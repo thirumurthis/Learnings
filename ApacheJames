@@ -1,0 +1,4 @@
+under conf/ folder
+updated the dsnserver.xml  = to use local ip address as DNS server (add it to the wireless -> properties -> inet 4 (properties) DNS input box
+ use 8.8.8.8 / 8.8.4.4
+updated the smptserver.xml = updated the addresshostlist with ips
