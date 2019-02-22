@@ -85,6 +85,45 @@ a30ca55  default virtualbox poweroff C:/Users/thirumurthi
    
    > vagrant halt 74411a2 
       - this command will shutdown the running VM
+      
+HOW TO CONNECT TO THE RUNNING VM BOX?
+   - by default, ubuntu not include graphical shell
+   - vagrant vm is headless mode (unless configured for graphical interface)
+   - connect using SSH is common method
+       - terminal which used to connect
+   - Vagrant includes SSH client to connect.
+ 
+ COMMAND To CONNECT using SSH:
+ USE command prompt / power shell:
+ 
+ > vagrant ssh
+ 
+    - above command will connect to the vagrant box, user name and host name is 
+    vagrant@vagrant:
+    - use linux command `ifconfig` to list the network details of the box.
+    Note: 
+     :- In case of VM box is not running use > vagrant status and > vagrant up
+    to run the VM box.
+     :- In case of any network interface exception try > vagrant up command couple of times
+ 
+    > exit  - command to disconnect the box.
+    
+    ssh command is used to run the commands in the box like install configration, etc.
+    
+ COMMAND to SHUTDOWN the running box.
+ 
+ > vagrant halt 
+  - command will be shutdown gracefully.
+  - to start again then issue > vagrant up
+  
+ COMMAND to DELETE and RESET the way the box was initally set :-------------------
+ 
+ > vagrant destory
+ 
+ Base box - starting point of the vm boxes.
+ 
+ Vagrant Cloud:
+ 
  
  
       
