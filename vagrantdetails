@@ -119,14 +119,21 @@ HOW TO CONNECT TO THE RUNNING VM BOX?
  COMMAND to DELETE and RESET the way the box was initally set :-------------------
  
  > vagrant destory
+
+Vagrant Cloud :-----------------
+  Base box - starting point of the vm boxes that has been downloaded.
+  The base box can be created and uploaded to the public / private vagrant cloud account.
+
+
+Vagrant File :--------------------
+ - Vagrant box are configured using Vagrantfile
+ - This VagrantFile are ruby files.
  
- Base box - starting point of the vm boxes.
+<<Using visual safe code, (view -> extensions type vagrant) install. 
+Use Integrated environment for entering following command.>>
+
  
- Vagrant Cloud:
- 
- 
- 
-      
+
       
       
       
