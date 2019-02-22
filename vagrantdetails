@@ -1,0 +1,46 @@
+Install the vagrant to apporpriate environment. (windows)
+ << Note: > - follows a command >>
+once installed, open power shell
+
+use below command to verify installation:
+ > vagrant -v
+output:
+  version will be displayed.
+
+---- once installation verified -------
+
+creat a folder under home directory (~ or %HOMEPATH%)
+
+> mkdir firstVagrantbox
+> cd firstVagrantbox
+   - the folder will be an unique environment and doesn't intercept with other 
+   vagrant configs box environment.
+   - this folder isolates the box from others
+   
+COMMAND to INIT box:
+issue below command to initialize box.
+> vagrant init bento/ubuntu-16.04
+
+bento - is the company manages the ubuntu distributions.
+-  The `init` will create a new file called "Vagrantfile".
+-  This file will have the appropriate box which has the configuration.
+
+COMMAND to RUN box:
+> vagrant up 
+  - This command will run the box
+
+output:
+           Bringing machine 'default' up with 'virtualbox' provider...
+          ==> default: Box 'bento/ubuntu-16.04' could not be found. Attempting to find and install...
+              default: Box Provider: virtualbox
+              default: Box Version: >= 0
+          ==> default: Loading metadata for box 'bento/ubuntu-16.04'
+              default: URL: https://vagrantcloud.com/bento/ubuntu-16.04
+          ==> default: Adding box 'bento/ubuntu-16.04' (v201812.27.0) for provider: virtualbox
+              default: Downloading: https://vagrantcloud.com/bento/boxes/ubuntu-16.04/versions/201812.27.0/providers/virtualbox.box
+              default: Download redirected to host: vagrantcloud-files-production.s3.amazonaws.com
+              default:
+          ==> default: Successfully added box 'bento/ubuntu-16.04' (v201812.27.0) for 'virtualbox'!
+          ==> default: Importing base box 'bento/ubuntu-16.04'...
+          ==> default: Matching MAC address for NAT networking...
+
