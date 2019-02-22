@@ -17,7 +17,7 @@ creat a folder under home directory (~ or %HOMEPATH%)
    vagrant configs box environment.
    - this folder isolates the box from others
    
-COMMAND to INIT box:
+COMMAND to INIT box:--------------------------------------------
 issue below command to initialize box.
 > vagrant init bento/ubuntu-16.04
 
@@ -25,11 +25,22 @@ bento - is the company manages the ubuntu distributions.
 -  The `init` will create a new file called "Vagrantfile".
 -  This file will have the appropriate box which has the configuration.
 
-COMMAND to RUN box:
+COMMAND to RUN box:---------------------------------------------
 > vagrant up 
+   
   - This command will run the box
-
-output:
+  - This command checks the name of the box (eg. bento/ubuntu-16.04)
+  1. Vagrant maintains a local cache of boxes 
+       - if not in local it will download from vagrant cloud. <<this will be a step in up output.>>
+       - the file in the cache are compressed.
+  Location of cache, C:\Users\<user_name>\.vagrant.d\boxes\bento-VAGRANTSLASH-ubuntu-16.04\201812.27.0\virtualbox
+  files under this folder: 
+            box, metadata.json, virutaldes(.vmdk file), vagrantfile.
+   2. Last step,
+         vagrant will merge the VagarantFile from the box, with the one created under
+         the independent folder (eg. firstVagrantbox/ folder)
+ 
+ Output of Command:
            Bringing machine 'default' up with 'virtualbox' provider...
           ==> default: Box 'bento/ubuntu-16.04' could not be found. Attempting to find and install...
               default: Box Provider: virtualbox
@@ -43,4 +54,56 @@ output:
           ==> default: Successfully added box 'bento/ubuntu-16.04' (v201812.27.0) for 'virtualbox'!
           ==> default: Importing base box 'bento/ubuntu-16.04'...
           ==> default: Matching MAC address for NAT networking...
-
+              ....
+ NOTE: 
+      Now the box is running, IN HEADLESS MODE - means no UI.
+      VM is not having a window, if the window closed we can't see anything.
+      
+ COMMAND to check STATUS of VAGRANT box.
+ > vagrant status 
+      - command will provide the status of the running VM
+      - this is easy in case on single VM
+      - ouput will be the status of the VM <eg. running.>
+      
+ COMMAND to check all VM in the machine:--------------------------------------
+    This command can be executed at any directory
+ > cd .. (move one level up to firstVagrantbox/)
+ 
+ > vagrant global-status
+    - this command list all status of the VM vagrant in the machine
+  
+  OUTPUT:
+  id       name    provider   state    directory
+-------------------------------------------------------------------------
+74411a2  default virtualbox running  C:/chef
+a30ca55  default virtualbox poweroff C:/Users/thirumurthi
+173c999  default virtualbox running  C:/Users/thirumurthi/myfirstbox
+  
+ COMMAND to execute in one specific VM :-------------------------------------------
+  
+ - Grab the id from the above command,  
+   
+   > vagrant halt 74411a2 
+      - this command will shutdown the running VM
+ 
+ 
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
