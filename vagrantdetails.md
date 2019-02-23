@@ -110,7 +110,7 @@ HOW TO CONNECT TO THE RUNNING VM BOX?
     
     ssh command is used to run the commands in the box like install configration, etc.
     
- COMMAND to SHUTDOWN the running box.
+ COMMAND to SHUTDOWN the running box:-------------------------
  
  > vagrant halt 
   - command will be shutdown gracefully.
@@ -131,6 +131,45 @@ Vagrant File :--------------------
  
 <<Using visual safe code, (view -> extensions type vagrant) install. 
 Use Integrated environment for entering following command.>>
+ use 
+     > cd firstVagrantbox
+     > code -r .  (this command in Vs code, to open the appropriate directory where the vagrantfile is present.)
+Ctrl~ opens, the powershell within the VS code.
+
+ABOUT VagrantFile details :----------------------
+
+     within the VS code power shell, if we create a new folder and issue > vagrant init
+
+     # code below in vagrant file is to indicate the version (2) of Vagrant file being used.
+
+     Vagrant.configure("2") do |config|
+
+     # code below indicates which box we are using, in this scenario the value is base which needs to be changed 
+     # this will be used by vagrant to build.
+
+     config.vm.box = "base"
+        <<- user "bento/ubuntu-16.04">>
+
+      # once above is completed and issued > vagrant up , will start the virtual box.
+
+      Note: other commented configuration code in the Vagrant file is not recommended to change by HashiCorp.
+
+      The below commented code in vagrant file checks for updates when the box is started. default value is true.
+        # config.vm.box_check_update = false 
+      No need to uncomment this code.
+
+      Below code from vagrant File content is hypervicer provider specific 
+      
+       # Example for VirtualBox:
+       #
+       # config.vm.provider "virtualbox" do |vb|
+       #   # Display the VirtualBox GUI when booting the machine
+       #   vb.gui = true
+       #
+       #   # Customize the amount of memory on the VM:
+       #   vb.memory = "1024"
+       # end
+       #
 
  
 
