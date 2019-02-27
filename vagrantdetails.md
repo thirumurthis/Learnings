@@ -207,16 +207,17 @@ Use Integrated environment for entering following command.>>
       # config.vm.synced_folder "../data", "/vagrant_data"
     ```
 Above *config.vm.synced_folder* should be uncommented.
-      - The first parameter **"../data"** - is the directory that needs to be synced in host (windows) machine.
-        - The folder "data" should be created one level above the folder where Vagrantfile config is present.
-      - The second parameter **"/vagrant_data"** will be at the root level of the vagrant box.
+ - The first parameter **"../data"** - is the directory that needs to be synced in host (windows) machine.
+  - The folder "data" should be created one level above the folder where Vagrantfile config is present.
+ - The second parameter **"/vagrant_data"** will be at the root level of the vagrant box.
 
 use the *> vagrant reload* command to reload the Vagrant box (command is combination of halt & up)
 
-Once the box is up, use *> vagrant ssh* to connect to the box, and at the root level should be able to see /vagrant_data with the data synced. 
-    - if the data directory has files it will be synced automatically.
-    
-  **Note:**
+ - Once the box is up, 
+ - use *> vagrant ssh* to connect to the box 
+ - at the root level, a folder /vagrant_data should be created with the ../data synced automaticall. 
+     
+**Note:**
       - The host (windows) machine Vagrantfile config, will be sync'ed in the vagrant box at root level under */vagrant* folder.
       
  
