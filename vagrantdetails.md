@@ -111,12 +111,12 @@ This command can be executed at any directory
      *vagrant@vagrant:*
    - use linux command `ifconfig` to list the network details of the box.
 
-    *Note:* 
-      :- In case of VM box is not running use > vagrant status and > vagrant up (to run the VM box.)
-      :- In case of any network interface exception try > vagrant up command couple of times
+ *Note:* 
+  - In case of VM box is not running use *> vagrant status* and *> vagrant up* (to run the VM box.)
+  - In case of any network interface exception try *> vagrant up* command couple of times
 
   ```   
-      > exit  - command to disconnect the box.
+    > exit  - command to disconnect the box.
   ```   
     ssh command is used to run the commands in the box like install configration, etc.
     
@@ -128,7 +128,7 @@ This command can be executed at any directory
   - to start again then issue > vagrant up
   
  **COMMAND to DELETE and RESET the way the box was initally set:**
-  ``` 
+ ``` 
     > vagrant destory
  ```
 
@@ -144,13 +144,13 @@ Vagrant File :
 
 <<Using visual safe code, (view -> extensions type vagrant) install. 
 Use Integrated environment for entering following command.>>
-      ``` 
-         > cd firstVagrantbox
-         > code -r .  (this command in Vs code, to open the appropriate directory where the vagrantfile is present.)
-     ```    
+  ``` 
+     > cd firstVagrantbox
+     > code -r .  (this command in Vs code, to open the appropriate directory where the vagrantfile is present.)
+  ```    
   Ctrl~ opens, the powershell within the VS code.
 
-**ABOUT VagrantFile details:**
+***ABOUT VagrantFile details:***
 
    *within the VS code power shell, if we create a new folder and issue > vagrant init*
    
@@ -166,28 +166,26 @@ Use Integrated environment for entering following command.>>
 ```
      # once above is completed and issued > vagrant up , will start the virtual box.
 
-**Note: other commented configuration code in the Vagrant file is not recommended to change by HashiCorp.**
+**Note:**
+     HashiCorp recommends to leave the configuration code in the Vagrant file, unless it is really necessary to update.
 
  *The below commented code in vagrant file checks for updates when the box is started. default value is true.*
  
-   ```     
+```     
     # config.vm.box_check_update = false 
-   ```
+```
    
 **No need to uncomment this code, unless it needed.**
 
   Below code from vagrant File content is hypervicer provider specific 
  ```    
        # Example for VirtualBox:
-       #
        # config.vm.provider "virtualbox" do |vb|
        #   # Display the VirtualBox GUI when booting the machine
        #   vb.gui = true
-       #
        #   # Customize the amount of memory on the VM:
        #   vb.memory = "1024"
        # end
-       #
 ```
 
 **COMMAND TO Reconfigure or HALT & START Vagrant box:**
@@ -203,9 +201,9 @@ Use Integrated environment for entering following command.>>
     # the path on the host to the actual folder. The second argument is
     # the path on the guest to mount the folder. And the optional third
     # argument is a set of non-required options.
-    ```
+ ```
       # config.vm.synced_folder "../data", "/vagrant_data"
-    ```
+ ```
 Above *config.vm.synced_folder* should be uncommented.
  - The first parameter **"../data"** - is the directory that needs to be synced in host (windows) machine.
   - The folder "data" should be created one level above the folder where Vagrantfile config is present.
@@ -218,7 +216,7 @@ use the *> vagrant reload* command to reload the Vagrant box (command is combina
  - at the root level, a folder /vagrant_data should be created with the ../data synced automaticall. 
      
 **Note:**
-      - The host (windows) machine Vagrantfile config, will be sync'ed in the vagrant box at root level under */vagrant* folder.
+ - The host (windows) machine Vagrantfile config, will be sync'ed in the vagrant box at root level under */vagrant* folder.
       
  
  
