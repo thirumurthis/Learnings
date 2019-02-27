@@ -218,6 +218,14 @@ use the *> vagrant reload* command to reload the Vagrant box (command is combina
 **Note:**
  - The host (windows) machine Vagrantfile config, will be sync'ed in the vagrant box at root level under */vagrant* folder.
       
+***VAGRANT NETWORKING:***
+Three types of,
+ - Port Forwarding
+ - Private Network
+ - Public Network
+ 
+ **Note:**
+  - Vagrant is not secure enough, for exposing to public network different setting needs to be done.
  
  
       
