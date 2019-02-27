@@ -1,37 +1,36 @@
-Install the vagrant to apporpriate environment. (windows)
+Install the vagrant to appropriate environment. (windows)
  << Note: > - follows a command >>
 once installed, open power shell
 
 use below command to verify installation:
- ```
+```
  > vagrant -v
 ```
-
 *output:*
   version will be displayed.
 
----- once installation verified -------
+*---- once installation verified -------*
 
 creat a folder under home directory (~ or %HOMEPATH%)
-
-> mkdir firstVagrantbox
-> cd firstVagrantbox
-   - the folder will be an unique environment and doesn't intercept with other 
-   vagrant configs box environment.
-   - this folder isolates the box from others
+```
+   > mkdir firstVagrantbox
+   > cd firstVagrantbox
+```
+  - the folder will be an unique environment and doesn't intercept with other vagrant configs box environment.
+  - this folder isolates the vagrant box from others
    
 **COMMAND to INIT box:--------------------------------------------**
-
 issue below command to initialize box.
-```> vagrant init bento/ubuntu-16.04
+```
+  > vagrant init bento/ubuntu-16.04
 ```
 bento - is the company manages the ubuntu distributions.
 -  The `init` will create a new file called "Vagrantfile".
 -  This file will have the appropriate box which has the configuration.
 
 **COMMAND to RUN box:---------------------------------------------**
-
-```> vagrant up 
+```
+  > vagrant up 
 ```   
   - This command will run the box
   - This command checks the name of the box (eg. bento/ubuntu-16.04)
@@ -46,9 +45,8 @@ bento - is the company manages the ubuntu distributions.
          the independent folder (eg. firstVagrantbox/ folder)
  
  **Output of Command:**
- 
- ```           Bringing machine 'default' up with 'virtualbox' provider...\
-            ==> default: Box 'bento/ubuntu-16.04' could not be found. Attempting to find and install...
+```          Bringing machine 'default' up with 'virtualbox' provider...\
+          ==> default: Box 'bento/ubuntu-16.04' could not be found. Attempting to find and install...
               default: Box Provider: virtualbox
               default: Box Version: >= 0
           ==> default: Loading metadata for box 'bento/ubuntu-16.04'
@@ -62,46 +60,36 @@ bento - is the company manages the ubuntu distributions.
           ==> default: Matching MAC address for NAT networking...
              ....
 ```
-
 *NOTE:* 
       Now the box is running, IN HEADLESS MODE - means no UI.
       VM is not having a window, if the window closed we can't see anything.
       
  **COMMAND to check STATUS of VAGRANT box.-----------------------**
- 
- ``` > vagrant status
-  ```
- 
+ ```
+   > vagrant status
+ ```
    - command will provide the status of the running VM
    - this is easy in case on single VM
    - ouput will be the status of the VM <eg. running.>
       
  **COMMAND to check all VM in the machine:--------------------------------------**
- 
- This command can be executed at any directory
- ``` > cd .. (move one level up to firstVagrantbox/)
- ```
- 
-``` > vagrant global-status
+This command can be executed at any directory
+``` 
+   > cd .. (move one level up to firstVagrantbox/)
+   > vagrant global-status
 ```
-
    - this command list all status of the VM vagrant in the machine
-  
-  **OUTPUT:**
- 
- -----------------------------------------------------------------------
- id   |    name |   provider |  state |   directory |
--------------------------------------------------------------------------
-74411a2 |  default | virtualbox | running | C:/chef |
-a30ca55 | default | virtualbox | poweroff | C:/Users/thirumurthi |
-173c999 | default | virtualbox | running  | C:/Users/thirumurthi/myfirstbox |
--------------------------------------------------------------
-  
+**OUTPUT:**
+|id   |    name |   provider |  state |   directory | 
+------|---------|-------------|--------|-------------|
+|74411a2 |  default | virtualbox | running | C:/chef |
+|173c999 | default | virtualbox | running  | C:/Users/thirumurthi/myfirstbox |
+|a30ca55 | default | virtualbox | poweroff | C:/Users/thirumurthi |
+
 **COMMAND to execute in one specific VM :-------------------------------------------**
-  
- - Grab the id from the above command,  
-   
-  ``` > vagrant halt 74411a2 
+- Grab the id from the above command,  
+  ``` 
+     > vagrant halt 74411a2 
   ```
    - this command will shutdown the running VM
       
@@ -113,34 +101,33 @@ a30ca55 | default | virtualbox | poweroff | C:/Users/thirumurthi |
    - Vagrant includes SSH client to connect.
  
  **COMMAND To CONNECT using SSH:**
- USE command prompt / power shell:
- 
- ``` > vagrant ssh
- ```
- 
+  USE command prompt / power shell:
+  ``` 
+     > vagrant ssh
+  ```
    - above command will connect to the vagrant box, user name and host name is 
-    vagrant@vagrant:
-    - use linux command `ifconfig` to list the network details of the box.
-    
-   *Note:* 
-     :- In case of VM box is not running use > vagrant status and > vagrant up
-    to run the VM box.
-     :- In case of any network interface exception try > vagrant up command couple of times
- 
- ```   > exit  - command to disconnect the box.
- ```   
-   ssh command is used to run the commands in the box like install configration, etc.
+     *vagrant@vagrant:*
+   - use linux command `ifconfig` to list the network details of the box.
+
+    *Note:* 
+      :- In case of VM box is not running use > vagrant status and > vagrant up (to run the VM box.)
+      :- In case of any network interface exception try > vagrant up command couple of times
+
+  ```   
+      > exit  - command to disconnect the box.
+  ```   
+    ssh command is used to run the commands in the box like install configration, etc.
     
  **COMMAND to SHUTDOWN the running box:-------------------------**
- 
- ``` > vagrant halt 
+  ``` 
+    > vagrant halt 
  ```
   - command will be shutdown gracefully.
   - to start again then issue > vagrant up
   
  **COMMAND to DELETE and RESET the way the box was initally set :-------------------**
- 
- ``` > vagrant destory
+  ``` 
+    > vagrant destory
  ```
 
 Vagrant Cloud :-----------------
@@ -155,21 +142,20 @@ Vagrant File :--------------------
 
 <<Using visual safe code, (view -> extensions type vagrant) install. 
 Use Integrated environment for entering following command.>>
- 
-     ``` > cd firstVagrantbox
+      ``` 
+         > cd firstVagrantbox
          > code -r .  (this command in Vs code, to open the appropriate directory where the vagrantfile is present.)
      ```    
   Ctrl~ opens, the powershell within the VS code.
 
 **ABOUT VagrantFile details :----------------------**
 
-     within the VS code power shell, if we create a new folder and issue > vagrant init
-
+   *within the VS code power shell, if we create a new folder and issue > vagrant init*
+   
      # code below in vagrant file is to indicate the version (2) of Vagrant file being used.
 ```
      Vagrant.configure("2") do |config|
 ```
-
      # code below indicates which box we are using, in this scenario the value is base which needs to be changed 
      # this will be used by vagrant to build.
 
@@ -200,9 +186,8 @@ Use Integrated environment for entering following command.>>
 ```
 
 **COMMAND TO Reconfigure or HALT & START Vagrant box: -----------------------------**
-
 ```
- > vagrant reload
+    > vagrant reload
 ```
  
 
