@@ -19,7 +19,7 @@ creat a folder under home directory (~ or %HOMEPATH%)
   - the folder will be an unique environment and doesn't intercept with other vagrant configs box environment.
   - this folder isolates the vagrant box from others
    
-**COMMAND to INIT box:--------------------------------------------**
+**COMMAND to INIT box:**
 issue below command to initialize box.
 ```
   > vagrant init bento/ubuntu-16.04
@@ -28,7 +28,7 @@ bento - is the company manages the ubuntu distributions.
 -  The `init` will create a new file called "Vagrantfile".
 -  This file will have the appropriate box which has the configuration.
 
-**COMMAND to RUN box:---------------------------------------------**
+**COMMAND to RUN box:**
 ```
   > vagrant up 
 ```   
@@ -64,7 +64,7 @@ bento - is the company manages the ubuntu distributions.
       Now the box is running, IN HEADLESS MODE - means no UI.
       VM is not having a window, if the window closed we can't see anything.
       
- **COMMAND to check STATUS of VAGRANT box.-----------------------**
+ **COMMAND to check STATUS of VAGRANT box:**
  ```
    > vagrant status
  ```
@@ -72,7 +72,7 @@ bento - is the company manages the ubuntu distributions.
    - this is easy in case on single VM
    - ouput will be the status of the VM <eg. running.>
       
- **COMMAND to check all VM in the machine:--------------------------------------**
+ **COMMAND to check all VM in the machine:**
 This command can be executed at any directory
 ``` 
    > cd .. (move one level up to firstVagrantbox/)
@@ -80,13 +80,14 @@ This command can be executed at any directory
 ```
    - this command list all status of the VM vagrant in the machine
 **OUTPUT:**
+
 |id   |    name |   provider |  state |   directory | 
 ------|---------|-------------|--------|-------------|
 |74411a2 |  default | virtualbox | running | C:/chef |
 |173c999 | default | virtualbox | running  | C:/Users/thirumurthi/myfirstbox |
 |a30ca55 | default | virtualbox | poweroff | C:/Users/thirumurthi |
 
-**COMMAND to execute in one specific VM :-------------------------------------------**
+**COMMAND to execute in one specific VM:**
 - Grab the id from the above command,  
   ``` 
      > vagrant halt 74411a2 
@@ -118,23 +119,23 @@ This command can be executed at any directory
   ```   
     ssh command is used to run the commands in the box like install configration, etc.
     
- **COMMAND to SHUTDOWN the running box:-------------------------**
+ **COMMAND to SHUTDOWN the running box:**
   ``` 
     > vagrant halt 
  ```
   - command will be shutdown gracefully.
   - to start again then issue > vagrant up
   
- **COMMAND to DELETE and RESET the way the box was initally set :-------------------**
+ **COMMAND to DELETE and RESET the way the box was initally set:**
   ``` 
     > vagrant destory
  ```
 
-Vagrant Cloud :-----------------
+Vagrant Cloud :
   Base box - starting point of the vm boxes that has been downloaded.
   The base box can be created and uploaded to the public / private vagrant cloud account.
 
-Vagrant File :--------------------
+Vagrant File :
  - Vagrant box are configured using Vagrantfile
  - This VagrantFile are ruby files.
 
@@ -148,7 +149,7 @@ Use Integrated environment for entering following command.>>
      ```    
   Ctrl~ opens, the powershell within the VS code.
 
-**ABOUT VagrantFile details :----------------------**
+**ABOUT VagrantFile details:**
 
    *within the VS code power shell, if we create a new folder and issue > vagrant init*
    
@@ -185,7 +186,7 @@ Use Integrated environment for entering following command.>>
        #
 ```
 
-**COMMAND TO Reconfigure or HALT & START Vagrant box: -----------------------------**
+**COMMAND TO Reconfigure or HALT & START Vagrant box:**
 ```
     > vagrant reload
 ```
