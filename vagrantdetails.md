@@ -1,5 +1,6 @@
 Install the vagrant to appropriate environment. (windows)
- << Note: > - follows a command >>
+ 
+*<< Note: > - follows a command >>*
 once installed, open power shell
 
 use below command to verify installation:
@@ -163,13 +164,16 @@ Use Integrated environment for entering following command.>>
 ```
      config.vm.box = "base"  << use "bento/ubuntu-16.04">>
 ```
-      # once above is completed and issued > vagrant up , will start the virtual box.
+     # once above is completed and issued > vagrant up , will start the virtual box.
 
 **Note: other commented configuration code in the Vagrant file is not recommended to change by HashiCorp.**
 
  *The below commented code in vagrant file checks for updates when the box is started. default value is true.*
-   ```     # config.vm.box_check_update = false 
+ 
+   ```     
+    # config.vm.box_check_update = false 
    ```
+   
 **No need to uncomment this code, unless it needed.**
 
   Below code from vagrant File content is hypervicer provider specific 
@@ -191,7 +195,32 @@ Use Integrated environment for entering following command.>>
     > vagrant reload
 ```
  
+**SYNC'ING HOST FOLDER with VAGRANTBOX folder: **
+   
+   - Vagrantfile (in windows, C:/firstVagrantBox/Vagrantfile)
+   
+    # Share an additional folder to the guest VM. The first argument is
+    # the path on the host to the actual folder. The second argument is
+    # the path on the guest to mount the folder. And the optional third
+    # argument is a set of non-required options.
+    ```
+      # config.vm.synced_folder "../data", "/vagrant_data"
+    ```
+Above *config.vm.synced_folder* should be uncommented.
+      - The first parameter **"../data"** - is the directory that needs to be synced in host (windows) machine.
+        - The folder "data" should be created one level above the folder where Vagrantfile config is present.
+      - The second parameter **"/vagrant_data"** will be at the root level of the vagrant box.
 
+use the *> vagrant reload* command to reload the Vagrant box (command is combination of halt & up)
+
+Once the box is up, use *> vagrant ssh* to connect to the box, and at the root level should be able to see /vagrant_data with the data synced. 
+    - if the data directory has files it will be synced automatically.
+    
+  **Note:**
+      - The host (windows) machine Vagrantfile config, will be sync'ed in the vagrant box at root level under */vagrant* folder.
+      
+ 
+ 
       
       
       
