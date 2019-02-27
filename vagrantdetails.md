@@ -7,7 +7,7 @@ use below command to verify installation:
  > vagrant -v
 ```
 
-*output:
+*output:*
   version will be displayed.
 
 ---- once installation verified -------
@@ -20,7 +20,7 @@ creat a folder under home directory (~ or %HOMEPATH%)
    vagrant configs box environment.
    - this folder isolates the box from others
    
-**COMMAND to INIT box:--------------------------------------------
+**COMMAND to INIT box:--------------------------------------------**
 
 issue below command to initialize box.
 ```> vagrant init bento/ubuntu-16.04
@@ -29,7 +29,7 @@ bento - is the company manages the ubuntu distributions.
 -  The `init` will create a new file called "Vagrantfile".
 -  This file will have the appropriate box which has the configuration.
 
-**COMMAND to RUN box:---------------------------------------------
+**COMMAND to RUN box:---------------------------------------------**
 
 ```> vagrant up 
 ```   
@@ -45,7 +45,7 @@ bento - is the company manages the ubuntu distributions.
          vagrant will merge the VagarantFile from the box, with the one created under
          the independent folder (eg. firstVagrantbox/ folder)
  
- Output of Command:
+ **Output of Command:**
  
  ```           Bringing machine 'default' up with 'virtualbox' provider...\
             ==> default: Box 'bento/ubuntu-16.04' could not be found. Attempting to find and install...
@@ -63,11 +63,11 @@ bento - is the company manages the ubuntu distributions.
              ....
 ```
 
-*NOTE: 
+*NOTE:* 
       Now the box is running, IN HEADLESS MODE - means no UI.
       VM is not having a window, if the window closed we can't see anything.
       
- **COMMAND to check STATUS of VAGRANT box.
+ **COMMAND to check STATUS of VAGRANT box.-----------------------**
  
  ``` > vagrant status
   ```
@@ -76,7 +76,7 @@ bento - is the company manages the ubuntu distributions.
    - this is easy in case on single VM
    - ouput will be the status of the VM <eg. running.>
       
- **COMMAND to check all VM in the machine:--------------------------------------
+ **COMMAND to check all VM in the machine:--------------------------------------**
  
  This command can be executed at any directory
  ``` > cd .. (move one level up to firstVagrantbox/)
@@ -87,7 +87,7 @@ bento - is the company manages the ubuntu distributions.
 
    - this command list all status of the VM vagrant in the machine
   
-  OUTPUT:
+  **OUTPUT:**
  
  -----------------------------------------------------------------------
  id   |    name |   provider |  state |   directory |
@@ -97,7 +97,7 @@ a30ca55 | default | virtualbox | poweroff | C:/Users/thirumurthi |
 173c999 | default | virtualbox | running  | C:/Users/thirumurthi/myfirstbox |
 -------------------------------------------------------------
   
-**COMMAND to execute in one specific VM :-------------------------------------------
+**COMMAND to execute in one specific VM :-------------------------------------------**
   
  - Grab the id from the above command,  
    
@@ -105,14 +105,14 @@ a30ca55 | default | virtualbox | poweroff | C:/Users/thirumurthi |
   ```
    - this command will shutdown the running VM
       
-HOW TO CONNECT TO THE RUNNING VM BOX?
+**HOW TO CONNECT TO THE RUNNING VM BOX?**
    - by default, ubuntu not include graphical shell
    - vagrant vm is headless mode (unless configured for graphical interface)
    - connect using SSH is common method
        - terminal which used to connect
    - Vagrant includes SSH client to connect.
  
- **COMMAND To CONNECT using SSH:
+ **COMMAND To CONNECT using SSH:**
  USE command prompt / power shell:
  
  ``` > vagrant ssh
@@ -122,7 +122,7 @@ HOW TO CONNECT TO THE RUNNING VM BOX?
     vagrant@vagrant:
     - use linux command `ifconfig` to list the network details of the box.
     
-   *Note: 
+   *Note:* 
      :- In case of VM box is not running use > vagrant status and > vagrant up
     to run the VM box.
      :- In case of any network interface exception try > vagrant up command couple of times
@@ -131,14 +131,14 @@ HOW TO CONNECT TO THE RUNNING VM BOX?
  ```   
    ssh command is used to run the commands in the box like install configration, etc.
     
- **COMMAND to SHUTDOWN the running box:-------------------------
+ **COMMAND to SHUTDOWN the running box:-------------------------**
  
  ``` > vagrant halt 
  ```
   - command will be shutdown gracefully.
   - to start again then issue > vagrant up
   
- **COMMAND to DELETE and RESET the way the box was initally set :-------------------
+ **COMMAND to DELETE and RESET the way the box was initally set :-------------------**
  
  ``` > vagrant destory
  ```
@@ -151,17 +151,17 @@ Vagrant File :--------------------
  - Vagrant box are configured using Vagrantfile
  - This VagrantFile are ruby files.
 
-**Editing files using tool:
+**Editing Vagrantfiles using visual studio code:**
 
 <<Using visual safe code, (view -> extensions type vagrant) install. 
 Use Integrated environment for entering following command.>>
- use 
+ 
      ``` > cd firstVagrantbox
          > code -r .  (this command in Vs code, to open the appropriate directory where the vagrantfile is present.)
      ```    
   Ctrl~ opens, the powershell within the VS code.
 
-**ABOUT VagrantFile details :----------------------
+**ABOUT VagrantFile details :----------------------**
 
      within the VS code power shell, if we create a new folder and issue > vagrant init
 
@@ -178,14 +178,15 @@ Use Integrated environment for entering following command.>>
 ```
       # once above is completed and issued > vagrant up , will start the virtual box.
 
-**Note: other commented configuration code in the Vagrant file is not recommended to change by HashiCorp.
+**Note: other commented configuration code in the Vagrant file is not recommended to change by HashiCorp.**
 
-  *The below commented code in vagrant file checks for updates when the box is started. default value is true.
-        # config.vm.box_check_update = false 
-**No need to uncomment this code, unless it needed.
+ *The below commented code in vagrant file checks for updates when the box is started. default value is true.*
+   ```     # config.vm.box_check_update = false 
+   ```
+**No need to uncomment this code, unless it needed.**
 
-      Below code from vagrant File content is hypervicer provider specific 
-      
+  Below code from vagrant File content is hypervicer provider specific 
+ ```    
        # Example for VirtualBox:
        #
        # config.vm.provider "virtualbox" do |vb|
@@ -196,7 +197,13 @@ Use Integrated environment for entering following command.>>
        #   vb.memory = "1024"
        # end
        #
+```
 
+**COMMAND TO Reconfigure or HALT & START Vagrant box: -----------------------------**
+
+```
+ > vagrant reload
+```
  
 
       
