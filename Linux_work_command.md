@@ -40,3 +40,10 @@ $ unzip -p <Zip_file_name>.zip /path_to_file_in_the_zip > file_content_to_save
  $ zgrep <content_to_search> <zip_file_name or Patter_of_zip_file>
  $ zgrep 'date' my-file.zip
  ```
+
+# In unix/Linux to convert the any case to lower case using *tr* command
+### tr command translate the range of A-Z to lower case for standard ouput content
+```
+ $ stringTobeConvert="heLLO World"
+ $ convertedString= $(echo "${stringTobeConvert}" | tr '[A-Z]' '[a-z]')
+```
