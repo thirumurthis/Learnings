@@ -53,5 +53,6 @@ $ unzip -p <Zip_file_name>.zip /path_to_file_in_the_zip > file_content_to_save
 ```
 $ outputOfCommand=`pwd`
 $ listofinputs = `ls -l "/home/user/" | awk '{print $NF}'`
+ output: 8 one two { prints the last word of the ls command which is trimmed using awk default delimiter ' ' (space), since total 8 (total number of block took by the file) is part of ls command output 8 is displayed along with other files in the folder}
 ```
 
