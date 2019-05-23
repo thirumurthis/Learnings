@@ -42,8 +42,16 @@ $ unzip -p <Zip_file_name>.zip /path_to_file_in_the_zip > file_content_to_save
  ```
 
 # In unix/Linux to convert the any case to lower case using *tr* command
-### tr command translate the range of A-Z to lower case for standard ouput content
+##### tr command translate the range of A-Z to lower case for standard ouput content
 ```
  $ stringTobeConvert="heLLO World"
  $ convertedString= $(echo "${stringTobeConvert}" | tr '[A-Z]' '[a-z]')
 ```
+
+# to convert a pwd command output to a variable
+##### awk NF- Nubmer of fields, FS - File separator
+```
+$ outputOfCommand=`pwd`
+$ listofinputs = `ls -l "/home/user/" | awk '{print $NF}'`
+```
+
