@@ -48,11 +48,25 @@ $ unzip -p <Zip_file_name>.zip /path_to_file_in_the_zip > file_content_to_save
  $ convertedString= $(echo "${stringTobeConvert}" | tr '[A-Z]' '[a-z]')
 ```
 
-# to convert a pwd command output to a variable
-##### awk NF- Nubmer of fields, FS - File separator
+# To convert a pwd command output to a variable 
+##### awk NF- Nubmer of fields, FS - File separator (no space between =)
 ```
 $ outputOfCommand=`pwd`
-$ listofinputs = `ls -l "/home/user/" | awk '{print $NF}'`
+$ listofinputs=`ls -l "/home/user/" | awk '{print $NF}'`
  output: 8 one two { prints the last word of the ls command which is trimmed using awk default delimiter ' ' (space), since total 8 (total number of block took by the file) is part of ls command output 8 is displayed along with other files in the folder}
 ```
 
+# using *if* *else* in ksh script template
+```
+if [ "${var1}" = "one" ]
+then
+  echo "one"
+elif [ "${var2}" = "two" ]
+then 
+  echo "two"
+  exit
+elif [ "${var1}" = "default" ]
+then
+  $var2='y'
+fi
+```
