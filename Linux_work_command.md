@@ -70,3 +70,16 @@ then
   $var2='y'
 fi
 ```
+
+# Passing a string to another shell script, treat that as an list using set in ksh
+```
+firstshell.sh
+   # store the number of files in the home folder to variable along with total block string.
+   input1='ls -lrt /home | wc -l'
+   . ~/secondshell.sh "${input1}"
+   
+secondshell.sh
+   set -A var $input1
+   returnVal=`eval ${var[0]}"`
+   echo $returnVal
+```
