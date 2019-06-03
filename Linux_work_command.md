@@ -83,3 +83,8 @@ secondshell.sh
    returnVal=`eval ${var[0]}"`
    echo $returnVal
 ```
+
+# Create a set of files using touch command and ls
+```
+ls -lrt *.ZIP | awk '{ print $9 }' | xargs -I '{}' touch {}.complete
+```
