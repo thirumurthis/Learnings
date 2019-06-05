@@ -1,10 +1,10 @@
-extract the single class file from jar
+# Extract single class file from a jar file
 
 ```
 $ jar -xf my.jar com/package/name/till/classname
 ```
 
-to decomplie the single class file
+# To decomplie the single class file
 
 ```
 $ javap -c classname 
