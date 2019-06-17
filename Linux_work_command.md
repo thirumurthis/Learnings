@@ -88,3 +88,34 @@ secondshell.sh
 ```
 ls -lrt *.ZIP | awk '{ print $9 }' | xargs -I '{}' touch {}.complete
 ```
+
+# In order to stop the bash shell script when encounters an exception in line or pipeline flow
+```
+#!/bin/bash
+
+# when the shell script executed with argument 1 if loop is executed
+if [ $1 -eq 1 ]; then
+  set -e;
+fi
+for i in {1..10}
+do
+  echo $i
+  if [ $i -eq 6 ]; then
+        echo "value 6";
+        # below is to print the execution status of previous command
+        echo $?
+        # below comment will make sure to send an exit status of non-zero
+        ls -unknown >& /dev/null
+        echo $?
+        echo `hash`
+  fi
+done;
+-- save the above in a sampleScript.sh
+# below is to mark the shell script as executable
+$ chmod 775 sampleScript.sh
+# run the shell script command with no arguments (#1) and with 1 as argument (#2)
+$ ./sampleScript.sh
+$ ./sampleScript.sh 1
+```
+  ##### Note: When executing without argument, notice all the lines are being executed, but with argument, the 'set -e' is executed and the script exection stops once it encouters a exist status of non-zero number
+  [online linux terminal](https://bellard.org/jslinux)
