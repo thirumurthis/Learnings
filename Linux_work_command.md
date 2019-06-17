@@ -119,3 +119,14 @@ $ ./sampleScript.sh 1
 ```
   ##### Note: When executing without argument, notice all the lines are being executed, but with argument, the 'set -e' is executed and the script exection stops once it encouters a exist status of non-zero number
   [online linux terminal](https://bellard.org/jslinux)
+
+
+# Using set -o for option name (set is built-in command and use [documentation](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)
+
+```
+# below command will output hello in the terminal (instead of using a shell script using the below convenstion)
+/bin/bash -c 'set -e; set -o pipefail; ls >& /dev/null;echo "hello"; wait'
+
+# below command will not ouput anything since the ls command has incorrect options or switch
+/bin/bash -c 'set -e; set -o pipefail; ls -# >& /dev/null; echo "hello"; wait'
+```
