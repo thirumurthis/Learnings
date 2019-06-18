@@ -121,7 +121,7 @@ $ ./sampleScript.sh 1
   [online linux terminal](https://bellard.org/jslinux)
 
 
-# Using set -o for option name (set is built-in command and use [documentation](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)
+# Using set -o for option name (set is built-in command and use [documentation](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html))
 
 ```
 # below command will output hello in the terminal (instead of using a shell script using the below convenstion)
@@ -130,3 +130,24 @@ $ ./sampleScript.sh 1
 # below command will not ouput anything since the ls command has incorrect options or switch
 /bin/bash -c 'set -e; set -o pipefail; ls -# >& /dev/null; echo "hello"; wait'
 ```
+
+# To delete the blank lines from the VI editor
+
+```
+$ vi somefile
+-- once opened with blank line space
+use:
+   :g/^$/d
+ 
+ g - globally applied
+ ^ - beginning of line
+ $ - end of line 
+ d - delete 
+ 
+ similar to deleting lines in vm, to delete lines 1 to 10 use 
+ 
+ : 1,10d
+ ```
+ 
+ 
+    
