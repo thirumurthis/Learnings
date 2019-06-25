@@ -18,3 +18,42 @@ $ npm -v
     -g for global
     in case of exception use `sudo npm`
  ```
+
+Exception message
+```
+/usr/lib/node_modules/@angular/cli/bin/postinstall/analytics-prompt.js:8
+(async () => {
+       ^
+
+SyntaxError: Unexpected token (
+    at createScript (vm.js:56:10)
+    at Object.runInThisContext (vm.js:97:10)
+    at Module._compile (module.js:549:28)
+    at Object.Module._extensions..js (module.js:586:10)
+    at Module.load (module.js:494:32)
+    at tryModuleLoad (module.js:453:12)
+    at Function.Module._load (module.js:445:3)
+    at Module.require (module.js:504:17)
+    at require (internal/module.js:20:19)
+    at Object.<anonymous> (/usr/lib/node_modules/@angular/cli/bin/postinstall/script.js:5:1)
+npm ERR! Linux 3.10.0-514.26.2.el7.x86_64
+npm ERR! argv "/usr/bin/node" "/bin/npm" "install" "-g" "@angular/cli"
+npm ERR! node v6.17.1
+npm ERR! npm  v3.10.10
+npm ERR! code ELIFECYCLE
+
+npm ERR! @angular/cli@8.0.4 postinstall: `node ./bin/postinstall/script.js`
+npm ERR! Exit status 1
+
+```
+
+
+During ng serve command if encountered below message
+
+Could not find module “@angular-devkit/build-angular”
+use 
+```
+npm install --save-dev @angular-devkit/build-angular
+   -g for global install
+```
+
