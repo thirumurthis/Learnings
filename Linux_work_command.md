@@ -149,5 +149,10 @@ use:
  : 1,10d
  ```
  
- 
+ # How to Fix “SSH Too Many Authentication Failures” Error
+[Link](https://www.tecmint.com/fix-ssh-too-many-authentication-failures-error/)
+
+```
+  $ ssh -o IdentitiesOnly=yes hostname
+```
     
