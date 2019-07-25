@@ -46,14 +46,17 @@ npm ERR! @angular/cli@8.0.4 postinstall: `node ./bin/postinstall/script.js`
 npm ERR! Exit status 1
 
 ```
+The above exception was due to the mismatch of npm and nodejs version.
 
+Used [Link](https://tecadmin.net/install-latest-nodejs-and-npm-on-centos/) to install the latest npm & nodejs.
+- Ensure to install the c++ make updates
 
 During ng serve command if encountered below message
 
 Could not find module “@angular-devkit/build-angular”
-use 
+use sudo in case of permission issue, during installation 
 ```
 npm install --save-dev @angular-devkit/build-angular
-   -g for global install
+ >  -g for global install
 ```
 
