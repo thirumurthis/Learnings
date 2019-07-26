@@ -56,13 +56,14 @@ During ng serve command if encountered below message
 ### One reason for the missing module, is the angular project was cloned from git which didn't have the dependencies that were mentioned in the package.json, after navigating to the folder issue the `$ npm install`. 
  - The `npm install` should resolve the dependencies. 
 
-        Could not find module “@angular-devkit/build-angular”
-        use sudo in case of permission issue, during installation 
+Issue 1:
+     Could not find module “@angular-devkit/build-angular”, can be fixed with the below command. (use sudo in case of permission issue, during installation) 
         ```
         npm install --save-dev @angular-devkit/build-angular
          >  -g for global install
         ```
-
-        Another exception when using `npm start`
-        An unhandled exception occurred: Cannot find module '@angular/compiler-cli'
+Issue 2:
+     Another exception when using `npm start` was "An unhandled exception occurred: Cannot find module '@angular/compiler-cli'".
+ 
+ Both issues 1 & 2 where resolved after usign `npm install`
 
