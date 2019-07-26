@@ -53,6 +53,9 @@ Used [Link](https://tecadmin.net/install-latest-nodejs-and-npm-on-centos/) to in
 
 During ng serve command if encountered below message
 
+****** One reason for the missing module, is the angular project was cloned from git which didn't have the dependencies that were mentioned in the package.json, after navigating to the folder issue the `$ npm install`. 
+ - The `npm install` should resolve the dependencies. 
+
 Could not find module “@angular-devkit/build-angular”
 use sudo in case of permission issue, during installation 
 ```
