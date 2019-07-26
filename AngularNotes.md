@@ -53,7 +53,9 @@ Used [Link](https://tecadmin.net/install-latest-nodejs-and-npm-on-centos/) to in
 
 During ng serve command if encountered below message
 
-### One reason for the missing module, is the angular project was cloned from git which didn't have the dependencies that were mentioned in the package.json, after navigating to the folder issue the `$ npm install`. 
+### One reason for the missing module was due to unresolved dependencies in the workspace folder of angular project, when i cloned code from git which didn't include the node_modules folder within the project which has the dependencies mentioned in the package.json.
+### After navigating to the project level folder and usign the `$ npm install` command resolved the issue. 
+
  - The `npm install` should resolve the dependencies. 
 
 Issue 1:
