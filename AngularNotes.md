@@ -60,3 +60,6 @@ npm install --save-dev @angular-devkit/build-angular
  >  -g for global install
 ```
 
+Another exception when using `npm start`
+An unhandled exception occurred: Cannot find module '@angular/compiler-cli'
+
