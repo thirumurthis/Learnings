@@ -24,3 +24,6 @@ curl -w 'HTTP_CODE=%{http_code}' --silent -XGET 'elastic_local.com:9200/index_20
       }
     }'
 ```
+
+Metrics beat to flow the cpu process details.
+curl -w => is to format
