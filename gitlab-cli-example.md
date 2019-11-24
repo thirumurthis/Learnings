@@ -10,7 +10,25 @@ The Dockerfile will take care of building the images, and the gitlab-ci.yml will
 Gitlab also registers it to a docker.hub. More about the using the [Gitlab runner](https://about.gitlab.com/blog/2016/04/05/shared-runners/) 
 this is provided for free. 
 
+Sample Docker Gitlab runner log message detals:
+
 ```
+[0KRunning with gitlab-runner 12.5.0-rc1 (b295d93b)
+[0;m[0K  on docker-auto-scale 72989761
+
+Health check error:
+service "runner-72989761-project-15508661-concurrent-0-docker-0-wait-for-service" timeout
+
+Health check container logs:
+
+Service container logs:
+2019-11-24T17:05:13.476447358Z time="2019-11-24T17:05:13.476201746Z" level=info msg="Starting up"
+2019-11-24T17:05:15.083152657Z time="2019-11-24T17:05:15.083070061Z" level=info msg="API listen on /var/run/docker.sock"
+
+[0;33m*********[0;m
+
+[0KPulling docker image docker:latest ...
+[0;m[0KUsing docker image sha256:52f7c6fb16b9e24691d5b200d81b2db1c3dae95d2a744ac5db72b858db6f70ef for docker:latest ...
 
 Step 1/4 : FROM alpine:latest
 latest: Pulling from library/alpine
@@ -52,5 +70,4 @@ The push refers to repository [registry.gitlab.com/thirumurthis/my-first-project
 latest: digest: sha256:3763ef928bcda3084ce6e12235b3a8f7c64b4c97ad40be6047069cf25a06cad6 size: 947
 section_end:1574615172:build_script
 ....[0K[32;1mJob succeeded
-[0;m
 ```
