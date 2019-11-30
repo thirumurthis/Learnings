@@ -137,3 +137,36 @@ Once the dashboard ui is avialable:
 }
 ```
  
+```
+> kubectl run 
+ -- above command is used to run the docker image in the cluster
+```
+
+```
+> kubectl get pod
+-- above command to get the status of the pod
+```
+
+```
+> kubectl expose deployment hello-node --type=NodePort
+ -- above command is used to expose the service to be accessed by the external world
+ -- note the --type there are different values, like LoadBalancer, NodePort, ClusterIP
+ --- LoadBalancer uses the hyperV of the host machine to get the ip, etc.
+```
+
+```
+> curl $(minikube service hello-node --url)
+-- above command to access the cluster and the data using curl
+-- output would be a http response
+```
+
+```
+> kubectl delete deployment hello-node
+-- above command will delete the deployment
+```
+
+```
+> minikube stop
+-- command to stop the minikube 
+```
+```
