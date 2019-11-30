@@ -60,4 +60,80 @@ Once the dashboard ui is avialable:
  
  [hello-node](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-minikube-cluster)
  
+ Sample deployment json for hello-node
+ 
+ ```
+ {
+  "kind": "ReplicaSet",
+  "apiVersion": "extensions/v1beta1",
+  "metadata": {
+    "name": "hello-node-55d9f949c6",
+    "namespace": "default",
+    "selfLink": "/apis/extensions/v1beta1/namespaces/default/replicasets/hello-node-55d9f949c6",
+    "uid": "17f419b2-7760-4464-8389-4ec1a7931dce",
+    "resourceVersion": "894",
+    "generation": 1,
+    "creationTimestamp": "2019-11-30T16:44:26Z",
+    "labels": {
+      "app": "hello-node",
+      "pod-template-hash": "55d9f949c6"
+    },
+    "annotations": {
+      "deployment.kubernetes.io/desired-replicas": "1",
+      "deployment.kubernetes.io/max-replicas": "2",
+      "deployment.kubernetes.io/revision": "1"
+    },
+    "ownerReferences": [
+      {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "hello-node",
+        "uid": "58ed6b2a-7f55-4b5c-8dd9-c6d73ca864c1",
+        "controller": true,
+        "blockOwnerDeletion": true
+      }
+    ]
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app": "hello-node",
+        "pod-template-hash": "55d9f949c6"
+      }
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "hello-node",
+          "pod-template-hash": "55d9f949c6"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "hello-node",
+            "image": "gct.io/hello-minikube-zero-install/hello-node",
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "Always"
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "securityContext": {},
+        "schedulerName": "default-scheduler"
+      }
+    }
+  },
+  "status": {
+    "replicas": 1,
+    "fullyLabeledReplicas": 1,
+    "observedGeneration": 1
+  }
+}
+```
  
