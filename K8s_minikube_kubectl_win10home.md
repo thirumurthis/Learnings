@@ -10,12 +10,11 @@ using cmd as admin package run the below command to install it.
 
 After installation of choco PM then use below command
 
-
 ```
 > choco install minikube
 ```
 
-to start the cluster, use 
+To start the cluster, use 
 
 ```
 > minikube start
@@ -60,83 +59,6 @@ Once the dashboard ui is avialable:
  
  [hello-node](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-minikube-cluster)
  
- Sample deployment json for hello-node
- 
- ```
- {
-  "kind": "ReplicaSet",
-  "apiVersion": "extensions/v1beta1",
-  "metadata": {
-    "name": "hello-node-55d9f949c6",
-    "namespace": "default",
-    "selfLink": "/apis/extensions/v1beta1/namespaces/default/replicasets/hello-node-55d9f949c6",
-    "uid": "17f419b2-7760-4464-8389-4ec1a7931dce",
-    "resourceVersion": "894",
-    "generation": 1,
-    "creationTimestamp": "2019-11-30T16:44:26Z",
-    "labels": {
-      "app": "hello-node",
-      "pod-template-hash": "55d9f949c6"
-    },
-    "annotations": {
-      "deployment.kubernetes.io/desired-replicas": "1",
-      "deployment.kubernetes.io/max-replicas": "2",
-      "deployment.kubernetes.io/revision": "1"
-    },
-    "ownerReferences": [
-      {
-        "apiVersion": "apps/v1",
-        "kind": "Deployment",
-        "name": "hello-node",
-        "uid": "58ed6b2a-7f55-4b5c-8dd9-c6d73ca864c1",
-        "controller": true,
-        "blockOwnerDeletion": true
-      }
-    ]
-  },
-  "spec": {
-    "replicas": 1,
-    "selector": {
-      "matchLabels": {
-        "app": "hello-node",
-        "pod-template-hash": "55d9f949c6"
-      }
-    },
-    "template": {
-      "metadata": {
-        "creationTimestamp": null,
-        "labels": {
-          "app": "hello-node",
-          "pod-template-hash": "55d9f949c6"
-        }
-      },
-      "spec": {
-        "containers": [
-          {
-            "name": "hello-node",
-            "image": "gct.io/hello-minikube-zero-install/hello-node",
-            "resources": {},
-            "terminationMessagePath": "/dev/termination-log",
-            "terminationMessagePolicy": "File",
-            "imagePullPolicy": "Always"
-          }
-        ],
-        "restartPolicy": "Always",
-        "terminationGracePeriodSeconds": 30,
-        "dnsPolicy": "ClusterFirst",
-        "securityContext": {},
-        "schedulerName": "default-scheduler"
-      }
-    }
-  },
-  "status": {
-    "replicas": 1,
-    "fullyLabeledReplicas": 1,
-    "observedGeneration": 1
-  }
-}
-```
- 
 ```
 > kubectl run 
  -- above command is used to run the docker image in the cluster
@@ -169,4 +91,128 @@ Once the dashboard ui is avialable:
 > minikube stop
 -- command to stop the minikube 
 ```
+
+Deployments 
+ - important for defining apps and services
+ - collection of resources and references
+ - typically described in YAML format
+ - this file can be deployed accross any K8s 
+ 
+ Deployment of tomcat server - practical [video demo](https://www.youtube.com/watch?v=Vj6EFnav5Mg)
+ 
+ Defining deployment: [resource](https://github.com/LevelUpEducation/kubernetes-demo)
+  - pod is an isntance of a container
+  - deployment can have any number of pods
+  - most deployment has simply one pod 
+   -- no redundancy, no separation of service.
+  
+ 1. Create a tomcat deployment.yaml
+  ```
+    apiVersion: apps/v1beta2
+    kind: Deployment
+    metadata:
+      name: tomcat-deployment
+    spec:
+      selector:
+        matchLabels:
+          app: tomact
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            app: tomcat
+        spec:
+          containers:
+          - name: tomcat
+            image: tomcat:9.0
+            ports
+            - containerPort: 8080
 ```
+
+Key things to note:
+ - image name
+ - number of replicas
+ - container port - in this case the tomcat to be exposed to 8080
+ - name of the application
+ 
+** Note: 
+ - K8s will automtaically default to public docker hub if repository is not presented. **
+ 
+ 2. Apply **kubectl apply** command
+```
+> kubectl apply -f ./deployment.yaml
+-- note the tomcat deployment yaml is used.
+-- apply command will takes the directives from the yaml file to the cluster
+```
+
+3. To **kubectl expose** to access tomcat from external world in 8080 port
+ ```
+ > kubectl expose deployment tomcat-deployment --type=NodePort
+  -- --type=NodePort - tells to K8s that we are going to expose or export the containerport 8080 in the deployment file on external port/host
+  -- this command exposes the service
+ ```
+ 
+ ```
+ > minikube service tomcat-deployment --url
+ -- This will provide the url to access the tomcat application
+ -- use _curl_ command
+ ```
+ 
+ ----------------
+ 
+ Command to List pods and its status
+ ```
+ > kubectl get pods
+ -- provides the pods on all the namespace
+ ```
+ 
+ Command to list the details of the sepcific pod
+ ```
+ > kubectl get pods [pod_name]
+  -- pod name obtained in the get pods command 
+  -- detail about the deployment of the pod
+ ```
+ 
+ Command to expose the port
+ ```
+ > kubectl expose <type name> <identifier/name> [--port-external port[ [--target-port=container-port] --type=service-type
+  -- exposes port (TCP or UDP) for a given deployment, pod or other resources
+ ```
+ 
+ Command to port-forward - forward port from local machine on which kubectl is running to pod on the remote host on the kubectl is connecting to.
+ ```
+ > kubectl port-forward <pod-name> [LOCAL_PORT:]REMOTE_PORT]
+ -- this is helpful dealing with remote cluster map to local port to a remote pod on a container this command will be useful.
+ -- in the above example since we are using minikube in local, this command is similar to expose
+ -- example kubectl port-forward tomcat-deployment-xxxxxx 8080:8080
+ ```
+ 
+ Command to attach to a pod that is already running process to view output
+ ```
+ > kubectl attach <pod-name> -c <container>
+ -- helps to attach to a process already running 
+ ```
+ 
+ Command to **debug** what is going inside a container
+ in case to wanted to execute a command within a conatiner
+ ```
+ > kubectl exec [-it] <pod name> [-c container] --COMMAND [args..]
+ -- -i will pass stdin to the container
+ -- -t will specify stdin is a tty
+ -- used to execute command to the container, process like bash 
+ -- other option to use the log analysis command.
+ ```
+ 
+ Command to label pods
+ ```
+ > kubectl label [--override] <type> KEY1=VAL1...
+ -- label the pods as key value pair. for example changing healty=false in deployment
+ ```
+ 
+ Command to run 
+ ```
+ > kubectl run <name> --image=image
+ -- easy way to run the docker image on a cluster
+ -- in ideal world, use the create deployment, and apply it to execute in cluster.
+ -- this command to quickly run the docker image. 
+ ```
