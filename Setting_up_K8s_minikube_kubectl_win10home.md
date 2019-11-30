@@ -49,6 +49,12 @@ Once the dashboard ui is avialable:
  a **config.json** file will be created. use the kubectl command to create a secret using the config.json.
  [Reference-link-to-before-begin](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#before-you-begin)
  
+ ```
+ kubectl create secret generic regcred \
+    --from-file=.dockerconfigjson=%USERPROFILE%/.docker/config.json \
+    --type=kubernetes.io/dockerconfigjson
+ ```
+ The above can be achived using the UI also usign create secert option.
  
  
  
