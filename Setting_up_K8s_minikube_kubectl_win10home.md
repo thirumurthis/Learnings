@@ -56,6 +56,8 @@ Once the dashboard ui is avialable:
  ```
  The above can be achived using the UI also usign create secert option.
  
+ Deploy the first application in K8s, hello-node
  
+ [hello-node](https://kubernetes.io/docs/tutorials/hello-minikube/#create-a-minikube-cluster)
  
  
