@@ -35,3 +35,21 @@ Then interact with the clusted usign Kubectl command
  ```
 > minikube dashboard
 ```
+
+
+Once the dashboard ui is avialable:
+ in order to retrive the image from docker, run the docker service (using the docker toolbox)
+ 
+ in the command prompt issue below command and input user id and password
+ ```
+ > cd %USERPROFILE%/.docker
+ > docker login
+ ```
+ 
+ a **config.json** file will be created. use the kubectl command to create a secret using the config.json.
+ [Reference-link-to-before-begin](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/#before-you-begin)
+ 
+ 
+ 
+ 
+ 
