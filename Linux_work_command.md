@@ -155,4 +155,19 @@ use:
 ```
   $ ssh -o IdentitiesOnly=yes hostname
 ```
-    
+ # To check if the string ends with specific value in shell script
+```
+#Console:
+$ x="test.com/"
+$ [[ "$x" == */ ]] && echo "yes"
+yes
+
+#Script file
+x="test12"
+if [[ "$x" == *12 || "$x" == *13 ]] then 
+ echo "matched"
+ continue
+else
+ echo "not matched"
+fi
+```
