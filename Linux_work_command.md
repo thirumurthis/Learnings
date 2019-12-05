@@ -171,3 +171,15 @@ else
  echo "not matched"
 fi
 ```
+
+# To bulk commit a shell script #!/bin/sh use below apporach
+```
+: <<'COMMENT'
+ string of code
+  string of code
+  string of code
+  string of code
+COMMENT
+
+Note: the : and should start at start of the line.
+```
