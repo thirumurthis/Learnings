@@ -187,5 +187,23 @@ Note: the : and should start at start of the line.
 # Setting default value to a variable in shell script
 
 ```
- var=${var:-"1"}
+ #!/bin/sh
+
+echo "Enter a number"
+read -p "input : " var
+
+var=${var:-"1"}
+
+echo "Value : $var"
+
+---
+$ sh <abovescriptasfilename.sh>
+output: (1st when use hits enter without any value)
+ Enter a number
+ input : 
+ Value : 1
+ 
+ Enter a number
+ input : 3
+ Value : 3
 ```
