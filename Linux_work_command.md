@@ -183,3 +183,9 @@ COMMENT
 
 Note: the : and should start at start of the line.
 ```
+
+# Setting default value to a variable in shell script
+
+```
+ var=${var:-"1"}
+```
