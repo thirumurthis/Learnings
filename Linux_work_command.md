@@ -33,6 +33,18 @@ $ unzip -p <Zip_file_name>.zip /path_to_file_in_the_zip > file_content_to_save
   fi
  # will print the " else part of loop" since the $4 command line argument is not zero
  # execute the shell with 1 2 3 4 5 
+----
+#!/bin/sh
+IN=""
+
+if [[ -z $IN ]]
+then
+        echo "blank values"
+else
+        echo "non-blank"
+fi
+
+=> output will print: blank values
 ```
 
 # To search content in the Zip file
