@@ -219,3 +219,22 @@ output: (1st when use hits enter without any value)
  input : 3
  Value : 3
 ```
+
+# To check if the string is starting with specific character
+```
+In command line 
+$ echo "#disk_info" | grep -q '^#'; echo $?
+ ==> outputs : 0
+$ echo " #disk_info" | grep -q '^#'; echo $?
+===> outputs : 1
+----
+#!/bin/sh
+input="1"
+ echo "#hello" | grep -q '^#'
+ # $? output of the previous process
+ # if condition on input not blank
+    if [ $? -eq 1 -a ! -z "$input" ]
+    then
+     echo " print "
+    fi
+```
