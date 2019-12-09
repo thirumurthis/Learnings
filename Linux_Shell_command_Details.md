@@ -253,3 +253,227 @@ fi
 
 output: Not blank value : Hello
 ```
+
+# Linux/Unix `grep` usage
+```
+# -e regex pattern
+      grep -e '|ONE|' -e '|one|' filename.txt
+# create an input.txt file with following text 
+# |one|two|three|four|
+# |Hello|test|rest|next|
+# -v inverse matches
+      cat input.txt | grep -v '|test|'
+# output: |one|two|three|four
+      cat input.txt | grep -v '|four|'
+# output: |Hello|test|rest|next|
+
+      cat input.txt | grep -v -e '|one|' -e '|two|'
+# output: |Hello|test|rest|next|
+```
+
+# Linux/Unix to `cut -d' ' -f 1 ` the data.
+```
+# create an input.txt file with following text 
+# |one|two|three|four|
+# |Hello|test|rest|next|
+
+    cat input.txt | cut -d'|' -f 2
+ output:
+    two
+    test
+    
+ Example:
+    cat input.txt | cut -d' ' -f 1,3,4,6
+```
+
+# Linux command to print the ZERO SIZED FILES using FIND command
+```
+touch one.txt
+touch two.txt
+
+find . -size 0 -print
+# . is the current directory
+# -print is optional
+
+Output:
+./one.txt
+./two.txt
+     
+```
+
+# Linux/Unix command to count the files which were modified 60 days ago from today using `find` command
+```
+find . -name "*.*" -mtime -60 | wc -l
+
+*.* => pattern of the file name like *.log,*.txt, etc.
+- mtime -60 => switch for identifying the current time and substract 60 days from now
+```
+
+# Linux/Unix command to unzip set of zipped files in the folder using `unzip`
+```
+SOURCE_LOC=/path/where/files/present
+DEST_LOC=/path/to/destitionation
+
+unzip -qq "$SOURCE_LO/*.zip" -d "$DEST_LOC"
+-q or -qq => switch to be quiet or quieter
+```
+
+# Linux command to set the current working directory in the korn shell prompt
+```
+   PS1="${HOSTNAME}:\${PWD} \$ "
+```
+
+# Linux command to remove carriage return ‘\r’ from the file in Unix
+```
+	tr -d '\r' < FileName_which_Has_Carriage_return.sh > FileName_where_the_trimed_content.sh
+```
+
+# Linux command to remove ^M from the files in VI editor
+```
+ :%s/[ctrlkey+v and ctrl-key+M]//g
+# How it looks
+ :%s/^V^M//g 
+```
+
+# Linux command to see the carriage return in a file using `cat`
+```
+ cat –v FileName_which_has_carriage_return.sh
+```
+
+# Command to use `awk` within linux
+```
+# create an input.txt file with following text 
+# |one|two|three|four|
+# |Hello|test|rest|next|
+
+cat input.txt | awk -F'|' '{print $1,":",$2}'
+
+output:
+   one : two
+   Help : test
+```
+
+# Last parameter stored in `$_`
+```
+echo one two three
+# the values one two three are parameters
+echo "$_"
+# output: three
+```
+
+# Command to find the file contents in a jar file 
+ - Helps to find the main jar file where the main method exists among lots of the jar file.
+```
+# template:
+find . -name \*jar -print -exec jar -tvf {} \; | awk '/YOURSEARCHSTRING/ || /jar/ {print} '
+
+# create a sample helloworld program with main method, and execute the below command from that file
+find . -name \*jar -print -exec jar -tvf {} \; | awk '/main/ || /jar/ {print} '
+# output: <jar_file_name_created.jar>
+
+```
+
+# Linux command to print the machine name 
+```
+uname -n | cut -d'.' -f1
+
+# Example: if hostname.someval, then hostname will be printed.
+```
+
+# `fc -l` command to list the last few history commands other than `history` command
+```
+ ls 
+ ps 
+ fc -l
+ # output last few commands executed (last 15 commands)
+ 1231 ls 
+ 1232 ps 
+```
+
+# command to print the port usage
+```
+ netstat -nt | grep :22
+ # output
+ tcp        0      0 ::ffff:255.247.255.244:22    ::ffff:255.247.255.222:38933 ESTABLISHED
+ tcp        0    184 ::ffff:255.247.255.239:22     ::ffff:255.247.255.8:3523   ESTABLISHED
+
+```
+
+# `sed` command to serach and replace the text in a file
+```
+# template
+# sed 's/find_text/replace_text/g' search_file > newfile
+
+# create an input.txt file with following text 
+# |one|two|three|
+# |Hello|test|rest|
+
+sed 's/one/eight/g' input.txt > input1.txt
+cat input1.txt
+# output:
+  eight|two|three|
+  Help|test|rest|
+```
+
+# Linux/unix command to list the process in sorting order using `ps`, `tr`, `cut`, `sort`
+```
+
+ps -ef | tr -s " " | cut -d " " -f1,2,5,8 | sort -rk3,4
+
+ # tr - translate command;
+ #    -s => squeeze repeated string specified, in this case repeated space will be represented as single space
+ # cut 
+ #    -f 1,2 => field needs to be checked for the number prsented here, since the ps output might be different
+ # sort 
+ #    -rk (-r => reverse the result comparision; -k => sort via a key)
+ #    
+```
+
+# Linux/Unix to use `date` command
+```
+date +%d%m%y%M%H%S
+# output: 091219351818
+date +%d-%m-%y#%M:%H:%S
+# output: 09-12-19#36:18:16
+
+# to execute this as a command and store to variable
+OUTPUT=`date +%d-%m-%y#%M:%H:%S`;echo $OUTPUT;
+# output: 09-12-19#38:18:16
+```
+
+# Linux/ Unix command to see difference between files
+```
+diff file1 file2 
+sdiff file1 file2 
+
+# Check the sed command section to replace the input.txt file one to eight example.
+diff intput.txt input1.txt
+# output:  changes are highlighted 
+1c1
+< one|two|three|
+---
+> eight|two|three|
+
+sdiff input.txt input1.txt
+# output: will be side by side comparision of files, the difference is highlighted with "|"
+one|two|three|						      |	eight|two|three|
+Help|test|rest|							Help|test|rest|
+
+```
+
+# Linux/Unix command to `sleep` for n seconds in the shell
+```
+#!/bin/sh
+
+OUTPUT=`date +%d-%m-%y#%M:%H:%S`;
+echo "EXECUTED AT : $OUTPUT";
+sleep 30
+
+OUTPUT=`date +%d-%m-%y#%M:%H:%S`;
+echo "EXECUTED AT : $OUTPUT";
+
+#output:
+EXECUTED AT : 09-12-19#45:18:10
+EXECUTED AT : 09-12-19#45:18:40
+
+```
