@@ -238,3 +238,18 @@ input="1"
      echo " print "
     fi
 ```
+
+# Negation on if condition in shell script 
+
+```
+#!/bin/sh
+IN="Hello"
+
+# ! is used for negation like not blank in this case
+if [[ ! -z $IN ]]
+then 
+   echo "Not blank value : $IN"
+fi
+
+output: Not blank value : Hello
+```
