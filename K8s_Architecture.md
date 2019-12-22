@@ -38,9 +38,9 @@ Pods:
       - Names of resources (deployments and pods) should be unique within the namespace, not necessarliy accross separate namespaces
         - Different team can have an _application name authentication_ in their own namespaces
    
-  ##### When launching a K8s, there is a default namespace where all objects is placed. Namespace is allowed to create whenenver the user wishes.
+  ###### When launching a K8s, there is a default namespace where all objects is placed. Namespace is allowed to create whenenver the user wishes.
 
-
+  ###### When a new Kuberntes application is installed, a new _namespace_ is installed, which doesn't interfere with existing cluster. 
 
 
       
