@@ -10,7 +10,7 @@ A K8s node should run
 
 Pods:
    - The application which uses to run like docker container, etc.
-   
+------------------------------   
    
 # Controllers
   - Deployment
@@ -21,7 +21,7 @@ Pods:
     - internal ip (used by the K8s cluster - called cluster IP, different cluster node interacts with each other using this)
     - external ip (endpoint where the IP is exposed to internet)
       - there is Loadbalancer, which is provided by the Cloud providers like AWS, Azure, etc.
-      
+-------------------------------      
 # Labels, selectors and namespace
   - Labels 
     - key value pair provided to a an object in k8s to identify or logically group the pods, can be identified using kubectl
@@ -39,7 +39,9 @@ Pods:
       - Names of resources (deployments and pods) should be unique within the namespace, not necessarliy accross separate namespaces
         - Different team can have an _application name authentication_ in their own namespaces
    
-** when launching a K8s, there is a default namespace where all objects is placed. Namespace is allowed to create whenenver the user wishes.**
+**when launching a K8s, there is a default namespace where all objects is placed. Namespace is allowed to create whenenver the user wishes.**
+----------------------------
+
 
 
       
