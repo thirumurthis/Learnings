@@ -43,6 +43,35 @@ Pods:
   ###### When a new Kuberntes application is installed, a new _namespace_ is installed, which doesn't interfere with existing cluster. 
 
 
+# Kubelet
+   - is k8s Node agent runs on each node
+     - Roles:
+       - communicates with the API server (in master node) to check if the pods have been assigned to nodes.
+       - Executes the pod container via container engine (example: docker)
+       - Mounts and runs pod volumes and secrets
+       - Executes health checks to identify node/pod status, reports back to API server.
+   - Prodspec YAML file
+       - Kubelet gets the Prodspecs from API server and ensures containers described in YAML are running and healthy.
+       - Kubelet manages only the containers that were created by the API server. (not any other container running on the node)
+       - Tip: The kubelet can be manged from an HTTP end-point or a file (without a need of API server, advanced use cases)
+
+# Kube-proxy
+  - The _network proxy_ that runs on all the nodes is called _**kube proxy**_
+  - This reflects the services defined in API on each node
+     - perform network streaming or round-robin forwarding accross a set of backend nodes
+  - Service cluster ip and port are currently found through Docker compitable env variables specifying ports opened by the service proxing
+  
+  ###### Modes of kube proxy:
+    - user space (commonly used mode) 
+    - iptables 
+    - ipvs mode
+  Kube proxy continously monitors the API server (in master) for addition or removal of services.
+  Kube proxy opens a randomly chosen port on the local mode, for each new service. 
+    - Any connection made to tht port are proxied to one of the corresponding backend pods.
+    
+    
+  
+  
       
     
    
