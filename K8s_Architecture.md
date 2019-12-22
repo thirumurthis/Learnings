@@ -65,8 +65,8 @@ Pods:
     - user space (commonly used mode) 
     - iptables 
     - ipvs mode
-  Kube proxy continously monitors the API server (in master) for addition or removal of services.
-  Kube proxy opens a randomly chosen port on the local mode, for each new service. 
+ - Kube proxy continously monitors the API server (in master) for addition or removal of services.
+ - Kube proxy opens a randomly chosen port on the local mode, for each new service. 
     - Any connection made to tht port are proxied to one of the corresponding backend pods.
     
     
