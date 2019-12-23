@@ -42,10 +42,27 @@
     - To view the running service info
     ```
     > kubectl get services
-    ```
     
+    # output:
+    C:\HelloFromDocker>kubectl get services
+     NAME            TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
+     hello-service   NodePort    10.96.10.33   <none>        8800:31377/TCP   15s
+     kubernetes      ClusterIP   10.96.0.1     <none>        443/TCP          7h18m
+     
+     # note: the 8800 port was exposed in the application
+    ```
+        
     - To view the running application
     ```
     > minikube service <deployment-name>
     ```
      
+     
+ # Kubectl command to get the yaml deployment file command:
+ ```
+ # in the above example use the below command to list all the info of the deployments and services 
+ > kubectl get all 
+ 
+ # use the deployment name from the list to see the yaml file
+ > kubectl get <deployment-name> -o yaml
+ ```
