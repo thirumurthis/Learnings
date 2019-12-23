@@ -56,8 +56,7 @@
     ```
     > minikube service <deployment-name>
     ```
-     
-     
+          
  # Kubectl command to get the yaml deployment file command:
  ```
  # in the above example use the below command to list all the info of the deployments and services 
@@ -66,3 +65,15 @@
  # use the deployment name from the list to see the yaml file
  > kubectl get <deployment-name> -o yaml
  ```
+
+# Kubectl command to `scale` the container
+
+```
+# kubectl scale --replicas=<no-of-replicas> <deploy>/<deployment-name>
+> kubectl scale --replicas=3 deploy/hello-service
+
+> kubectl get rs
+# output
+ NAME                       DESIRED   CURRENT   READY   AGE
+ hello-service-64b799fcc8   3         3         3       7h58m
+```
