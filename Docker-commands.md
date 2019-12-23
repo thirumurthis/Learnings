@@ -85,3 +85,12 @@ $ mvn jib:build -P<provilename>
 ``` 
 > docker image history <image-name>
 ```
+
+# pushing the image to the docker hub
+```
+docker tag <name> <username/project-name>:0.0.1
+
+docker image ls 
+
+docker push <username/project-name>:0.0.1
+```
