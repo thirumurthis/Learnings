@@ -1,7 +1,40 @@
-install the choco MS package manger
+# Minikube and Kubectl download and install on Windows 10 (no hyperV)
 
+Directly download the executable of Minikube and Kubectl from Kubernetes.io.
 
-using cmd as admin package run the below command to install it.
+For Kubectl executable:
+  - Set the Environment PATH to the executable. 
+  - In command prompt try `kubectl version` the command should display the version of the kubectl.
+
+_Note:_ Assuming the system already has the VirtualBox installed and working (in my case i was able to provision a VM using vagrant)
+
+After everything is setup issue below command
+```
+ > minikube start
+ 
+# output: 
+* minikube v1.6.2 on Microsoft Windows 10 Home 10.0.17763 Build 17763
+* Selecting 'virtualbox' driver from existing profile (alternates: [])
+* Tip: Use 'minikube start -p <name>' to create a new cluster, or 'minikube delete' to delete this one.
+* Starting existing virtualbox VM for "minikube" ...
+* Waiting for the host to be provisioned ...
+* Found network options:
+  - NO_PROXY=192.168.99.100
+  - no_proxy=192.168.99.100
+* Preparing Kubernetes v1.17.0 on Docker '19.03.5' ...
+  - env NO_PROXY=192.168.99.100
+  - env NO_PROXY=192.168.99.100
+* Downloading kubeadm v1.17.0
+* Downloading kubelet v1.17.0
+* Launching Kubernetes ...
+* Done! kubectl is now configured to use "minikube"
+ 
+```
+---------------
+
+Alternate way to install Minikube and KubeCtl install the choco MS package manger (only an optional approach)
+
+using `cmd` as admin package run the below command to install it.
 
 ```
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
@@ -13,7 +46,7 @@ After installation of choco PM then use below command
 ```
 > choco install minikube
 ```
-
+----------
 To start the cluster, use 
 
 ```
@@ -34,7 +67,6 @@ Then interact with the clusted usign Kubectl command
  ```
 > minikube dashboard
 ```
-
 
 Once the dashboard ui is avialable:
  in order to retrive the image from docker, run the docker service (using the docker toolbox)
