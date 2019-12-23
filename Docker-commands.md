@@ -36,12 +36,14 @@ Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDI
 # lists the docker image
 > docker images
 > docker image -ls 
+```
 
 -- build the images
 ```
 > docker build -t <image-name> 
   : -t is tagging a name
 ```
+
 -- command to run the container
 ```
 > docker run -p 8080:8080 -d <containername> 
@@ -49,10 +51,12 @@ Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDI
   Note: in case of Windows 10 the deployed spring book application was not accessible
   Try default container ip <http://192.168.99.100:8080/>
 ```  
+
 -- command to login to container and view the details
 ```
 > docker exec -it <container-id> /bin/bash
 ```
+
 -- command to troubleshoot the network
 ```
 > docker network ls
@@ -70,5 +74,6 @@ Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDI
 -- $ mvn jib:build -P<provilename>
 -- jib doesn't require a docker daemon
 ```  
+
 > docker image history <image-name>
 ```
