@@ -10,6 +10,7 @@ Trobuleshoot docker network
 Using jib for deployment process.
 
 Using multiple stages in Dockerfile
+
  FROM <image-name-from-registry> as <stage-name>
  ADD
  WORKDIR
@@ -20,15 +21,15 @@ Using multiple stages in Dockerfile
 # Docker
 
 Sample docker file (.dockerignore - similar to .gitignore)
-
+```
 FROM adoptopenjdk/openjdk8:latest
 WORKDIR /app/test
 
 COPY target/customer-0.0.1-SNAPSHOT.jar /app/test/
 EXPOSE 8080
 CMD ["java", "-jar", "/app/test/customer-0.0.1-SNAPSHOT.jar"]
-
-Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDIR
+```
+_Note:_ RUN mkdir /app/test - didn't work in this case since and had to use WORKDIR
 
 --------------------
  ##### list the images created
@@ -51,6 +52,10 @@ Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDI
   Note: in case of Windows 10 the deployed spring book application was not accessible
   Try default container ip <http://192.168.99.100:8080/>
 ```  
+##### Docker toolbox to identify the `default container ip` [docker toolbox](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
+```
+> docker-machine ip default
+```
 
 ##### command to login to container and view the details
 ```
