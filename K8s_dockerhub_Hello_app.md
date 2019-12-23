@@ -77,3 +77,9 @@
  NAME                       DESIRED   CURRENT   READY   AGE
  hello-service-64b799fcc8   3         3         3       7h58m
 ```
+
+# Kubectl deleting the resources
+```
+> kubectl delete deployment/hello-service,service/hello-service
+# command will delete the resources, when viewed in minikube dashboard all pods will be deleted
+```
