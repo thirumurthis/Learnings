@@ -31,20 +31,20 @@ CMD ["java", "-jar", "/app/test/customer-0.0.1-SNAPSHOT.jar"]
 Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDIR
 
 --------------------
- -- list the images created
+ ##### list the images created
 ```
 # lists the docker image
 > docker images
 > docker image -ls 
 ```
 
--- build the images
+##### build the images
 ```
 > docker build -t <image-name> 
   : -t is tagging a name
 ```
 
--- command to run the container
+##### command to run the container
 ```
 > docker run -p 8080:8080 -d <containername> 
   : -p publish to port from container to the local
@@ -52,28 +52,31 @@ Note: RUN mkdir /app/test - didn't work in this case since and had to use WORKDI
   Try default container ip <http://192.168.99.100:8080/>
 ```  
 
--- command to login to container and view the details
+##### command to login to container and view the details
 ```
 > docker exec -it <container-id> /bin/bash
 ```
 
--- command to troubleshoot the network
+##### command to troubleshoot the network
 ```
 > docker network ls
   : lists the network info
 ```
   
--- command to inspect network
+##### command to inspect network
 ```
 > docker network inspect <network-name-from-network-ls-command>
 ```
--- command to view the history of the image (jib maven plugin)
--- jib build oci/images in a layered fasion rather building the whole image
--- with jib no need for dockerfile, it has a opinated image which will be used for building
--- $ mvn package -P<profilename>(the credientials of the dockerhub.registry will be set in setting.xml of maven)
--- $ mvn jib:build -P<provilename>
--- jib doesn't require a docker daemon
-```  
 
+##### command to view the history of the image (jib maven plugin)
+ - jib build oci/images in a layered fasion rather building the whole image
+ - with jib no need for dockerfile, it has a opinated image which will be used for building
+
+```
+$ mvn package -P <profilename>(the credientials of the dockerhub.registry will be set in setting.xml of maven)
+$ mvn jib:build -P<provilename>
+-- jib doesn't require a docker daemon
+```
+``` 
 > docker image history <image-name>
 ```
