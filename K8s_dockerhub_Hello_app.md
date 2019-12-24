@@ -83,3 +83,26 @@
 > kubectl delete deployment/hello-service,service/hello-service
 # command will delete the resources, when viewed in minikube dashboard all pods will be deleted
 ```
+
+
+# Kubectl to use selector quering label
+
+```
+# command displays the label info in the output along with the pods
+> kubectl get pods --show-labels
+
+# selector to query the pods label (below will list the pod with lable run = hello-service)
+> kubectl get pods --selector run=hello-service
+
+# selector to query pods with multiple label
+> kubectl get pods --selector run=hello-service,pods-template-hash=72827827
+
+# selector to use NOT matching the label
+> kubectl get pods --selector run!=hello-service
+
+# selector to use IN operator -- can be used shorty as -l
+> kubectl get pods -l 'release-version in (0.0.1,latest)'
+
+# delete pods that matches label
+> kubectl delete pods -l run=hello-service
+```
