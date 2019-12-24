@@ -106,3 +106,85 @@
 # delete pods that matches label
 > kubectl delete pods -l run=hello-service
 ```
+
+# Kubectl - creates deployment yaml with the provided values when using `kubectl run --image=<image-name>`
+```
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "1"
+    creationTimestamp: "2019-12-24T14:59:14Z"
+    generation: 1
+    labels:
+      run: hello-service
+    name: hello-service
+    namespace: default
+    resourceVersion: "76195"
+    selfLink: /apis/apps/v1/namespaces/default/deployments/hello-service
+    uid: 90950172-1c0b-4b9f-a339-b47569366f4e
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        run: hello-service
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          run: hello-service
+      spec:
+        containers:
+        - image: thirumurthi/hello-service:0.0.1
+          imagePullPolicy: IfNotPresent
+          name: hello-service
+          ports:
+          - containerPort: 8800
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+  status:
+    availableReplicas: 1
+    conditions:
+    - lastTransitionTime: "2019-12-24T14:59:19Z"
+      lastUpdateTime: "2019-12-24T14:59:19Z"
+      message: Deployment has minimum availability.
+      reason: MinimumReplicasAvailable
+      status: "True"
+      type: Available
+    - lastTransitionTime: "2019-12-24T14:59:14Z"
+      lastUpdateTime: "2019-12-24T14:59:19Z"
+      message: ReplicaSet "hello-service-75d67cc857" has successfully progressed.
+      reason: NewReplicaSetAvailable
+      status: "True"
+      type: Progressing
+    observedGeneration: 1
+    readyReplicas: 1
+    replicas: 1
+    updatedReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
+```
+
+# Kubectl to include health check `ReadinessProbes` and `LivenessProbes` - update the deployment yaml file under the container
+ReadinessProbes - http check
+Liveness - checks perodically if the pod is healthy
+
+
