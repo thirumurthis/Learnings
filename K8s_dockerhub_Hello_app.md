@@ -188,3 +188,19 @@ ReadinessProbes - http check
 Liveness - checks perodically if the pod is healthy
 
 
+# Kubectl to display logs of the pod
+```
+> kubectl get pods
+
+> kubectl logs pods/<name-of-the-pod>
+
+# below command will provide the status of any deployments, pods
+> kubectl describe deploy/<name-of-deployment>
+> kubectl describe pod/<name-of-pod>
+
+# exec to the specific pod - exec to pod and pipe to bash shell in here
+> kubectl exec -it <pod-name> /bin/bash
+
+# in case of multiple container in pod
+> kubectl exec -it <pod-name> -c <container-name> /bin/bash
+```
