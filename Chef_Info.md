@@ -16,3 +16,6 @@ $ knife environment from file <path-of-json>
 This command will update the enivornment json file to the server, and this can be validated in chef server under Environment directory.
 
 Check `Policy` tab -> `Environments` -> Environment Name -> Attributes tab (at bottom)
+
+
+The `knife supermarket` subcommand is used to interact with cookbooks that are located in on the public Supermarket as well as private Chef Supermarket sites. A user account is required for any community actions that write data to the Chef Supermarket; however, the following arguments do not require a user account: download, search, install, and list
