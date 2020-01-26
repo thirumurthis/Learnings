@@ -34,3 +34,24 @@ or
 $ ng g d <directive-name>
 ```
 
+Creating Service:
+
+What is Service?
+
+When we need to make two or more component to communicate with each other using services.
+
+```
+$ ng generate service <service-name>
+or 
+$ ng g s <service-name>
+```
+
+Angular 8.0
+  - Ivy, compile engine and rendering engine. (reduce bundle size)
+  - Dynamic routing (perform lazy loading of routes)
+  - type script support for 3.1
+  - cli interaction prompts 
+  - virtical scrolling 
+  - drag and drop feature.
+  
+  
