@@ -54,14 +54,14 @@ Angular 8.0
   - virtical scrolling 
   - drag and drop feature.
   
-COMPONENT:
+#### COMPONENT:
   - building blocks of angular
   - angular comprises of multiple component, which build the application.
   - type of `directives` - components has a template of their own, this is known as self-contained directives. it has its own UI.
   - in general `directives` - when we need to add some specified behaviour to DOM element, we use directive
   - `ng new project <project-name>` will create a component itself.
   
-Files created within component (using CLI):
+##### Files created within component (using CLI):
    - \*.html 
    - \*.spec.ts - testing 
    - \*.css - style
@@ -74,7 +74,7 @@ Files created within component (using CLI):
  $ ng g c <component-name> --spec=false
  ```
  
- Creating a component manually (without cli)
+ ##### Creating a component manually (without cli)
     - in the app directory, create another component files directly (files extension) or within a folder.
     - SomeComponent.component.ts 
     - SomeComponent.component.html
@@ -108,12 +108,72 @@ Files created within component (using CLI):
    import the somecomponent path
   ```
   
+ If the component needs to return the data for example as below,
  
-    
+ the component class to ` implements OnInit` *_life-cycle hook_* also we need to interface method `ngOnInit () ` method also. 
  
+ ```
+ // implements the onInit 
+ export class SomeComponent implements OnInit{
  
-    
+ data : any;
  
+ //implement the interface info,
+ ngOnInit() : void {
+   this.data = this.getData ();
+ }
+ 
+ getData(){
+    return  [ { "name": "name1" }, {"name" : "name2"} ];
+    //note make sure the return and following statement are in the same
+    //line since the javascript treats as return statement, will not be
+    //able to reach it.
+ }
+ ```
+ 
+ Update the somecomponent.component.html
+ ```
+ <table>
+   <tr *ngFor = let d of data'>
+     <td> {{d.name}}</td>
+   </tr>
+ ```
+
+in the somecomponent.component.html, the bootstrap style can be used.
+refer the bootsrap css in the index.html.
+
+```
+//index.html - add 
+<link href="https://..bootstrap...css">
+
+//somecomponent.component.html
+<table class="table table-striped">
+```
+
+#### Data binding:
+
+Bind the data from component(ts) to the view (html) template:
+    - Interpolation {{..}}
+         - used to display the value of attribute present in the component.
+    - Property binding  [..]
+         - used to bind the property of element in component. 
+    - Event binding  (...)
+         - bind event of the component to the view template.
+    - Two way data binding
+         - communication between the component & view and vice versa.
+         - any change in the UI/view the value is probagated to component.
+         - any change in the component is reflected in the view
+         property binding [..]
+               +                 ----->   Two way data bindning [(...)]
+         Event binding (..)
+
+Some property present in the component, can be displayed in the view using data binding.
+Not only data, event, etc.
+
+
+
+
  
  
   
+
