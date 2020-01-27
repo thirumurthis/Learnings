@@ -1,26 +1,40 @@
+##### Angular supports component based development.
+ - Each component we create is isolated from every other part in an application.
+ - within the component, we have both business logic and view
+ - Every application will have one top-leve component, several sub components
+ 
+ ```
+                Component (Root)
+                     |
+           -----------------------
+           |                      |
+       component1 (child)      component2 (child)
+           |
+  ---------------------
+  |                   |
+ component11         component12
+ ```
 
-Create a project
-
+##### Create a project
 ```
  $ ng new <project-name>
 ```
 
-Create a component
-
+##### Create a component
 ```
 $ ng g c <component-name>
 or
 $ ng generate component <component-name>
 ```
 
-To compile the application and serve the application in local browser
+##### To compile the application and serve the application in local browser
 ```
 $ ng serve
 or 
 $ ng serve --open --port 8080
 ```
 
-Creating Directive
+#### Creating Directive
 
 What is directive?
 Driective:
@@ -34,7 +48,7 @@ or
 $ ng g d <directive-name>
 ```
 
-Creating Service:
+##### Creating Service:
 
 What is Service? - When we need to make two or more component to communicate with each other using services.
 
@@ -52,7 +66,7 @@ Angular 8.0
   - virtical scrolling 
   - drag and drop feature.
   
-#### COMPONENT:
+##### COMPONENT:
   - building blocks of angular
   - angular comprises of multiple component, which build the application.
   - type of `directives` - components has a template of their own, this is known as self-contained directives. it has its own UI.
@@ -133,7 +147,7 @@ Angular 8.0
  }
  ```
  
- Update the somecomponent.component.html to achive, **interpolation** data binding using {{}}
+ Update the somecomponent.component.html to achive, **interpolation** data binding using `{{}}`
  ```
  <table>
    <tr *ngFor = let d of data'>
@@ -155,11 +169,11 @@ Or use css styling in the .css file within the component.
 ### Data binding:
 
 Bind the data from component(ts) to the view (html) template:
-  - *Interpolation* {{..}}
+  - *Interpolation* `{{..}}`
      - used to display the value of attribute present in the component.
-  - *Property binding*  [..]
+  - *Property binding*  `[..]`
      - used to bind the property of element in component. 
-  - *Event binding*  (...)
+  - *Event binding*  `(...)`
      - bind event of the component to the view template.
   - *Two-way data binding*
      - communication between the component & view and vice versa.
@@ -334,7 +348,7 @@ export SomeComponent... {
  
 ```
 
-#### @Output & Event Emitter
+##### @Output & Event Emitter
 
 ```
 @Output() & Event Emitter
@@ -429,7 +443,7 @@ If we meed to acces the content of tempate where in this case below \<h2\> eleme
       <span>Align this sub title</span>
    </div>
 ```
-Implementing the tempate reference variable
+##### Implementing the tempate reference variable
 
 ```
 //app.component.html 
@@ -457,12 +471,12 @@ display(elementValue: HTMLInputElement) {
   console.log((<HTMLInputEelement>elementValue).value);
 }
 ```
-
-In case of template refernce variable, the value of \<h1\> is passed as parameter to a function.
+##### @ViewChild
+In case of `template refernce variable`, the value of \<h1\> is passed as parameter to a function.
  
  Scenario: In case if we don't want to pass the value as parameter, and perform some operation before passing the value.
  
- @ViewChild decorator helps in this scenario.
+ `@ViewChild` decorator helps in this scenario.
     - When parent component (app.component.ts) wanted to access the whole child component template (i.e. SomeComponent.component.html)
 
 ```
