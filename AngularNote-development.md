@@ -399,7 +399,6 @@ displayEmittedValue(result){
  
 Scenario usage, when there is a change in value then the color of the button. 
 
-
 ```
 //SomeComponent.component.ts include import for `onChanges` from @angular/core
 import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angular/core'
@@ -459,13 +458,14 @@ display(elementValue: HTMLInputElement) {
 }
 ```
 
-In case of template refernce variable, the value of <h1> is passed as parameter to a function.
+In case of template refernce variable, the value of \<h1\> is passed as parameter to a function.
  
  Scenario: In case if we don't want to pass the value as parameter, and perform some operation before passing the value.
  
  @ViewChild decorator helps in this scenario.
     - When parent component (app.component.ts) wanted to access the whole child component template (i.e. SomeComponent.component.html)
- ```
+
+```
  //app.component.ts - PARENT component
  ...
  export AppComponent implements OnInit,AfterViewInit {
@@ -516,6 +516,3 @@ ngAfterContentInit(){
 }
 ```
 
-
-```
-   
