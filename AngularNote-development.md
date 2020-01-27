@@ -36,9 +36,7 @@ $ ng g d <directive-name>
 
 Creating Service:
 
-What is Service?
-
-When we need to make two or more component to communicate with each other using services.
+What is Service? - When we need to make two or more component to communicate with each other using services.
 
 ```
 $ ng generate service <service-name>
@@ -88,32 +86,33 @@ Angular 8.0
   ```
   -- Create the content of component:
   import { Component } from '@anguar/core';
-  //second step - add the decorator @Component the VS code will automatically import the 
-  // component from angular package
+  //second step - add the decorator @Component and import the component from angular package
   //third step: - add the selector property within the @component decorator
-  // add the templateUrl - provide link to html5
-  //    - for inline template - use template : '<h2>some-template-content</h2>'
-  // add the styleCSS - two option inline CSS or external CSS
-  //    - for external Css, we try using array of CSS
-  //    - for inline Css, we use styles
+               // add the templateUrl - provide link to html5
+               //    - for inline template - use template : '<h2>some-template-content</h2>'
+               // add the styleCSS - two option inline CSS or external CSS
+               //    - for external Css, we try using array of CSS
+               //    - for inline Css, we use styles
   @Component ({
     selector: 'app-sc-component',
     templateUrl : './somecomponent.component.html',
     styleUrls : [ './somecomponent.component.css']
   })
+  
   // first step - create class name
   export class SomeComponent{
   
   }
+  ```
   
-  -- Update the Module
+  ```
+  -- Update the Module (app.module.ts)
    update the @NgModul array with the component class name
    import the somecomponent path
   ```
   
- If the component needs to return the data for example as below,
- 
- the component class to ` implements OnInit` *_life-cycle hook_* also we need to interface method `ngOnInit () ` method also. 
+ If the component is to return the data then component class needs to ` implements OnInit` *_life-cycle hook_*.
+ And we need to implement the method `ngOnInit ()` from interface, like below
  
  ```
  // implements the onInit 
@@ -134,7 +133,7 @@ Angular 8.0
  }
  ```
  
- Update the somecomponent.component.html
+ Update the somecomponent.component.html to achive, **interpolation** data binding using {{}}
  ```
  <table>
    <tr *ngFor = let d of data'>
@@ -142,18 +141,18 @@ Angular 8.0
    </tr>
  ```
 
-in the somecomponent.component.html, the bootstrap style can be used.
-refer the bootsrap css in the index.html.
+In order to use bootstrap for styling in the somecomponent.component.html, refer the bootsrap css in the index.html.
+Or use css styling in the .css file within the component.
 
 ```
-//index.html - add 
+//index.html - add for including the bootstrap style sheet
 <link href="https://..bootstrap...css">
 
 //somecomponent.component.html
 <table class="table table-striped">
 ```
 
-#### Data binding:
+### Data binding:
 
 Bind the data from component(ts) to the view (html) template:
   - *Interpolation* {{..}}
@@ -170,10 +169,75 @@ Bind the data from component(ts) to the view (html) template:
                +                 ----->   Two way data bindning [(...)]
          Event binding (..)
 
-Some property present in the component, can be displayed in the view using data binding.
-Not only data, event, etc.
+**Property binding - example** 
 
+```
+//app.component.ts - define a property
+...
+export class AppComponent ....{
+data : Any;
 
+//property to be used in the view.
+heightValue : number = 10;
+
+...
+}
+
+// use the property in view - app.component.html
+...
+<button [style.height.px] = 'heightValue' >Link</button> //heightValue will be used from the component ts file.
+...
+```
+
+**Event binding - example**
+
+```
+// app.component.ts
+...
+export class AppComponent ... {
+value1 : number = 10;
+value2 : number = 20;
+result : number ;
+product(){
+this.result = this.value1 * this.value2;
+}
+...
+}
+
+//app.component.html
+..
+<button class="btn btn-success" (click)="product()">Product</button> //Event binding (...)
+...
+```
+
+**Two-way databinding - example**
+  - when the data int the model got updated, the view is also updated.
+  - when the view is updated the changes are probagated back to component/model.
+ 
+ Another way of defining this is, combination of property binding and event binding which turns into **[(ngModel)]**
+ 
+ ```
+ // in app.component.html
+ ...
+ <input type="text" [(ngModel)]= "userInput" >
+ <br>
+ {{userInput}}
+ ...
+ 
+ Note: At this point if we didn't include the "ngModel" value in the Component there will be an error message in the 
+ console of browser "Template parse error: Can't bind 'ngModel' since it isn't a known property of input...." 
+ 
+ Solution: we need to import the "FormsModule" module in app.module.ts and update NgModule -> imports array
+ import {FormsModule} from '@angular/forms';
+ 
+ @NgModule({
+ ...
+ imports :[
+ BrowseModule, FormsModule
+ ... 
+ ```
+ 
+ Note: The `app.module.ts` needs to be updated in this case to import the `FormsModule` to use [(ngModel)].
 
 
  
