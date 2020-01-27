@@ -271,10 +271,12 @@ this.result = this.val1 * this.val2;
   - @Input
   - @Output
   - Event Emitter
- ngOnChanges *life-cycle* hook
- Communication can happen through,
+
+ngOnChanges *life-cycle* hook
+ 
+ Communication between component can happen in below ways too,
   - using template reference variable
-  - viewChild and ContentChild
+  - `@viewChild` and `@ContentChild`
   - Services - used when two component are not related to each other.
   
   When two component need to share data between each other.
@@ -391,3 +393,31 @@ displayEmittedValue(result){
 }
 ```
 ---------------
+
+##### ngOnChanges *life-cycle hook*
+ Any change on input bound property or output bound event then angular use ngOnChange life-cycle hook in which the value gets updated on DOM. 
+ 
+Scenario usage, when there is a change in value then the color of the button. 
+
+
+```
+//SomeComponent.component.ts include import for `onChanges` from @angular/core
+import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angular/core'
+...
+ 
+ export class SomeComponent implements OnInit, OnChanges {
+ 
+ //implement the method from onChanges interface
+ ngOnChanges(){
+   //if wanted to perform some color changes
+   if (this.result > 100){
+      this.color ='red';
+   }
+   ...
+ }
+```
+
+##### Template Reference Variable
+
+
+ 
