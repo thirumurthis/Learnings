@@ -165,9 +165,12 @@ Bind the data from component(ts) to the view (html) template:
      - communication between the component & view and vice versa.
      - any change in the UI/view the value is probagated to component.
      - any change in the component is reflected in the view
+     
+```     
          property binding [..]
-               +                 ----->   Two way data bindning [(...)]
+               +                 ----->   Two-way data bindning [(ngModel)]
          Event binding (..)
+```
 
 **Property binding - example** 
 
@@ -295,7 +298,9 @@ messageFromParent = "from parent";
 messageToChild= "child message, passed from parent";
 ...
 }
+```
 ---------------------
+```
 //SomeComponent.component.ts -- This is the child component
 ...
 @Component({
@@ -308,7 +313,9 @@ export SomeComponent... {
 //using @input() decorator for passing values from parent to child
 @Input() passedMessage: String; //holds the value of parent component
 }
+```
 -----------------------
+```
 // app.component.html --- this will hold the child component referenc
    //Interpolation
 {{messageFromParent}} 
@@ -317,9 +324,9 @@ export SomeComponent... {
   // to child component (SomeComponent.component.ts) to passedMessage attribute
   
  <app-sc-component [passedMessage]='messageToChild'></app-sc-component>
- 
+ ```
  -----------------------
- 
+ ```
  //SomeComponent.component.html
  {{passedMessage}}
  
@@ -352,7 +359,9 @@ result : number = 100;
  }
 ...
 }
+```
 --------------------
+```
 // SomeComponent.component.html --- child component view template
 
 //This Event binding will invoke the child component function.
@@ -364,8 +373,9 @@ result : number = 100;
 //In the case of Event Emitter & @Output () decorator
 //we need to use Event binding - which gets some event type using "$event"
 <app-sc-component (emitterObj)="displayEmittedValue($event)"></app-sc-component>
-
+```
 ---------------------
+```
 //app.component.ts --- This is PARENT component ts file 
 ...
 export class AppComponent implements OnInit{
@@ -379,5 +389,5 @@ displayEmittedValue(result){
   //use console to see if the value is emitted
   console.log(result);
 }
-
 ```
+---------------
