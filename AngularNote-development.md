@@ -66,8 +66,11 @@ Angular 8.0
    - \*.spec.ts - testing 
    - \*.css - style
    - \*.ts - logic goes here
-  `module` all the directives, components are kept, kind of container.
-    - app.module.ts - updated with the created component in the `array @NgModule` and `imported the component`
+   
+  **module** sort of containers for all components/directives.
+  
+  `app.module.ts` is updated with the created component, by including it in the `array @NgModule` 
+  and also the component is `imported` here in this file.
  
  Note: If we don't want the spec.ts file to be created, we can use the option/flag
  ```
@@ -153,16 +156,16 @@ refer the bootsrap css in the index.html.
 #### Data binding:
 
 Bind the data from component(ts) to the view (html) template:
-    - Interpolation {{..}}
-         - used to display the value of attribute present in the component.
-    - Property binding  [..]
-         - used to bind the property of element in component. 
-    - Event binding  (...)
-         - bind event of the component to the view template.
-    - Two way data binding
-         - communication between the component & view and vice versa.
-         - any change in the UI/view the value is probagated to component.
-         - any change in the component is reflected in the view
+  - *Interpolation* {{..}}
+     - used to display the value of attribute present in the component.
+  - *Property binding*  [..]
+     - used to bind the property of element in component. 
+  - *Event binding*  (...)
+     - bind event of the component to the view template.
+  - *Two-way data binding*
+     - communication between the component & view and vice versa.
+     - any change in the UI/view the value is probagated to component.
+     - any change in the component is reflected in the view
          property binding [..]
                +                 ----->   Two way data bindning [(...)]
          Event binding (..)
