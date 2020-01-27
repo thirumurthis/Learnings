@@ -239,8 +239,145 @@ this.result = this.value1 * this.value2;
  
  Note: The `app.module.ts` needs to be updated in this case to import the `FormsModule` to use [(ngModel)].
 
+##### Sample program using data binding to product two numbers 
+```
+//app.component.html
+Enter first number 
+<input type="number" placeholder="first number" [(ngModel)]= "val1" >
+{{val1}}<br>
+<input type="number" placeholder="second number" [(ngModel)]= "val2" >
+{{val2}}<br>
+<button class="btn btn-success" [style.height.px]="heightValue' (click)="product()">Product</button>
+{{result}}
 
- 
- 
+//app.component.ts
+export class AppComponent ... {
+val1 : number = 10;
+val2 : number = 20;
+result : number ;
+product(){
+this.result = this.val1 * this.val2;
+}
+
+// similar to product, we can have sub, add, etc function
+
+```
+
+### Component Communication
+
+  - @Input
+  - @Output
+  - Event Emitter
+ ngOnChanges *life-cycle* hook
+ Communication can happen through,
+  - using template reference variable
+  - viewChild and ContentChild
+  - Services - used when two component are not related to each other.
   
+  When two component need to share data between each other.
 
+```
+@Input () decorator
+
+                               data   
+  component 1 (parent)       -------->      component 2 (child)
+```
+
+###### @Input decorator
+ Inputs value from one component to another component.
+ 
+```
+//app.component.ts -- This is parent component
+...
+export class AppComponent implements OnInit{
+..
+messageFromParent = "from parent";
+messageToChild= "child message, passed from parent";
+...
+}
+---------------------
+//SomeComponent.component.ts -- This is the child component
+...
+@Component({
+ selector: 'app-sc-component'
+ ....
+})
+//import the input decorator within this component
+export SomeComponent... {
+...
+//using @input() decorator for passing values from parent to child
+@Input() passedMessage: String; //holds the value of parent component
+}
+-----------------------
+// app.component.html --- this will hold the child component referenc
+   //Interpolation
+{{messageFromParent}} 
+  // use the selector from the child component (SomeComponent.component.ts)
+  // use the "property binding" to pass value from parent (app.component.ts)
+  // to child component (SomeComponent.component.ts) to passedMessage attribute
+  
+ <app-sc-component [passedMessage]='messageToChild'></app-sc-component>
+ 
+ -----------------------
+ 
+ //SomeComponent.component.html
+ {{passedMessage}}
+ 
+```
+
+#### @Output & Event Emitter
+
+```
+@Output() & Event Emitter
+
+                            @Output()
+component 1 (parent)     <---------------   component 2 (child)
+                           Event emitted
+```
+
+For a scenario, when clicking a button in child component and it needs to execute a function in parent componment we can use **@Output()** 
+
+```
+//SomeComponent.component.ts - this is the CHILD component
+//import the @Ouput within this component
+....
+export class SomeComponent....{
+...
+@Output() emitterObj = new EventEmitter();
+result : number = 100;
+
+    //function which will emit the value from this component
+ passResultUsingEmit(){
+    this.emitterObj.emit(this.result); // Emits the properties from child component
+ }
+...
+}
+--------------------
+// SomeComponent.component.html --- child component view template
+
+//This Event binding will invoke the child component function.
+<button (click) = "passResultUsingEmit()"> Click here to emit </button>
+-------------------
+// app.component.html  --- This is PARENT component view template
+
+{{messageFromParent}}
+//In the case of Event Emitter & @Output () decorator
+//we need to use Event binding - which gets some event type using "$event"
+<app-sc-component (emitterObj)="displayEmittedValue($event)"></app-sc-component>
+
+---------------------
+//app.component.ts --- This is PARENT component ts file 
+...
+export class AppComponent implements OnInit{
+..
+messageFromParent = "from parent";
+messageToChild= "child message, passed from parent";
+...
+//Create the function which will be used by the Event binding from the parent component view
+result : number ;
+displayEmittedValue(result){
+  //use console to see if the value is emitted
+  console.log(result);
+}
+
+```
