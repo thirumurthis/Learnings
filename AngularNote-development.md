@@ -420,8 +420,7 @@ import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angula
 ##### Template Reference Variable
 
 Scenario: Assume there is a component view/html with below content
-If we meed to acces the content of tempate where in this case below <h2> element tag and display it after the parent <div> which is not reference inside the component.
- Without using it in the component, then we can use **template reference variable** option.
+If we meed to acces the content of tempate where in this case below \<h2\> element tag and display it after the parent \<div\> which is not reference inside the component. Without using it in the component \(*.ts file\), then we can use **template reference variable** option.
  
  Using # tag within the element.
  
@@ -431,8 +430,8 @@ If we meed to acces the content of tempate where in this case below <h2> element
       <span>Align this sub title</span>
    </div>
 ```
-
 Implementing the tempate reference variable
+
 ```
 //app.component.html 
    <div>
@@ -467,7 +466,7 @@ In case of template refernce variable, the value of <h1> is passed as parameter 
  @ViewChild decorator helps in this scenario.
     - When parent component (app.component.ts) wanted to access the whole child component template (i.e. SomeComponent.component.html)
  ```
- //app.component.ts - PRAENT component
+ //app.component.ts - PARENT component
  ...
  export AppComponent implements OnInit,AfterViewInit {
  ...
@@ -487,5 +486,36 @@ In case of template refernce variable, the value of <h1> is passed as parameter 
  ##### @ContentChild
   - If we have some content within the `ngContent` we can use `@ContentChild` to access it.
    - Accessing content of component in another component using @ContentChild
-   
+
+```
+// app.component.html - PARENT component
+....
+
+<button class="btn btn-info" [style.background]='color' (click)="display()">Click here</button>
+
+//The content of the CHILD is applied here using ng-content
+// use the selector "app-sc-component" from SomeComponent.component.ts
+<ng-content select="app-sc-component"></ng-content>
+```
+
+How to access the `ng-content` in the app.component.ts PARENT file:
+```
+// app.component.ts
+
+export class AppComponent implements OnInit,  {
+
+// use the reference to the CHILD component
+@ContentChild(SomeComponent, {static:false}) somecomponentViewContent: SomeComponent;
+
+// we need to declare the life-cycle hook
+ngAfterContentInit(){
+  console.log(this.somecomponentViewContent); 
+  // the ng content is access from the template of (app.component.html ng-content)
+}
+..
+}
+```
+
+
+```
    
