@@ -516,3 +516,127 @@ ngAfterContentInit(){
 }
 ```
 
+##### Directive:
+  - Used to add a specified behavious to the DOM element. This is like a marker to the DOM.
+  
+ ##### Types:
+   - Component directive - which has html of its own (building blocks of angular)
+   - Strutural directive - used to change the layout like `ngFor`, `ngIf`
+   - Attribute directive - used to change the apperance or behaviour
+   - Custom directive
+
+```
+//app.component.html
+//ngIf and ngFor usage
+....
+export class AppComponent...{
+...
+flagCheck : boolean = false;
+result : any;
+onInit(){
+this.resut = this.someFunction();
+}
+...
+someFuntion(){
+thisflagCheck = true;
+return [{"name":"name1"},{"name":"name2"}];
+```
+----------
+```
+//app.component.html
+
+<table *ngIg=flagChek>
+   <tr *ngFor = "let name of result">
+      <td>{{{name}}</td>
+   </tr>
+</table>
+```
+
+##### Custom Attribute directives
+   - HostBinding
+   - HostListener
+
+How to create  `Custom Attribute directives` ?
+
+##### To create using CLI:
+```
+$ ng g d <directive-name>
+```
+
+Files created:
+  - \*.directive.ts
+  - \*.directive.spec.ts (used for test)
+  - app.module.ts - updated/registered with the new directive.
+  
+##### To create directive manually:
+ - To create a directive, create the class with `@Directive` decorator
+ - Inject services ElementRef and Renderer
+ - Register directive in module (for example: app.module.ts file, when using cli)
+ - Use the created directive
+ 
+ ```
+ //color.directive.ts - created by the CLI
+ //STEP:1 - created a class with @Directive decorator
+ import {Directive} from '@angular/core';
+ 
+ @Directive({
+ selector: '[backgroundColor]'
+ })
+ export class ColorDirective {
+   // STEP:2 - inject with the ElementRef and Renderer
+    constructor(private element: ElementRef, private rendrer : Renderer){
+      // call the method
+      this.updateColor('blue');
+    }
+    
+    // To use the Directive - create a function outside constructor.
+    updateColor(color : string){
+       this.renderer.setElementStyle(this.element.nativeElement, 'color', color);
+    }
+ }
+ ```
+ ----------------
+ ```
+ //app.component.html
+ 
+ <div  backgroundColor> //the attribute directory selector value is used here
+    <p> Using custom attribute directive </p>
+ </div>
+ ```
+
+Using custom attribute on element in this case we used in div element.
+And we wanted to capture the events like click on these elements - then we use `@HostListener`
+
+Sample div element we created:
+```
+  <div  backgroundColor> 
+    <p> Using custom attribute directive </p>
+ </div>
+```
+----------------
+ ```
+ //color.directive.ts - created by the CLI
+ import {Directive} from '@angular/core';
+ 
+ @Directive({
+ selector: '[backgroundColor]'
+ })
+ export class ColorDirective {
+    constructor(private element: ElementRef, private rendrer : Renderer){
+      // call the method
+      this.updateColor('blue');
+    }
+    
+    updateColor(color : string){
+       this.renderer.setElementStyle(this.element.nativeElement, 'color', color);
+    }
+    
+    //import the hostlistener from core package
+    // when the user clicks the below funtion will be invoked.
+    @HostListener('click') userClick(){
+    this.color = 'red';
+    }
+ }
+ ```
+ 
+ 
