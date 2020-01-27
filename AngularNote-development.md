@@ -419,5 +419,73 @@ import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angula
 
 ##### Template Reference Variable
 
-
+Scenario: Assume there is a component view/html with below content
+If we meed to acces the content of tempate where in this case below <h2> element tag and display it after the parent <div> which is not reference inside the component.
+ Without using it in the component, then we can use **template reference variable** option.
  
+ Using # tag within the element.
+ 
+```
+   <div>
+      <h1>Header of the component</h1>
+      <span>Align this sub title</span>
+   </div>
+```
+
+Implementing the tempate reference variable
+```
+//app.component.html 
+   <div>
+     // using a hash with a variable name, latter this can be accessed outside the 
+     // parent div tag
+      <h1 #elementRef>Header of the component</h1>
+      <span>Align this sub title</span>
+   </div>
+   
+   //Below is the way to access the above <h1> using template reference 
+   {{elementRef.textContent}} //"Header of the component" will be displayed 
+   
+   <button (click)="display(elementRef)">Click here</button>
+```
+--------------
+```
+//app.component.ts
+...
+export class AppComponent...{
+
+//passed value from the click event above - the type is HTMLInputElement
+display(elementValue: HTMLInputElement) {
+  //upon clicking the template html5 the console will print the value
+  console.log((<HTMLInputEelement>elementValue).value);
+}
+```
+
+In case of template refernce variable, the value of <h1> is passed as parameter to a function.
+ 
+ Scenario: In case if we don't want to pass the value as parameter, and perform some operation before passing the value.
+ 
+ @ViewChild decorator helps in this scenario.
+    - When parent component (app.component.ts) wanted to access the whole child component template (i.e. SomeComponent.component.html)
+ ```
+ //app.component.ts - PRAENT component
+ ...
+ export AppComponent implements OnInit,AfterViewInit {
+ ...
+ 
+ // init dom boject using ngAfterViewInit
+ // implementation of method from AfterViewInit life-cycle hook 
+ ngAfterViewInit(){
+   console.log(this.somecomponentviewfirstchild);
+ }
+ 
+ //@ViewChild decorator is used and passed with child component class and options (in this case {static:false})
+ //Below alone will not pass the child content to parent. init dom object
+ @ViewChild(SomeComponent,{static:false}) somecomponentviewfirstchild : SomeComponent;
+ //The compelet child (SomeComponent.component.html) content id displayed in the somecompoenentviewfirstchild value.
+ ```
+
+ ##### @ContentChild
+  - If we have some content within the `ngContent` we can use `@ContentChild` to access it.
+   - Accessing content of component in another component using @ContentChild
+   
+   
