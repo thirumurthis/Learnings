@@ -742,8 +742,9 @@ Difference between the template Driven forms vs Reactive Forms:
  ...
  export class SomeComponent... {
  ..
- save(){
-  console.log("submitted from the form");
+ // takes form object of NgForm class type
+ save(form: NgForm){
+  console.log("submitted from the form "+form.value);
   }
   ....
  ```
@@ -769,8 +770,124 @@ ngNativeValidate - this will allow validation in the application
 
 ```
 
+##### To check css style that is applied to the form since using the bootstrap
+```
 
-  
+//SomeComponent.component.html
+
+<form ngNativeValidate (ngSubmit)="save(form)" #form="ngForm">  
+ <div class="form-group">
+  //Create a template reference for this element
+   <input class="form-control" type="text" [(ngModel)]="name" required #tempRef><br>
+   //interpolate the values
+   {{tempRef.className}}
+ <div>
+ <button>Click here</button>
+ </form>
+
+```
+
+##### Reactive Forms
+  - Bind with model
+  - Validation on  reactive forms
+  - easy to perform unit testing
+  - dynamically adding elements
+  - applying different validation for different scenario
+  - when the form is on the component class it is easy to test 
+```
+//app.component.ts
+// create FormModel to work with Reactive forms
+// For FormModel, import FormGroup and FormControl instance in component class
+import { FormGroup, FormControl } from '@angular/forms'
+
+// The data model represents the data passed from the backend server or hardcoded value
+// The Form model is the instance of the element (input) that present in the template
+
+export class AppComponent implement OnInit {
+
+customForm: FormGroup;
+Userdata = new Userdata();
+
+ngOnInit(){
+  this.customForm = new FormGoup({
+  name: new FormControl (),
+  age: new FormControl ()
+ });
+ }
+ 
+ save(){
+   console.log(this.customForm);
+ }
+}
+```
+----------
+```
+//app.module.ts
+import ....
+....
+import { ReactiveFormsModule} from '@angular/forms';
+@NgModule({
+...
+// In previous Template dirven we imported formsmodule, in this case we will include
+// ReactiveFormsModule
+import:[ ...
+ReactiveFormsModule,
+...
+```
+-------------
+Additional directives that can be used in reactive forms
+//formGroup, formControlName, formControl, formGroupname, formArrayName
+```
+//Binding the reactive forms to the template
+//app.component.html
+
+//Reactive Form doesn't support two-way data binding - remove ngModel
+
+//bind using property grouping
+<form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
+ <div class="form-group">
+  //include formcontrol which will provide the form value to component
+   <input class="form-control" type="text" formControl="name"><br>
+ <div>
+ <button>Click here</button>
+ </form>
+ ```
+
+##### Apply validation on Reactive forms
+When there is no validation and the above input field, error "Expected validator return Promise or Obeservable" will be displayed.
+```
+//app.component.ts
+import { FormGroup, FormControl } from '@angular/forms'
+
+export class AppComponent implement OnInit {
+
+customForm: FormGroup;
+Userdata = new Userdata();
+
+constructor(private formBuilder: FormBuilder){}
+
+ngOnInit(){
+  this.customForm = this.formBuilder.group({
+  //array of array with parameters
+  name: ['',[Validators.required, Validators.maxlength(3)]] ,
+  age: ['']
+ });
+ }
+ 
+ save(){
+   console.log(this.customForm);
+ }
+}
+```
+SetValidator and ClearValidator performed in the input fields
+```
+control.setValidator(Validator.required);
+control.clearValidator(Validator.maxlength(8)):
+```
+
+##### Reactive form custom validation
+
+
     
    
  
