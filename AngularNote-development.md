@@ -1094,4 +1094,19 @@ $ ng g m <module-name> -m app/module1
 // - m creates within the app/module1 directory
 
 import the created module that you wanted to share in that specific module. (import array)
+
+// new module created and sharing the component
+// module1.module.ts
+....
+@NgModule({
+ delarations : [
+    SomeComponent
+    ],
+    imports :[
+     CommonModule, FormsModule // this import formsModule can be accessed by importing module
+     ],
+     exports: [  // export will include the component of this module in order to be accessed by shared modules
+      SomeComponent
+      ]
+    ...
 ```
