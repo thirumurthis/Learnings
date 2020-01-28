@@ -617,7 +617,7 @@ Files created:
     <p> Using custom attribute directive </p>
  </div>
  ```
-
+##### @HostListener
 Using custom attribute on element in this case we used in div element.
 And we wanted to capture the events like click on these elements - then we use `@HostListener`
 
@@ -629,8 +629,8 @@ Sample div element we created:
 ```
 ----------------
  ```
- //color.directive.ts - created by the CLI
- import {Directive} from '@angular/core';
+ //color.directive.ts - assume the template/structure created by the CLI
+import { Directive, ElementRef, Renderer, HostListner } from '@angular/core';
  
  @Directive({
  selector: '[backgroundColor]'
@@ -652,5 +652,126 @@ Sample div element we created:
     }
  }
  ```
+ 
+ ##### @HostBinding:
+ When we need capture the property of the host element, example height, border, etc.
+ 
+ ```
+ //color.directive.ts - created by the CLI
+ @Directive({
+ selector: '[backgroundColor]'
+ })
+ export class ColorDirective {
+    constructor(private element: ElementRef, private rendrer : Renderer){
+      // call the method
+      this.updateColor('blue');
+    }
+    
+    //property that needs to be captured from host element
+    // import the decorator 
+    @HostBinding ('style.border') border : string;
+    
+    updateColor(color : string){
+       this.renderer.setElementStyle(this.element.nativeElement, 'color', color);
+    }
+    
+      @HostListener('click') userClick(){
+  
+  //The host element color needs to be updated 
+    // so the color is applied to the host element when the click happens
+    this.border = '10px solid blue';
+    
+    this.color = 'red';
+    }
+ }
+ ```
+ 
+ ### Forms:
+ ##### Template Driven Forms and perform validation on them
+  Forms are used to gather info and submit info to the servers.
+ 
+ ##### Types of forms:
+    - Template Driven Forms
+    - Reactive Forms (Advanced)
+  
+Difference between the template Driven forms vs Reactive Forms:
+ - Template Driven forms: 
+     - Forms used within the html of component.
+     - Unit Testing little difficult
+ - Reactive Forms: 
+     - Forms used in the typescript file of component.
+     - Unit Testing is easy
+ 
+ ##### Template Driven Forms:
+   `ngForm` directive
+   
+ ```
+ // Somecomponent.component.html
+ // using boostrap classes - use npm to install
+ <form (ngSubmit)="save(form)" #form="ngForm">  
+ //#form is the template reference variable used.
+ // event binding of submit, which invokes the save funtion within the typescript
+ <div class="form-group">
+ <input class="form-control" type="text" [(ngModel)]="name"><br>
+ <div>
+ <button>Click here</button>
+ </form>
+ 
+ //the template reference is interpolated and piped to view
+ {{form | json}}
+ {{form.value | json}}
+ ```
+ ----------
+ In order to use the forms module within the typescript import the forms module
+ ```
+ //app.module.ts
+ //import the FormsModule
+ import { FormsModule } from '@anguar/forms';
+ @NgModule({
+ ...
+ ...
+ imports: [
+ BrowserModule,FormsModule
+ ...
+ ```
+ ---------
+ ```
+ //SomeComponent.component.ts
+ ...
+ @Component({
+ ...
+ export class SomeComponent... {
+ ..
+ save(){
+  console.log("submitted from the form");
+  }
+  ....
+ ```
+
+##### Adding validation to the form
+
+html5 - validation keyword required, minimumlength, etc.
+
+angular - turns off validation in the application everytime.
+
+ngNativeValidate - this will allow validation in the application
+
+```
+//SomeComponent.component.html
+
+//add ngNativeValidate 
+ <form ngNativeValidate (ngSubmit)="save(form)" #form="ngForm">  
+ <div class="form-group">
+   <input class="form-control" type="text" [(ngModel)]="name" required minlength="3" maxlength="10"><br>
+ <div>
+ <button>Click here</button>
+ </form>
+
+```
+
+
+  
+    
+   
  
  
