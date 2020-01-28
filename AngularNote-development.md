@@ -887,8 +887,97 @@ control.clearValidator(Validator.maxlength(8)):
 
 ##### Reactive form custom validation
 
+Validator is a function.
+```
+//app.component.ts
+import ....
 
+//Custom validation snippet
+// the function will take a parameter AbstractControl
+//if anything wrong with the input field perform key, else return null
+/*
+function myCustomValidator(ac :AbstractControl):{[key : string] :boolean }| null {
+
+if(//input is null ){
+ return {'customValidator': true};
+}
+  return null;
+}
+*/
+//Above function is the structure actual code is below
+function myCustomValidator(ac :AbstractControl):{[key : string] :boolean }| null {
+
+  if(ac != null ){
+   return {'scaleValidator': true};
+  }
+  return null;
+}
+export ....
+ngOnInit(){
+  this.customForm = this.formBuilder.group({
+  //array of array with parameters
+  name: ['',[Validators.required, Validators.maxlength(3)]] ,
+  scale: ['',myCustomValidator] // represents the custom funtion
+ });
+ }
+... 
+```
+------------
+ Include the message in the template
+```
+//app.component.html
+<form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
+ <div class="form-group">
+    <input class="form-control" type="text" formControl="name"><br>
     
-   
+    //created a input field to apply custom validation
+    <input id="scale" class="form-control" type="number" formControlName="scaling"><br>
+ <div>
+ // a span with validator fail case to display a message
+ <span *ngIf= "customForm.get('scale').errors?.scaleValidator" >Error happened</span>
+ 
+ <button>Click here</button>
+ </form>
+
+//when the input is entered with value the message will displayed.
+```
+-----------
+##### Instead of using a hardcoded value for checking the AbstractControl use FactoryValidator function
+
+```
+function myCustomValidator(ac :AbstractControl):{[key : string] :boolean }| null {
+
+  // hard coded check
+  if(ac != null ){
+   return {'scaleValidator': true};
+  }
+  return null;
+}
+```
+##### Factory validator function
+Function returns another Validator function, which will help pass two validation condition.
+
+```
+function myValidator(min : number, max : number){
+
+//function will be returned
+return (ac :AbstractControl):{[key : string] :boolean }| null => {
+
+    if(ac != null && (isNaN(ac.value) || ac.value < <min> || ac.value > <max>) ){
+     return {'scaleValidator': true};
+    }
+    return null;
+  };
+}
+
+export ....
+ngOnInit(){
+  this.customForm = this.formBuilder.group({
+  //array of array with parameters
+  name: ['',[Validators.required, Validators.maxlength(3)]] ,
+  scale: ['',myValidator(1,12)] // represents the custom funtion
+ });
+ }
+```
  
  
