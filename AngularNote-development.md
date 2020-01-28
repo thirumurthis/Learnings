@@ -928,11 +928,11 @@ ngOnInit(){
 //app.component.html
 <form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
  <div class="form-group">
-    <input class="form-control" type="text" formControl="name"><br>
+    <input class="form-control" type="text" formControlName="name"><br>
     
     //created a input field to apply custom validation
     <input id="scale" class="form-control" type="number" formControlName="scaling"><br>
- <div>
+ </div>
  // a span with validator fail case to display a message
  <span *ngIf= "customForm.get('scale').errors?.scaleValidator" >Error happened</span>
  
@@ -979,5 +979,119 @@ ngOnInit(){
  });
  }
 ```
+##### Cross form validation  can be performed
+ In the myValidator function get the values of the form and perfom comparison and validated.
+
+##### Custom Validation in Reactive forms `setValue` and `patchValue`
  
+ If we need to populate the form with pre-defined or default value we can achive this with `setValue` and `patchValue`.
  
+ setValue : In case we have more than one control in the form model, we need to update the values of each one, we can use setValue.
+ 
+ patchValue: In case we need to update the set of values, we can use patchValue.
+
+```
+//app.component.html
+<form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
+ <div class="form-group">
+    <input class="form-control" type="text" formControlName="name" required><br>
+    <input class="form-control" type="number" formControlName="age" required><br>
+ </div>
+ 
+ //upon click of the button, the loadData() function will invoke
+ <button class="btn btn-success" (click)="loadData()" > Load data</button>
+  <button class="btn btn-primary">Click here</button>
+ </form>
+
+```
+--------------
+```
+//app.component.ts
+...
+constructor (private formBuilder : FormBuilder){}
+ngOnInit(){
+  this.customForm = this.formBuilder.group({
+    name: ['', [Validators.required]],
+    age: ['', Validator.required]
+  });
+}
+loadData(){
+ this.customForm.setValue({
+   name: "Name1", //value will be loaded on click
+   age: "20"
+ })
+}
+
+// for usage Passage value witin the same above ts
+...
+loadData(){
+ this.customForm.patchValue({
+   name: "Name", //value will be loaded on click
+ })
+```
+
+### Modules and organizing module
+
+Module 
+   - is a class decorated with `@NgModule` decorator
+   - where the component and directives are declared
+   - Modules can be loaded egarly and lazily.
+
+Structure of modules:
+```
+//app.mdoule.ts
+....
+@NgModule({
+declaration: [...
+],
+imports: [....
+],
+providers : [], // contains all the service used in the application
+bootstrap :[AppComponent]
+})
+export class AppModule {} // this is used to export this module info, to another module
+```
+##### bootstrap array 
+   - is the `entry point` of the application, is the `root component`.
+   - it should be used in one module, not to be used in all other modules within the application.
+
+##### declaration array
+   - one components should be used in one module, unless it is shared using export/import.
+   - use export to expose the components, use import in another component.
+   - don't `export the services`, since the services are already accessible to other modules and components.
+
+##### imports array
+   - can access all the modules that are exported, and the components, template within that modules.
+   - In case of importing `FormsModule` only that specific funtionality can be accessed.
+    
+##### Feature and shared modules
+
+##### Feature modules
+Seperate the features to different modules, like userinfo, etc.
+
+```
+ $ ng generate module <module-name> -m app
+ 
+ // -m is used to create the module within the app directory
+ 
+ //somemodule.module.ts
+ ...
+ 
+ @NgModule({
+ decelrations: [],
+ imports :[
+   CommonModule,
+   FormsModule,
+   RouterModule.forChild([  //child routes
+   { path :''}
+  }]
+ ...
+```
+##### Shared Module:
+
+```
+$ ng g m <module-name> -m app/module1
+// - m creates within the app/module1 directory
+
+import the created module that you wanted to share in that specific module. (import array)
+```
