@@ -763,34 +763,31 @@ angular - turns off validation in the application everytime.
 
 ngNativeValidate - this will allow validation in the application
 
-```
-//SomeComponent.component.html
+```html
+<!--SomeComponent.component.html-->
 
-//add ngNativeValidate 
+<!--//add ngNativeValidate -->
  <form ngNativeValidate (ngSubmit)="save(form)" #form="ngForm">  
  <div class="form-group">
    <input class="form-control" type="text" [(ngModel)]="name" required minlength="3" maxlength="10"><br>
  <div>
  <button>Click here</button>
  </form>
-
 ```
 
 ##### To check css style that is applied to the form since using the bootstrap
-```
-
-//SomeComponent.component.html
+```html
+<!-- //SomeComponent.component.html -->
 
 <form ngNativeValidate (ngSubmit)="save(form)" #form="ngForm">  
  <div class="form-group">
-  //Create a template reference for this element
+  <!-- //Create a template reference for this element -->
    <input class="form-control" type="text" [(ngModel)]="name" required #tempRef><br>
    //interpolate the values
    {{tempRef.className}}
  <div>
  <button>Click here</button>
  </form>
-
 ```
 
 ##### Reactive Forms
@@ -930,27 +927,27 @@ ngOnInit(){
 ```
 ------------
  Include the message in the template
-```
-//app.component.html
+```html
+<!-- //app.component.html -->
 <form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
  <div class="form-group">
     <input class="form-control" type="text" formControlName="name"><br>
     
-    //created a input field to apply custom validation
+    <!-- //created a input field to apply custom validation -->
     <input id="scale" class="form-control" type="number" formControlName="scaling"><br>
  </div>
- // a span with validator fail case to display a message
+ <!-- // a span with validator fail case to display a message -->
  <span *ngIf= "customForm.get('scale').errors?.scaleValidator" >Error happened</span>
  
  <button>Click here</button>
  </form>
 
-//when the input is entered with value the message will displayed.
+<!-- //when the input is entered with value the message will displayed. -->
 ```
 -----------
 ##### Instead of using a hardcoded value for checking the AbstractControl use FactoryValidator function
 
-```
+```js
 function myCustomValidator(ac :AbstractControl):{[key : string] :boolean }| null {
 
   // hard coded check
