@@ -443,7 +443,7 @@ If we meed to acces the content of tempate where in this case below \<h2\> eleme
  
  Using # tag within the element.
  
-```
+```html
    <div>
       <h1>Header of the component</h1>
       <span>Align this sub title</span>
@@ -451,17 +451,17 @@ If we meed to acces the content of tempate where in this case below \<h2\> eleme
 ```
 ##### Implementing the tempate reference variable
 
-```
-//app.component.html 
+```html
+<!--app.component.html -->
    <div>
-     // using a hash with a variable name, latter this can be accessed outside the 
-     // parent div tag
+     <!-- using a hash with a variable name, latter this can be accessed outside the 
+      parent div tag-->
       <h1 #elementRef>Header of the component</h1>
       <span>Align this sub title</span>
    </div>
    
-   //Below is the way to access the above <h1> using template reference 
-   {{elementRef.textContent}} //"Header of the component" will be displayed 
+   <!-- Below is the way to access the above <h1> using template reference -->
+   {{elementRef.textContent}} <!-- //"Header of the component" will be displayed -->
    
    <button (click)="display(elementRef)">Click here</button>
 ```
