@@ -1245,3 +1245,147 @@ upon clicking the link, we pass the \_id view the info
 ...
 <!-- // when the user clicks on the <a> link the parameter is passed, doc._id is the parameter -->
 ```
+------
+###### Passing router parameter from component class (.ts file)
+```
+// passing the parameter
+this.router.navigate(['/view',this.document.id]);
+```
+
+With the passed \_id parameter we need to fetch the corresponding data
+ - The \_id value should be fetched and passed to the component which is done by `Activated Route Service`
+ Then reading the data
+ - using Observable
+ - using Snapshot
+ 
+ ```
+ // inject the activated route service in side the component
+ // then fetch url from the component
+ ```
+ ```js
+ //View.component.ts
+...
+export class ViewComponent...{
+...
+// inject the ActivatedRoute
+constructor (private dataService: DataService, private route: ActivatedRoute, private router: Router){
+...
+ngOnInit(){
+// using snapshot to retrive the parameter
+// when using the snapshot, fetches the initial state of the route parameter
+this.route.snapshot.paramMap.get('_id');
+
+//using Observable
+// here route parameter changes are monitored and passed
+this.route.paramMap.subscribe(params => {
+   const paramId = params.get('_id');
+   this.getDocument(paramId);
+}):
+...
+}
+```
+
+##### Child Routes & Secondary Routes:
+  - How to activate and configure 
+  
+  Child Routes - Display the component template, inside another component template.
+  - we have view which is container to another view, and the another view is the child routes
+  
+```js
+//app-routing.module.ts
+....
+const routes : Routes = [
+  {path : 'home', component : HomeComponent },
+  {path : 'search', component : SearchComponent},
+  // we use children property to use display child route.
+  {path : 'view/:_id', component : ViewComponent, children : [
+   // when the view/:_id is hit it gets redirected by default to Edit product component
+   // in this case the EditComponent is placed in the DisplayComponent
+     {path : '', redirectTo: 'edit' , pathMatch :'full'},
+     {path : 'edit', component : EditProductComponent, outlet: 'popup'}
+];
+...
+ // use the <router-outlet></router-outlet> in the component template to view the content on appropriate component to display the content
+```
+------
+```html
+<!-- view.component.html -->
+...
+<tr *ngFor=" document of documents">
+ ....
+ <!- approach 1 to use the Absolute path to activate child on click -->
+<a [routerLink] ="['/view',document.id,'edit']" >Edit Product </a>
+ ....
+ <!- apporach 2 to use the Relative path to activate child on click.
+  Angular knows that since this is ViewComponent template, it uses the child 
+  route config info. Recommended since any change in the path no need to change here-->
+ <a [routerLink] ="['edit']" > Edit Product </a>
+ ....
+ ```
+ -----------
+ Activating from the component (ts file)
+ ```
+ // abosulte path
+ this.router.navigate(['/view','this.document.id','/edit']) // view is the parent component
+ 
+ // relative path 
+ this.router.navigate(['edit'], {relativeTo: this.route}); // using relativeTo property
+ ```
+ 
+ ##### Secondary route or auxilary route or multiple route
+ Used to display multiple panels in single view, refer below
+ 
+ ```
+ // the component1, 2, 3 are placed on the view 
+ // we need to use <router-outlet> of the specific component
+    -------------------           -------------------    
+    | component1       |          |component2        |
+    | <router-outlet>  |          |<router-outlet>   |
+    | </router-outlet> |          |</router-outlet>  |
+    --------------------          --------------------
+    --------------------------------------------------
+    |  component3                                    |
+    | <router-outlet></router-outlet>                |
+    --------------------------------------------------
+ ```
+ 
+ ###### How does the \<router-outlet\> placeholder knows which component to display.
+  Named Router Outlet
+ ```html
+ <!-- //app.component.html -->
+...
+<rotuer-outlet name="popup"> <router-outlet>
+<rotuer-outlet> <router-outlet>
+...
+ ```
+ ------
+ configure usign `outlet` property
+ ```js
+ --app-routing.module.ts
+ ....
+ const routes : Routes =[
+   {path : 'first',  component: FirstComponent},
+   {path : 'second', component: SecondComponent, outlet : 'popup'} 
+   //outlet is the property name is used by the named router-outlet name.
+ ];
+ --
+ ```
+ Activate the secondary route
+ ```html
+<!-- app.component.html-->
+...
+<button class='btn btn-primary' routerLink="/first">Cick for component1</button>
+<!-- acitvate the secondary routes representation -->
+<!-- outlets property takes a key value pair, here we are usign popup (name of route)
+and passing the path -->
+<a [routerLink]="[{outlets: {popup :['second']}}]"> Names router outlet way </a>
+
+<router-outlet name="popup"> <router-outlet>
+<router-outlet></router-outlet>
+```
+To activate from the component class (ts file)
+```js
+this.router.navigate([{outlets: {popup:['edit']}}]);
+```
+##### Route gaurds - Securing the route navigation
+canActivate, canActivateChild, canDeactivate
