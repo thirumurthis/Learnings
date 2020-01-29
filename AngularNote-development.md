@@ -15,6 +15,12 @@
  component11         component12
  ```
 
+###### Angular 8 feature
+  - Dynamic import (lazy loading)
+  - Typescript 3.1 support
+  - Differntial loading
+  - Ivy compiling
+
 ##### Create a project
 ```
  $ ng new <project-name>
@@ -1109,4 +1115,136 @@ import the created module that you wanted to share in that specific module. (imp
       SomeComponent
       ]
     ...
+```
+
+###### Enabling Ivy
+To implement ivy, 
+   1.  For exisitng appluication, edit the ts.config file to include the ivy
+   2.  Using CLI use --enable-ivy
+      `$ ng new <application-name> --enable-ivy`
+
+###### Lazy Loading of routes: Using `loadChildren`
+ - If a feature module was NOT be implemented for every time. We can avoid loading of such module during start of the application and use only when it is needed.
+ ```
+ // Older way in previous version: lazy loading is performed using loadChildren
+  { path: 'customer ', loadChildren: './customer/customer.module#CustomerModule'}
+  // <path-of-the-module = ./customer/customer.module#CustomerModule>
+  //this path is a string which is pron to errors
+  
+  //Newer way: dynamic import
+  {path:'customer' , loadChildren: () => import ('./customer/customer.module'). then(m=>m.CustomerModule)}
+  //this is dynamic way, since the IDE will be able to catch in case of spelling mistakes
+ ```
+ 
+ ##### Differential Loading
+   - creation of two bundles, JS version less than Es5 will be a bundle and higher version as a seperate bundle, and the performance is improvised depending on the bundles.
+   
+ ### Routings:
+   - Navigating from one view to another view, done using routing.
+   
+  Setting Routes steps:
+    - 1. Create/Add routes using CLI or manually
+    - 2. Configure the application routes
+    - 3. Activate the routes
+    - 4. use RouterOutlet (placing the content over the view template)
+ 
+ ```
+ //step #1
+ // when creating the application using ng new, the question prompted to add routing
+ 
+ //app-routing.module.ts
+  ...
+  
+  const routes: Routes= [] // route array which contains routing info
+ @NgModule({
+ imports : [RouterModule.forRoot(routes)],
+ exports :[RouteModule]
+ })
+ export class AppRoutingModule {}
+ 
+ // app.module.ts
+ // has the refrence to the routing module in the @NgModule decorator
+ ```
+ --------------
+ ```
+ // Step #2:
+ // to configure the route, upon clicking one link it should route to another view
+ 
+ // generate a new component using ng g c Customer
+ 
+ //app-routing.module.ts
+ ...
+ // configure routes in this array
+ const routes : Routes= [
+ { path :'customer', component: CustomerComponent} // this is the route config
+ ]
+ ```
+ ------------
+ ```
+ // Step # 3 Activate the route using RouterLink
+ //app.component.html  - using the routerLink directive 
+ <button class='btn btn-primary' routerLink = "/customer"> click Customer</button>
+ 
+ // when user clicks the button it will navigate to next component.
+ ```
+ -------------
+ ##### Router outlet is a template place holder of new component view
+ ```
+ // Step #4 - RouterOutlet
+ // in the above step 3, if we click on the button the address bar has the routed url but no action happens
+ 
+ // we need RouterOutlet needs to be used, where the content of the next component comes 
+ 
+ // in app.component.html
+ <button class='btn btn-primary' routerLink = "/customer"> click Customer</button>
+ 
+ <router-outlet></rotuer-outlet>
+ 
+ //now when the "click customer" is clicked the content of new view will be displayed.
+ ```
+ 
+ ###### Notes:
+  - in `app-routing.module.ts` the order of the routing impacts the redirection
+  - event associated with the Router- NavigationStart, NaviationEnd
+  
+##### Passing parameter between Routing from one view to another view
+
+   - Passing parameter from URL
+   - Passing parameter from Component
+   - Reading parameter as `Observable`
+   - Reading parameter as `Snapshot`
+   
+Scenario, when we need to pass the id from component, and fetch the relevant data from another component.
+
+Steps:
+   - place holder to hold the data of the id
+   - pass parameter from the URL 
+
+```
+// app-routing.module.ts
+//route configuration
+cosnt routes : Routes = [
+{ path: 'home', component : HomeComponent},
+{ path: 'search', component : SearchComponent},
+{ path: 'view/:_id',component : ViewComponent},
+{path: '', redirectTo : 'home', pathMatch: 'full' }
+];
+
+// when we need to pass id parameter from view component to search.
+// _id is routing parameter 
+// now the place holder for the routing paramter is complete.
+
+```
+In the above when the "localhost:4200/search" displays some content
+upon clicking the link, we pass the \_id view the info
+
+------------
+```
+app.component.html
+...
+<tr *ngFor= 'let doc of documents'>
+.....
+<td> <a id="title" [routerLink] = '["/view","doc._id"]'>{{doc?.title}}</td>
+...
+// when the user clicks on the <a> link the parameter is passed, doc._id is the parameter
 ```
