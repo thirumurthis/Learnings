@@ -34,3 +34,6 @@ Azure Monitoring:
     **To delete the Action group:**
      Alerts -> Manage actions -> select the appropriate action group and delete 
    
+
+Application Insights: (for java application)
+https://azure.microsoft.com/en-us/blog/application-insights-java-sdk/
