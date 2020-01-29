@@ -1146,7 +1146,7 @@ To implement ivy,
     - 1. Create/Add routes using CLI or manually
     - 2. Configure the application routes
     - 3. Activate the routes
-    - 4. use RouterOutlet (placing the content over the view template)
+    - 4. use `RouterOutlet` (placing the content over the view template)
  
  ```
  //step #1
@@ -1193,7 +1193,7 @@ To implement ivy,
  // Step #4 - RouterOutlet
  // in the above step 3, if we click on the button the address bar has the routed url but no action happens
  
- // we need RouterOutlet needs to be used, where the content of the next component comes 
+ // we need RouterOutlet, where the content of the next component comes this is a place holder
  
  // in app.component.html
  <button class='btn btn-primary' routerLink = "/customer"> click Customer</button>
