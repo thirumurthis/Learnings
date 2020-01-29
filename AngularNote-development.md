@@ -858,7 +858,7 @@ Additional directives that can be used in reactive forms
 
 ##### Apply validation on Reactive forms
 When there is no validation and the above input field, error "Expected validator return Promise or Obeservable" will be displayed.
-```
+```js
 //app.component.ts
 import { FormGroup, FormControl } from '@angular/forms'
 
@@ -891,7 +891,7 @@ control.clearValidator(Validator.maxlength(8)):
 ##### Reactive form custom validation
 
 Validator is a function.
-```
+```js
 //app.component.ts
 import ....
 
@@ -960,7 +960,7 @@ function myCustomValidator(ac :AbstractControl):{[key : string] :boolean }| null
 ##### Factory validator function
 Function returns another Validator function, which will help pass two validation condition.
 
-```
+```js
 function myValidator(min : number, max : number){
 
 //function will be returned
@@ -993,22 +993,22 @@ ngOnInit(){
  
  patchValue: In case we need to update the set of values, we can use patchValue.
 
-```
-//app.component.html
+```html
+<!-- //app.component.html-->
 <form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
  <div class="form-group">
     <input class="form-control" type="text" formControlName="name" required><br>
     <input class="form-control" type="number" formControlName="age" required><br>
  </div>
  
- //upon click of the button, the loadData() function will invoke
+ <!-- //upon click of the button, the loadData() function will invoke -->
  <button class="btn btn-success" (click)="loadData()" > Load data</button>
   <button class="btn btn-primary">Click here</button>
  </form>
 
 ```
 --------------
-```
+```js
 //app.component.ts
 ...
 constructor (private formBuilder : FormBuilder){}
@@ -1236,12 +1236,12 @@ In the above when the "localhost:4200/search" displays some content
 upon clicking the link, we pass the \_id view the info
 
 ------------
-```
-app.component.html
+```html
+<!-- //app.component.html -->
 ...
 <tr *ngFor= 'let doc of documents'>
 .....
 <td> <a id="title" [routerLink] = '["/view","doc._id"]'>{{doc?.title}}</td>
 ...
-// when the user clicks on the <a> link the parameter is passed, doc._id is the parameter
+<!-- // when the user clicks on the <a> link the parameter is passed, doc._id is the parameter -->
 ```
