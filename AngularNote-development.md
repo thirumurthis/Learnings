@@ -1599,3 +1599,94 @@ Service within another service, service gets the data, and another service using
  constructor ({ private newdataservice : ServicenameService}) //just inject the other service where the data is present
 ...
 ```
+
+### In-memory web API in angular
+  - we can return a hardcoded value
+  - have a json file
+  - Angular provide mocked backend api
+  - using angular web-api (this is not part of @angular/core) this is seperate service
+  
+Import Angular HttpService
+Create data Access service - to get data from the backend
+Inject Angular http service to the data access service
+Import Observable, etc
+Use Http Operations (Get, put, etc)
+
+Get data from in memory
+```js
+//create a service and import the HttpClientmodule in the 'app.module.ts'
+...
+import {HttpClientModule} from '@angular/common/http';
+..
+imports : [
+... 
+HttpClientModule..
+],
+```
+Create a service using angular CLI
+```js
+//new.service.ts
+import {Observable} from 'rxjs';
+...
+export class NewService{
+//inject the Http service
+//the data is handeled asyncronysly and requires Observable to be import it
+constructor (private http:HttpClient){
+}
+```
+Installing the In-memory web API as dependency 
+```
+$ npm install angular-in-memory-web-api --save-dev
+// save-dev is used to save it in the package.json of the project
+```
+Include the In-memory web api in the modules.
+```js
+//InMemoryBackendService.service.ts
+....
+//in imports array include the InMemoryWebApiModule
+import {InMemoryWebApiModul} from 'angular-in-memory-web-api';
+
+imports : [
+AppRoutingModule, FormsModule, ReactiveFormsModule, HttpClientModule,
+InMemoryWebApiModule.forRoot(Customer) //Customer class contains the data that to be stored in memory
+],
+...
+//we are using InMemoryWebApiModule.forRoot() - to be used in specific class
+```
+
+Class that uses the in-memory 
+```js
+import {InMemoryBackendService} 
+
+export class CustomerData implements InMemoryBackendService{
+
+createDatastore(){
+//Customer class is created already
+  const customers : Customer [] = [
+  {id:1, fname: 'test', lname :'test', age :10 },
+  {id:2, fname: 'test2', lname :'test2', age :10 },
+  ...
+  ];
+
+```
+Service Class that can use the data
+```js
+
+import {tap} from 'rsjx';
+...
+export class DataService{
+
+url='api/customers';
+headers = new HttpHeaders().set('Content-Type','application/json').set('Accept','application/json);
+httpOptions = {
+headers: this.headers
+};
+
+consturctor (private http: HttpClient){}
+
+getCustomers():Observable<Customer[]>{
+  return this.http.get<Customer[]>(this.url).pipe(tap(data => console.log(data)));
+  }
+  ...
+ }
+```
