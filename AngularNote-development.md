@@ -1394,4 +1394,91 @@ To activate from the component class (ts file)
 this.router.navigate([{outlets: {popup:['edit']}}]);
 ```
 ##### Route gaurds - Securing the route navigation
-canActivate, canActivateChild, canDeactivate
+
+Scenario to use router gaurd: 
+When the user is filling up the form, and wanted to navigate to different screen of application form. The info will be lost and that needs to be alerted to the user.
+In this case the application needs a Route Gaurd, where it informs the user that the input data will be lost.
+
+Types of Route Gaurd: (monitoring and securing)
+Order is in life-cycle stage sequence of execution:
+
+   - canDeactivate - Guard navigation away from the route leaving the application route
+   - canLoad - used for lazy load routes, used in asynchronous routing
+   - canActivate - Gaurd navigation to route
+   - canActivateChild - Guard navigation to child route
+   - resolve - used to resolve things before loading the application. wait for data to be recevied and load the page
+   
+Creating route gaurd
+   - To create manually by creating a service, which will act as route gaurd
+   - Using CLI use `$ ng g g <gaurd-name>`, there will be different options
+       () canActivate, etc.
+  Files will be created:
+  <gaurd-name>.gaurd.ts
+  <gaurd-name>.gaurd.spec.ts
+  
+```js
+  import { Injectable } from '@angular/core';
+  import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
+  import { Observable } from 'rxjs';
+   
+  @Injectable({
+    providedIn : 'root'
+    })
+    
+    //implementing canActivte gaurd
+    export class SampleGaurdGard implements canActivate{
+    
+    //when we declare the variable guarded as false
+    // this won't allow to navigate to another screen
+    gaurded : boolean = false;  //when using this try changing the if condition
+    
+    //implement method of implemenet interface
+    canActivate(route: ActivateRouteSnapshot, state: RouterStateSnapshot):boolean | UrlTree | im...
+    if(!this.gaurded){
+     return true;
+     } else {
+       console.log("Cannot activate route");
+       }
+    }
+   ...
+ ```
+ To implement it we update the app-routing.moduel.ts
+ ```js 
+ import { NgModule } from '@angular/core';
+ ...
+ 
+ //The place to activate the route gaurd
+ const routes : Routes = [
+   { path : 'first' , component : FirstComponent, canActivate : [SampleGaurdGaurd]}
+ ];
+ 
+ @NgModule({
+ ...
+ })
+ 
+ export class SampleGaurdGaurd ....{
+ }
+ ```
+ 
+ CanActivateChild gaurd, can be implemented similar to the CanActivate way.
+ 
+ CanDeactivate - This gaurd is called everytime the route changes one path to another.
+ This will not work when used opens the different application is closed.
+ The basic functionality, is that when the back button is clcked accidently.
+ ```js
+ export class SampleGaurdGaurd implements CanDeactivate{
+ 
+ guarded: boolean;
+ canDeativate (
+ component: FirstComponent,
+ currentRoute: ActivatedRouteSnapshot,
+ currentState : RouteStateSnapshot,
+ nextState : RouterStateSnapshot
+ ): Observable<boolean|UtlTree|Promise<boolean|UrlTree|boolean|UrlTree{
+ return true; // we can also use gaurd check
+ }
+ }
+ 
+ ```
+ 
+  
