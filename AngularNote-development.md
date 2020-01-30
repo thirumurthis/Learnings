@@ -103,7 +103,7 @@ Angular 8.0
  
  In "SomeComponent.component.ts" file, update the below code.
    - create a class
-  ```
+  ```js
   -- Create the content of component:
   import { Component } from '@anguar/core';
   //second step - add the decorator @Component and import the component from angular package
@@ -134,7 +134,7 @@ Angular 8.0
  If the component is to return the data then component class needs to ` implements OnInit` *_life-cycle hook_*.
  And we need to implement the method `ngOnInit ()` from interface, like below
  
- ```
+ ```js
  // implements the onInit 
  export class SomeComponent implements OnInit{
  
@@ -154,7 +154,7 @@ Angular 8.0
  ```
  
  Update the somecomponent.component.html to achive, **interpolation** data binding using `{{}}`
- ```
+ ```html
  <table>
    <tr *ngFor = let d of data'>
      <td> {{d.name}}</td>
@@ -164,7 +164,7 @@ Angular 8.0
 In order to use bootstrap for styling in the somecomponent.component.html, refer the bootsrap css in the index.html.
 Or use css styling in the .css file within the component.
 
-```
+```html
 //index.html - add for including the bootstrap style sheet
 <link href="https://..bootstrap...css">
 
@@ -194,7 +194,7 @@ Bind the data from component(ts) to the view (html) template:
 
 **Property binding - example** 
 
-```
+```js
 //app.component.ts - define a property
 ...
 export class AppComponent ....{
@@ -205,7 +205,8 @@ heightValue : number = 10;
 
 ...
 }
-
+```
+```html
 // use the property in view - app.component.html
 ...
 <button [style.height.px] = 'heightValue' >Link</button> //heightValue will be used from the component ts file.
@@ -214,7 +215,7 @@ heightValue : number = 10;
 
 **Event binding - example**
 
-```
+```js
 // app.component.ts
 ...
 export class AppComponent ... {
@@ -226,10 +227,13 @@ this.result = this.value1 * this.value2;
 }
 ...
 }
+```
+```html
 
-//app.component.html
+<!-- //app.component.html -->
 ..
-<button class="btn btn-success" (click)="product()">Product</button> //Event binding (...)
+<button class="btn btn-success" (click)="product()">Product</button> 
+<!--//Event binding (...) -->
 ...
 ```
 
@@ -239,18 +243,19 @@ this.result = this.value1 * this.value2;
  
  Another way of defining this is, combination of property binding and event binding which turns into **[(ngModel)]**
  
- ```
- // in app.component.html
+ ```html
+ <!-- // in app.component.html -->
  ...
  <input type="text" [(ngModel)]= "userInput" >
  <br>
  {{userInput}}
  ...
- 
+ ```
  Note: At this point if we didn't include the "ngModel" value in the Component there will be an error message in the 
  console of browser "Template parse error: Can't bind 'ngModel' since it isn't a known property of input...." 
  
  Solution: we need to import the "FormsModule" module in app.module.ts and update NgModule -> imports array
+ ```js
  import {FormsModule} from '@angular/forms';
  
  @NgModule({
@@ -263,8 +268,8 @@ this.result = this.value1 * this.value2;
  Note: The `app.module.ts` needs to be updated in this case to import the `FormsModule` to use [(ngModel)].
 
 ##### Sample program using data binding to product two numbers 
-```
-//app.component.html
+```html
+<!-- //app.component.html -->
 Enter first number 
 <input type="number" placeholder="first number" [(ngModel)]= "val1" >
 {{val1}}<br>
@@ -272,7 +277,8 @@ Enter first number
 {{val2}}<br>
 <button class="btn btn-success" [style.height.px]="heightValue' (click)="product()">Product</button>
 {{result}}
-
+```
+```js
 //app.component.ts
 export class AppComponent ... {
 val1 : number = 10;
@@ -281,9 +287,7 @@ result : number ;
 product(){
 this.result = this.val1 * this.val2;
 }
-
-// similar to product, we can have sub, add, etc function
-
+// similar to product, we can have sub, add, etc function 
 ```
 
 ### Component Communication
@@ -311,7 +315,7 @@ ngOnChanges *life-cycle* hook
 ###### @Input decorator
  Inputs value from one component to another component.
  
-```
+```js
 //app.component.ts -- This is parent component
 ...
 export class AppComponent implements OnInit{
@@ -322,7 +326,7 @@ messageToChild= "child message, passed from parent";
 }
 ```
 ---------------------
-```
+```js
 //SomeComponent.component.ts -- This is the child component
 ...
 @Component({
@@ -337,18 +341,18 @@ export SomeComponent... {
 }
 ```
 -----------------------
-```
-// app.component.html --- this will hold the child component referenc
-   //Interpolation
+```html
+<!-- // app.component.html --- this will hold the child component reference 
+   //Interpolation -->
 {{messageFromParent}} 
-  // use the selector from the child component (SomeComponent.component.ts)
+ <!-- // use the selector from the child component (SomeComponent.component.ts)
   // use the "property binding" to pass value from parent (app.component.ts)
-  // to child component (SomeComponent.component.ts) to passedMessage attribute
+  // to child component (SomeComponent.component.ts) to passedMessage attribute -->
   
  <app-sc-component [passedMessage]='messageToChild'></app-sc-component>
  ```
  -----------------------
- ```
+ ```html
  //SomeComponent.component.html
  {{passedMessage}}
  
@@ -366,7 +370,7 @@ component 1 (parent)     <---------------   component 2 (child)
 
 For a scenario, when clicking a button in child component and it needs to execute a function in parent componment we can use **@Output()** 
 
-```
+```js
 //SomeComponent.component.ts - this is the CHILD component
 //import the @Ouput within this component
 ....
@@ -383,21 +387,22 @@ result : number = 100;
 }
 ```
 --------------------
-```
-// SomeComponent.component.html --- child component view template
+```html
+<!-- // SomeComponent.component.html --- child component view template
 
-//This Event binding will invoke the child component function.
+//This Event binding will invoke the child component function. -->
 <button (click) = "passResultUsingEmit()"> Click here to emit </button>
 -------------------
-// app.component.html  --- This is PARENT component view template
+```html
+<!-- // app.component.html  --- This is PARENT component view template -->
 
 {{messageFromParent}}
-//In the case of Event Emitter & @Output () decorator
-//we need to use Event binding - which gets some event type using "$event"
+<!-- //In the case of Event Emitter & @Output () decorator
+//we need to use Event binding - which gets some event type using "$event" -->
 <app-sc-component (emitterObj)="displayEmittedValue($event)"></app-sc-component>
 ```
 ---------------------
-```
+```js
 //app.component.ts --- This is PARENT component ts file 
 ...
 export class AppComponent implements OnInit{
@@ -419,7 +424,7 @@ displayEmittedValue(result){
  
 Scenario usage, when there is a change in value then the color of the button. 
 
-```
+```js
 //SomeComponent.component.ts include import for `onChanges` from @angular/core
 import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angular/core'
 ...
@@ -466,7 +471,7 @@ If we meed to acces the content of tempate where in this case below \<h2\> eleme
    <button (click)="display(elementRef)">Click here</button>
 ```
 --------------
-```
+```js
 //app.component.ts
 ...
 export class AppComponent...{
@@ -485,7 +490,7 @@ In case of `template refernce variable`, the value of \<h1\> is passed as parame
  `@ViewChild` decorator helps in this scenario.
     - When parent component (app.component.ts) wanted to access the whole child component template (i.e. SomeComponent.component.html)
 
-```
+```js
  //app.component.ts - PARENT component
  ...
  export AppComponent implements OnInit,AfterViewInit {
@@ -507,19 +512,19 @@ In case of `template refernce variable`, the value of \<h1\> is passed as parame
   - If we have some content within the `ngContent` we can use `@ContentChild` to access it.
    - Accessing content of component in another component using @ContentChild
 
-```
-// app.component.html - PARENT component
+```html
+<!-- // app.component.html - PARENT component -->
 ....
 
 <button class="btn btn-info" [style.background]='color' (click)="display()">Click here</button>
 
-//The content of the CHILD is applied here using ng-content
-// use the selector "app-sc-component" from SomeComponent.component.ts
+<!-- //The content of the CHILD is applied here using ng-content
+// use the selector "app-sc-component" from SomeComponent.component.ts -->
 <ng-content select="app-sc-component"></ng-content>
 ```
 
 How to access the `ng-content` in the app.component.ts PARENT file:
-```
+```js
 // app.component.ts
 
 export class AppComponent implements OnInit,  {
@@ -545,7 +550,7 @@ ngAfterContentInit(){
    - Attribute directive - used to change the apperance or behaviour
    - Custom directive
 
-```
+```js
 //app.component.html
 //ngIf and ngFor usage
 ....
@@ -562,8 +567,8 @@ thisflagCheck = true;
 return [{"name":"name1"},{"name":"name2"}];
 ```
 ----------
-```
-//app.component.html
+```html
+<!-- //app.component.html -->
 
 <table *ngIg=flagChek>
    <tr *ngFor = "let name of result">
@@ -594,7 +599,7 @@ Files created:
  - Register directive in module (for example: app.module.ts file, when using cli)
  - Use the created directive
  
- ```
+ ```js
  //color.directive.ts - created by the CLI
  //STEP:1 - created a class with @Directive decorator
  import {Directive} from '@angular/core';
@@ -616,7 +621,7 @@ Files created:
  }
  ```
  ----------------
- ```
+ ```html
  //app.component.html
  
  <div  backgroundColor> //the attribute directory selector value is used here
@@ -628,13 +633,13 @@ Using custom attribute on element in this case we used in div element.
 And we wanted to capture the events like click on these elements - then we use `@HostListener`
 
 Sample div element we created:
-```
+```html
   <div  backgroundColor> 
     <p> Using custom attribute directive </p>
  </div>
 ```
 ----------------
- ```
+ ```js
  //color.directive.ts - assume the template/structure created by the CLI
 import { Directive, ElementRef, Renderer, HostListner } from '@angular/core';
  
@@ -662,7 +667,7 @@ import { Directive, ElementRef, Renderer, HostListner } from '@angular/core';
  ##### @HostBinding:
  When we need capture the property of the host element, example height, border, etc.
  
- ```
+ ```js
  //color.directive.ts - created by the CLI
  @Directive({
  selector: '[backgroundColor]'
@@ -711,25 +716,25 @@ Difference between the template Driven forms vs Reactive Forms:
  ##### Template Driven Forms:
    `ngForm` directive
    
- ```
- // Somecomponent.component.html
- // using boostrap classes - use npm to install
+ ```html
+ <!-- // Somecomponent.component.html
+ // using boostrap classes - use npm to install -->
  <form (ngSubmit)="save(form)" #form="ngForm">  
- //#form is the template reference variable used.
- // event binding of submit, which invokes the save funtion within the typescript
+<!--  //#form is the template reference variable used.
+ // event binding of submit, which invokes the save funtion within the typescript -->
  <div class="form-group">
  <input class="form-control" type="text" [(ngModel)]="name"><br>
  <div>
  <button>Click here</button>
  </form>
  
- //the template reference is interpolated and piped to view
+<!-- //the template reference is interpolated and piped to view -->
  {{form | json}}
  {{form.value | json}}
  ```
  ----------
  In order to use the forms module within the typescript import the forms module
- ```
+ ```js
  //app.module.ts
  //import the FormsModule
  import { FormsModule } from '@anguar/forms';
@@ -741,7 +746,7 @@ Difference between the template Driven forms vs Reactive Forms:
  ...
  ```
  ---------
- ```
+ ```js
  //SomeComponent.component.ts
  ...
  @Component({
@@ -797,7 +802,7 @@ ngNativeValidate - this will allow validation in the application
   - dynamically adding elements
   - applying different validation for different scenario
   - when the form is on the component class it is easy to test 
-```
+```js
 //app.component.ts
 // create FormModel to work with Reactive forms
 // For FormModel, import FormGroup and FormControl instance in component class
@@ -824,7 +829,7 @@ ngOnInit(){
 }
 ```
 ----------
-```
+```js
 //app.module.ts
 import ....
 ....
@@ -840,16 +845,16 @@ ReactiveFormsModule,
 -------------
 Additional directives that can be used in reactive forms
 //formGroup, formControlName, formControl, formGroupname, formArrayName
-```
-//Binding the reactive forms to the template
-//app.component.html
+```html
+<!-- //Binding the reactive forms to the template
+//app.component.html 
 
 //Reactive Form doesn't support two-way data binding - remove ngModel
 
-//bind using property grouping
+//bind using property grouping -->
 <form ngNativeValidate (ngSubmit)="save(form)" [formGroup]="customForm">  
  <div class="form-group">
-  //include formcontrol which will provide the form value to component
+ <!-- //include formcontrol which will provide the form value to component -->
    <input class="form-control" type="text" formControl="name"><br>
  <div>
  <button>Click here</button>
@@ -1041,7 +1046,7 @@ Module
    - Modules can be loaded egarly and lazily.
 
 Structure of modules:
-```
+```js
 //app.mdoule.ts
 ....
 @NgModule({
@@ -1095,7 +1100,8 @@ Seperate the features to different modules, like userinfo, etc.
 ```
 $ ng g m <module-name> -m app/module1
 // - m creates within the app/module1 directory
-
+```
+```js
 import the created module that you wanted to share in that specific module. (import array)
 
 // new module created and sharing the component
@@ -1122,7 +1128,7 @@ To implement ivy,
 
 ###### Lazy Loading of routes: Using `loadChildren`
  - If a feature module was NOT be implemented for every time. We can avoid loading of such module during start of the application and use only when it is needed.
- ```
+ ```js
  // Older way in previous version: lazy loading is performed using loadChildren
   { path: 'customer ', loadChildren: './customer/customer.module#CustomerModule'}
   // <path-of-the-module = ./customer/customer.module#CustomerModule>
@@ -1217,7 +1223,7 @@ Steps:
    - place holder to hold the data of the id
    - pass parameter from the URL 
 
-```
+```js
 // app-routing.module.ts
 //route configuration
 cosnt routes : Routes = [
