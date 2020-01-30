@@ -1480,5 +1480,122 @@ Creating route gaurd
  }
  
  ```
- 
+ ### Services:
+  Reusable piece of functionality, that can be shared and used accross different component. We use the service to hold the data, we inject the service in the component which needs that data.
   
+  Creating a Service:
+      - Manually using directives
+      - using CLI
+      
+Creating Service using CLI
+```
+$ ng generate service <service-name>
+```
+Files generated:
+  servicename.service.spec.ts
+  sercicename.service.ts
+  
+```js
+import {Injectable } from '@angular/core';
+
+// injects the meta data
+@Injectable({
+ providedIn: 'root'
+ })
+ export class ServicenameService{
+    constructor () {}
+    //create the functionality
+ }
+```  
+
+Creating service manually
+  - create a servicename.service.ts file
+  - Input the code content `export class ServicenameService { construtor ....`
+  - In `app.module.ts`, `providers array` add the service, and import the service.
+  
+###### Basic ways to injecting service (dependency injection)
+Remove the content `providedIn : 'root'` from the `@Injectable` decorator.
+Include the service name within modules, provider array.
+
+##### Using the service as a recpie or token in the ts.module.ts (useClass)
+In the app.module.ts, providers array as below
+```js
+ ...
+ imports:[
+ ..
+ providers : [
+   {provide : ServicenameService, useClass : ServicenameService} // use the Servicename class when using it
+ ...
+```
+
+In the service that is implementing this service can implement the service now 
+```js
+//NewService.service.ts
+....
+@Injectable ()
+export class NewService implements ServicenameService{ //as ServicenameService interface
+  constructor () {}
+}
+```
+
+##### Using the service as a recpie or token in the ts.module.ts (useExisting)
+```js
+//app.module.ts
+...
+providers : [ NewService,
+  { provided: ServicenameService, useExisting: NewService } //Whenever ServicenameService is requested, the NewService will be executed.
+  ],
+...
+```
+##### Using the service as a recpie or token in the ts.module.ts (useValue)
+- when using `useValue` the service will not create new instance of service. (single ton)
+
+```js
+//app.module.ts
+...
+providers : [ NewService,
+  { provided: ServicenameService, useValue: {
+  log : <service>,
+  error: <service>
+  }
+  ],
+
+```
+
+##### How the data is being sent to the component
+Basically get the data once, and use it whenever the component is needed
+```js
+//ServicenameService.js
+...
+//method gets data
+getDocuments(): Observable <Document[]> {
+//using htttp service
+  return this.http.get('<url>').pipe(tap<Document[]>(data => data));
+  }
+...
+```
+How to use it within the component
+```js
+....
+//inject the service
+constructor (private servicename : ServicenameService,...)
+
+...
+//use the get methods
+getDocument(){
+  // the data is the variable used in the observable.
+  this.servicename.getDocument().subscribe(data => {this.documents = data; });
+  }
+```
+##### Nested Services
+Service within another service, service gets the data, and another service using that data
+
+```
+//create new service
+...
+//import the ServicenameService, which has the data
+ export class NewDataService{
+ 
+ constructor ({ private newdataservice : ServicenameService}) //just inject the other service where the data is present
+...
+```
