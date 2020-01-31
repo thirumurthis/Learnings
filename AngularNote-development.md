@@ -193,6 +193,21 @@ Angular 8.0
      <td> {{d.name}}</td>
    </tr>
  ```
+```html
+//Interpolation also supports method invocation
+{{ name.substr(2,4)}}
+
+//if user name is null peform null check
+{{ name?.substr(2,4)}}
+
+//template expression - cannot use ++,--,new, += etc string
+{{ 'helloworld'.substr(1,4) }}
+
+//Template statement - responds to user defined event
+
+(click)="displayMessage()"
+ <p (click)="displayMessage()">click here</p>
+```
 
 In order to use bootstrap for styling in the somecomponent.component.html, refer the bootsrap css in the index.html.
 Or use css styling in the .css file within the component.
@@ -502,7 +517,7 @@ If we meed to acces the content of tempate where in this case below \<h2\> eleme
    
    <button (click)="display(elementRef)">Click here</button>
 ```
---------------
+
 ```js
 //app.component.ts
 ...
@@ -514,6 +529,15 @@ display(elementValue: HTMLInputElement) {
   console.log((<HTMLInputEelement>elementValue).value);
 }
 ```
+
+More Example 
+```html
+<input #custName placeholder="Enter name">
+<button (click)="showCustName(custName.value)">View</button>
+
+<!-- the same content can also used within component.ts template property -->
+```
+
 ##### @ViewChild
 In case of `template refernce variable`, the value of \<h1\> is passed as parameter to a function.
  
