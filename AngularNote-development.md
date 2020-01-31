@@ -18,12 +18,31 @@
 Angular utlizes `MVVM` design pattern, model view and viewmodel.
 
 `Model` : Used to define the structure of an entity.simply a javascript class
+
 `View` : Is the visual representation of an application (html template)
+
 `ViewModel` : Contains the business logic
 
 View and ViewModel are connected thorug data binding. By default any change to the viewModel properties will be reflected on view too. In angular, the viewModel is a typescript class.
 
-Component : 
+Module : `app.module.ts` in @NgModule decorator
+  - imports array property to import all the `Module` that is being used by the app
+  - declaration array property to define all `user defined components`, directive, pipe, etc.
+  - providers array property should contain all `services` class used in the app
+  - bootstrap declaration contains the `root component` to load.
+  BrowserModule imported, is needed to run application within the browser.
+ For more about modules refer below.
+ 
+##### File Structure :
+ package.json - dependencies
+ tsconfig.ts - typescript compiler defintions
+ angular.json - build related information
+ main.ts - to bootstrap root module, 
+      - main.ts file contains enablesprodmode() which will run application faster in prod env.
+                     platformBrowserDynamic class used to compile the app based on browser platform.
+ index.html - root component displayed using <app-root></app-root> which is app-root selector in this file.
+
+##### Component : 
  - This is a custom HTML tag, with functionality attached.
  - Seperation of concerns
  - Angular manges the life-cycle of the components, like create, update and delete when user moves through application, developer can take action at each moment in the component life-cycle using the life-cycle hooks.
@@ -400,13 +419,13 @@ result : number = 100;
 ...
 }
 ```
---------------------
+
 ```html
 <!-- // SomeComponent.component.html --- child component view template
 
 //This Event binding will invoke the child component function. -->
 <button (click) = "passResultUsingEmit()"> Click here to emit </button>
--------------------
+```
 ```html
 <!-- // app.component.html  --- This is PARENT component view template -->
 
@@ -415,7 +434,7 @@ result : number = 100;
 //we need to use Event binding - which gets some event type using "$event" -->
 <app-sc-component (emitterObj)="displayEmittedValue($event)"></app-sc-component>
 ```
----------------------
+
 ```js
 //app.component.ts --- This is PARENT component ts file 
 ...
@@ -431,7 +450,6 @@ displayEmittedValue(result){
   console.log(result);
 }
 ```
----------------
 
 ##### ngOnChanges *life-cycle hook*
  Any change on input bound property or output bound event then angular use ngOnChange life-cycle hook in which the value gets updated on DOM. 
