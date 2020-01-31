@@ -233,6 +233,10 @@ Bind the data from component(ts) to the view (html) template:
      - communication between the component & view and vice versa.
      - any change in the UI/view the value is probagated to component.
      - any change in the component is reflected in the view
+  - *Attribute data binding* 
+     - example: ` <tr [attr.colspan] = 'value-from-component'>`
+  - *Class data binding*
+     - example: ` <div [class.<classname>]= "isValid"> bind class </div>`
      
 ```     
          property binding [..]
