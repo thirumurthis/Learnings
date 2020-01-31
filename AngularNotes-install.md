@@ -69,3 +69,14 @@ Issue 2:
  
  Both issues 1 & 2 where resolved after usign `npm install`
 
+
+### Uninstall angluar
+
+```
+$ npm uninstall -g @angular/cli
+$ npm cache clean --force
+```
+### Re-install angluar latest
+```
+$ npm install -g @angular/cli
+```
