@@ -101,20 +101,19 @@ public void createCatalogItem(List<CatalogItem> items,RestClient client) {
 // The search string is passed within the "text".
 
 public void findCatalogItem(String text, RestClient client) {
-	 Request request = new Request("GET", 
-	 String.format("/%s/_search", "catalog_item_low_level"));
+   Request request = new Request("GET", String.format("/%s/_search", "item_details_low_level"));
    
    //Right now we used the query string like this.
-   String SEARCH = "{ \"query\" : {\"query_string\" : { \"query\": \"%s\" } } }";	       
-	 request.setJsonEntity(String.format(SEARCH, text));
+   String SEARCH = "{ \"query\" : {\"query_string\" : { \"query\": \"%s\" } } }";	            
+   request.setJsonEntity(String.format(SEARCH, text));
 	 
    try {
-	        Response response = client.performRequest(request);
+	   Response response = client.performRequest(request);
 	   if (response.getStatusLine().getStatusCode()==200) {
 		   String responseBody = EntityUtils.toString(response.getEntity());
 			  System.out.println(responseBody);
 	       } 
-	  } catch (IOException ex) {
+	   } catch (IOException ex) {
 	    	System.err.println(String.format("Could not post %s to ES",ex.toString());
 	  }
 }
@@ -146,7 +145,7 @@ In `findCatalogItem ()` method use the search query as below:
 ```
 
 ```java
-public void findCatalogItem(String text, RestClient client) {
+  public void findCatalogItem(String text, RestClient client) {
 	Request request = new Request("GET", 
 	String.format("/%s/_search", "catalog_item_low_level"));
 	String SEARCH = "{ \"query\" : { \"match\" : { \"itemDescription\" : \"%s\" } } }";
@@ -160,5 +159,5 @@ public void findCatalogItem(String text, RestClient client) {
 	 } catch (IOException ex) {
 	   System.err.println("Could not post to ES"+ex.toString());
          }
-}
+   }
 ```
