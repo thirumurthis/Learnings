@@ -119,7 +119,7 @@ public void findCatalogItem(String text, RestClient client) {
 }
 ```
 
-Search query string:
+Search query string: `HTTP action : GET`
 
 To run a search with a low-level client, in this case we can issue a GET request that will run against <index-name> index with the following URI: **`/<indexname>/_search.`**
   
@@ -137,7 +137,7 @@ To get CatalogItem results, navigate the json structure to find the document and
 
 We can use Kibana, postman, Rest Client (ARC) plugin to form the request.
 
-##### query to check the corresponding field within the document
+##### Query to check the corresponding field within the document
 
 In `findCatalogItem ()` method use the search query as below:
 ```
@@ -184,7 +184,7 @@ itemDescription: "This is a product1"
 }
 ```
 
-##### UPDATING the document:
+### UPDATE the document: `HTTP action : POST`
    - Update the entire document
    - Update only the specific field
    
@@ -259,3 +259,61 @@ description: "This is product 2 - updated document and added field to doc" // ne
 }
 ```
 
+### DELETE the Document : `HTTP action : DELETE`
+```
+URI : http://localhost:9200/<index-name>/_doc/<document-id>
+```
+```java
+public void deleteCatalogItem(Integer id,RestClient client) {
+	  Request request = new Request("DELETE", String.format("/%s/_doc/%d", "items_detail_low_level",  id));
+	  try {
+	    Response response = client.performRequest(request);
+	    System.out.println("delete response: "+ response);
+	  } catch (IOException ex) {
+	    System.err.println("Could not post to ES "+ex);
+	  }
+}
+```
+
+### Asynchronous call
+To make an asynchronous call using the low-level client, use the `performRequestAsync` method instead of the `performRequest` method.
+A response listener needs to be supplied for asynchronous call. 
+The response listener needs to implement two methods: `onSuccess` and `onFailure`.
+
+```java
+public void createCatalogItemAsync(List<CatalogItem> items, RestClient client) {
+		CountDownLatch latch = new CountDownLatch(items.size());
+		ResponseListener listener = new ResponseListener() {
+			@Override
+			public void onSuccess(Response response) {
+				latch.countDown();
+			}
+			@Override
+			public void onFailure(Exception exception) {
+				latch.countDown();
+				System.out.println("Could not process ES request. "+ exception);
+			}
+		};
+
+		items.stream().forEach(e-> {
+			//HTTP actions  PUT and POST can be used to create documents to index, 
+			// best practice to use POST but PUT can also be used
+			Request request = new Request("PUT",String.format("/%s/_doc/%d","items_detail_low_level", e.getItemId()));
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				request.setJsonEntity(objectMapper.writeValueAsString(e));
+				client.performRequestAsync(request, listener);
+			} catch (IOException ex) {
+				System.err.println("Could not post to ES"+ ex);
+			}
+		});
+		try {
+			latch.await(); //wait for all the threads to finish
+			System.out.println("Inserted all the records/documents to the index");
+		} catch (InterruptedException e1) {
+			System.out.println("interrupted."+e1);
+		}
+	}
+```
+
+[Reference Link](https://blogs.oracle.com/javamagazine/easy-searching-with-elasticsearch)
