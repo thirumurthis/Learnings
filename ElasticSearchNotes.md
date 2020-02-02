@@ -353,5 +353,12 @@ Then set the ID on the request and add JSON as a source.
 
 Calling the high-level client index API with the request synchronously will return the index response, which could then be used to see if a document was created or updated.
 
+------
+##### Parsing the response :
+In order to parse the response, we can use the small logic.
+
+Query ES using, /<index-name>/_search with "{ "query" : { "match" : { "itemDescription" : "%s" } } } " and substring with string **_\_source_** and  "}]}}".
+
+
 
 [Reference Link](https://blogs.oracle.com/javamagazine/easy-searching-with-elasticsearch)
