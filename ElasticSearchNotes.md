@@ -20,7 +20,11 @@
 ##### ES Rest API to create index, and search documents
    - Low-Level Synchronous CRUD API
    - High-Level REST Client
-   
+
+**`POST`** is the preferred method for creating a record while **`PUT`** is the preferred method for updating a record.
+The **`PUT`** method is used here as an `upsert` (that is, an insert or update).
+For demonstration reasons, the same code was executed multiple times and PUT will perform upsert.
+
 #####  URL 
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
@@ -78,6 +82,7 @@ public static void main(String[] args) {
 		escurd.findCatalogItem("product1",restClient);		
 	}
 ```      
+
 ```java      
 //Method to create index and add documents
 public void createCatalogItem(List<CatalogItem> items,RestClient client) {
