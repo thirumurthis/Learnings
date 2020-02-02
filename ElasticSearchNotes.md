@@ -347,8 +347,10 @@ Maven dependencies to for High-level API
 </dependency>
 ```
 
-To create a document using high-level API, you need to use `IndexRequest` and initialize it with the name of the desired index. 
+To create a document using high-level API, you need to use `IndexRequest` and initialize it with the name of the desired index.
+
 Then set the ID on the request and add JSON as a source.
+
 Calling the high-level client index API with the request synchronously will return the index response, which could then be used to see if a document was created or updated.
 
 
