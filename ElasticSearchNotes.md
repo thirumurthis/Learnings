@@ -57,49 +57,46 @@ Use RestClient (thread-safe) to build the url. When you download the ES, navigat
 ```java
 //Note: CatalogItem class created with id, name and description of item just an entity 
 public static void main(String[] args) {
+	try (RestClient restClient = RestClient.builder(new HttpHost("localhost",9200,"http")).build()){
+			
+        	EsCURDExample escurd = new EsCURDExample();
+		List<CatalogItem> items = new ArrayList<CatalogItem>();
+		CatalogItem catItem = new CatalogItem();
+		catItem.setItemId(1);
+		catItem.setItemName("product1");
+		catItem.setItemDescription("This is a product1");
+		items.add(catItem);
+		catItem = new CatalogItem();
+		catItem.setItemId(2);
+		catItem.setItemName("product2");
+		catItem.setItemDescription("This is a product2");
+		items.add(catItem);
+		//Creates and insert log
+		escurd.createCatalogItem(items, restClient);
 		
-		try (RestClient restClient = RestClient.builder(new HttpHost("localhost",9200,"http")).build()){
-			
-			EsCURDExample escurd = new EsCURDExample();
-			List<CatalogItem> items = new ArrayList<CatalogItem>();
-			CatalogItem catItem = new CatalogItem();
-			catItem.setItemId(1);
-			catItem.setItemName("product1");
-			catItem.setItemDescription("This is a product1");
-			items.add(catItem);
-			catItem = new CatalogItem();
-			catItem.setItemId(2);
-			catItem.setItemName("product2");
-			catItem.setItemDescription("This is a product2");
-			items.add(catItem);
-			//Creates and insert log
-			escurd.createCatalogItem(items, restClient);
-			
-			//Search the data
-			escurd.findCatalogItem("product1",restClient);
-      
-      }
-      
-      
+		//Search the data
+		escurd.findCatalogItem("product1",restClient);		
+	}
+```      
+```java      
 //Method to create index and add documents
 public void createCatalogItem(List<CatalogItem> items,RestClient client) {
-
-		  items.stream().forEach(e-> {
-		      
-		    Request request = new Request("PUT", 
-		            String.format("/%s/_doc/%d","item_details_low_level",e.getItemId()));
-		    try {
-		    	ObjectMapper obj = new ObjectMapper(); //uses jackson jar
-		        request.setJsonEntity(
-		            obj.writeValueAsString(e));
-		      
-		        client.performRequest(request);
-		      } catch (IOException ex) {
-		        System.err.print(String.format("Could not post %s to ES - %s", e.toString(),ex.toString()");
-		      }
-		  });
-		}
-    
+	   items.stream().forEach(e-> {
+	    Request request = new Request("PUT", String.format("/%s/_doc/%d","item_details_low_level",e.getItemId()));
+	    try {
+	    	ObjectMapper obj = new ObjectMapper(); //uses jackson jar
+	        request.setJsonEntity(
+	        obj.writeValueAsString(e));
+	      
+	        client.performRequest(request);
+	      } catch (IOException ex) {
+	        System.err.print(String.format("Could not post %s to ES - %s", e.toString(),ex.toString()");
+	      }
+	  });
+	}
+    }
+```    
+```java
 // Method to search for the inserted document
 // The search string is passed within the "text".
 
@@ -124,6 +121,7 @@ public void findCatalogItem(String text, RestClient client) {
 ```
 
 Search query string:
+
 To run a search with a low-level client, in this case we can issue a GET request that will run against <index-name> index with the following URI: **`/<indexname>/_search.`**
   
 Because the low-level API uses the Elasticsearch REST interface, we need to construct the REST query object like below, in this case it will look as 
@@ -140,27 +138,27 @@ To get CatalogItem results, navigate the json structure to find the document and
 
 We can use Kibana, postman, Rest Client (ARC) plugin to form the request.
 
-##### query to check the corresponding field
+##### query to check the corresponding field within the document
 
-in `findCatalogItem ()` method use the search query as below:
+In `findCatalogItem ()` method use the search query as below:
 ```
 { "query" : { "match" : { "itemDescription" : "<string-to-search>" } } }
 ```
 
 ```java
 public void findCatalogItem(String text, RestClient client) {
-	    Request request = new Request("GET", 
-	             String.format("/%s/_search", "catalog_item_low_level"));
-		String SEARCH = "{ \"query\" : { \"match\" : { \"itemDescription\" : \"%s\" } } }";
-	    request.setJsonEntity(String.format(SEARCH, text));
-	    try {
-	        Response response = client.performRequest(request);
-	   if (response.getStatusLine().getStatusCode()==200) {
-		   String responseBody = EntityUtils.toString(response.getEntity());
-		   System.out.println(responseBody);
-	       } 
-	    } catch (IOException ex) {
-	    	System.err.println("Could not post to ES"+ex.toString());
-	    }
-	}
+	Request request = new Request("GET", 
+	String.format("/%s/_search", "catalog_item_low_level"));
+	String SEARCH = "{ \"query\" : { \"match\" : { \"itemDescription\" : \"%s\" } } }";
+	request.setJsonEntity(String.format(SEARCH, text));
+	try {
+	  Response response = client.performRequest(request);
+	  if (response.getStatusLine().getStatusCode()==200) {
+	      String responseBody = EntityUtils.toString(response.getEntity());
+	      System.out.println(responseBody);
+	    } 
+	 } catch (IOException ex) {
+	   System.err.println("Could not post to ES"+ex.toString());
+         }
+}
 ```
