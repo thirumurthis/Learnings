@@ -72,6 +72,11 @@ public static void main(String[] args) {
 			catItem.setItemName("product2");
 			catItem.setItemDescription("This is a product2");
 			items.add(catItem);
+			//Creates and insert log
+			escurd.createCatalogItem(items, restClient);
+			
+			//Search the data
+			escurd.findCatalogItem("product1",restClient);
       
       }
       
@@ -125,5 +130,37 @@ Because the low-level API uses the Elasticsearch REST interface, we need to cons
 ```
  { "query" : {"query_string" : { "query": "<string-to-search>" } } }
 ```
+With reference to the `findCatalogItem` method:
 
+After sending the request to ES, we will receive a result in a Response object, which  contains, 
+   - return status 
+   - entity that represents the JSON response
 
+To get CatalogItem results, navigate the json structure to find the document and convert to the corresponding model (entity object).
+
+We can use Kibana, postman, Rest Client (ARC) plugin to form the request.
+
+##### query to check the corresponding field
+
+in `findCatalogItem ()` method use the search query as below:
+```
+{ "query" : { "match" : { "itemDescription" : "<string-to-search>" } } }
+```
+
+```java
+public void findCatalogItem(String text, RestClient client) {
+	    Request request = new Request("GET", 
+	             String.format("/%s/_search", "catalog_item_low_level"));
+		String SEARCH = "{ \"query\" : { \"match\" : { \"itemDescription\" : \"%s\" } } }";
+	    request.setJsonEntity(String.format(SEARCH, text));
+	    try {
+	        Response response = client.performRequest(request);
+	   if (response.getStatusLine().getStatusCode()==200) {
+		   String responseBody = EntityUtils.toString(response.getEntity());
+		   System.out.println(responseBody);
+	       } 
+	    } catch (IOException ex) {
+	    	System.err.println("Could not post to ES"+ex.toString());
+	    }
+	}
+```
