@@ -124,7 +124,7 @@ public void findCatalogItem(String text, RestClient client) {
 }
 ```
 
-Search query string: `HTTP action : GET`
+### Search query string: `HTTP action : GET`
 
 To run a search with a low-level client, in this case we can issue a GET request that will run against <index-name> index with the following URI: **`/<indexname>/_search.`**
   
@@ -132,9 +132,20 @@ Because the low-level API uses the Elasticsearch REST interface, we need to cons
 ```
  { "query" : {"query_string" : { "query": "<string-to-search>" } } }
 ```
-With reference to the `findCatalogItem` method:
 
-After sending the request to ES, we will receive a result in a Response object, which  contains, 
+##### Search using the id within documents
+```
+"{  "query": {  "terms": { "_id": [ "%s" ] }} }"
+```
+
+##### Search using the specific field within the documents
+```
+// if the document contains catalogItem and corresponding field
+"{ "query": {  "match" : { "catalogItem.category_name" : "%s" } } }"
+```
+
+With reference to the `findCatalogItem` method:
+After sending the request to ES, we will receive a result in a Response object, it  contains: 
    - return status 
    - entity that represents the JSON response
 
@@ -142,7 +153,7 @@ To get CatalogItem results, navigate the json structure to find the document and
 
 We can use Kibana, postman, Rest Client (ARC) plugin to form the request.
 
-##### Query to check the corresponding field within the document
+##### Query to search using the specific field within the document
 
 In `findCatalogItem ()` method use the search query as below:
 ```
@@ -320,5 +331,25 @@ public void createCatalogItemAsync(List<CatalogItem> items, RestClient client) {
 		}
 	}
 ```
+
+### High-level REST API
+   - High-level API is much easier to work with
+   - This is build over the Low-level client
+   - The dependencies needs to be updated with every release/version of ES.
+   - Low-level API gives more control 
+   
+Maven dependencies to for High-level API
+```xml
+<dependency>
+  <groupId>org.elasticsearch.client</groupId>
+  <artifactId>elasticsearch-rest-high-level-client</artifactId>
+  <version>7.4.2</version>
+</dependency>
+```
+
+To create a document using high-level API, you need to use `IndexRequest` and initialize it with the name of the desired index. 
+Then set the ID on the request and add JSON as a source.
+Calling the high-level client index API with the request synchronously will return the index response, which could then be used to see if a document was created or updated.
+
 
 [Reference Link](https://blogs.oracle.com/javamagazine/easy-searching-with-elasticsearch)
