@@ -307,7 +307,7 @@ public void createCatalogItemAsync(List<CatalogItem> items, RestClient client) {
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				request.setJsonEntity(objectMapper.writeValueAsString(e));
-				client.performRequestAsync(request, listener);
+				client.performRequestAsync(request, listener); // Listener passed within this method
 			} catch (IOException ex) {
 				System.err.println("Could not post to ES"+ ex);
 			}
