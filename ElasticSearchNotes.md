@@ -35,21 +35,21 @@ Note:
 
 To start we use the maven dependecies defined.
 ```
-	<dependency>
-			<groupId>org.elasticsearch.client</groupId>
-			<artifactId>elasticsearch-rest-client</artifactId>
-			<version>7.5.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-core</artifactId>
-			<version>2.9.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.9.4</version>
-		</dependency>
+<dependency>
+	<groupId>org.elasticsearch.client</groupId>
+	<artifactId>elasticsearch-rest-client</artifactId>
+        <version>7.5.2</version>
+</dependency>
+<dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-core</artifactId>
+	<version>2.9.4</version>
+</dependency>
+<dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-databind</artifactId>
+	<version>2.9.4</version>
+</dependency>
 ```
 
 Use RestClient (thread-safe) to build the url. When you download the ES, navigate to run bin/eleasticsearch.bat. Once ES is started, use `http://localhost:9200` to see whether the instance is up.
@@ -147,7 +147,7 @@ In `findCatalogItem ()` method use the search query as below:
 ```java
   public void findCatalogItem(String text, RestClient client) {
 	Request request = new Request("GET", 
-	String.format("/%s/_search", "catalog_item_low_level"));
+	String.format("/%s/_search", "item_details_low_level"));
 	String SEARCH = "{ \"query\" : { \"match\" : { \"itemDescription\" : \"%s\" } } }";
 	request.setJsonEntity(String.format(SEARCH, text));
 	try {
@@ -161,3 +161,101 @@ In `findCatalogItem ()` method use the search query as below:
          }
    }
 ```
+
+##### Direct url to fetch the document info using url document id
+```js
+http://localhost:9200/item_details_low_level/_doc/1
+// This returns only the specific object as json object
+
+//output:
+{
+_index: "item_details_low_level",  //Index-name in this case
+_type: "_doc",
+_id: "1",
+_version: 2,
+_seq_no: 2,
+_primary_term: 1,
+found: true,
+_source: {
+itemId: 1,  //document-id in this case
+itemName: "product1",
+itemDescription: "This is a product1"
+}
+}
+```
+
+##### UPDATING the document:
+   - Update the entire document
+   - Update only the specific field
+   
+To update entire document:
+```
+Use the URI: /<index-name/_update/<document-id>
+```
+```
+Use Json entity:
+{ "doc" : "<the complete document info>" }
+// in the below code, we are writing the value as json using jackson objectmapper
+```
+```java
+public void updateCatalogItem(CatalogItem item1,RestClient client) {
+	  Request request =  new Request("POST",String.format("/%s/_update/%d","item_details_low_level", 2));
+	  
+	  CatalogItem item= new CatalogItem();
+	  item.setItemDescription("This is product2 - issued update");
+	  item.setItemId(2);
+	  item.setItemName("product2-update");
+	  try {
+	  ObjectMapper objectMapper = new ObjectMapper();
+	    request.setJsonEntity("{ \"doc\" :" + objectMapper.writeValueAsString(item)+"}");
+	      
+	    Response response = client.performRequest(request);
+	    //Below will print if the update response was success OK/200
+	    System.out.println("update response: "+ response);
+	  } catch (IOException ex) {
+	    System.err.println("Could not post to ES "+ ex);
+	  }    
+}
+```
+
+To Update the specific field in the document:
+```
+To udpate specific field
+{ doc : { itemDescription : "This is product2- updated content at field level" } }  -- will update the existing field
+
+//This is used demostrated in the below code snippet
+{ doc : { description : "This is product 2 - updated document and added field to doc } } -- will update the document with a new field 
+```
+```java
+//invoke this below method from the main passing the description and the restclient reference
+
+public void updateDescription(String desc, RestClient client) {
+	Request request = new Request("POST", String.format("/%s/_update/%d", "items_detail_low_level",  2));
+	try {
+		request.setJsonEntity(String.format("{ \"doc\" : { \"description\" : \"%s\" }}",desc));
+		Response response = client.performRequest(request);
+		System.out.println("update response: "+ response);
+	} catch (IOException ex) {
+		System.out.println("Could not post to ES "+ ex);
+	}
+}
+```
+```js 
+//output
+{
+_index: "items_detail_low_level",
+_type: "_doc",
+_id: "2",
+_version: 5,
+_seq_no: 6,
+_primary_term: 1,
+found: true,
+_source: {
+itemId: 2,
+itemName: "product2-update",
+itemDescription: "This is product2 - issued update", // we can also update this field description
+description: "This is product 2 - updated document and added field to doc" // new field to the existing document id 2 is added
+}
+}
+```
+
