@@ -413,6 +413,80 @@ In order to parse the response, we can use the small logic.
 
 Query ES using, /<index-name>/_search with "{ "query" : { "match" : { "itemDescription" : "%s" } } } " and substring with string **_\_source_** and  "}]}}".
 
-
-
 [Reference Link](https://blogs.oracle.com/javamagazine/easy-searching-with-elasticsearch)
+
+-------
+
+# Query or Search for data in ES, using Kibana or REST API
+
+### To query all the indices in the ES
+```js
+ GET _cat/indicies?v
+```
+
+### To query the Mapping info
+```js
+GET /<index-name-pattern>/_search?size=50&pretty=true
+```
+
+###  To Query the field (data type of text) matching the value
+```js
+GET /<index-name-pattern>/_search?size=50
+{ 
+ "query":{
+    "bool" : {
+        "must" : [ 
+	 { "match" : {"severity" : "INFO" }}
+	 ]
+      }
+  }
+}
+
+Note: the document has an field Severity and query fetches the records matching that value.
+bool - here is used to include multiple field to fire match query
+
+we have used must, other options are must_not, should.
+```
+### To Query and get only the specific field in the results
+```js
+GET /<index-name-pattern>/_search?size=50
+{ 
+ "_source" : ["severity","message"],
+ "query":{
+    "bool" : {
+        "must" : [ 
+	 { "match" : {"severity" : "INFO" }}
+	 ]
+      }
+  }
+}
+```
+
+##### Output of above query, note the `_source` contains only selected fields.
+```js
+{
+  "took" : 4,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "skipped" : 0,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 34,
+    "max_score" : 0.026202373,
+    "hits" : [
+      {
+        "_index" : "logstash-2020-01-03",
+        "_type" : "container",
+        "_id" : "12121212sdfsdfsd",
+        "_score" : 0.026202373,
+        "_source" : {
+          "severity" : "INFO",
+          "message" : "some content included in the index when creating this document. ...... "
+        }
+      },
+      ...
+      ...
+```
