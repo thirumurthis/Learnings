@@ -353,6 +353,60 @@ Then set the ID on the request and add JSON as a source.
 
 Calling the high-level client index API with the request synchronously will return the index response, which could then be used to see if a document was created or updated.
 
+```java
+//jackson 
+public ObjectMapper getObjectMapper() {
+		return new ObjectMapper();
+	}
+public void createCatalogItem(List<CatalogItem>items,RestHighLevelClient client) {
+   items.stream().forEach(e-> {
+	IndexRequest request = new IndexRequest("item_details_low_level");
+	try {
+		request.id(""+e.getItemId());
+		request.source(getObjectMapper().writeValueAsString(e), XContentType.JSON);
+		request.timeout(TimeValue.timeValueSeconds(10));
+		IndexResponse indexResponse = client.index(request, RequestOptions.DEFAULT);
+		if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
+		  System.out.println("Document added to the ES index");
+		} else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+		System.out.println("document updated "+indexResponse.getIndex()+" "+indexResponse.getVersion() );
+		} 
+	} catch (IOException ex) {
+		ex.printStackTrace();
+	}
+   });
+}
+```
+
+##### Search/find the document usign the SearchHits, we need to use `SimpleQueryStringBuilder`
+Create a search request by passing an index and then use a search query builder to construct a full text search. 
+
+The search response encapsulates the JSON navigation and allows to easy access to the resulting documents via the SearchHits array.
+
+To search all indexes, create a SearchRequest without any parameters.
+
+```java
+public void findCatalogItem(String text, RestHighLevelClient client) {
+	    try {
+	        SearchRequest request = new SearchRequest("item_details_high_level"); 
+	        SearchSourceBuilder scb = new SearchSourceBuilder();
+	        SimpleQueryStringBuilder mcb = QueryBuilders.simpleQueryStringQuery(text);
+	        scb.query(mcb); 
+	        request.source(scb);
+	         
+	        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+	        SearchHits hits = response.getHits();
+	        SearchHit[] searchHits = hits.getHits();
+	        List<String> catalogItems =  Arrays.stream(searchHits).filter(Objects::nonNull)
+	                  .map(e -> e.toString())
+	                  .collect(Collectors.toList());
+	        catalogItems.forEach(System.out::println);
+	         
+	    } catch (IOException ex) {
+	        ex.printStackTrace();
+	    }
+	}
+```
 ------
 ##### Parsing the response :
 In order to parse the response, we can use the small logic.
