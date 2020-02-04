@@ -1,4 +1,4 @@
-# setting up chef-repo in VM
+# Set up chef-repo in VM
 
 After getting access to the chef-server navigate to `Administrator` -> `Starter Kit` -> Download the starter kit
 
@@ -9,7 +9,7 @@ in the cookbooks folder under chef-starter, clone the cookbooks from git or user
 
 To push the databags file towards the server, where the environment is defined.
 
-```
+```sh
 $ knife environment from file <path-of-json>
 ```
 
@@ -19,3 +19,14 @@ Check `Policy` tab -> `Environments` -> Environment Name -> Attributes tab (at b
 
 
 The `knife supermarket` subcommand is used to interact with cookbooks that are located in on the public Supermarket as well as private Chef Supermarket sites. A user account is required for any community actions that write data to the Chef Supermarket; however, the following arguments do not require a user account: download, search, install, and list
+
+
+---
+
+### Executing the chef solo for a recipies
+
+```sh 
+$ sudo chef-client -z -o test-cookbook::helloWorld.rb
+
+#// -o sets the run-list for the chef solo.
+```
