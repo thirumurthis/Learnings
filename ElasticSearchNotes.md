@@ -490,3 +490,34 @@ GET /<index-name-pattern>/_search?size=50
       ...
       ...
 ```
+### Analyzer and Tokenizer
+The output will be what is going on the index
+```
+GET <index-name>/_analze
+{
+  "tokenizer" : "standard",
+  "text" : "<some-text-for-referernce>"
+ }
+
+Mostly the special chars are dropped.
+
+If we used tokenizer "letter" will only use the letters
+In case to tokenize email xyz@domain.com, use "uax_url_email"
+```
+### To create Aggregation query:
+
+```
+GET <index-name>/_search
+{
+  "size" : 0,
+  "aggs" : {
+     "field-name" : { //in sample data example state
+       "terms" : {
+           "field" : "field-name.keyword" // state.keyword 
+	   }
+	 } 
+    }
+ }
+ 
+// Buckets (partition)
+```
