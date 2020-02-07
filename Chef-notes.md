@@ -1,3 +1,60 @@
+### Chef
+
+Ruby library are called as gem's
+
+`Recipe` - is made up of ingredients, called chef resources.
+`Resources` : are fundamental units of chef.
+ Resource contains different elements
+     - Type
+     - Name
+     - Properties
+     - Action
+  
+ ```
+ package 'httpd' do
+    version '1.1'
+    action :install
+ end
+ 
+ package - type (resource type)
+ 'httpd' - name
+  do - end => ruby block
+  version - property ( each resources has specified list of properties that accepts, and it will be different for file, service, etc.)
+  action - to take on, actions are the process of actually placing the resources in desired state. 
+ 
+ ```
+Defintion of `Resource` is a statement of configuration policy, also describes the desired state of infrastructure and steps need to bring it desired state.
+  
+  
+Example of chef resources:
+
+`service`
+```ruby
+service 'ntp' do
+  action [ :enable, :start ]
+end
+```
+
+`file`
+```ruby 
+file '/etc/motd' do
+  content 'this is hello world'
+end
+
+file '/var/log/somelog.log' do
+  mode 0644
+  owner 'root'
+  action :create
+end  
+```
+`package`
+```ruby
+package 'httpd' do
+  version '1.0.1'
+  action :install
+end
+```
+
 
 ### Custom Resources
 
