@@ -10,7 +10,7 @@ Ruby library are called as gem's
      - Properties
      - Action
   
- ```
+ ```ruby
  package 'httpd' do
     version '1.1'
     action :install
@@ -55,6 +55,20 @@ package 'httpd' do
 end
 ```
 
+`Converge the instance ` is a state where the instance brought to desired state.
+
+`cookbook` fundamental unit of configuration and policy distribution.
+
+```sh
+$ chef generate cookbook <cookbook-name>
+```
+```
+recipes/
+   | 
+     default.rb -> default recipe
+metadata.rb  -> who maintains it, versioning 
+Berksfile -> manages the cookbook dependecies, right now it has the super market url and metadata.rb reference.   
+```
 
 ### Custom Resources
 
