@@ -58,6 +58,7 @@ end
 `Converge the instance ` is a state where the instance brought to desired state.
 
 `cookbook` fundamental unit of configuration and policy distribution.
+   Note: Create the cookbook under a `cookbooks directory` else when executing `sudo chef-client -z -r "recipe[cookbook-name::recpie]"` will work as expected. Else 
 
 ```sh
 $ chef generate cookbook <cookbook-name>
@@ -68,6 +69,94 @@ recipes/
      default.rb -> default recipe
 metadata.rb  -> who maintains it, versioning 
 Berksfile -> manages the cookbook dependecies, right now it has the super market url and metadata.rb reference.   
+```
+
+Directory structure and issue command at this level
+```
+[vagrant@localhost chef-learn]$ tree .
+.
+├── cookbooks
+│   └── lamp
+│       ├── Berksfile
+│       ├── Berksfile.lock
+│       ├── CHANGELOG.md
+│       ├── chefignore
+│       ├── LICENSE
+│       ├── metadata.rb
+│       ├── nodes [error opening dir]
+│       ├── README.md
+│       ├── recipes
+│       │   └── default.rb
+│       ├── spec
+│       │   ├── spec_helper.rb
+│       │   └── unit
+│       │       └── recipes
+│       │           └── default_spec.rb
+│       └── test
+│           └── integration
+│               └── default
+│                   └── default_test.rb
+├── nodes [error opening dir]
+└── setup.rb
+
+11 directories, 12 files
+[vagrant@localhost chef-learn]$ pwd
+/home/vagrant/chef-learn
+[vagrant@localhost chef-learn]$ sudo chef-client -z -r "recipe[lamp::default]"
+
+```
+When executing the recpie 
+
+```ruby
+# recipe file
+package 'httpd' do
+  action :install
+end
+
+file '/var/www/html/hello.html' do
+  content "<h1> Hello From chef </h1>"
+end
+
+service 'httpd' do
+  action :start
+end
+```
+
+Note when the service resource name was "web" the below exception occurred.
+In this case the systectl command executed with the name "web", when changed to 'httpd' it worked as expected.
+```
+# Scenario were exception occured when using web
+Running handlers:
+[2020-02-08T03:14:12+00:00] ERROR: Running exception handlers
+Running handlers complete
+[2020-02-08T03:14:12+00:00] ERROR: Exception handlers complete
+Chef Client failed. 0 resources updated in 04 seconds
+[2020-02-08T03:14:12+00:00] FATAL: Stacktrace dumped to /root/.chef/local-mode-cache/cache/chef-stacktrace.out
+[2020-02-08T03:14:12+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+[2020-02-08T03:14:12+00:00] FATAL: Mixlib::ShellOut::ShellCommandFailed: service[web] (lamp::default line 15) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to ex
+it with [0], but received '5'
+---- Begin output of /bin/systemctl --system start web ----
+STDOUT:
+STDERR: Failed to start web.service: Unit web.service not found.
+---- End output of /bin/systemctl --system start web ----
+Ran /bin/systemctl --system start web returned 5
+[vagrant@localhost chef-learn]$
+[vagrant@localhost chef-learn]$ vi  cookbooks/lamp/recipes/default.rb
+[vagrant@localhost chef-learn]$ sudo chef-client -z -r "recipe[lamp::default]"
+[2020-02-08T03:16:19+00:00] WARN: No config file found or specified on command line. Using command line options instead.
+```
+
+```
+# Scenario where service had 'httpd' as name
+Recipe: lamp::default
+  * dnf_package[httpd] action install (up to date)
+  * file[/var/www/html/hello.html] action create (up to date)
+  * service[httpd] action start
+    - start service service[httpd]
+
+Running handlers:
+Running handlers complete
+Chef Client finished, 1/3 resources updated in 04 seconds
 ```
 
 ### Custom Resources
