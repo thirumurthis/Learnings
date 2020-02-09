@@ -250,3 +250,15 @@ template '/var/www/html/index.html' do
   action :create
 end
 ```
+
+##### To use the `node` global variable within the file resource using `#{.. }`
+```ruby
+
+file `/var/www/html/index.html' do
+  content "<h1> Hello from chef!!
+    hostname : #{node['hostname']}
+    memory : #{node['memory']['total']}
+    platform : # {node ['platform']}
+    "
+end
+```
