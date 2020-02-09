@@ -263,3 +263,38 @@ file `/var/www/html/index.html' do
     "
 end
 ```
+
+
+# `node` attributes is tunable and can be accessed in all the cookbook.
+node attributes are created inside the cookbooks, we need to create `attribute` within the cookbook
+
+```unix
+
+$ chef generate attributes cookbooks/lamp default
+# note the command is issued from above cookbooks directory level
+# default is the attribute file name, creates a attributes/default.rb
+```
+Synatx to define the attributes use `default`
+```ruby
+# cookbooks/lamp/attributes/default.rb
+
+default['lamp']['hello_path']='/var/www/html/hello.html'
+
+# default keyworkd is called precedence level, check docs for more detail
+```
+When executing the below file the file name attribute will be replaced accordingly.
+The attributes can be used to set some global values which can be used accross cookbooks.
+
+```ruby
+# edit the cookbooks/lamb/default.rb - file resources
+
+# replacing the actual file name with the node attribute created in the cookbooks/lamp/attribute/default.rb
+
+file node['lamp']['hello_path'] do
+   content "<h1> Hello from chef!!
+    hostname : #{node['hostname']}
+    memory : #{node['memory']['total']}
+    platform : #{node ['platform']}  
+    "
+end
+```
