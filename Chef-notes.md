@@ -208,7 +208,9 @@ load_current_value do |desired|
 end
 ```
 
-### `Ohai` tool is used by chef DK to get the system information. For example, ubuntu used apt-get package manager and centos uses Yum package manager, chef-client knows to use the appropriate package manger using the ohai utility
+### `Ohai` 
+Tool is used by chef DK to get the system information. 
+For example, ubuntu used apt-get package manager and centos uses Yum package manager, chef-client knows to use the appropriate package manger using the ohai utility
 
 Ohai is a command line utility for getting the system inventory, which is of json format.
 
