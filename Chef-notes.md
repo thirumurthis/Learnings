@@ -5,10 +5,10 @@ Ruby library are called as gem's
 `Recipe` - is made up of ingredients, called chef resources.
 `Resources` : are fundamental units of chef.
  Resource contains different elements
-     - Type
-     - Name
-     - Properties
-     - Action
+  - Type
+  - Name
+  - Properties
+  - Action
   
  ```ruby
  package 'httpd' do
@@ -254,11 +254,12 @@ end
 ##### To use the `node` global variable within the file resource using `#{.. }`
 ```ruby
 
+# note: don't leave spaces between # and {
 file `/var/www/html/index.html' do
   content "<h1> Hello from chef!!
     hostname : #{node['hostname']}
     memory : #{node['memory']['total']}
-    platform : # {node ['platform']}
+    platform : #{node ['platform']}  
     "
 end
 ```
