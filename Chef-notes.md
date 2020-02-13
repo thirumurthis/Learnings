@@ -268,16 +268,15 @@ file `/var/www/html/index.html' do
 end
 ```
 
-
 # `node` attributes is tunable and can be accessed in all the cookbook.
 node attributes are created inside the cookbooks, we need to create `attribute` within the cookbook
 
 ```unix
-
 $ chef generate attributes cookbooks/lamp default
 # note the command is issued from above cookbooks directory level
 # default is the attribute file name, creates a attributes/default.rb
 ```
+
 Synatx to define the attributes use `default`
 ```ruby
 # cookbooks/lamp/attributes/default.rb
@@ -370,15 +369,87 @@ The information is stored as key value pairs.
 
 To create a databags,
   - inside the chef-repo directory create a folder `data_bags` 
-  - create the necessary directory, for example i wanted to store password info, so creating a folder `data_bags/password`
-  - create a new file, within the passwords folder, a json file to store the data bag information
+  - create the necessary directory, for example i wanted to store password info, so creating a folder `data_bags/databg1`
+  - create a new file, within the `databg1` folder, a json file to store the data bag information
   - The requirement for the json within the database is the json file should have id
   ```json
+  # databg1/databag_example.json
   { 
-    "id" : "password_list",
-    ....
+    "id" : "databag_example",
+    "key1" : "value1",
+    "key2" : "value2"
   }
   ```
   
-  Upload the databags to the chef-server, so all cookbooks can be accessing and use it.
+  ##### Upload the databags to the chef-server, so all cookbooks can be accessing and use it.
+  ```ruby
+  # within the recipe file ".rb" to get data bags
+  
+  # create a local variable,  use chef helper method data_bag_item
+  # data_bag_item('<name-of-databags-folder>','reference-of-the-databag-item-id')
+  
+  databgValue = data_bag_item ('databg1','databag_example');
+  
+  # using read values from the local variable
+  
+  printVariable = databgValue['key1']; // value1 will be set to the local variable
+    
+  ```
+  ##### Before uploding the databags check if the data bags item already exists using 
+  Note: we are located insider `chef-repo` directory level
+  ```unix
+  $ knife data bag list
+  # there shouldn't be any output; if there is no data bags in the chef-server
+  ```
+  
+  ##### To Create the data bag
+  ```unix 
+  $ knife data bag create databg1
+  # created  data_bag[databg1] response in case of successfull execution
+  ```
+  
+  ##### To Add items to the data bag
+  ```unix
+  $ knife data bag from file databg1/databag_example
+  ```
+  ##### To view the databag list from the databag from the chef-server
+  ```unix 
+  $ knife data bag show databg1
+  
+  # use the databag name
+  $ knife data bag show databg1 databag_example
+  
+  # note if the data bag is not unencrypted, there will be a warning message.
+  # check the documentation for encrypted databags, chef vault.
+  ```
+  ##### Now we can upload cookbook using berks command
+  Navigate to the cookbooks/lamp to issue `berks install` and then `bersks upload`.
+  
+  ### Note:
+    - `berks upload` berkshelf checks the version in chef-server cookbook version 
+    - If there is no change, then there will be message cookbook skipped with a message (frozen)
+    
+    In order to make the chef-server to refelect the changes in the workstation cookbook, update the metadata.rb version, then issue berks upload.
+    The verson number used is symentic version `major.minor.patch` version number.
+    
+  ##### Set the run-list to the node
+  
+  ```
+  ## to display the details of the node. Also displays runlist
+  $ knife node show <node-name>
+  
+  ## Set the runlist using knife node
+  $ knife node run_list set <node-name> "recipe[lamp]"
+  ```
+    
+  ##### Converge the runlist in the specific node which is to be provisioned
+  For the first time once logged in to the node that is to be provisioned, and upon issuing the below command
+  it will check with the chef-server and updates the corresponding node.
+  
+  ```unix
+  ## login to specific node, and issue chef-client command
+  $  sudo chef-client
+  ```
+  chef-client default behaviour is to reach out the chef-server and pull the cookbook and recipes to be in desiered state.
+  It will skip the resources that are in desiered state.
   
