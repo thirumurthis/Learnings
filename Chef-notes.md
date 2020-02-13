@@ -3,7 +3,9 @@
 Ruby library are called as gem's
 
 `Recipe` - is made up of ingredients, called chef resources.
+
 `Resources` : are fundamental units of chef.
+
  Resource contains different elements
   - Type
   - Name
