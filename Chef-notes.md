@@ -341,3 +341,44 @@ The knife command interacts with the chef server, sample command to list the coo
 $ knife cookbook list
 ```
 
+### `chef server` is a centeralized location to store the policies like cookbook, and helps distribute these resources to different managed nodes. The nodes runs different or same cookbooks specified in the `run-list`.
+
+### `Bootstraping`: is a rare scenario where the using a workstation (local machine), connect to the node and pull the chef cookbooks and execute the chef-client run.
+
+#####  To execute the bootstrap command make sure to be at the chef-repo level, where the .chef folder exists.
+```unix
+$ knife bootstrap FDQN -p <port number> -x Username -P password -i /path/of/identityfile -N <node-name> -r 'recipe[lamp]' --sudo
+#  -p - lower case p to authenticate on this port
+# -r - runlist to execute
+# the --sudo executed the bootstrap as root.
+# FDQN - in our case using localhost, this can be a name to the machine
+# if want to used identity file rather than using a password
+$ knife bootstrap FDQN -i <identity-file> 
+```
+
+In case we needed to gather the config information of vagrant, issue the command.
+```
+# the vagrant instance should be up and running. check using vagrant status
+$ vagrant ssh-config
+
+# Execute this command in the node which needs the chef-client to be executed connecting to chef server.
+# simply the node that needs to be provisioned using cookbooks.
+```
+
+### `data bags` is a place where the senstive information can be stored, like database password, etc.
+The information is stored as key value pairs.
+
+To create a databags,
+  - inside the chef-repo directory create a folder `data_bags` 
+  - create the necessary directory, for example i wanted to store password info, so creating a folder `data_bags/password`
+  - create a new file, within the passwords folder, a json file to store the data bag information
+  - The requirement for the json within the database is the json file should have id
+  ```json
+  { 
+    "id" : "password_list",
+    ....
+  }
+  ```
+  
+  Upload the databags to the chef-server, so all cookbooks can be accessing and use it.
+  
