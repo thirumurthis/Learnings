@@ -216,7 +216,7 @@ Ohai is a command line utility for getting the system inventory, which is of jso
 
 Using the `jq` utility you can read through json.
 ```unix
-# command to use to get memoru
+# command to use to get memory
 
 $ ohai memory
 $ ohai ipaddress 
@@ -300,3 +300,42 @@ file node['lamp']['hello_path'] do
     "
 end
 ```
+
+### `Berksshelf`
+In a cookbook in case if hte `Berksshelf` is missing it can be created using below command
+
+```unix
+# navigate to appropriate cookbook where the Berskfile needs to be created
+$ berks init
+```
+
+### Resolving dependency using `berks install`
+
+```unix
+
+# navigate to appropriate cookbook
+$ berks install
+```
+##### The `berks install` will resolve the dependencies and downloads the appropriate version of cookbook, from the supermarket or enterprise repo, ot `~/.berskfile/cookbooks` location.
+
+##### Upload the cookbook to the server
+
+`Berksfile.lock` locks the appropriate version to be uploaded to the chef server.
+Whenever there is a change in the version of cookbook, issue ` berks install` and upload.
+
+In case of any exception occured during upload process 
+
+```unix
+# within the cookbook directory that needs to be uploaded, use the below command
+$ berks upload
+
+# if there are issues during upload, there is high chance the syntax of the cookbook is incorrect.
+# use cookstyle a lint tool to validate the cookbook for syntax, etc.
+```
+### `knife` command:
+
+The knife command interacts with the chef server, sample command to list the cookbook.
+```unix
+$ knife cookbook list
+```
+
