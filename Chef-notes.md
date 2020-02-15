@@ -468,16 +468,21 @@ To create a databags,
 
 ##### Issue with the Chef-DK installable with Windows 10 home edition.
 
-After installation of the chef-DK executable, opens the PowerShell with the below exception
+After installation of the chef-DK executable, opens the PowerShell with the below exception, 
+[Link to fix above issue.](https://sqlwithmanoj.com/2017/06/09/powershell-error-import-module-file-azurerm-psm1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system/)
+
 ```
- File C:\opscode\chefdk\modules\chef\chef.psm1 cannot be loaded. The file
+Import-Module : File C:\opscode\chefdk\modules\chef\chef.psm1 cannot be loaded. The file
 C:\opscode\chefdk\modules\chef\chef.psm1 is not digitally signed. You cannot run this script on the current system.
 For more information about running scripts and setting execution policy, see about_Execution_Policies at
 https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:123
++ ... l | out-string | iex; Import-Module chef -DisableNameChecking;echo 'P ...
++                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) [Import-Module], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess,Microsoft.PowerShell.Commands.ImportModuleCommand
 
 # The above issue was resolved using below command, from power shell.
 
 >  Set-ExecutionPolicy RemoteSigned
-```
-[Link to fix above issue.](https://sqlwithmanoj.com/2017/06/09/powershell-error-import-module-file-azurerm-psm1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system/)
 ```
