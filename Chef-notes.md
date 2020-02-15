@@ -479,5 +479,5 @@ https:/go.microsoft.com/fwlink/?LinkID=135170.
 
 >  Set-ExecutionPolicy RemoteSigned
 ```
-(Link)[https://sqlwithmanoj.com/2017/06/09/powershell-error-import-module-file-azurerm-psm1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system/]
+[Link to fix above issue.](https://sqlwithmanoj.com/2017/06/09/powershell-error-import-module-file-azurerm-psm1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system/)
 ```
