@@ -464,3 +464,20 @@ To create a databags,
   chef-client default behaviour is to reach out the chef-server and pull the cookbook and recipes to be in desiered state.
   It will skip the resources that are in desiered state.
   
+--------
+
+##### Issue with the Chef-DK installable with Windows 10 home edition.
+
+After installation of the chef-DK executable, opens the PowerShell with the below exception
+```
+ File C:\opscode\chefdk\modules\chef\chef.psm1 cannot be loaded. The file
+C:\opscode\chefdk\modules\chef\chef.psm1 is not digitally signed. You cannot run this script on the current system.
+For more information about running scripts and setting execution policy, see about_Execution_Policies at
+https:/go.microsoft.com/fwlink/?LinkID=135170.
+
+# The above issue was resolved using below command, from power shell.
+
+>  Set-ExecutionPolicy RemoteSigned
+```
+(Link)[https://sqlwithmanoj.com/2017/06/09/powershell-error-import-module-file-azurerm-psm1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system/]
+```
