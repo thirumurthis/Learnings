@@ -228,6 +228,7 @@ $ ohai memory/total
 ```
 
 Ohai command is used build the globally accessible object called `node`. which can be used within the recipe/template to access info
+
 ##### Adding the ip address and host name using templats to index.html
 
 Command to create the template file
@@ -310,7 +311,7 @@ In a cookbook in case if hte `Berksshelf` is missing it can be created using bel
 $ berks init
 ```
 
-### Resolving dependency using `berks install`
+##### Resolving dependency using `berks install`
 
 ```unix
 
@@ -345,6 +346,7 @@ $ knife cookbook list
 ##### **`Bootstraping`** is a rare scenario where the using a workstation (local machine), connect to the node and pull the chef cookbooks and execute the chef-client run.
 
 #####  To execute the bootstrap command make sure to be at the chef-repo level, where the .chef folder exists.
+
 ```unix
 $ knife bootstrap FDQN -p <port number> -x Username -P password -i /path/of/identityfile -N <node-name> -r 'recipe[lamp]' --sudo
 #  -p - lower case p to authenticate on this port
@@ -364,7 +366,7 @@ $ vagrant ssh-config
 # simply the node that needs to be provisioned using cookbooks.
 ```
 
-### `data bags` is a place where the senstive information can be stored, like database password, etc.
+##### `data bags` is a place where the senstive information can be stored, like database password, etc.
 
 The information is stored as key value pairs.
 
@@ -384,6 +386,7 @@ To create a databags,
   ```
   
   ##### Upload the databags to the chef-server, so all cookbooks can be accessing and use it.
+  
   ```ruby
   # within the recipe file ".rb" to get data bags
   
@@ -415,6 +418,7 @@ To create a databags,
   ```unix
   $ knife data bag from file databg1/databag_example
   ```
+  
   ##### To view the databag list from the databag from the chef-server
   ```unix 
   $ knife data bag show databg1
@@ -425,14 +429,14 @@ To create a databags,
   # note if the data bag is not unencrypted, there will be a warning message.
   # check the documentation for encrypted databags, chef vault.
   ```
+  
   ##### Now we can upload cookbook using berks command
   
   Navigate to the cookbooks/lamp to issue `berks install` and then `bersks upload`.
   
-  ### Note:
-  
-    - `berks upload` berkshelf checks the version in chef-server cookbook version 
-    - If there is no change, then there will be message cookbook skipped with a message (frozen)
+  Note:
+   - `berks upload` berkshelf checks the version in chef-server cookbook version 
+   - If there is no change, then there will be message cookbook skipped with a message (frozen)
     
     In order to make the chef-server to refelect the changes in the workstation cookbook, update the metadata.rb version, then issue berks upload.
     The verson number used is symentic version `major.minor.patch` version number.
