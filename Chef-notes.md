@@ -268,7 +268,7 @@ file `/var/www/html/index.html' do
 end
 ```
 
-# `node` attributes is tunable and can be accessed in all the cookbook.
+##### `node` attributes is tunable and can be accessed in all the cookbook.
 node attributes are created inside the cookbooks, we need to create `attribute` within the cookbook
 
 ```unix
