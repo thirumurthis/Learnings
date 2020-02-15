@@ -340,9 +340,9 @@ The knife command interacts with the chef server, sample command to list the coo
 $ knife cookbook list
 ```
 
-### `chef server` is a centeralized location to store the policies like cookbook, and helps distribute these resources to different managed nodes. The nodes runs different or same cookbooks specified in the `run-list`.
+##### **`chef server`** is a centeralized location to store the policies like cookbook, and helps distribute these resources to different managed nodes. The nodes runs different or same cookbooks specified in the `run-list`.
 
-### `Bootstraping`: is a rare scenario where the using a workstation (local machine), connect to the node and pull the chef cookbooks and execute the chef-client run.
+##### **`Bootstraping`** is a rare scenario where the using a workstation (local machine), connect to the node and pull the chef cookbooks and execute the chef-client run.
 
 #####  To execute the bootstrap command make sure to be at the chef-repo level, where the .chef folder exists.
 ```unix
@@ -365,6 +365,7 @@ $ vagrant ssh-config
 ```
 
 ### `data bags` is a place where the senstive information can be stored, like database password, etc.
+
 The information is stored as key value pairs.
 
 To create a databags,
@@ -372,6 +373,7 @@ To create a databags,
   - create the necessary directory, for example i wanted to store password info, so creating a folder `data_bags/databg1`
   - create a new file, within the `databg1` folder, a json file to store the data bag information
   - The requirement for the json within the database is the json file should have id
+  
   ```json
   # databg1/databag_example.json
   { 
@@ -393,9 +395,10 @@ To create a databags,
   # using read values from the local variable
   
   printVariable = databgValue['key1']; // value1 will be set to the local variable
-    
   ```
-  ##### Before uploding the databags check if the data bags item already exists using 
+
+  ##### Before uploding the databags check if the data bags item already exists using below command
+  
   Note: we are located insider `chef-repo` directory level
   ```unix
   $ knife data bag list
@@ -423,9 +426,11 @@ To create a databags,
   # check the documentation for encrypted databags, chef vault.
   ```
   ##### Now we can upload cookbook using berks command
+  
   Navigate to the cookbooks/lamp to issue `berks install` and then `bersks upload`.
   
   ### Note:
+  
     - `berks upload` berkshelf checks the version in chef-server cookbook version 
     - If there is no change, then there will be message cookbook skipped with a message (frozen)
     
@@ -434,7 +439,7 @@ To create a databags,
     
   ##### Set the run-list to the node
   
-  ```
+  ```unix
   ## to display the details of the node. Also displays runlist
   $ knife node show <node-name>
   
@@ -443,6 +448,7 @@ To create a databags,
   ```
     
   ##### Converge the runlist in the specific node which is to be provisioned
+  
   For the first time once logged in to the node that is to be provisioned, and upon issuing the below command
   it will check with the chef-server and updates the corresponding node.
   
@@ -450,6 +456,7 @@ To create a databags,
   ## login to specific node, and issue chef-client command
   $  sudo chef-client
   ```
+  
   chef-client default behaviour is to reach out the chef-server and pull the cookbook and recipes to be in desiered state.
   It will skip the resources that are in desiered state.
   
