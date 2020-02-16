@@ -592,7 +592,8 @@ Chef Infra Client finished, 5/5 resources updated in 44 seconds
  ```
 5. The `knife bootstrap` command push the node info to chef server. 
  
- ![image](https://user-images.githubusercontent.com/6425536/74597373-4cb8c680-5013-11ea-82e1-7cb326857b8c.png)
+ ![image](https://user-images.githubusercontent.com/6425536/74600839-e1d7b180-504b-11ea-9726-b9ac6c5ad768.png)
+
 
 6. Updated the cookbook to use the node.default[][] values from attribute folder, verified in virtual box using chef-client -z
 7. Pushed the cookbook to chef-server using `knife upload cookbooks/lamp` from the chef-repo directory level.
