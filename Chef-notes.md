@@ -513,3 +513,83 @@ parameter. For a list of approved verbs, type Get-Verb.
 WARNING: Some imported command names contain one or more of the following restricted characters: # , ( ) {{ }} [ ] & -
 / \ $ ^ ; : " ' < > | ? @ ` * % + = ~
 ```
+
+### Demo to work with Chef-server and Kinfe bootstrap from windows command
+
+1. Using vagrant and virtual box, setup a new box, for demo i used `bento/centos-8.1`, and enabled the public_network in the `Vagrantfile`
+2. From the windows command prompt, validated the connection to guest box using `ping hostname` in this case ping chef-node-vm1. chef-node-vm1 was the hostname of the vm which i wanted to execute the chef cookbook.
+3. Issued `knife bootstrap` bootstrap command from windows command prompt.
+```
+ > knife bootstrap chef-node-vm1 -U vagrant -i  C:/<path>/chef-node/.vagrant/machines/default/virtualbox/private_key -N chef-node-vm1 --sudo
+ 
+  The above command will connect to chef-node-vm1, and installs the chef-client to the node.
+  
+  Right now the command doesn't include any run list
+```
+ Content upon issuing the above `knife bootstrap` command.
+```
+Before you can continue, 2 product licenses
+must be accepted. View the license at
+https://www.chef.io/end-user-license-agreement/
+
+Licenses that need accepting:
+  * Chef Infra Client
+  * Chef InSpec
+
+Do you accept the 2 product licenses (yes/no)?
+
+ > yes
+
+Persisting 2 product licenses...
+✔ 2 product licenses persisted.
+
++---------------------------------------------+
+Connecting to chef-node-vm1
+```
+ 4. Login to the vagrant machine (chef-node-vm1), then issue `sudo chef-client` commanf which will install the run list if specified.
+ ```
+ [vagrant@chef-node-vm1 ~]$ sudo chef-client
+Starting Chef Infra Client, version 15.8.23
+resolving cookbooks for run list: []
+Synchronizing Cookbooks:
+Installing Cookbook Gems:
+Compiling Cookbooks...
+[2020-02-16T00:26:14+00:00] WARN: Node chef-node-vm1 has an empty run list.
+Converging 0 resources
+
+Running handlers:
+Running handlers complete
+Chef Infra Client finished, 0/0 resources updated in 06 seconds
+ ```
+ 4.1 Re-issue with the command with the run list, which automatically updates the 
+ ```
+ > knife bootstrap chef-node-vm1 -U vagrant -i  C:/thiru/chef-node/.vagrant/machines/default/virtualbox/private_key -N chef-node-vm1 -r 'recipe[lamp]' --sudo
+ 
+Connecting to chef-node-vm1
+The authenticity of host 'chef-node-vm1 (fe80::a00:27ff:fe22:f080%35)' can't be established.
+fingerprint is SHA256:NK8IAID7Zffehl7Edq9wrgGIvj3baX0sD8ZUXEJ1icA.
+
+Are you sure you want to continue connecting
+? (Y/N) Y
+Connecting to chef-node-vm1
+Node chef-node-vm1 exists, overwrite it? (Y/N) Y
+Client chef-node-vm1 exists, overwrite it? (Y/N) Y
+Creating new client for chef-node-vm1
+Creating new node for chef-node-vm1
+Bootstrapping chef-node-vm1
+ [chef-node-vm1] -----> Existing Chef Infra Client installation detected
+ [chef-node-vm1] Starting the first Chef Infra Client Client run...
+ [chef-node-vm1] Starting Chef Infra Client, version 15.8.23
+ [chef-node-vm1] resolving cookbooks for run list: ["lamp"]
+ [chef-node-vm1] Synchronizing Cookbooks:
+ [chef-node-vm1]   - lamp (0.1.0)
+ [chef-node-vm1] Installing Cookbook Gems:
+Compiling Cookbooks...
+....
+Running handlers:
+Running handlers complete
+Chef Infra Client finished, 5/5 resources updated in 44 seconds
+ ```
+5. The `knife bootstrap` command push the node info to chef server. 
+ 
+ ![image](https://user-images.githubusercontent.com/6425536/74597373-4cb8c680-5013-11ea-82e1-7cb326857b8c.png)
