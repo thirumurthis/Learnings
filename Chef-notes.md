@@ -294,7 +294,7 @@ The attributes can be used to set some global values which can be used accross c
 
 # replacing the actual file name with the node attribute created in the cookbooks/lamp/attribute/default.rb
 
-file node['lamp']['hello_path'] do
+file node['lamp']['hello_path'] do  // the usage with latest version is node.default['lamp']['hello_path']
    content "<h1> Hello from chef!!
     hostname : #{node['hostname']}
     memory : #{node['memory']['total']}
