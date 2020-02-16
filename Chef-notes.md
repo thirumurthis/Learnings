@@ -593,3 +593,53 @@ Chef Infra Client finished, 5/5 resources updated in 44 seconds
 5. The `knife bootstrap` command push the node info to chef server. 
  
  ![image](https://user-images.githubusercontent.com/6425536/74597373-4cb8c680-5013-11ea-82e1-7cb326857b8c.png)
+
+6. Updated the cookbook to use the node.default[][] values from attribute folder, verified in virtual box using chef-client -z
+7. Pushed the cookbook to chef-server using `knife upload cookbooks/lamp` from the chef-repo directory level.
+8. In the chef-node-vm1 host, i issued the `sudo chef-client` command, which chef-client made sure to sync up with the chef-server and updated the cookbook as hosted in the runlist.
+
+```
+[vagrant@chef-node-vm1 ~]$ sudo chef-client
+Starting Chef Infra Client, version 15.8.23
+resolving cookbooks for run list: ["lamp"]
+Synchronizing Cookbooks:
+  - lamp (0.1.1)
+Installing Cookbook Gems:
+Compiling Cookbooks...
+Converging 4 resources
+Recipe: lamp::default
+  * dnf_package[httpd] action install (up to date)
+  * template[/var/www/html/index.html] action create (up to date)
+  * file[{}] action create
+    - create new file {}
+    - update content in file {} from none to a68087
+    --- {}      2020-02-16 01:39:52.669485404 +0000
+    +++ ./.chef-{}20200216-7007-w9qvdf  2020-02-16 01:39:52.668485386 +0000
+    @@ -1 +1,6 @@
+    +<h1> Hello from chef!!</h1>
+    +    hostname : chef-node-vm1 <br>
+    +    memory : 841104kB <br>
+    +    platform : centos <br>
+    +
+    - restore selinux security context
+  * service[httpd] action start (up to date)
+  * service[httpd] action enable (up to date)
+
+Running handlers:
+Running handlers complete
+Chef Infra Client finished, 1/5 resources updated in 33 seconds
+```
+##### checking the status of the node from the work station.
+
+```
+[vagrant@chef-ws-vm1 chef-repo]$ knife node show chef-node-vm1
+Node Name:   chef-node-vm1
+Environment: _default
+FQDN:        chef-node-vm1
+IP:          10.0.2.15
+Run List:    recipe[lamp]
+Roles:
+Recipes:     lamp, lamp::default
+Platform:    centos 8.1.1911
+Tags:
+```
