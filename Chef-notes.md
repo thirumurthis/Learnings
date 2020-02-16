@@ -483,7 +483,33 @@ At line:1 char:123
     + FullyQualifiedErrorId : UnauthorizedAccess,Microsoft.PowerShell.Commands.ImportModuleCommand
 ```
 
-##### The above issue was resolved using below command, from power shell.
+##### The above issue was resolved using below command, from power shell. `Set-ExecutionPolicy RemoteSigned`
+
 ```
->  Set-ExecutionPolicy RemoteSigned
+PS C:\WINDOWS\system32> Import-Module chef
+Import-Module : File C:\opscode\chefdk\modules\chef\chef.psm1 cannot be loaded. The file
+C:\opscode\chefdk\modules\chef\chef.psm1 is not digitally signed. You cannot run this script on the current system.
+For more information about running scripts and setting execution policy, see about_Execution_Policies at
+https:/go.microsoft.com/fwlink/?LinkID=135170.
+At line:1 char:1
++ Import-Module chef
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : SecurityError: (:) [Import-Module], PSSecurityException
+    + FullyQualifiedErrorId : UnauthorizedAccess,Microsoft.PowerShell.Commands.ImportModuleCommand
+```
+```
+PS C:\WINDOWS\system32>  Set-ExecutionPolicy RemoteSigned
+
+Execution Policy Change
+The execution policy helps protect you from scripts that you do not trust. Changing the execution policy might expose
+you to the security risks described in the about_Execution_Policies help topic at
+https:/go.microsoft.com/fwlink/?LinkID=135170. Do you want to change the execution policy?
+[Y] Yes  [A] Yes to All  [N] No  [L] No to All  [S] Suspend  [?] Help (default is "N"): A
+
+PS C:\WINDOWS\system32> Import-Module chef
+WARNING: The names of some imported commands from the module 'chef' include unapproved verbs that might make them less
+discoverable. To find the commands with unapproved verbs, run the Import-Module command again with the Verbose
+parameter. For a list of approved verbs, type Get-Verb.
+WARNING: Some imported command names contain one or more of the following restricted characters: # , ( ) {{ }} [ ] & -
+/ \ $ ^ ; : " ' < > | ? @ ` * % + = ~
 ```
