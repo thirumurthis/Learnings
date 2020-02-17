@@ -9,12 +9,13 @@
   - Cassandra can be deployed in `Commodity Hardware`, cheaper hardware
      - Vertical scaling is costly, Cassandra can deployed in commodity hardware
   - Easy to manange Cassandra operations
-  
+  - No `ACID` guarantee, Atomic:Consistent:Isolated:Durable
+  - Eventual consistency
   ```
-  Note: Commodity Hardware: is a device or device component that is relatively inexpensive, 
+  Commodity Hardware is a device or component that is relatively inexpensive, 
   widely available and more or less interchangeable with other hardware of its type.
   ```
-  - No Master-slave architecture invoved, it is `peer-peer` type.
+  - No `Master-slave` architecture invoved, it is `peer-peer` type.
   
   ### What is Cassandra?
   
@@ -37,12 +38,15 @@
   ```diff
   - Cassandra chooses `Availablity and partition tolerance` over consistency.
   ```
+  `Consistency` - All nodes see the same data at the same time
+  `Availability` - A guarantee that every client request recives a success/failed response.
+  - `Partition Tolerance` - The system continues to operate despite of arbitary partitioning in case of network failures.
   
   ![image](https://user-images.githubusercontent.com/6425536/74592288-a77efd80-4fd4-11ea-8468-c07916a10d2e.png)
 
-  Assume when there are three data center in different geological location like US, Europe and Asia, data replication happens asynchronously. Which leads to `replication lag`, where the data is updated in one data-center and it takes some time to sync up the other data center due to network or other limitations. This is one situation where it is difficut to achive consistency over the data.
-
-This is one of the reason that Cassandra considers Availability over Consistency.
+  Assume when there are three data center in different geological location like US, Europe and Asia, data replication happens asynchronously. Which leads to `replication lag`, where the data is updated in one data-center and it takes some time to sync up the other data center due to network or other limitations. 
+  
+  This is one situation where it is difficut to achive consistency over the data. Also one of the reason Cassandra considers Availability over Consistency.
 
 ##### Fault tolerance
 
@@ -140,4 +144,16 @@ As Developer can take control the avialablity and performance.
  - Since the Cassandra is Eventually consistent system, time to time the nodes disagree about the value (one node might not have the latest updated data). 
  `read_repair_chance` configuration tries to talk to all the replica in order to make all data to be consistent, the default value is `10%`.
  
+ ### Data Modeling in Cassandra
  
+ Cassandra is a `column store`. The `key space` in Cassandra is a container for tables, indexes, etc.
+ 
+ The `primary key` is composed of two parts 
+   - `Partition key` - tells Cassandra in which server/node teh data is present, (check hashing function output to store data)
+   - `Cluster key` - tells Cassandra how to order the data when it is returned.
+ 
+ ##### Sorting using Cassandra query is not achievable, but when creating the table we can use classes to sort the data when storing to table.
+ 
+ ##### Data Types 
+  - `Single` - Int, Text, Float, UUID, Blob
+  - `Collection` - List, Map, Set.
