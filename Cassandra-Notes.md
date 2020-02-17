@@ -102,5 +102,6 @@ As Developer can take control the avialablity and performance.
      - 3. Responds back to the Client, that the data is written.
   - Every data that is being written in Cassandra gets a timestamp associated to it.
      - 4. `memtable` memory runs out, Cassandra flushes the data to the disk behind the scenes asynchornously (sequential IO operation which is fast, taking the in-memory data and serializing it to disk). The disk is called `SSTable`.
-     
   
+  ![image](https://user-images.githubusercontent.com/6425536/74626761-76eab100-5105-11ea-8228-93c19c14bc9d.png)
+
