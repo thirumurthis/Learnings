@@ -96,7 +96,7 @@ As Developer can take control the avialablity and performance.
   (Note: All node in the cluster are equal, there is no master-slave architecture)
   
   - Once the write request hits the individual (`coordinator`) nodes below happens,
-     - 1. The write request data is written to the `commit log`. 
+     - 1. The write request data is written to the `commit log`. Every write includes `timestamp`.
          - Commit log is an append only data structure, which performs sequential IO, which makes it fast. 
      - 2. Then the data is merged to an in-memory representation called `memtable`.
      - 3. Responds back to the Client, that the data is written.
@@ -104,4 +104,39 @@ As Developer can take control the avialablity and performance.
      - 4. `memtable` memory runs out, Cassandra flushes the data to the disk behind the scenes asynchornously (sequential IO operation which is fast, taking the in-memory data and serializing it to disk). The disk is called `SSTable`.
   
   ![image](https://user-images.githubusercontent.com/6425536/74626761-76eab100-5105-11ea-8228-93c19c14bc9d.png)
+  
+ ##### Cassandra doesn't do any updates or deletes.
+ ##### SSTable are immutable.
+ ##### when deleting a data, Cassandra writes a **`tombstone`**, a special type of record. A marker to say there is no data here, for this column anymore. `Tombstone` like other records also gets timestamp.
+ 
+ ### What are SSTables?
+   - What happens when there are many SSTables?
+     - SSTables are immutable files on disk (data file for row storage). 
+     - When SSTables are flushed they are written as smaller files, as an optimization there is process called **`compaction`** does merge the smaller SSTables to bigger ones. As merged, only the latest timestamp is kept.
+        ```
+         Row1 Time1
+         Row1 Time2
+          only latest time2/latest time is kept part of compaction process.
+          this makes the Cassandra fast, also this makes backup extremely trivial
+        ```
+     - Partition is spread accross multiple SSTables.
+     - Same column can be in multiple SSTables.
+   - Once the SSTables are written to a disk, copy it to another server and it should work. 
+  
+  **`Compaction`** (optimization) : A process where the smaller SSTable are merged into a bigger one.
 
+### How READS work in Cassandra?
+  Reads are similar to writes, the node recived the read request is called `coordinator` node.
+  At individual node level, Cassandra looks for data in multiple SSTables (as compaction is running in background process) and in a scenario where this process is still running,
+      - Cassandra pulls the data from multiple SSTables to memory, and merge them together using the latest timestamp.
+      - Also pulls the unflushed data in the `memtable` it also gets merged
+   The data is then sent to client.
+ 
+ In case of read, the choice of Disk type has an impact like using SSD, etc.
+ If Cassandra has to read on lesser file, then the read will be very fast. 
+ 
+ When the consistency level is < ALL (ONE or QUORAM), Cassandra performs read repair in background which can set using configuration called `read_repair_chance`. 
+ Since the Cassandra is Eventually consistent system, time to time the nodes disagree about the value (one node might not have the latest updated data). 
+ `read_repair_chance` configuration tries to talk to all the replica in order to make all data to be consistent, the default value is `10%`.
+ 
+ 
