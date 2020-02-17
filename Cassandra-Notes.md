@@ -88,15 +88,19 @@ As Developer can take control the avialablity and performance.
  For single Datacenter, the consistency level will be ONE or QUORAM.
  For Multi Datacenter, the consistency level to use is LOCAL ONE or LOCAL QUORAM. The data is asyncroniously replicated to other data center. We can specify the replica factor per Key space.
  
- ### How Cassandra READ and WRITE is working.
+ ### Working of Cassandra data READ & WRITE.
  
 ##### Write request:
-  - When a write request is sent to Cassandra cluster, any node within the cluster can serve ther equest. 
-  - The node that serves the request is called `coordinator` node. This node will coordinate with other nodes in the cluster behind the scenes.
-  (Note: all node in the cluster are equal, there is no master-slave architecture)
-  - Once the write request hits the individual nodes below happens,
-     - 1. The write request is written to the `commit log`. Commit log is an append only data structure, which performs sequential IO which is fast. 
-     - 2. Then the data is merged to an in-memory representation called `memtable`.
-     
+  - When a write request is sent to Cassandra cluster, any node within the cluster can serve that request. 
+  - The node that serves the request is called `coordinator` node. This node will coordinate with other nodes in the cluster behind the scenes on behalf of query.
+  (Note: All node in the cluster are equal, there is no master-slave architecture)
   
+  - Once the write request hits the individual (`coordinator`) nodes below happens,
+     - 1. The write request data is written to the `commit log`. 
+         - Commit log is an append only data structure, which performs sequential IO, which makes it fast. 
+     - 2. Then the data is merged to an in-memory representation called `memtable`.
+     - 3. Responds back to the Client, that the data is written.
+  - Every data that is being written in Cassandra gets a timestamp associated to it.
+     - 4. `memtable` memory runs out, Cassandra flushes the data to the disk behind the scenes asynchornously (sequential IO operation which is fast, taking the in-memory data and serializing it to disk). The disk is called `SSTable`.
+     
   
