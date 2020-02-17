@@ -63,4 +63,40 @@ As Developer can take control the avialablity and performance.
  ```
  
  ##### Consistency level
-  - ALL, ONE , QUORAM
+  How many replicas the Cassandra needs to hear from before serving the read/write request to the client. (how many replicas for query to respond OK)
+ 
+ Different types 
+  - ALL
+  - ONE * 
+  - QUORAM * 
+ * - Popularly used are ONE and QUORAM.
+ 
+`ONE` - Cassandra just need to hear from One replica, and serves the client.
+      - In this case if two replicas is not available, the client is served with just one node.
+      
+`QUORAM` - Cassandra has to hear form majority (for replication factor 3, Cassandra needs to hear at least is 2 replicas) 51% or higher.
+ 
+ Points:
+   - Consistency level, set at each read/write request. (per query)
+ 
+ ##### How fast read and write data in Cassandra depends on the Consistency level.
+ 
+ Lower the consistency level (with replication factor RF= 3, even if two nodes down the client is served) , high availablity.
+ Higher the consistency level (need to hear from more nodes, more nodes to be online which is less tolerant to node going down), low availablity.
+ 
+ ##### Multi-DC 
+ For single Datacenter, the consistency level will be ONE or QUORAM.
+ For Multi Datacenter, the consistency level to use is LOCAL ONE or LOCAL QUORAM. The data is asyncroniously replicated to other data center. We can specify the replica factor per Key space.
+ 
+ ### How Cassandra READ and WRITE is working.
+ 
+##### Write request:
+  - When a write request is sent to Cassandra cluster, any node within the cluster can serve ther equest. 
+  - The node that serves the request is called `coordinator` node. This node will coordinate with other nodes in the cluster behind the scenes.
+  (Note: all node in the cluster are equal, there is no master-slave architecture)
+  - Once the write request hits the individual nodes below happens,
+     - 1. The write request is written to the `commit log`. Commit log is an append only data structure, which performs sequential IO which is fast. 
+     - 2. Then the data is merged to an in-memory representation called `memtable`.
+     
+  
+  
