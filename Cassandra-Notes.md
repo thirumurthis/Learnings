@@ -143,21 +143,8 @@ As Developer can take control the avialablity and performance.
  - When the consistency level is < ALL (ONE or QUORAM), Cassandra performs read repair in background which can set using configuration called `read_repair_chance`. 
  - Since the Cassandra is Eventually consistent system, time to time the nodes disagree about the value (one node might not have the latest updated data). 
  `read_repair_chance` configuration tries to talk to all the replica in order to make all data to be consistent, the default value is `10%`.
- 
- ### Data Modeling in Cassandra
- 
- Cassandra is a `column store`. The `key space` in Cassandra is a container for tables, indexes, etc.
- 
- The `primary key` is composed of two parts 
-   - `Partition key` - tells Cassandra in which server/node teh data is present, (check hashing function output to store data)
-   - `Cluster key` - tells Cassandra how to order the data when it is returned.
- 
- ##### Sorting using Cassandra query is not achievable, but when creating the table we can use classes to sort the data when storing to table.
- 
- ##### Data Types 
-  - `Single` - Int, Text, Float, UUID, Blob
-  - `Collection` - List, Map, Set.
 
+### Setting Apache Cassandra locally
 ##### Installing Cassandra in Virtual box, and using the steps detailed in this [Link](http://cassandra.apache.org/download/)
 ##### To install the ubuntu box, in windows 10  follow the [Link](https://github.com/thirumurthis/Learnings/blob/master/Ubuntu19.10-virtualbox.md)
  
@@ -172,3 +159,104 @@ As Developer can take control the avialablity and performance.
 
 $ cqlsh
 ```
+ 
+ ### Data Modeling in Cassandra
+ 
+ Cassandra is a `column store`. The `key space` in Cassandra is a container for tables, indexes, etc.
+ 
+ The `primary key` is composed of two parts 
+   - `Partition key` - tells Cassandra in which server/node teh data is present, (check hashing function output to store data)
+   - `Cluster key` - tells Cassandra how to order the data when it is returned.
+ 
+ ##### Sorting using Cassandra query is not achievable, but when creating the table we can use classes to sort the data when storing to table.
+ 
+ ##### Data Types 
+  - `Single` 
+     - Int, 
+     - Text, 
+     - Float, 
+     - Timestamp, 
+     - Date, 
+     - UUID, 
+     - Blob
+  - `Collection` 
+     - List - collecton of one or more elements with no duplicates and order matters
+     - Map - group of key value pair 
+     - Set - collection of one or more elements where the values are Unique and order doesn't matters
+     
+  ##### `Keyspace` are logical container for Tables, idexes, primary keys, etc. data structure
+  When defining keyspace we also define replication stratergy, replicas are high availablity feature. 
+  The replication staergy types, 
+     - `Simple replication` - Sets number of replicas when using within a single data center.  
+     - `Network topology repplication` - Used to set number of replicas when using multiple data center.
+  
+  Create keyspace query structure:
+  ```sql
+  CREATE KEYSPACE <Keyspace-name>
+  WITH
+    replication = {'class':'SimpleStrategy',
+                    'replication_factor' : 3};
+  ```
+ 
+ ##### Create `table` once the `keyspace` is created.
+ 
+ ```sql
+   CREATE TABLE (
+      field1 int,
+      field2 text,
+      field3 text,
+      PRIMARY KEY (field1))
+  ```
+  
+  Simple create table with map
+  
+  ```sql
+    CREATE TABLE (
+      field1 text,
+      field2 int,
+      field3 map<text,int>,
+      PRIMARY KEY (field1));
+  ```
+  
+  ##### Selecting `primary key`, this key uniquely identifies the row. 
+  
+  
+  
+  ```sql
+    CREATE TABLE applicationInfo (
+      application_name text,
+      host_id int,
+      process_id int,
+      cpu_time int,
+      os_cpu_time map<text,int>,
+      PRIMARY KEY (host_id,process_id));
+   ```
+   Note:
+      host_id => is used as `partition key`, which determines which node the data is stored on.
+      porcess_id => `Clustering  key`, which determines how to data is ordered on the disk. 
+ 
+ When selecting the data from the table we need to use primary keys. We need to specify the whole primary key.
+ The below query uses both the partition key and clustering key, which returns data.
+```sql
+  SELECT * FROM 
+    applicationInfo
+  where 
+    host_id = 'Webserver'
+  AND
+    process_id = '100';
+```
+Cassandra also provides option to sort order when data is stored in disk.
+
+```sql
+    CREATE TABLE applicationInfo (
+      application_name text,
+      host_id int,
+      process_id int,
+      cpu_time int,
+      PRIMARY KEY (host_id,process_id)
+      ) 
+      WITH CLUSTERING ORDER BY (process_id);
+```
+ Cassandra doesn't provide any mechanism to sort the query results at query time `consider sort order during table creation time`.
+ 
+ 
