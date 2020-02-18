@@ -157,3 +157,9 @@ As Developer can take control the avialablity and performance.
  ##### Data Types 
   - `Single` - Int, Text, Float, UUID, Blob
   - `Collection` - List, Map, Set.
+
+
+### Installing Cassandra in Virtual box, and using the steps detailed in this (Link)[http://cassandra.apache.org/download/]
+ To install the ubuntu box, in windows 10  follow the (Link)[https://github.com/thirumurthis/Learnings/blob/master/Ubuntu19.10-virtualbox.md]
+ 
+ 
