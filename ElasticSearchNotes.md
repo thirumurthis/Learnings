@@ -592,7 +592,7 @@ Output:
 ...
 ...
  "aggregations" : {
-    "max_agg" : {
+    "max_aggs" : {
       "value" : 102.0
     }
   }
