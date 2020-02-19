@@ -5,7 +5,7 @@
 | Elastic  |  Database relavent | Elastic Search descrption |
 |---------|----------------|------------------|
 | Data type| Data type | Applicable to document field. A type such as integer, text, keyword, date, range, geographical coordiantes, etc.|
-| Document | Databae record | Json documents stored in Elastic search. Contains fields, and each field is of particular data type.|
+| Document | Database record | Json documents stored in Elastic search. Contains fields, and each field is of particular data type.|
 | Type (*) | - | Deprecated in Es 7+. Previously, type was convinent way to group similar documents together.|
 | Index  | Database table (preivously this was similar to Db, since type is deprecated. this is similar to **table**.| Index stores and manages documents of same type.|
 
@@ -492,6 +492,28 @@ GET /<index-name-pattern>/_search?size=50
       ...
       ...
 ```
+
+### To search and `sort` the record based on the field
+```json
+GET logstash-2020.02.1*/_search
+{
+  "sort" : [
+        { "@timestamp" : {"order" : "desc"}}
+    ],
+    "query": {
+    "bool": {
+      "must" : [
+        {"match": {"tags.keyword":"service"}},
+        {"match" :{"env.keyword" :"ENV-DEV"}},
+        {"match" : {"metric_path":"health.check.service"}}
+        ]
+    }
+  }
+}
+```
+
+
+
 ### Analyzer and Tokenizer
 The output will be what is going on the index
 ```
