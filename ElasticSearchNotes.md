@@ -511,7 +511,26 @@ GET logstash-2020.02.1*/_search
   }
 }
 ```
+### To query based on the date time range using GET, using `filter` and `range`
+```json
+GET logstash-2020.02.1*/_search
+{
+  "sort" : [
+        { "@timestamp" : {"order" : "desc"}}
+    ],
+    "query": {
+    "bool": {
+      "must" : [
+        {"match": {"tags.keyword":"webserver"}}
+        ],
+        "filter": [ 
+          {"range": {"@timestamp": {"from": "now-5m"}}}
+	  ]
+    }
+  }
+}
 
+```
 
 
 ### Analyzer and Tokenizer
