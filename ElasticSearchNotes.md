@@ -554,7 +554,7 @@ GET <index-name>/_search
 {
   "size" : 0,
   "aggs" : {
-     "field-name" : { //in sample data example state
+     "name-for-aggregation" : { //in sample data example state
        "terms" : {
            "field" : "field-name.keyword" // state.keyword 
 	   }
@@ -563,4 +563,38 @@ GET <index-name>/_search
  }
  
 // Buckets (partition)
+```
+Example:
+```json
+GET logstash-2020.02.1*/_search
+{
+  "sort" : [
+        { "@timestamp" : {"order" : "desc"}}
+    ],
+    "query": {
+    "bool": {
+      "must" : [
+        {"match": {"tags.keyword":"webserver"}}
+        ],
+        "filter": [ 
+          {"range": {"@timestamp": {"from": "now-5m"}}}]
+    }
+  },
+    "aggs" :{
+      "max_aggs" :{
+         "max" :{ "field" :"error_cnt" }
+      }
+    }
+}
+```
+Output:
+```
+...
+...
+ "aggregations" : {
+    "max_agg" : {
+      "value" : 102.0
+    }
+  }
+
 ```
