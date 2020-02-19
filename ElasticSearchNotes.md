@@ -409,10 +409,12 @@ public void findCatalogItem(String text, RestHighLevelClient client) {
 ```
 ------
 ##### Parsing the response :
-In order to parse the response, we can use the small logic.
+In order to parse the response, we can use the logic.
 
-Query ES using, /<index-name>/_search with "{ "query" : { "match" : { "itemDescription" : "%s" } } } " and substring with string **_\_source_** and  "}]}}".
+Query ES using, /<index-name>/_search with "{ "query" : { "match" : { "itemDescription" : "%s" } } } " 
+	and substring with string **_\_source_** and  "}]}}".
 
+-------
 [Reference Link](https://blogs.oracle.com/javamagazine/easy-searching-with-elasticsearch)
 
 -------
