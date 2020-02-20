@@ -150,7 +150,11 @@ As Developer can take control the avialablity and performance.
  
  Inside the Ubuntu box once the process is started
  ```unix
+   // incase of systemd with older version
    $ service cassandra status 
+   
+   // in case of centos 7+/8+
+   $ systemctl status cassandra
  ```
  ![image](https://user-images.githubusercontent.com/6425536/74711403-c64de180-51d8-11ea-8685-33bde7a0688c.png)
 
@@ -224,7 +228,7 @@ $ cqlsh
   
   ```sql
     CREATE TABLE applicationInfo (
-      application_name text,
+      application_name varchar,
       host_id int,
       process_id int,
       cpu_time int,
@@ -259,4 +263,70 @@ Cassandra also provides option to sort order when data is stored in disk.
 ```
  Cassandra doesn't provide any mechanism to sort the query results at query time `consider sort order during table creation time`.
  
+ ##### Creating secondary `index`
+ ```sql
  
+  // create index <index-name> on Table(column);
+ //from cqlsh, use describe index-name to view the information
+ 
+ $ create index host_id_index on applicationInfo(host_id); 
+ ```
+
+### Kinds of `Numeric datatypes` :
+ - INT * (32 bit signed integers)
+ - BIGINT * (64 bit signed integers)
+ - TINYINT * (1 bit numbers 0 to 255 / 127 to -127)
+ - VARINT * ( to store arbitary precision integers with variable length encoding. like varchar)
+ - Decimal (with decimal precision)
+ - Float ( 32 bit IEEE 754 )
+ - Double ( 64 bit IEEE 754 )
+ * for integers 
+
+### Kinds of `String datatypes` :
+ - ASCII (stores US ASCII char strings / 127 chars - most of keyboard chars) 
+ - VARCHAR (stores UTF -8 encoded string / 128000 chars - special characters included)
+ - Text ( is an alias of VARCHAR)
+ 
+Note: 
+   - ASCII chars is a subset of UTF-8 encoded characters.
+   - VARCHAR and Text can be used interchangably.
+   
+ ### Kinds of `Time datatype`:
+   - Timestamp - is date + time (enocded as 8 bits since unix epoch (01/01/1970), number of millisecond since epoch) 
+       - Eg: yyyy-mm-dd HH:mm, yyyy-mm-dd HH:mm:ssZ with Z is used to specify 4 digit time zone.
+   - TimesUUID - Universly unique identifier based on time and the MAC address of device generating the identifier 
+       - Includes Time and sorting on time, this helps to identify order of UUID generated 
+  
+  ### UUID 
+  Universly unique identifier based on time and the MAC address of device generating the identifier
+  
+  ### Collection (non-atomic value store)
+   - List - order preserved, contains duplicate
+   - Sets - order free, without duplicate. `It is recommended to use Sets, than List`
+   - Map - Sets of key value pair.
+  Note: Collection can hold upto 64K items in collection, best practice to keep this small
+
+ ### Tuple 
+   Used to create structured collections.
+   Tuple order lists of attributes with fixed structure.
+   Tuples is different from list and sets which can have varing length.
+  Example:
+  ```sql
+     Create TABLE item_location (
+       product_id UUID,
+       product_name text,
+      location <tuple<decimal, decminal, int>>,
+      primary key (product_id));
+      
+      //Location stores lattitude, longitude and altitude. in the same order.
+  ```
+  Insert query for tuple data
+  ```sql 
+      insert into item_location(product_id, product_name, location) 
+      values ('4asdada-asdeee-asdada-ereasda','kids toy', (122.40505,-124.0000,60)) 
+  ``` 
+  
+  Note: 
+    Used when logically group serveral attribute, and no new attributes cannot be added latter.
+    
+    
