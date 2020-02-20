@@ -325,4 +325,14 @@ Note:
   Note: 
     Used when logically group serveral attribute, and no new attributes cannot be added latter.
     
-    
+ ### Designing Cassandra Tables
+   - Queries drives the design of Tables in cassandra, not the entities.
+   - Cassandra doesn't have `joins` and lots of duplication of data. This is unlike the relational database, since joins are expensive in cassandra so the data duplication happens.
+      - Duplication data doesn't mean we are wasting the disk space, we need to choose the data types to minimize the data usage.
+      - Avoid using data to store many narrow rows, usage of one wide row boosts performance.
+      
+ ### Denormalizing (instead of joining and sorting)
+ 
+      
+   
+   
