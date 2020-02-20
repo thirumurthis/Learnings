@@ -531,8 +531,6 @@ GET logstash-2020.02.1*/_search
 }
 
 ```
-
-
 ### Analyzer and Tokenizer
 The output will be what is going on the index
 ```
@@ -597,4 +595,28 @@ Output:
     }
   }
 
+```
+
+##### Alternate way to use aggregate and filter, using filter and match with range.
+```
+GET logstash-2020.02.*/_search
+{
+       "aggs": {
+           "fail_count" : { "avg" : { "field" : "metric_count" } }
+       },
+       "query": {
+         "bool": {
+     
+           "must" : {
+              "term": {"env.keyword" : "DEV-ENV"}
+           },
+
+           "filter": [
+              {"match": {"tags.keyword": "webservice"}},
+	      {"match": {"metric_path": "service.health.metrics"}},
+              {"range": {"@timestamp" : {"gte":"now-5m"}}}
+           ]
+          }
+       }
+    }
 ```
