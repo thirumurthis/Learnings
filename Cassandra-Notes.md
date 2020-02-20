@@ -42,15 +42,15 @@
  - `Availability` - A guarantee that every client request recives a success/failed response.
  - `Partition Tolerance` - The system continues to operate despite of arbitary partitioning in case of network failures.
   
-          ![image](https://user-images.githubusercontent.com/6425536/74592288-a77efd80-4fd4-11ea-8468-c07916a10d2e.png)
+      ![image](https://user-images.githubusercontent.com/6425536/74592288-a77efd80-4fd4-11ea-8468-c07916a10d2e.png)
 
-  Assume when there are three data center in different geological location like US, Europe and Asia, data replication happens asynchronously. Which leads to `replication lag`, where the data is updated in one data-center and it takes some time to sync up the other data center due to network or other limitations. 
+Assume when there are three data center in different geological location like US, Europe and Asia, data replication happens asynchronously, which leads to `replication lag`. The data is updated in one data-center and it takes some time to sync up the other data center due to network or other limitations. 
   
-  This is one situation where it is difficut to achive consistency over the data. Also one of the reason Cassandra considers Availability over Consistency.
+This is one situation where it is difficut to achive consistency over the data. Also one of the reason Cassandra considers `Availability` over `Consistency`.
 
 ##### Fault tolerance
 
-As Developer can take control the avialablity and performance.
+Developer can take control the avialablity and performance, using the correct configuration.
 
 ##### Replication (Replication Factor)
  - Data is replicated automatically 
@@ -221,11 +221,8 @@ $ cqlsh
       field3 map<text,int>,
       PRIMARY KEY (field1));
   ```
-  
   ##### Selecting `primary key`, this key uniquely identifies the row. 
-  
-  
-  
+    
   ```sql
     CREATE TABLE applicationInfo (
       application_name varchar,
@@ -265,8 +262,7 @@ Cassandra also provides option to sort order when data is stored in disk.
  
  ##### Creating secondary `index`
  ```sql
- 
-  // create index <index-name> on Table(column);
+ // create index <index-name> on Table(column);
  //from cqlsh, use describe index-name to view the information
  
  $ create index host_id_index on applicationInfo(host_id); 
