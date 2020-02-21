@@ -393,5 +393,36 @@ Note:
   In the above case we don't want to duplicate the entire data, just use the collection to store multiple values, in this case the ip address.
   If you want to don't wan't to preserver order in which the ipaddress are being added, then use set in the field instead of list.
   
-   
+  ##### Optimizing the query:
+  
+  ```
+  Create table product_sold(
+  id uuid,
+  product_name text,
+  location map<text,text>,
+  manufactured_date date
+  ) primary key ((id),manufactured_date);
+  
+  -- using select query as below will NOT work
+  select * from product_sold 
+  where manufactured_date < '2020-02-20';
+  ```
+  Note: 
+   The `select` query has the where clause which doesn't reference the partition key. This will generate the error since, Cassandra will try to query all the node.
+    
+   In order to address this situation, we can include the manufactured_year in the table, so Cassandra will not need to look for data in all the nodes.
+  ```sql
+  -- include manufacture year to address the above issue.
+  Create table product_sold(
+  id uuid,
+  product_name text,
+  location map<text,text>,
+  manufactured_date date,
+  manufactured_year int
+  ) primary key ((id),manufactured_year, manufactured_date);
+  
+  -- using select query as below will NOT work
+  select * from product_sold 
+  where manufactured_date < '2020-02-20' and manufactured_year < 2020;
+  ```
    
