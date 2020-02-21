@@ -332,7 +332,64 @@ Note:
       - Avoid using data to store many narrow rows, usage of one wide row boosts performance.
       
  ### Denormalizing (instead of joining and sorting)
- 
-      
+   - We use redundant copy of data.
+   - Collection to store multiple values, instead of using spearate table.
+   
+   For example, we are tracking server performance metrics and wanted to build tables.
+   We need the metrics to list the servers by average cpu utlization, we need a query and build table accordingly.
+   ```sql
+   create table avg_cpu_utlization(
+   server_name text,
+   avg_cpu_utlization int,
+   disk_storage int,
+   measure_time datetime,
+   .., //other fields
+   ..,
+   primary key ((server_name), avg_cpu_utlization, measure_time))
+   with clustering order by (avg_cpu_utlization desc);
+  ```
+  
+  In above query, the primary key includes two parts, 
+      partition key - in this case it is servername which tells cassandra in which node it should store the data based on the hash function.
+      clustering key - using clustering class.
+  
+  Assume we need another query which serves the same data in different order (say servers by disk utlization) , we need to create another table here for this scenario.
+  Cassandra query doesn't support order by or sort.
+  Below is mostly likely same data, but different table.
+  ```sql
+   create table avg_cpu_utlization(
+   server_name text,
+   avg_disk_utlization int,
+   disk_storage int,
+   measure_time datetime,
+   .., //other fields
+   ..,
+   primary key ((server_name), avg_disk_utlization, measure_time))
+   with clustering order by (avg_disk_utlization desc);
+  ```
+  
+  Duplication is a denormalizing technique to server faster query.
+  
+  Using collection is another denormalzing techinque.
+  
+  Updating data to the column which used collection.
+  
+  ```sql
+  Create table avg_cpu_utlization(
+  server_name text,
+  user_name text,
+  ip_address set<text>,
+  ...
+  primary key(....
+  );
+  
+  -- to update the values in the ip address
+  
+  update avg_cpu_utilization 
+  set ip_address = ip_address + ['0.1.0.1']
+  where server_name = 'webserver1';
+  ```
+ Note: In the aboce case we don't want to duplicate the entire data, just use the collection to store multiple values, in this case the ip address.
+  
    
    
