@@ -389,7 +389,9 @@ Note:
   set ip_address = ip_address + ['0.1.0.1']
   where server_name = 'webserver1';
   ```
- Note: In the aboce case we don't want to duplicate the entire data, just use the collection to store multiple values, in this case the ip address.
+ Note:
+  In the above case we don't want to duplicate the entire data, just use the collection to store multiple values, in this case the ip address.
+  If you want to don't wan't to preserver order in which the ipaddress are being added, then use set in the field instead of list.
   
    
    
