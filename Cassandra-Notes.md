@@ -526,7 +526,6 @@ Note:
     id uuid,
     device_name text,
     serial_number int,
-    device_name text,
     ...
     primary key (id)
   );
@@ -553,4 +552,28 @@ Note:
    
   Read [link](http://www.datastax.com/dev/blog/materialized-view-performance-in-cassandra-3-x)
   
+  ### How to delete a column from single row and entire table
+   `uuid()` - cassandra provides a function to create a uuid values.
+  ```sql
+   Create table devices (
+    id uuid,
+    device_name text,
+    serial_number int,
+    primary key (id)
+  );
+  
+  Insert into devices ( id, device_name, serial_number) values (uuis(),'sample deice','x1231231');
+  ```
+  
+  Using Set, Map in insert query
+  ```sql
+  Create Table devices(
+  id uuid,
+  device_name varchar,
+  ip_address set<text>,
+  location map<text,text>
+  primary key (id));
+  
+  Insert into devices(id,device_name,location) values (uuid(), 'devicename1', {'192.164.0.1'}, {'data center':'city1','rack':'rack1'});
+  ```
    
