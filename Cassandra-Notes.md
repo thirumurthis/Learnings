@@ -437,3 +437,61 @@ Note:
   where manufactured_date < '2020-02-20' and manufactured_year < 2020;
   ```
    
+  ##### Modeling time series data
+   Use wide row for time series data
+   
+   ```sql 
+   --Creating table
+     Create Table heat_sensor (
+     sensor_name text,
+     measure_time timestamp,
+     temperature int,
+     Primary key (sensor_name, measure_time));
+   
+   --Inserting row
+   Insert into heat_sensor (sensor_name,measure_time, temperature) values ('heat sync','2020-02-20 07:00:00',70);
+   ```
+  When storing large volume of time series data we could end up in with large number timestamp and measures in row. 
+  Row here means data associated with the partition key, Wide values by partition key. 
+  
+  If we are gathering the temprature data every milliseconds which is much more frequently, then sotring these data in single partition leads to poor query performance.
+  
+  Solving this problem, using fine grained partition.
+    - partition by server and date, like below
+ 
+   ```sql 
+   --Creating table
+   Create Table heat_sensor (
+     sensor_name text,
+     measuer_date date,
+     measure_time timestamp,
+     temperature int,
+     Primary key (sensor_name, measure_date, measure_time));
+   ```
+  
+##### Time to live (TTL) feature
+      - When insert data we can tell how long the data to be live in the database. 
+      - After the TTL period is reached the data is marked for deletion.
+   
+   We can use the same Create Table query as we did for the heat_sensor table.
+   Insert query with the TTL values is as follows, TTL specified in seconds. 
+   ```sql
+      -- keep the data for one day, TTL is specified in seconds.
+      Insert into heat_sensor (sensor_name,measure_time, temperature) values ('heat sync','2020-02-20 07:00:00',70) USING TTL 86440;
+   ```
+   Note: In this case where the data is expiring, the data can be inserted in DESCENDIND order.
+   
+   ```sql
+   Create Table heat_sensor (
+     sensor_name text,
+     measuer_date date,
+     measure_time timestamp,
+     temperature int,
+     Primary key (sensor_name, measure_date, measure_time))
+     WITH CLUSTERING ORDER BY (measure_time DSEC)
+   ```
+  
+  ### When to use `Secondary Index`
+  
+  ### When to use `Materialized views`
+  
