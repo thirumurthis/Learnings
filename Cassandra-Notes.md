@@ -171,6 +171,17 @@ $ cqlsh
  The `primary key` is composed of two parts 
    - `Partition key` - tells Cassandra in which server/node the data is present, (this value is passed to hashing function and based on the output value data is store within the node that falls within the range.)
    - `Cluster key` - tells Cassandra how to store the row data in catogrized order. The arrangment of data is based on the columns, invokved in the clustering key. This arrangment well order to recover data using clustering key. 
+
+![image](https://user-images.githubusercontent.com/6425536/75085430-01ecf200-54de-11ea-8d22-e65cc8d067f1.png)
+
+![image](https://user-images.githubusercontent.com/6425536/75085419-db2ebb80-54dd-11ea-8a89-2b09c592e73b.png)
+
+![image](https://user-images.githubusercontent.com/6425536/75085470-8770a200-54de-11ea-9029-2bd2830b2b9a.png)
+
+![image](https://user-images.githubusercontent.com/6425536/75085488-c9014d00-54de-11ea-9404-a04d4040fb25.png)
+
+
+[Reference](https://www.slideshare.net/planetcassandra/cassandra-summit-2014-cql-under-the-hood-39445761)
  
  ##### Sorting using Cassandra query is not achievable, but when creating the table we can use classes to sort the data when storing to table.
  
