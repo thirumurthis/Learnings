@@ -594,5 +594,24 @@ Note:
   The complete row will be deleted.
   
   ```
+  ----
   
+### Estimating data size
+ 
+Once we have the physical model the size of the data can be estimated, based on below building blocks,
+ - Column data = Column name + cloumn value (data type size) + Overhead value (15 bytes or 23 if using TTL); varchar roughly length of string
+ - Row data = sum (stored columns size) + 23 bytes
+ - Indexes 
+
+Table size:
+  Column size based on data type 
+  Estimate % of rows that will have this column (column_usage_percent)
+  Estimate number of rows in the table (row_count)
+  
+  Column storage = (coulumn size) * column_usage_percent 
+  Row storage = sum of columns + 23 bytes overhead.
+  Table size = row storage * row count;
+  
+ 
+   
   
