@@ -170,6 +170,7 @@ $ cqlsh
  
  The `primary key` is composed of two parts 
    - `Partition key` - tells Cassandra in which server/node the data is present, (this value is passed to hashing function and based on the output value data is store within the node that falls within the range.)
+     `We need to know the partition key at the query time.`
    - `Cluster key` - tells Cassandra how to store the row data in catogrized order. The arrangment of data is based on the columns, invokved in the clustering key. This arrangment well order to recover data using clustering key. 
 
 ![image](https://user-images.githubusercontent.com/6425536/75085512-ff3ecc80-54de-11ea-9eca-0329d7efd6f6.png)
