@@ -169,8 +169,8 @@ $ cqlsh
  Cassandra is a `column store`. The `key space` in Cassandra is a container for tables, indexes, etc.
  
  The `primary key` is composed of two parts 
-   - `Partition key` - tells Cassandra in which server/node teh data is present, (check hashing function output to store data)
-   - `Cluster key` - tells Cassandra how to order the data when it is returned.
+   - `Partition key` - tells Cassandra in which server/node the data is present, (this value is passed to hashing function and based on the output value data is store within the node that falls within the range.)
+   - `Cluster key` - tells Cassandra how to store the row data in catogrized order. The arrangment of data is based on the columns, invokved in the clustering key. This arrangment well order to recover data using clustering key. 
  
  ##### Sorting using Cassandra query is not achievable, but when creating the table we can use classes to sort the data when storing to table.
  
