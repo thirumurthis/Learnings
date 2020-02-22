@@ -437,7 +437,7 @@ Note:
   where manufactured_date < '2020-02-20' and manufactured_year < 2020;
   ```
    
-  ##### Modeling time series data
+  ### Modeling time series data
    Use wide row for time series data
    
    ```sql 
@@ -490,8 +490,67 @@ Note:
      Primary key (sensor_name, measure_date, measure_time))
      WITH CLUSTERING ORDER BY (measure_time DSEC)
    ```
+   ```
+   select measure_time, TTL(measure_time) from heat_sensor;
+   -- the response will provide number of time to live, how many seconds to live.
+   ```
+   
+ ### When to use `Secondary Index`
+  Mostly we design Cassandra tables to address single query.
+  We can also design multipe query to fetch similar data from the same table, using index.
+  Data duplication is common practice is cassandra.
   
-  ### When to use `Secondary Index`
+  In the above heat_sensor table, we wanted to capture the manufacture info. we can add the field in the same table, but we will not be able to query using Where clause.
   
-  ### When to use `Materialized views`
+  In this case we can create an Index on manufacturer and then fire query.
   
+  Secondary indexes are indexes on columns, that allows us to specify that column in the where clause of select query.
+  
+  When are secondary Index useful, since creating index also has side effects to query performance.
+   - There are many rows that have indexed values.
+   - Tables don't have counters, an autoincrement feature of Cassandra.
+   - The column is not frequently updated.
+  
+  What happens when we have few rows, with a particular indexed value. This is referred to as `high cardinality index` which doesn't perform well in these cases and should be avoided.
+    
+ ### When to use `Materialized views`
+  We can manage multiple tables when we need to denormalize, each time we add a row to one table we have to add to the other table.
+  We need to perform operation to sync the data synchronized.
+  
+  Cassandra provides a feature called `Materialized view` to address this scenarios. 
+  
+  Materialized view is table managed by Cassandra. Cassandra will keep data in sync between the tables and materialized views.
+  
+  ```
+  Create table devices (
+    id uuid,
+    device_name text,
+    serial_number int,
+    device_name text,
+    ...
+    primary key (id)
+  );
+  
+  CREATE MATERIALIZED VIEW device_by_serial_num
+  As
+    select serial_number,device_name, manufacturer
+    from 
+     devices 
+     where serial_number is not null and id is not null
+     primary key (serial_number, id);    
+     
+  // Not null is used since the primary key doesn't allow null values
+ ```
+  
+  Materialized views help reduce the overhead of managing denormalized tables.
+  Limitation in using materialized view:
+   - The primary key of the base table must be in the primary key of the materialized view.
+   - Only one column can be added to the materialized view primary key.
+   
+  Overhead/trade-offs  of materialized view:
+   - They introduce additional steps to update operation and data replication
+   There will be performance penality about 10% on WRITE operation, READ is not impacted.
+   
+  Read [link](http://www.datastax.com/dev/blog/materialized-view-performance-in-cassandra-3-x)
+  
+   
