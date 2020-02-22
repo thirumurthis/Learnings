@@ -180,7 +180,7 @@ $ cqlsh
 
 ![image](https://user-images.githubusercontent.com/6425536/75085488-c9014d00-54de-11ea-9404-a04d4040fb25.png)
 
-[Reference](https://www.slideshare.net/planetcassandra/cassandra-summit-2014-cql-under-the-hood-39445761)
+Images abover are refered from @[link](https://www.slideshare.net/planetcassandra/cassandra-summit-2014-cql-under-the-hood-39445761)
  
  ##### Sorting using Cassandra query is not achievable, but when creating the table we can use classes to sort the data when storing to table.
  
