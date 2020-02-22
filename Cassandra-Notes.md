@@ -552,7 +552,7 @@ Note:
    
   Read [link](http://www.datastax.com/dev/blog/materialized-view-performance-in-cassandra-3-x)
   
-  ### How to delete a column from single row and entire table
+ ### using `uuid()` function of cassandra to generate uuid value.
    `uuid()` - cassandra provides a function to create a uuid values.
   ```sql
    Create table devices (
@@ -576,4 +576,23 @@ Note:
   
   Insert into devices(id,device_name,location) values (uuid(), 'devicename1', {'192.164.0.1'}, {'data center':'city1','rack':'rack1'});
   ```
-   
+  ### How to delete a column from row and delete single row from table   
+  Deleting a column in specific row, demonstrating with the same devices table above.
+  
+  ```sql
+  delete device_name from devices where id = 6324adsa-23423asda-323424a-daasd;  
+  
+  --output:
+  The device_name column will be null for the id 6324adsa-23423asda-323424a-daasd
+  ```
+  
+  Delete entire row
+  ```sql
+  delete from devices where id = 78887ada-asdasd-9899adsa-232;
+  
+  --output
+  The complete row will be deleted.
+  
+  ```
+  
+  
