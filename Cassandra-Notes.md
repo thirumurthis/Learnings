@@ -603,15 +603,46 @@ Once we have the physical model the size of the data can be estimated, based on 
  - Row data = sum (stored columns size) + 23 bytes
  - Indexes 
 
-Table size:
-  Column size based on data type 
-  Estimate % of rows that will have this column (column_usage_percent)
-  Estimate number of rows in the table (row_count)
+Column size based on data type 
   
-  Column storage = (coulumn size) * column_usage_percent 
-  Row storage = sum of columns + 23 bytes overhead.
-  Table size = row storage * row count;
+Estimate % of rows that will have this column (column_usage_percent)
   
- 
-   
+Estimate number of rows in the table (row_count)
+
+```
+Expected Column storage = (coulumn size) * column_usage_percent 
   
+Expected Row storage = sum of columns in expected column storage (+ 23 bytes overhead).
+  
+Table size = row storage * row count;
+
+Index size also needs to be considered. 
+  Size of the columns in the primary key determines size of index.
+  Index reqiuires 32 bytes overhead.
+
+Table size + index size
+```  
+Demo:
+
+```sql
+ -- For a table:
+  Create Table product(
+  id uuid,
+  product_name varchar,
+  year_manufactured int,
+  serial_num text,
+  primary key (id));
+```
+
+column name | data type | column size | column_usage (%) |Expected column storage(col. size * % col. usage) |
+|--------|--------|--------|----|-------|
+|id | uuid | 16 | 100 | 16 |
+|product_name | varchar | 25 (avg length) | 100 | 16 |
+|year_manufactured | int | 4 | 60  (some data misses) | 2.4 |
+|serial_num | text | 12 (avg length) | 50 | 6 | 
+
+Expected_row_storage = 16 + 16 + 2.4 + 6 = 40.4 bytes
+Row overhead = 23 bytes
+
+Expected row storage with overhead = 63.4 bytes
+For 10,000 number of rows, then 634,000 bytes.
