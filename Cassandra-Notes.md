@@ -246,10 +246,12 @@ Images abover are refered from @[link](https://www.slideshare.net/planetcassandr
    Note:
       host_id => is used as `partition key`, which determines which node the data is stored on.
       porcess_id => `Clustering  key`, which determines how to data is ordered on the disk. 
-``` 
+
  Cassandra expects `partition key` to be unique, since if we push data over and over it will be upserted. That is the reason we include clustring key aloing wiht partition key in case there is no unique value. 
  For example, for application if we are grouping based on states like CA, TX, WA. When creating table the primary key would include state and unique id.
-```
+
+`Clustering key` is mostly used for ordering the record, and also for uniqueness.
+
  When selecting the data from the table we need to use primary keys. We need to specify the whole primary key.
  The below query uses both the partition key and clustering key, which returns data.
 ```sql
