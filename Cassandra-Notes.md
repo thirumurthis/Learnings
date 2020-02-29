@@ -690,7 +690,22 @@ Use `Murmur3` or `MD5` partitioner, which will evenly distribute data in random 
 Different types of policy:
     - `TokenAwarePolicy` - driver chooses the node which contains the data
     - `RoundRobinPolicy` - driver will perform round robin the ring, relys on `coordinator`
-    - `DCAwareRoundRobinPolicy` - round robin the data center
+    - `DCAwareRoundRobinPolicy` - round robin the data center (data stays within local dc)
 
 In `tokenAwarePolicy` when data comes to the driver, it knows to which node holds the data needs to be sent thus eleminating the need for `coordinator` node involvement. 
 
+##### Scaling
+ - Single node has the disadvantage for downtime and replication of data.
+ - More node more capacity, no downtime.
+ - Horizontal vs Vertical scaling:
+      - `Vertical scaling`: Needs 1 large expensive machine
+      - `Horizontal scaling`: Needs multiple less-expensive commodity hardware
+    
+ ##### Scaling down nodes
+  - Decommission the nodes.
+     - Drain or flush the data from commit log, memtable. (`nodetool drain`)
+     - Execute the decommission process. (`nodetool decommission`)
+        - During decommission, `nodetool status` will display LEAVING Status.
+
+
+ 
