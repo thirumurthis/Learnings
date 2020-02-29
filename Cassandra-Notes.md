@@ -15,7 +15,17 @@
   Commodity Hardware is a device or component that is relatively inexpensive, 
   widely available and more or less interchangeable with other hardware of its type.
   ```
-  - No `Master-slave` architecture invoved, it is `peer-peer` type.
+  - No `Master-slave` or `leader-follower` architecture invoved, it is `peer-peer` type.
+     - When using `Leader-follower` leader will coordinate with the follower node
+     - Follower node are copy of leader node.
+     - `sharding` - data spread over multiple node
+     - If the leader node goes down, new leader to be elected and delays.
+   - `Peer-peer` is used in Cassandra
+      - No node is leader no node is follower, all are the same.
+      - `Coordinator` takes the data from client and writes the data async to corresponding node. This also sends data correct replica nodes.
+      - What happens if the cluster splits down, Cassandra handles the split automatically. 
+        - Each node still online that can be seen by client can write the data. 
+        - This is configurable, consistency level.
   
   ### What is Cassandra?
   
