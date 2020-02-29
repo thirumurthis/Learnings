@@ -647,7 +647,50 @@ column name | data type | column size | column_usage (%) |Expected column storag
 |serial_num | text | 12 (avg length) | 50 | 6 | 
 
 Expected_row_storage = 16 + 16 + 2.4 + 6 = 40.4 bytes
+
 Row overhead = 23 bytes
 
 Expected row storage with overhead = 63.4 bytes
+
 For 10,000 number of rows, then 634,000 bytes.
+
+--------------
+
+##### Ring/ Cluster
+
+When we need to handle more load/capacity, we can add more node/servers.
+
+Data coming to the cluster, is recieved by any node in the cluster. This node that recives the data to write is called as `coordinator` node. 
+
+Job of the coordiator node is to send the data to the node that handles that range of partition. 
+
+Each node is responsible for a range of data (partition hash), this is known as `token range`. 
+Knowing the token range, the coordiantor node sends the data to that corresponding node. That particular node writes the data and sends acknowldgement/response to the client.
+
+Range of the token/partition hash: 2^63-1 to -2^63 
+This range is distributed accross the ring/cluster.
+
+`Partitioner` - determines how the partition hash/ data is distributed among the ring/cluster.
+If partitioner didn't work as expected the range will be distributed unevenly, where some nodes are overloaded when others doesn't have issue.
+
+Use `Murmur3` or `MD5` partitioner, which will evenly distribute data in random fashion. 
+
+##### when a node joins cluster
+- There is no downtime when the node joins ring.
+- Gossips to the seed nodes. (seed node list among the possible nodes from cassandra.yaml)
+- The other nodes calculate where the new node to fit within the ring. (this can be manual/automatic)
+- The other node streams the data to the new node.
+- Four stages to each the node:
+     - JOINING (During this phase the node is still recieving data, but not fully joined and not ready for reads) 
+     - LEAVING
+     - UP
+     - DOWN
+- During joining phase of node, when the driver connects to cassandra cluster it participates in exchange of the data. When driver connects it understands the token ranges and will store the informaton locally. The dirver is aware of the token ranges belongs to which node and which replicas. This is called `tokenAwarePolicy` of driver.
+
+Different types of policy:
+    - `TokenAwarePolicy` - driver chooses the node which contains the data
+    - `RoundRobinPolicy` - driver will perform round robin the ring, relys on `coordinator`
+    - `DCAwareRoundRobinPolicy` - round robin the data center
+
+In `tokenAwarePolicy` when data comes to the driver, it knows to which node holds the data needs to be sent thus eleminating the need for `coordinator` node involvement. 
+
