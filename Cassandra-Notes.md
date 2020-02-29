@@ -740,4 +740,11 @@ $ nodetool ring
 
 # after exeucting the ring command, could see each node responsible for smaller sections. 
 ```
+
+### Gossip 
+  - Broadcast protocol for disseminating data
+  - There is NO centeralized server that holds information, instead peer shares the information among themselves, maintaing only latest information automatically.
+  - Information spreads out to the cluster/ring in polynomial fashion
+  
+  
    
