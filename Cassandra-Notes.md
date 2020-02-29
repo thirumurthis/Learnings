@@ -717,5 +717,19 @@ In `tokenAwarePolicy` when data comes to the driver, it knows to which node hold
      - Execute the decommission process. (`nodetool decommission`)
         - During decommission, `nodetool status` will display LEAVING Status.
 
+### VNODES (virtual nodes)
+  - Uneven token range distribution in a ring/cluster. A good partioner will evenly distribute the token range.
+  - Adding and removing (recommission and decommissioning) nodes will have the nodes in the ring to have unbalanced token range for a short duration.
+  - Assume int this case where one of the Node is over-loaded with the partition hash range and a new node is added to the ring, the data will get streamed from the overloaded node to newly added node, which is again a overload to the same node with overloaded token range.
+  - Cassandras VNode feature is used to address this overloading issue.
+      - Vnode feature makes each physical node act more like several smaller VNodes.
+      - With VNode each physical node is responsible for smaller slices of ring of smaller size instead of single slice. With consistent hash all the nodes will roughly has same amount of data.
+      - When a new noded added with the VNode feature, instead of the new node taking over the token range from one specific node, the new node with Vnode feature will take part of the token range from each other node. Thus data streamed to the new node in more balanced way.
+      - VNode feature automatically manges the token range assignement, instead of administrator managing it.
+      - By default, each node has 128 Vnodes.
+      
+##### Configuring VNode
+   - using `num_tokens` in the cassandra.yaml file.
+   - value greater than 1 will turn on vnodes.
 
- 
+   
