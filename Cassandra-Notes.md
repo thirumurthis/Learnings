@@ -732,4 +732,12 @@ In `tokenAwarePolicy` when data comes to the driver, it knows to which node hold
    - using `num_tokens` in the cassandra.yaml file.
    - value greater than 1 will turn on vnodes.
 
+```
+# comment the initial_token value from cassandra.yaml file
+# add num_tokens = 128 
+# restart the cassandra service ( $ systemclt start cassandra)
+$ nodetool ring
+
+# after exeucting the ring command, could see each node responsible for smaller sections. 
+```
    
