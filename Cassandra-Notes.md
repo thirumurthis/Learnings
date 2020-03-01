@@ -822,5 +822,25 @@ $ nodetool ring
    - To change the network topology, all the nodes needs to be restarted.
    - Once the nodes are up, then `repair` and `cleanup` on each node.
    
-   
+   ### Sample Cassandra.yaml for DSE configuration
+   ```
+   ubuntu@ds201-node1:~/labwork$ ./config_node 
+modifying /home/ubuntu/node/resources/cassandra/conf/cassandra.yaml as follows:
+	num_tokens: 1
+	listen_addresss: 127.0.0.1
+	rpc_address: 127.0.0.1
+	seeds: 127.0.0.1, 127.0.0.2, 127.0.0.3
+	data_file_directories: /home/ubuntu/node/data/data
+	commitlog_directory: /home/ubuntu/node/data/commit-log
+	hints_directory: /home/ubuntu/node/data/hints
+	saved_caches_directory: /home/ubuntu/node/data/saved-caches
+	intital_token: 0
+	cdc_raw_directory: /home/ubuntu/node/data/cdc_raw
+	native_transport_port: 9042
+modifying /home/ubuntu/node/resources/cassandra/conf/cassandra-env.sh as follows:
+	MAX_HEAP_SIZE="512M"
+	HEAP_NEWSIZE="128M"
+	JMX_PORT="7199"
+
+   ```
       
