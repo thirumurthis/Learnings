@@ -767,7 +767,19 @@ $ nodetool ring
                - `LOAD=100.0`  (disk space usage)
   - Gossip is simple message protocol
     - The node insitiates the gossip to another node via a `SYN` message, this message stores a digestive information. Each digest info  stores the `End point: generation: version and complete heart beat`. For each node this node has information about.  
-    - The node that recives the SYN message knows what is currently information, towards in the SYN.
+    - The node that recives the SYN message knows what is currently information, towards information in the recived SYN message. When comparing the message the heart beat generation match but not the version information, this is a stale message. 
+    - In case if the version number in the reciveing node was less, then a ACK message which contains the digest information is sent back to the sender node. Using the ACK message, the Sender node understands that the Node B has information upto version 6.
+    - Not the Node B needs the updated version about the node 127.0.0.1, so Node A packs the updated information in ACK message instead of digest for node (127.0.0.1)     
+  ```
+  
+  Node A (Sender)                               Node B (Reciever)
+            SYN            ------------> 
+         {127.0.0.1:10:10}                        {127.0.0.1:10:6} (currrent version)
+         
+                          <--------------     ACK
+                                             {127.0.0.1:10:6}
+   When there is a difference in the version a ACK message is sent to the Sender                                          
+  ```
     
     
     
