@@ -824,7 +824,19 @@ $ nodetool ring
    
    ### Sample Cassandra.yaml for DSE configuration
    ```
-   ubuntu@ds201-node1:~/labwork$ ./config_node 
+# Modify the yaml file values - including:
+#       num_tokens: 1
+#       listen_address: 127.0.0.<1>?
+#       rep_address: 127.0.0.<1>?
+#       seeds: 127.0.0.1
+# installed directory
+#       data_file_directories: /home/thiru?/node/data/data
+#       commitlog_directory: /home/thiru?/node/data/commit-log
+#       hints_directory: /home/thiru/node?/data/hints
+#       saved_caches_directory: /home/thiru/node?/data/saved-caches
+   ```
+   ```
+thiru@thiru-node1:~/labwork$ ./config_node 
 modifying /home/ubuntu/node/resources/cassandra/conf/cassandra.yaml as follows:
 	num_tokens: 1
 	listen_addresss: 127.0.0.1
