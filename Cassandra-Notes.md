@@ -867,3 +867,10 @@ CREATE TABLE killrvideo.videos (
     AND min_index_interval = 128
     AND read_repair_chance = 0.0
 ```
+## INSTALL CASSANDRA DSE IN UBUNTU Virtualbox
+
+Follow this link [installation 6.7 DSE](https://docs.datastax.com/en/install/6.7/install/installTARdse.html)
+
+Unzip the tar file and then update the `cassandra.yaml` with the data location.
+
+Check the link for command that creates the data location or installation.
