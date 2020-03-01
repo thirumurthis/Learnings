@@ -745,14 +745,14 @@ $ nodetool ring
   - Broadcast protocol for disseminating data
   - There is NO centeralized server that holds information, instead peer shares the information among themselves, maintaing only latest information automatically.
   - Information spreads out to the cluster/ring in polynomial fashion
-  - Nodes can gossip with any numbe of nodes, there is no specifi order in which the nodes gossip.
-       - Node picks the node to gossip based on specifi criteria
+  - Nodes can gossip with any number of nodes, there is no specific order in which the nodes gossip.
+       - Node picks the node to gossip based on specific criteria
        - Seed nodes gets more probability of being choosen for gossip by any nodes.
        - Each node initates gossip round every second.
        - Chooses 1 to 3 random nodes to gossip with.
        - No Tracking available on which nodes where gossiped prior.
        - Gossip information spreads quickly, in reliable and efficient way.
-  - Gossip spreads Only node metadata.
+  - Gossip spreads only node metadata. Cluster metadata data structure
        - Each node has a datastructure called `Endpoint state`, this stores all the gossip state information of the node.
        - `Endpoint state` contains another data structure 
            - `Heartbeat state`, which tracks two values 
@@ -766,8 +766,10 @@ $ nodetool ring
                - `SCHEMA=abece...` (schema that mutated over time)
                - `LOAD=100.0`  (disk space usage)
   - Gossip is simple message protocol
+    - The node insitiates the gossip to another node via a `SYN` message, this message stores a digestive information. Each digest info  stores the `End point: generation: version and complete heart beat`. For each node this node has information about.  
+    - The node that recives the SYN message knows what is currently information, towards in the SYN.
     
-           
-       
-  
-   
+    
+    
+    
+    
