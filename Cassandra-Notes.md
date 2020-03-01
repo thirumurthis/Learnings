@@ -769,7 +769,10 @@ $ nodetool ring
     - The node insitiates the gossip to another node via a `SYN` message, this message stores a digestive information. Each digest info  stores the `End point: generation: version and complete heart beat`. For each node this node has information about.  
     - The node that recives the SYN message knows what is currently information, towards information in the recived SYN message. When comparing the message the heart beat generation match but not the version information, this is a stale message. 
     - In case if the version number in the reciveing node was less, then a ACK message which contains the digest information is sent back to the sender node. Using the ACK message, the Sender node understands that the Node B has information upto version 6.
-    - Not the Node B needs the updated version about the node 127.0.0.1, so Node A packs the updated information in ACK message instead of digest for node (127.0.0.1)     
+    - The Node B needs the updated version about the node 127.0.0.1, Node A sees that it has the more upto node data than the recieving node, so it packs the updated information in ACK2 message instead of digest for node (127.0.0.1). Thus the nodes gets updated.    -
+  
+  Gossip doesn't cause any network traffic compared to the data traffic.
+  
   ```
   
   Node A (Sender)                               Node B (Reciever)
@@ -780,8 +783,44 @@ $ nodetool ring
                                              {127.0.0.1:10:6}
    When there is a difference in the version a ACK message is sent to the Sender                                          
   ```
-    
-    
-    
-    
-    
+  
+  ### Snitch
+  - This reports a node's rack and data center, thus snitches determine the topology of a cluster.
+  - Snitch is configured on the cassandra.yaml file, `endpoint_snitch : SimpleSnitch`
+  - Types of snitch: Two groups,
+     | Regular | Cloud Based |
+     |--------|----------|
+     | SimpleSnitch| EC2MultiRegionSnitch|
+     | PropertySnitch| |
+     | GossipPropertiesFileSnitch| |
+     | DynamicSnitch| |
+     
+     - `Simple Snitch` 
+        - places all nodes in the same data center and rack. This is default snitch.
+     - `PropertySnitch` 
+        - reads datacenter and rack information for all node from  local configuration file called `cassandra-topology.properties`.
+        - The file should be kept in all the nodes and should be sync'ed with all the nodes in cluster.
+        - This is flexible than the SimpleSnitch.
+     - `GossipPropertiesSnitch` 
+        - Is the best compared to SimpleSnitch and PropertySnitch.
+        - Declare the current node datacenter and rack information in `cassandra-rackdc.properties` file individually.
+        - Gossip process spreads this infomration to other nodes.
+        ```
+          dc=DC1
+          rack=RAC0
+        ```
+     - `Rack Inferring Snitch`
+         - Infers the datacenter and rack info from IO address.
+         - This is not preffered because casues overhead.
+     - `DynamicSnitch`
+        - Acts as wrapper around the snitch you wanted to use, configured in the cassandra.yaml file.
+        - Its job is to monitor the cluster health and performance.
+        - Durning node needs interact with another replica node, this helps the node which cassandra node is performing the best so serves the better node.
+        
+   - Make sure the same snitch in all the nodes in the cluster. 
+   - If not using the same snitch, the cluster will go into incosistent state.
+   - To change the network topology, all the nodes needs to be restarted.
+   - Once the nodes are up, then `repair` and `cleanup` on each node.
+   
+   
+      
