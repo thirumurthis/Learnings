@@ -19,15 +19,16 @@ Not an complete documentation, this contains the abstract idea
   if any changes are made to code and pushed, ACR task will create the build: and contains the image registered
     
   **AKS** resource is created, along with service principle and RBAC to access the ACR resources
-    ```
+    
+```
       Create a deployment "yaml" script which defines the service, number replication, label of the cluster and pods
       
       kubectl CLI can be used to list the pods, scale, etc.
       $  kubeclt apply 
       
       # (above command deploys the image from the acr which takes the registered ACR and the image information)
-   ```
+```
    
- Reference [link](https://docs.microsoft.com/en-us/azure/aks/)
+Reference [link](https://docs.microsoft.com/en-us/azure/aks/)
     
   
