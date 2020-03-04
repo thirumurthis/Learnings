@@ -13,9 +13,10 @@ Not an complete documentation, this contains the abstract idea
   check [link](https://www.youtube.com/watch?v=VafY-qfpM8M)
     
   **Github/Gitlab**
-    use create **Azure Container Registry** (ACR) resource and create a Task; the task will access the git using the access token
+  
+    Create **Azure Container Registry** (ACR) resource and create a Task; the task will access the git using the access token
     
-    if any changes are made to code and pushed, ACR task will create the build and contains the image registered
+    if any changes are made to code and pushed, ACR task will create the build: and contains the image registered
     
     **AKS** resource is created, along with service principle and RBAC to access the ACR resources
     
