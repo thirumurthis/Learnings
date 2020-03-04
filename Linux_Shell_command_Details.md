@@ -477,3 +477,22 @@ EXECUTED AT : 09-12-19#45:18:10
 EXECUTED AT : 09-12-19#45:18:40
 
 ```
+
+# Linux ssh issue with `Too many authentication fauilures`
+
+```
+# below command will connect to the VM without any failures issue.
+# the other alertnate is to create ~/.ssh/conf file and set it up
+
+$ ssh -o IdentitiesOnly=yes thiru@thiru-vm
+
+<username@hostname>
+```
+
+# Linux SCP command, with `Too many authentication failures` issue
+```
+# below option will avoid the failures
+
+$ scp -o PubkeyAuthentication=no <file-name-to-be-copied> username@hostname:~/path
+
+```
