@@ -15,6 +15,8 @@ Not an complete documentation, this contains the abstract idea
   In this case Build will build the resource, test has to use the built resource, there should be a way to make stages communicate with each other. The build stage should store the artifacts. 
   In the yml file define the `artifacts`: ... section with the location where it should be located.
   
+  Enabling gitlab to communicate with the docker hub, check this link. provide access to docker with user name access.
+  Follow this reference [Link](https://docs.gitlab.com/ee/user/packages/container_registry/)
   
   Reference [link](https://www.youtube.com/watch?v=VafY-qfpM8M), [link2](https://www.youtube.com/watch?v=Jav4vbUrqII)
     
