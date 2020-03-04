@@ -9,7 +9,7 @@ Not an complete documentation, this contains the abstract idea
     use GitLab runner to build and test the image.    
     use Azure Kubernetes service to build the resource, once K8s service exposed to a IP.
     use K8s UI to deploy the image from the docker.io
-    ````
+  ```
   check [link](https://www.youtube.com/watch?v=VafY-qfpM8M)
     
   **Github/Gitlab**
