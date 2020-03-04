@@ -10,7 +10,7 @@ Not an complete documentation, this contains the abstract idea
     use Azure Kubernetes service to build the resource, once K8s service exposed to a IP.
     use K8s UI to deploy the image from the docker.io
   ```
-  check [link](https://www.youtube.com/watch?v=VafY-qfpM8M)
+  Reference [link](https://www.youtube.com/watch?v=VafY-qfpM8M)
     
   **Github/Gitlab**
   
@@ -27,6 +27,7 @@ Not an complete documentation, this contains the abstract idea
       
       # (above command deploys the image from the acr which takes the registered ACR and the image information)
    ```
-   Check [link](https://docs.microsoft.com/en-us/azure/aks/)
+   
+ Reference [link](https://docs.microsoft.com/en-us/azure/aks/)
     
   
