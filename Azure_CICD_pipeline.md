@@ -4,13 +4,19 @@ Not an complete documentation, this contains the abstract idea
 
 ##### Using Azure Container Registry and AKS:
   
-  **Github/Gitlab** -> use git-ci.yml file to build the docker image and push to docker.io registry (or custom enterprise registry)
+  **Github/Gitlab** -> use gitlab-ci.yml file to build the docker image and push to docker.io registry (or custom enterprise registry)
   ```
     use GitLab runner to build and test the image.    
     use Azure Kubernetes service to build the resource, once K8s service exposed to a IP.
     use K8s UI to deploy the image from the docker.io
   ```
-  Reference [link](https://www.youtube.com/watch?v=VafY-qfpM8M)
+  
+  `gitlab-ci.yml` - file has different stages, for example if you build and test stage, each stage will be performing activites and deleting the resource. 
+  In this case Build will build the resource, test has to use the built resource, there should be a way to make stages communicate with each other. The build stage should store the artifacts. 
+  In the yml file define the `artifacts`: ... section with the location where it should be located.
+  
+  
+  Reference [link](https://www.youtube.com/watch?v=VafY-qfpM8M), [link2](https://www.youtube.com/watch?v=Jav4vbUrqII)
     
   **Github/Gitlab**
   
