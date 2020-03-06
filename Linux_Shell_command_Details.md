@@ -133,10 +133,10 @@ $ ./sampleScript.sh 1
   [online linux terminal](https://bellard.org/jslinux)
 
 
-# Using set -o for option name (set is built-in command and use [documentation](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html))
+### Using set -o for option name (set is built-in command and check [documentation](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html)) flow up of above demonstration to stop the script from proceeding further in case of exception.
 
 ```
-# below command will output hello in the terminal (instead of using a shell script using the below convenstion)
+# below command will output hello in the terminal (instead of using a shell script using the below convention)
 /bin/bash -c 'set -e; set -o pipefail; ls >& /dev/null;echo "hello"; wait'
 
 # below command will not ouput anything since the ls command has incorrect options or switch
