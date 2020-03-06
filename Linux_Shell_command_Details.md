@@ -496,3 +496,19 @@ $ ssh -o IdentitiesOnly=yes thiru@thiru-vm
 $ scp -o PubkeyAuthentication=no <file-name-to-be-copied> username@hostname:~/path
 
 ```
+
+# find command to find files and change the permissions
+```
+# list the files
+# -type f => for regular files.
+# -type d => for directories
+# -type l => symbolic links
+# use exec rather using xargs
+$ find . -type f -print0 | xargs -0 chmod 775
+
+# lists the files in single line
+$ find . -type f -print0 | xargs -0 
+
+# lists the files in new line
+find . -type f -print | xargs -0 
+```
