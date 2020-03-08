@@ -47,45 +47,44 @@ Note:
   - When any merge happens to master `deploy stage` will happen.
 
 ```yaml
-image: ubuntu:latest
-variable
-     WORKING_DIR: ${CI_PROJECT_NAME}
-	 BRANCH: ${CI_COMMIT_REF_NAME}
-	 REPOSITORY: <git project url eg. https://gitlab.com/user/project.git>
+--- 
+deploy: 
+  before_script: 
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - "mkdir -p ~/.ssh"
+    - "eval $(ssh-agent -s)"
+    - "[[ -f /.dockerenv ]] && echo -e \"Host *\\n\\tStrictHostKeyChecking no\\n\" > ~/.ssh/config"
+  only: 
+    - master
+  script: 
+    - "ssh-add < (echo \"$PR_KEY\")  //Variable declared in the gitlab settings."
+    - "rm -rt .git   // remove any git references"
+    - "ssh -o StrictHostJeyChecking=no username@\"$SERVER-DEV\" \"rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};\"  // add other commands that needs to be executed like install, deploy instruction"
+  stage: deploy
+image: "ubuntu:latest"
+stages: 
+  - test
+  - deploy
+test: 
+  before_script: 
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - "mkdir -p ~/.ssh"
+    - "eval $(ssh-agent -s)"
+    - "[[ -f /.dockerenv ]] && echo -e \"Host *\\n\\tStrictHostKeyChecking no\\n\" > ~/.ssh/config"
+  except: 
+    - master
+  only: 
+    - branches
+  script: 
+    - "ssh-add < (echo \"$PR_KEY\")  //Variable declared in the gitlab settings."
+    - "rm -rt .git   // remove any git references"
+    - "ssh -o StrictHostJeyChecking=no username@\"$SERVER-TEST\" \"rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};\"  // add other commands that needs to be executed like install"
+  stage: test
+variable: 
+  BRANCH: "${CI_COMMIT_REF_NAME}"
+  REPOSITORY: "<git project url eg. https://gitlab.com/user/project.git>"
+  WORKING_DIR: "${CI_PROJECT_NAME}"
 
-stages:
-     - test
-     - deploy
-  
-test:
-     stage: test
-	before_script:
-	- 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-	- mkdir -p ~/.ssh
-	- eval $(ssh-agent -s)
-	- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
-	script:
-	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
-		- rm -rt .git   // remove any git references
-		- ssh -o StrictHostJeyChecking=no username@"$SERVER-TEST" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
-	only:
-	    - branches
-	 except:
-	    - master
-		
-deploy:
-     stage: deploy
-	 before_script:
-	- 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-	- mkdir -p ~/.ssh
-	- eval $(ssh-agent -s)
-	- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
-	script:
-	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
-		- rm -rt .git   // remove any git references
-		- ssh -o StrictHostJeyChecking=no username@"$SERVER-DEV" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
-	 only:
-	    - master
 ```      
 
 Courtesy: 
