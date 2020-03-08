@@ -37,3 +37,47 @@ The steps in the pipeline will list the pull and push info, that is specified. T
 ##### Variables in Gitlag
 Create variable in gitlab `Settings -> CI/CD -> Variable (expand)` add variables.
 This variables can be used within the `.gitlab-ci.yml` file.
+
+Sample `.gitlab-ci.yml` file:
+
+```yaml
+image: ubuntu:latest
+variable
+     WORKING_DIR: ${CI_PROJECT_NAME}
+	 BRANCH: ${CI_COMMIT_REF_NAME}
+	 REPOSITORY: <git project url eg. https://gitlab.com/user/project.git>
+
+stages:
+     - test
+     - deploy
+  
+test:
+     stage: test
+	 before_script:
+	 - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+	 - mkdir -p ~/.ssh
+	 - eval $(ssh-agent -s)
+	 - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
+	 script:
+	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
+		- rm -rt .git   // remove any git references
+		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
+	 only:
+	    - branches
+	 except:
+	    - master
+		
+deploy:
+     stage: deploy
+	 before_script:
+	 - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+	 - mkdir -p ~/.ssh
+	 - eval $(ssh-agent -s)
+	 - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
+	 script:
+	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
+		- rm -rt .git   // remove any git references
+		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
+	 only:
+	    - master
+```      
