@@ -34,3 +34,5 @@ The pipeline will execute and push the image to the container registry. After ex
 
 The steps in the pipeline will list the pull and push info, that is specified. There are default .gitlab-ci.yml template to play with.
 
+##### Variables in Gitlag
+Create variable in gitlab `Settings -> CI/CD -> Variable (expand)` add variables.
