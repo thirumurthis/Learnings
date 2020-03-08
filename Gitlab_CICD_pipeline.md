@@ -40,7 +40,11 @@ This variables can be used within the `.gitlab-ci.yml` file.
 
 Sample `.gitlab-ci.yml` file:
 
-Note: SERVER is the actual VM which needs to be deployed or tested.
+Note: 
+  - SERVER is the actual VM which needs to be deployed or tested.
+  - ssh command below will execute the steps in that vm.
+  - So when any commit is pushed to branch, only the `test stage` will be kick started.
+  - When any merge happens to master `deploy stage` will happen.
 
 ```yaml
 image: ubuntu:latest
@@ -63,7 +67,7 @@ test:
 	script:
 	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
 		- rm -rt .git   // remove any git references
-		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER-TEST" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
+		- ssh -o StrictHostJeyChecking=no username@"$SERVER-TEST" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
 	only:
 	    - branches
 	 except:
@@ -79,7 +83,10 @@ deploy:
 	script:
 	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
 		- rm -rt .git   // remove any git references
-		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER-DEV" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
+		- ssh -o StrictHostJeyChecking=no username@"$SERVER-DEV" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
 	 only:
 	    - master
 ```      
+
+Courtesy: 
+Reference [1](https://www.youtube.com/watch?v=Mj-RdXlNE9E&list=PLaFCDlD-mVOlnL0f9rl3jyOHNdHU--vlJ&index=9)
