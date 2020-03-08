@@ -24,8 +24,10 @@ Note:
 
 By default after 8.8 version of Gitlab the `Container Registry` enabled by default. 
 
-Documentation Link to add docker login info and use the docker images from the container registry. 
-    - Use the command to pull the docker image (`$ docker pull <registry.gitlab..image>`) if it needs to be shared or executed locally.
+Documentation Link to add docker login info and use the docker images from the container registry.
+
+  - Use the command to pull the docker image (`$ docker pull <registry.gitlab..image>`) if it needs to be shared or executed locally.
+  
 [Gitlab Container registry docs](https://gitlab.com/help/user/packages/container_registry/index)
 
 The pipeline will execute and push the image to the container registry. After execution check for image version under `package -> Container Registr`.
