@@ -36,3 +36,4 @@ The steps in the pipeline will list the pull and push info, that is specified. T
 
 ##### Variables in Gitlag
 Create variable in gitlab `Settings -> CI/CD -> Variable (expand)` add variables.
+This variables can be used within the `.gitlab-ci.yml` file.
