@@ -53,16 +53,16 @@ stages:
   
 test:
      stage: test
-	 before_script:
-	 - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-	 - mkdir -p ~/.ssh
-	 - eval $(ssh-agent -s)
-	 - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
-	 script:
+	before_script:
+	- 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+	- mkdir -p ~/.ssh
+	- eval $(ssh-agent -s)
+	- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
+	script:
 	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
 		- rm -rt .git   // remove any git references
 		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
-	 only:
+	only:
 	    - branches
 	 except:
 	    - master
@@ -70,11 +70,11 @@ test:
 deploy:
      stage: deploy
 	 before_script:
-	 - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-	 - mkdir -p ~/.ssh
-	 - eval $(ssh-agent -s)
-	 - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
-	 script:
+	- 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+	- mkdir -p ~/.ssh
+	- eval $(ssh-agent -s)
+	- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config'
+	script:
 	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
 		- rm -rt .git   // remove any git references
 		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
