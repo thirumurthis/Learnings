@@ -40,6 +40,8 @@ This variables can be used within the `.gitlab-ci.yml` file.
 
 Sample `.gitlab-ci.yml` file:
 
+Note: SERVER is the actual VM which needs to be deployed or tested.
+
 ```yaml
 image: ubuntu:latest
 variable
@@ -61,7 +63,7 @@ test:
 	script:
 	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
 		- rm -rt .git   // remove any git references
-		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
+		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER-TEST" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install
 	only:
 	    - branches
 	 except:
@@ -77,7 +79,7 @@ deploy:
 	script:
 	    - ssh-add < (echo "$PR_KEY")  //Variable declared in the gitlab settings.
 		- rm -rt .git   // remove any git references
-		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
+		- ssh -o StrictHostJeyChecking=no ubuntu@"$SERVER-DEV" "rm -rf ~/${WORKING_DIR}; mkdir ~/${WORKING_DIR}; git clone -b ${BRANCH} ${REPOSITORY}; cd ~/${WORKING_DIR};"  // add other commands that needs to be executed like install, deploy instruction
 	 only:
 	    - master
 ```      
