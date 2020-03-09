@@ -604,3 +604,20 @@ $ bzip2 mytar
 $ xz mytar
 // use xz --help for more options
 ```
+
+# viewing the file using `more`, `less`, `tail`, `head` usage
+ more - one way navigation, provides a percentage at the bottom.
+ less - allows to move backwards and forward, this is more useful.
+ ```
+ $ cat input.txt | less
+ 
+ # tail to display last 10 lines of a file
+ $ tail -n 10 input.txt
+ 
+ # to open and stream the file content in real time using -f, helpful in the log file viewing
+ $ tail -f input.txt
+ //use cntrl + c to come out.
+ 
+ # head to display first 10 lines of a file
+ $ head -m 10 input.txt
+ ```
