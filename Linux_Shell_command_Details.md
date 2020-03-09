@@ -512,3 +512,11 @@ $ find . -type f -print0 | xargs -0
 # lists the files in new line
 find . -type f -print | xargs -0 
 ```
+
+# Different types of compression
+Below are few different type of compression techniques, xy is the latest one which is slow but efficient compressions
+```
+bz2
+gzip
+xy
+```
