@@ -621,3 +621,21 @@ $ xz mytar
  # head to display first 10 lines of a file
  $ head -m 10 input.txt
  ```
+ 
+ # commands `cut`, `sort`, `tr` 
+  cut - to cut 
+  sort - to sort
+  tr - to translate
+  ```
+  # cut the field
+  $ cut -f 3 -d : /etc/passwd | sort | less
+  // -f field followed by field number.
+  // -d delimeter to cut
+  
+  # sort to use number or numeric sort using -n
+  $ cut -f 3 -d : /etc/passwd | sort -n | less
+  
+  # translate: lower cast to upper case
+  $ cut -f 1 -d : /etc/passwd | tr [:lower:] [:upper:]
+  // usage of tr [a-z] [A-Z] is available to use but incase of special char it will cause issues.
+  ```
