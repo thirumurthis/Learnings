@@ -513,10 +513,94 @@ $ find . -type f -print0 | xargs -0
 find . -type f -print | xargs -0 
 ```
 
-# Different types of compression
-Below are few different type of compression techniques, xy is the latest one which is slow but efficient compressions
+# Command to display the content of file in unix, using `cat` and `tac`
+
+cat filename => will display the content of the text starting from first line
+tac filename => will display the content in reverse way
+##### Use git-bash Windows/Linux application 
 ```
-bz2
-gzip
-xy
+$ vi input.txt
+1
+2
+3
+
+$ cat input.txt
+1
+2
+3
+
+$ tac input.txt
+3
+2
+1
+```
+##### `cat` command and additional useful options `-A` , `-b`, `-s`
+```
+$ cat -A input.txt
+// -A displays the non-printalbe characters, in this case the EOF (end of line) with $
+
+$ cat -b input.txt
+// -b displays the line number
+
+$ cat -s input.txt
+// -s suppress repeated empty lines
+```
+
+# `file` command to find the type of the file
+Unix doesn't need a extension of the file to identify the type of file
+```
+# use the file command 
+$ file input.txt
+
+$ file intput.sh
+```
+
+# Different types of compression and usage of `tar` command
+`tar` - Tape Archiver, by default it _**doesn't**_ compress data.
+
+By default the folder will be removed and the tar file will be created.
+
+The usage of '-' in tar option is optional, only in few commands.
+```
+# to create a tar file
+$ tar -cvf <filename.tar> /path-of-dir-file-to-tar1 /path-of-dir-file-to-tar2
+$ tar -cvf mytar.tar /home /etc
+
+# Redirect the tar file creation to different path, output the created tar to different path.
+$ tar -cvf mytar.tar /home /etc -C /tmp 
+
+# to list the content of the tar file
+$ tar -tvf mytar.tar
+
+# To extract the tar file 
+$ tar xvf mytar.tar
+
+```
+##### Compress options with the `tar` file itself 
+```
+#-z is for gzip
+#-j is for bzip2
+#-J is for xz
+```
+
+##### Below are few different type of compression techniques, xy is the latest one which is slow but efficient compressions
+  - bz2
+  - gzip
+  - zip
+  - xz
+```
+# to gzip use the command
+$ gzip directory-name
+$ gzip mytar
+// The gzip adds the extension .gz automatically
+
+# to un-gzip use the command
+$ gunzip mytar.gz
+
+# using bzip2
+$ bzip2 mytar
+
+# using xz compression
+$ xz mytar
+// use xz --help for more options
 ```
