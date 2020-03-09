@@ -161,7 +161,7 @@ use:
  : 1,10d
  ```
  
- # How to Fix “SSH Too Many Authentication Failures” Error
+ # How to Fix `SSH Too Many Authentication Failures` Error
 [Link](https://www.tecmint.com/fix-ssh-too-many-authentication-failures-error/)
 
 ```
@@ -497,7 +497,7 @@ $ scp -o PubkeyAuthentication=no <file-name-to-be-copied> username@hostname:~/pa
 
 ```
 
-# find command to find files and change the permissions
+# `find` command to find files and change the permissions
 ```
 # list the files
 # -type f => for regular files.
