@@ -390,7 +390,7 @@ uname -n | cut -d'.' -f1
  1232 ps 
 ```
 
-# command to print the port usage
+# command to print the port usage (note new command is `ss` like `$ sudo ss -tulp | grep ":22"` )
 ```
  netstat -nt | grep :22
  # output
