@@ -1,15 +1,34 @@
-Building docker image (using docker build)
+# Building docker image (using docker build)
+```
+$ docker build -t <tag-name> <path-of-Dockerfile> -name <name-of-image>
 
-Running docker image in container (using docker container run)
-  Running docker as dettached mode or in background 
-  
-View docker images list (using docker image ls)
+## name of image is optional
+```
 
-Trobuleshoot docker network
+#Running docker image in container (using docker container run)
+```
+$ docker run -p 8080:8080 <name-of-image>
 
-Using jib for deployment process.
+## -p = publish <host-port-number>:<guest-or-container-port>  (alternate --publish)
+## -d = to execute in detached mode (alternate --detach)
+```
+    
+# View docker images list (using docker image ls)
+```
+$ docker image ls
+$ docker images 
+```
 
-Using multiple stages in Dockerfile
+# View docker container process that is running
+```
+$ docker ps
+```
+
+# Trobuleshoot docker network use `docker-machine` refer the below topics
+
+Maven plugin `jib` can be used for deployment process. This will automate the process of creating the image and pushing it to dockerhub or private repository.
+
+# Example of using multiple stages in Dockerfile
 
  FROM <image-name-from-registry> as <stage-name>
  ADD
@@ -18,7 +37,7 @@ Using multiple stages in Dockerfile
 
 [Docker command list](https://gist.github.com/thirumurthis/b90b8d89d55c2856c707708071c252e1)
 
-# Docker
+# `Dockerfile` and `'dockerignore`:
 
 Sample docker file (.dockerignore - similar to .gitignore)
 ```
@@ -31,28 +50,31 @@ CMD ["java", "-jar", "/app/test/customer-0.0.1-SNAPSHOT.jar"]
 ```
 _Note:_ RUN mkdir /app/test - didn't work in this case since and had to use WORKDIR
 
---------------------
- ##### list the images created
+## list the images created (revisiting)
 ```
 # lists the docker image
 > docker images
 > docker image -ls 
 ```
 
-##### build the images
+## build the images (revisiting)
 ```
 > docker build -t <image-name> 
   : -t is tagging a name
 ```
 
-##### command to run the container
+## command to run the container (revisting)
 ```
 > docker run -p 8080:8080 -d <containername> 
   : -p publish to port from container to the local
   Note: in case of Windows 10 the deployed spring book application was not accessible
   Try default container ip <http://192.168.99.100:8080/>
 ```  
-##### Docker toolbox to identify the `default container ip` [docker toolbox](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
+
+##### Docker toolbox to identify the `default container ip` 
+
+[Docker toolbox](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
+
 ```
 > docker-machine ip default
 ```
@@ -86,7 +108,7 @@ $ mvn jib:build -P<provilename>
 > docker image history <image-name>
 ```
 
-# pushing the image to the docker hub
+# pushing the image to the docker hub (if the :versionnumber is not provded it would be considered as latest)
 ```
 docker tag <name> <username/project-name>:0.0.1
 
@@ -115,3 +137,8 @@ default   *        virtualbox   Running   tcp://192.168.99.107:2376           v1
   The name of the machine is default
   
 ##### Once logged into the machine, then sudo it using `sudo -i` to be as root user..
+```
+[docker@default] $ sudo su -
+or
+[docker@default] $ sudo -i
+```
