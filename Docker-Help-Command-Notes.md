@@ -5,7 +5,7 @@ $ docker build -t <tag-name> <path-of-Dockerfile> -name <name-of-image>
 ## name of image is optional
 ```
 
-#Running docker image in container (using docker container run)
+# Running docker image in container (using docker container run)
 ```
 $ docker run -p 8080:8080 <name-of-image>
 
