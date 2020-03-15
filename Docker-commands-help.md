@@ -94,3 +94,24 @@ docker image ls
 
 docker push <username/project-name>:0.0.1
 ```
+
+# To login to the local `Docker` image once the toolbox is started, use the below command
+```
+$ docker-machine ssh
+
+## in case if the above command prompts for user-id/password try docker/tcuser.
+## else find the machine name and try ssh with machine name.
+```
+
+# To list the `docker` bare metal machine status use
+```
+$ docker-machine ls
+
+## output 
+NAME      ACTIVE   DRIVER       STATE     URL                         SWARM   DOCKER     ERRORS
+default   *        virtualbox   Running   tcp://192.168.99.107:2376           v19.03.5
+```
+**Note:**
+  The name of the machine is default
+  
+##### Once logged into the machine, then sudo it using sudo -i (identity file)
