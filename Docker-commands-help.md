@@ -114,4 +114,4 @@ default   *        virtualbox   Running   tcp://192.168.99.107:2376           v1
 **Note:**
   The name of the machine is default
   
-##### Once logged into the machine, then sudo it using sudo -i (identity file)
+##### Once logged into the machine, then sudo it using `sudo -i` to be as root user..
