@@ -133,21 +133,21 @@ ssh username@hotsname2 "free -h"
 
 ##### Troubleshoot the connectivity in case of ssh
 
-i. Using ssh, there is no response for a long time, then check if the fire wall has the port opened for inbound traffic.
+**i.** Using ssh, there is no response for a long time, then check if the fire wall has the port opened for inbound traffic.
 
-  - Sometimes firewall is setup to block unintended traffic to the server.
-(In AWS EC2 the firewall is called `security group`.)  
+  - Sometimes firewall is setup to block unintended traffic to the server.(In AWS EC2 the firewall is called `security group`.)  
   - `Inbound` => Traffic that is going into the machine. Connectivity issue is usually in inbound, since we are trying to connect to the machine.
   - `Outbound` => Traffic that is going out of the machine
 
-ii. If the inbond traffic rule is set and enable, then try using `ping ip-address/hostname` command. If ping is responding with 0% packet loss, then if `telnet ip-address/hostname` to see any response. `telnet` is NOT enabled in most of the cases.
+**ii.** If the inbond traffic rule is set and enable, then try using `ping ip-address/hostname` command. If ping is responding with 0% packet loss, then if `telnet ip-address/hostname` to see any response. `telnet` is NOT enabled in most of the cases.
 
 **`Note:`**
     `mc hostname/dns-name port#` - alternate command for `telnet` since it is not installed in most of the machine. [cygwin mc prompts a different window.]
 
-iii. If the connection is established from a client, and for some reason a new session is not able getting established. Then there is a possiblity that the `sshd` service is down on the server.
+**iii.** If the connection is established from a client, and for some reason a new session is not able getting established. Then there is a possiblity that the `sshd` service is down on the server.
 
-In the server see if the sshd service is running and restart.
+##### In the server see if the sshd service is running and restart.
+
 ```
 $ sudo systemctl status sshd
 # output:  
