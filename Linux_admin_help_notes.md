@@ -174,4 +174,262 @@ $ sudo systemctl restart sshd
 # To Stop the sshd service
 $ sudo systemctl stop sshd
 ```
+### Profile file, which controls the environment for that user or shell.
+
+To see what is the shell being used use `which shell` command.
+
+Check for the profile file, in most of the case `bash` or `ksh` shell will be used. `csh` is not rare.
+
+```
+ $ ls -lrta ~/
+ # or 
+ $ cd ; ls -lrta;
+ $ cat .bash_profile
+ # this file runs .bashrc part of the profile itself
+ 
+ # any modification to the .bash_profile file can be made effective by executing 
+ $ . ~/.bash_profile
+ 
+ # Else logout and login to the machine, if GUI exists open a new terminal.
+```
+
+### `env` command for displaying the default runtime environment details for that session
+
+```
+$ env
+```
+
+### Setting up an `alias` command in .bash_profile
+
+```
+$ vi ~/.bash_profile
+
+alias l="ls -lrta"
+
+## logout and login or execute . ~/.bash_profile
+```
+
+**`Note:`**
+  - No hard rule whether to update the `.bash_profile` or `.bashrc`. 
+  - There is hirearchy, any value in .bash_profile will been override if the same exists in .bashrc. 
+  
+# `touch` command to create a marker file, this helps in shell scripting to indicate that the process is completed.
+
+```
+$ touch filename
+
+## if the filename exists the time stamp is updated.
+## if the filename is NOT exists the new file is created and timestamp is updated.
+```  
+
+### `stdinput - 0`, `stdoutput - 1`, `stderr -2` redirection
+
+Redirect the standard input and error of an command
+```
+ $ someprocess > standardout.out 2> standarderr.out
+ 
+ # > is simple representation of 1> in Linux
+```
+
+Redirect to a null device
+```
+  $ someprocess > /dev/null
+```
+### Redirecting to `standardout` in shell script 
+```
+### sample.sh
+#! /bin/sh
+ echo "somecontent" >&1
+
+## when executing the shell script
+$ sh sample.sh >> test.out
+$ cat test.out 
+somecontent
+```
+
+### Permissions for a file by default is controlled by `umask` value.
+
+```
+$ umask
+0022
+
+## Determining how the umask is used for computing permissions of directory and file
+## DIRECTORY:  777 - 022(umask value) = 111 111 111 - 000 010 010 = 111 101 101 (rwx r-x r-x) 
+## FILE:       666 - 022(umask value) = 110 110 110 - 000 010 010 = 110 100 100 (rw- r-- r--)
+```
+`ls -lrt` command will list the owner and group of the file respective order. 
+
+Moving ownership of file, only if the user has access to the groups can change the permission using `chown`.
+
+With sudo the ownership can be changed among any available user.
+```
+$ id <username>
+# above provides list of access 
+[vagrant@chefnode1 ~]$ id vagrant
+uid=1000(vagrant) gid=1000(vagrant) groups=1000(vagrant)
+```
+
+**`Note:`**
+  - with `chown` the group name can also be changed. 
+    - Use command like `$ chown <owner-name>:<group-name-that-needs-to-be-changed> filename-or-foldername`.
+  
+`$ chgrp ` can only be used to change group not the ownership.  
+
+# `ACL` (Access Control List) using `setfacl` and `getfacl`
+ - Best practice in production environment is not to use 777 permission on a directory or files.
+ - To provide elevated privleges, we can use ACL.
+ 
+ [Reference Topic](https://www.linux.com/tutorials/how-manage-users-groups-linux/)
+ 
+##### To see if the file is already having a ACL, use the command `getfacl filename`
+```
+[vagrant@chefnode1 ~]$ getfacl test1.txt
+# file: test1.txt
+# owner: vagrant
+# group: vagrant
+user::rw-
+group::rw-
+other::r--
+```
+
+##### Managing the ACL in file and use the `setfacl -M` command. Check the help of the command.
+For a single user below is the command
+```
+# setfacl -m <u/g/o>:<name-of-user>:<permission-to-grant> file
+
+$ setfacl -m u:vagrant:r filename
+# above will create additional user read access
+```
+
+# Creating user in Linux using `useradd`, sudo access is required to execute.
+
+`useradd` and `adduser` are same, `adduser` inturn calls `useradd`
+```
+$ useradd centos8
+# above command creates an user centos8
+
+$ cat /etc/passwd
+# above command displays the user information that was created.
+
+[vagrant@chefnode1 ~]$ cat /etc/passwd | grep -i centos8
+centos8:x:1001:1001::/home/centos8:/bin/bash
+```
+
+##### List default config for `useradd -D`
+```
+$ useradd -D
+[vagrant@chefnode1 ~]$ useradd -D
+GROUP=100
+HOME=/home
+INACTIVE=-1
+EXPIRE=
+SHELL=/bin/bash
+SKEL=/etc/skel
+CREATE_MAIL_SPOOL=yes
+```
+
+##### List the groups in the Linux using `$ cat /etc/group`
+```
+[vagrant@chefnode1 ~]$ cat /etc/group | grep -i centos
+centos8:x:1001:
+```
+### Added new user and group, add the new user to that group using `groupadd` and `usermod`
+```
+[vagrant@chefnode1 ~]$ sudo groupadd vagrant
+[vagrant@chefnode1 ~]$ sudo usermod -a -G vagrantbox centos8
+
+## After adding the user to the groyp
+[vagrant@chefnode1 ~]$ cat /etc/passwd
+centos8:x:1001:1001::/home/centos8:/bin/bash
+
+## Before adding check the above for cat /etc/passwd once creating the user.
+
+[vagrant@chefnode1 ~]$ cat /etc/group | grep -i vagrant
+vagrantbox:x:1002:centos8
+```
+##### `id` command on the username
+```
+[vagrant@chefnode1 ~]$ id centos8
+uid=1001(centos8) gid=1001(centos8) groups=1001(centos8),1002(vagrantbox)
+```
+
+### logs in most cases will be under `/var/log` directory
+### To find the list of logs that are modified last 24 hours
+```
+$ find . -name "*.log" -mtime -1
+```
+
+### To find the list of files that was modified 7 days ago
+```
+$ find . -name "*.log" -mtime +7
+
+## to see the file dates
+$ find . -name "*.log" -mtime +7 | xargs ls -lrt
+```
+
+### To search a string within the files in the log directory that was modified within last 24 hours using `xargs`
+
+`xargs` - will pass the content of the file in the below case as input to `grep` command.
+```
+$ find . -name "*.log" -mtime -1 | xargs grep -i error 
+## each file from the find will be passed as argument to grep command by xargs
+
+[vagrant@chefnode1 ~]$ sudo find /var/log -name "*.log"  -mtime -1 | xargs sudo grep -i error
+/var/log/tuned/tuned.log:2020-01-04 21:24:26,356 ERROR    tuned.plugins.plugin_cpu: Failed to set energy_perf_bias on cpu 'cpu0'. Is the value in the profile correct?
+/var/log/tuned/tuned.log:2020-03-08 06:35:20,325 ERROR    tuned.plugins.plugin_cpu: Failed to set energy_perf_bias on cpu 'cpu0'. Is the value in the profile correct?
+```
+
+### To use the xargs within ls command
+```
+$ ls -1 /var/log/*.log | xargs grep -i error
+```
+
+### Challenge #1: From the below file, find the number of occurance of the words
+```
+# content of the input.txt file
+1,2,3,ONE
+1,2,3,TWO
+1,2,3,ONE
+1,2,3,FOUR
+1,2,3,TWO
+1,2,3,TWO
+1,2,3,ONE
+1,2,3,ONE
+1,2,5,SEVEN
+
+# Command for the challenge
+$ cut -d, -f4 input.txt | sort | uniq -c
+#output
+      1 FOUR
+      4 ONE
+      1 SEVEN
+      3 TWO
+
+# uniq command compares the date with the next line, so better in most case to use it with sort pipe.
+
+# using awk command
+$ awk -F, '{print $4}' input.txt  | sort | uniq -c
+      1 FOUR
+      4 ONE
+      1 SEVEN
+      3 TWO
+```
+##### `awk` with if condition check
+Print the lines from the input, where the comma delimited second number is matching 4
+```
+# input.txt 
+1,2,3,ONE
+1,2,3,TWO
+1,2,3,ONE
+1,4,3,FOUR
+1,2,3,TWO
+1,4,3,TWO
+1,2,3,ONE
+1,2,3,ONE
+1,2,5,SEVEN
+
+$ awk -F, '{ if($2 == 4) print}' input.txt
+1,4,3,FOUR
+1,4,3,TWO
+```
 
