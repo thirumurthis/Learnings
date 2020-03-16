@@ -433,3 +433,10 @@ $ awk -F, '{ if($2 == 4) print}' input.txt
 1,4,3,TWO
 ```
 
+#### Challenge #2 : Using the same input as above, find the sum of 3 column delimited by , when second column value is 4
+```
+$  awk -F, -v SUM=0 ' $2 ==4 { SUM += $3} END  {printf "%d\n", SUM; }' input.txt
+
+-v = used to declare variable for the awk BEGIN END block.
+```
+
