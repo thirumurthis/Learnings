@@ -40,3 +40,12 @@ InStream input = new FileInputStream(New File("test/test-data.json"));
 InputStreamReader inReader = new InputStreamReader(input);
 ...
 ```
+
+In somecase below works
+```java
+ InputStream inputfile = this.getClass().getClassLoader()
+                .getResourceAsStream("input.json");
+        if(inputfile!=null) {
+            InputStreamReader inReader = new InputStreamReader(inputfile);
+            ..
+```
