@@ -32,6 +32,11 @@ console.log(numMapsqrt);
 
 const mapReduce = numArray.filter(n => n < 10).reduce((total,num)=>(total+num),0);
 console.log("map reduce : "+mapReduce);
+
+//Without functional approach
+const sum = numArray.reduce(function(total,num){
+  return total + age;
+  },0);
 ```
 
 For deploying this application in a simple server, use the chrome plugin `200 OK - web server for chorme` plugin. Refer the folder.
