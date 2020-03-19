@@ -27,10 +27,10 @@ echo $result
 
 ```sql
 SET SERVEROUTPUT ON SIZE UNLIMITED
-set heading off verify off feedback off echo off
+SET HEADING OFF VERIFY OFF FEEDBACK OFF ECHO OFF
 
 rem -----------
-rem COMMENTS go here
+rem COMMENTS goes here
 rem -----------
 
 -- arguments passed from the shell script sql execution
