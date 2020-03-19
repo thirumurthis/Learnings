@@ -38,10 +38,11 @@ SPOOL &1
 
 DECLARE
     COUNT NUMBER :=0;
+    QUERY_INPUT NUMBER := &2; -- input from shell script
 BEGIN
     DBMS_OUTPUT.PUT_LINE('STARTED, Time : ' || TO_CHAR(SYSDATE, 'DD-MON-YYYY HH24:MI:SS');
     
-    FOR index IN 1..10 
+    FOR index IN 1 .. QUERY_INPUT 
     LOOP
       COUNT := COUNT+1;
     END LOOP;
