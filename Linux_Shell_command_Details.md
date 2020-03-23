@@ -639,3 +639,10 @@ $ xz mytar
   $ cut -f 1 -d : /etc/passwd | tr [:lower:] [:upper:]
   // usage of tr [a-z] [A-Z] is available to use but incase of special char it will cause issues.
   ```
+
+  # String manipulation
+  ```unix
+   string=abcde
+   echo ${#string} // prints length of the string
+  ```
+[Reference](https://www.tldp.org/LDP/abs/html/string-manipulation.html)
