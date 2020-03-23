@@ -97,3 +97,10 @@ $ sh callingfun.sh
 
 # check the response
 ```
+
+# String manipulation
+```
+string=abcde
+echo ${#string} // prints length of the string
+```
+[Reference](https://www.tldp.org/LDP/abs/html/string-manipulation.html)
