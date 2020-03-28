@@ -1,8 +1,10 @@
-In a Client - Server based application, the application used a angular with data table component.
+#### Binding the request object to Spring controller (overriding the default binding)
 
-The data table component was usign ajax call to send data as GET query parameter which exceeds the httpmaxHeader config limits.
+In a Client - Server based application, the application used angular with data table component.
 
-Handling the client side request in Spring controller to automatically bind to object. (custom type converter)
+The data table component uses ajax call to send data as GET query, the parameter which exceeded the httpmaxHeader config limits in the tomcat configuration.
+
+To handling the client side request in Spring controller which bind to object, _**custom type converter**_ is used.
 
 
 Create annoation
