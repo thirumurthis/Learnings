@@ -46,7 +46,7 @@ $ java -jar -Dspring.profiles.active=prod application.jar
 $ java jar application.jar --spring.profiles.active=dev --spring.config.location=c:\config
 ```
 
-### Using profile using `@profile` annotation
+#### Defining profile using `@profile` annotation
 
  - Use the `@profile('dev')` annotation on the servce that is needs to be used for specific environment.
  - In `application.properties` specify the active profile usign `spring.profiles.active=dev`.
@@ -56,11 +56,13 @@ $ java jar application.jar --spring.profiles.active=dev --spring.config.location
 **`Note`**: 
   - In case of application.properties if there is specific property file defined any properties value missed in the specific property will be identifed by Spring from the applicaion properties itself.
  
-#### when the controller is in different package from the package where the SprinBoot main application is present, then use `@ComponentScan("com.pacakge.name.*")` to help spring context to discover the controller or service.
+### @ComponentScan
 
-#### `@RequestParam` and `@RequestBody` code example
+##### when the controller is in different package from the package where the SprinBoot main application is present, then use `@ComponentScan("com.pacakge.name.*")` to help spring context to discover the controller or service.
 
-#### EmployeeController.java
+### `@RequestParam` and `@RequestBody` Example
+
+##### EmployeeController.java
 ```java
 package com.restdemo.app.controller;
 
