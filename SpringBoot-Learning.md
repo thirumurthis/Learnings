@@ -86,11 +86,112 @@ public class EmployeeController {
 }
 
 ```
-
 ```
 Output:
   - once the application is deployed
   - use Postman or java code to connect to the API at 
        - GET : http://localhost:8080/employee
        - POST: http://localhost:8080/register/employee (update the Body with json content, content type application/json)
+```
+### `@ConfigurationProperties`
+- A way to group the properties .
+- These can be made type-safe configuration properties.
+- These properties can be inject in code, avoiding the need for using `@value` annotation everywhere.
+- .properties and .yaml is supported
+
+##### How to achive it.
+- using `@component` tagged with `@ConfigurationProperties`
+- The `@CongigurationProperties` should use the prefix, and the `@component` class properties should have the same name as the one in application properties.
+- Within the `@Component` validation can be performed as needed like `@Notnull`, etc. 
+
+```properties
+server.port=9090
+
+default.employee.employeeId=1
+default.employee.employeeName=default one
+
+custom.employee.employeeId=-1
+custom.employee.employeeName=minus one
+custom.employee.greetings=hello from custom properties
+```
+
+```java
+package com.restdemo.app.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
+//Default property of @configurationpropertiees is prefix
+@ConfigurationProperties("custom.employee")
+public class ConfigurePropertiesDemo {
+    //The name of the value should match the one present in properties file
+    private long employeeId;
+    private String employeeName;
+    private String greetings;
+
+    public long getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(long employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+
+    public String getGreetings() {
+        return greetings;
+    }
+
+    public void setGreetings(String greetings) {
+        this.greetings = greetings;
+    }
+}
+```
+
+```java
+package com.restdemo.app.controller;
+
+import com.restdemo.app.Data.Employee;
+import com.restdemo.app.config.ConfigurePropertiesDemo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class EmployeeController {
+
+    @Value("${default.employee.employeeName}")
+    private String empName;
+    @Value("${default.employee.employeeId}")
+    private long empId;
+
+    @Autowired
+    private ConfigurePropertiesDemo configuration;
+
+    @RequestMapping("/employee/custom")
+    public Employee customEmployee(@RequestParam(value = "employeeId",defaultValue = "0",required = false) long employeeId,
+                                @RequestParam(value= "employeeName", defaultValue = "default empName", required = false) String employeeName){
+        System.out.println(configuration.getGreetings());
+        //The configuration object is created using @Component and @ConfigurationProperties
+        //so the required properties can be grouped as needed.
+        return new Employee(configuration.getEmployeeId(),configuration.getEmployeeName());
+    }
+
+    @RequestMapping("/employee/default")
+    public Employee defaultEmployee(@RequestParam(value = "employeeId",defaultValue = "0",required = false) long employeeId,
+                                   @RequestParam(value= "employeeName", defaultValue = "default empName", required = false) String employeeName){
+        //The values of the employee object is from default properties group
+        //defined in application.properties using @Value annotation
+        return new Employee(empId,empName);
+    }
+
+}
 ```
