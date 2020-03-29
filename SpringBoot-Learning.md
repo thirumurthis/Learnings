@@ -50,3 +50,6 @@ $ java jar application.jar --spring.profiles.active=dev --spring.config.location
  - In `application.properties` specify the active profile usign `spring.profiles.active=devprofile`.
  
  The application will use that profile.
+ 
+ 
+#### when the controller is in different package from the package where the SprinBoot main application is present, then use `@ComponentScan("com.pacakge.name.*")` to help spring context to discover the controller or service.
