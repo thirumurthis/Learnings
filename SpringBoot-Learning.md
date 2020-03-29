@@ -44,4 +44,9 @@ $ java -jar -Dspring.profiles.active=prod application.jar
 $ java jar application.jar --spring.profiles.active=dev --spring.config.location=c:\config
 ```
 
+### Using profile using `@profile` annotation
 
+ - Use the `@profile('devprofile')` annotation on the servce that is needs to be used for specific environment.
+ - In `application.properties` specify the active profile usign `spring.profiles.active=devprofile`.
+ 
+ The application will use that profile.
