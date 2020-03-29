@@ -31,7 +31,7 @@ To make the application to use the dev properties in above case, when starting t
 
 ##### using maven
 ```
-$ mvn spring-boot:run -Dspring.profiles.active=dev
+$ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 #####  using java as (JVM arguments using -D)
