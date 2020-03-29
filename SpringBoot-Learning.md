@@ -192,6 +192,32 @@ public class EmployeeController {
         //defined in application.properties using @Value annotation
         return new Employee(empId,empName);
     }
-
 }
+```
+
+### using `yaml` file
+
+ - Spring application can automatically identify the `application.yml` file.
+ - The resource file is expected to have only `application.yml` file.
+ 
+ In the old project structure remove the application.proeprties and use the appplication.yml file.
+ 
+ There is no need for any code change in the controller class.
+
+Converting the application.properties to application.yml from the above example.
+```yaml
+
+server:
+  port=9090
+
+default:
+  employee:
+    employeeId: 1
+    employeeName: default one
+
+custom:
+  employee: 
+    employeeId: -1
+    employeeName: minus one
+    greetings: hello from custom properties
 ```
