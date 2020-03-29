@@ -18,18 +18,20 @@ server.port=9090
 ##### Multiple `application.properties` file for different environments.
 
 For example, we have below files under the resource directory of spring-boot project
-`application-dev.properties`
+
+`application-dev.properties` file content
 ```
 server.port=9091
 ```
-`application.properties`
+
+`application.properties` file content
 ```
 server.port=9090
 ```
 
 To make the application to use the dev properties in above case, when starting the application use -Dspring.profiles.active=dev
 
-##### using maven
+##### using maven to tell spring to use specific profile (the application-dev.properties) file will be used
 ```
 $ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
