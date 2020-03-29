@@ -5,13 +5,15 @@
   
 Spring is opnionated framework, which has default configuration to start the application.
 
-##### Profile:
+## Profile:
 
 ` application.properties` is a the default properties file present within the `/main/resources/`.
 
 ```
 server.port=9090
 ```
+
+### Using specific `application.properties` as profile.
 
 ##### Multiple `application.properties` file for different environments.
 
@@ -25,7 +27,7 @@ server.port=9091
 server.port=9090
 ```
 
-To make the application to use the dev properties, when starting the application use -Dspring.profiles.active=dev
+To make the application to use the dev properties in above case, when starting the application use -Dspring.profiles.active=dev
 
 ##### using maven
 ```
