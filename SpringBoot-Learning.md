@@ -208,7 +208,7 @@ Converting the application.properties to application.yml from the above example.
 ```yaml
 
 server:
-  port=9090
+  port: 9090
 
 default:
   employee:
@@ -221,3 +221,56 @@ custom:
     employeeName: minus one
     greetings: hello from custom properties
 ```
+
+#### How to specify the profile to pick by the application using application.yml file
+The specic profiles are grouped using --- in yaml file.
+
+```yaml
+spring:
+  profile:
+    active: dev
+    
+----
+spring:
+   profiles: dev
+server:
+  port: 9090
+
+default:
+  employee:
+    employeeId: 1
+    employeeName: default one
+
+----
+spring:
+   profiles: test
+
+server:
+  port: 9090
+
+default:
+  employee:
+    employeeId: 1
+    employeeName: default one
+
+```
+
+### Creating a war file from the spring boot
+ - In maven for the `spring-boot-tomcat` dependencies, change the scope to provided.
+ - Maven package should be set as war (instead of jar)
+ - The Application**.java (the main method class) should externd `SpringBootServletInitializer` and implement the `configure()` method.
+ 
+ ```java
+ @SpringBootApplication
+ public class ApplicationDemo extends SpringBootServletInitalizer{
+ 
+ public static void main(String  ... args){
+   SpringApplication.run(ApplicationDemo.class, args);
+ }
+ 
+ @Override
+ SpringApplicationBuilder configure(SpringApplicationBuilder builder){
+   return super.configure(builder);
+ }
+ }
+ ```
