@@ -332,3 +332,7 @@ iii) To Log using `log4j`, in maven exclude the default logback configuration us
     }
 //...
 ```
+
+### Spring Data JPA
+  - use `@EnableJpaRepositories` in the main springboot application to automatically detect the entities, etc. by application.
+  
