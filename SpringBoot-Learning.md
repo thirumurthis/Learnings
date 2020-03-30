@@ -274,3 +274,31 @@ default:
  }
  }
  ```
+
+// below command in terminal will create war, then use it to deploy in any application server like tomcat, weblogic, etc.
+```
+$ mvn clean package
+```
+
+### logging in spring boot application can be configured using `logback` and  also using `application.properties`/`application.yml`.
+- For logback, we need to set the configuration in logback.xml file.
+
+i) To Log message using `application.properties` configure as below
+```
+logging.level.springframework.web=web
+## below is the package where the java class exists within the application
+logging.com.restdemo.app=INFO
+
+## until we use the below, the log will be displayed only in the console.
+## to store the value in file
+logging.file=logfile-info.log
+
+## defining pattern
+logging.pattern.console=%d %-5level %logger : %msg%n
+logging.pattern.file=%d %-5level [%thread] %logger : %msg%n
+```
+
+ii) To Log using `logback.xml`, create a logback.xml file with the configuration and spring will automatically read those configuration.
+
+iii) To Log using `log4j`, in maven exclude the default logback configuration using <exclusion> and include the log4j.xml. Then create corresponding log4j.xml file within the resource.
+  
