@@ -319,4 +319,16 @@ iii) To Log using `log4j`, in maven exclude the default logback configuration us
    <artifactId>spring-boot-starter-log4j2</artifactId>
 </dependency>  
 ```
-  
+
+### RestTemplate to create client to access REST API
+
+```java
+//...
+   @RequestMapping(value = "/stock-api",produces = MediaType.APPLICATION_JSON_VALUE)
+    public String getStockInfo(){
+       String uri="https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&outputsize=compact&datatype=json&apikey=**";
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(uri, String.class);
+    }
+//...
+```
