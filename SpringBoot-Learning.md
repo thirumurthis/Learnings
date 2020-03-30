@@ -302,3 +302,21 @@ ii) To Log using `logback.xml`, create a logback.xml file with the configuration
 
 iii) To Log using `log4j`, in maven exclude the default logback configuration using <exclusion> and include the log4j.xml. Then create corresponding log4j.xml file within the resource.
   
+```xml
+...
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-web</artifactId>
+   <exclusions>
+       <exclusion>
+           <groupId>org.springframework.boot</groupId>
+           <artifactId>sring-boot-starter-logging</artifactId>
+       </exclusion>
+   </exclusions>
+</dependency>
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-log4j2</artifactId>
+</dependency>  
+```
+  
