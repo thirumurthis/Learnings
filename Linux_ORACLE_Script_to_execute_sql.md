@@ -1,5 +1,5 @@
 
-```unix
+```sh
 #!/bin/sh
 exe_date=`date +%m%d%y%H%M%S`
 
