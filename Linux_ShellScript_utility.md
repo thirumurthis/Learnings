@@ -97,3 +97,61 @@ $ sh callingfun.sh
 
 # check the response
 ```
+
+## DATE manipulation
+
+```unix
+#!/bin/ksh
+
+# input validation will be performed for 20,21 century
+INPUT_YEAR=$1
+# input month should be between 1-12, representing Jan-Dec resp.
+# validation to be performed.
+INPUT_MONTH=$2
+
+
+#if either input year or month is null then compute based on today execution
+if [[ -z $INPUT_YEAR || -z $INPUT_MONTH ]]
+then
+
+# Get today day 
+CURRENT_DAY=$(date +'%Y-%m-%d' | cut -d'-' -f 3);
+
+# Since the SQl executes from start and end of the month
+# below logic is used with reference to reteintion period
+if [ ${CURRENT_DAY} -lt 15 ]
+then
+    echo "- 3 months"
+   DATE_INFO=$(date +'%Y-%m-%d' -d -3month)
+fi
+
+if [ ${CURRENT_DAY} -ge 15 ]
+then
+    echo " -2 month"
+   DATE_INFO=$(date +'%Y-%m-%d' -d -2month)
+fi
+
+INPUT_YEAR=$(echo $DATE_INFO | cut -d '-' -f 1);
+INPUT_MONTH=$(echo $DATE_INFO | cut -d '-' -f 2);
+fi
+
+if [ ${#INPUT_YEAR} -ne 4 ]
+then 
+  echo "Input year not correct";
+  exit;
+fi
+if ! [ $INPUT_YEAR -ge 2000 -a $INPUT_YEAR -le 2999 ]
+then 
+  echo "Input year not correct"
+  exit;
+fi
+
+if ! [ $INPUT_MONTH -ge 1 -a  $INPUT_MONTH -le 12 ]
+then 
+  echo "Input month not correct"
+  exit;
+fi
+
+echo input year $INPUT_YEAR
+echo input month $INPUT_MONTH
+```
