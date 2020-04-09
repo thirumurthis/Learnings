@@ -18,6 +18,35 @@ fi
 echo $catchword
 
 ```
+## check if the unput string is digit or ends with s/h/m
+
+```unix
+#!/bin/sh
+
+
+#User input time delay
+TIME_DELAY=$1
+
+# if no input then delay defaults to 2 hour
+if [ -z $TIME_DELAY ]
+then
+TIME_DELAY=2h
+fi
+
+# when the input doesn't match sleep exit application
+pat="[0-9]+[hms]+"
+if [[ "$TIME_DELAY" =~ ^[0-9]+$ ||"$TIME_DELAY" =~ $pat ]]
+then
+ echo "process executed script with TIME DELAY of $TIME_DELAY"
+else
+ echo "Incorrect time delay format, use pattern like 100, 100s, 20m, 2h ";
+ exit;
+fi
+
+
+echo $TIME_DELAY
+
+```
 
 We can use the below command to clean the file which was created last 24 hours and 5 hrs ago
 ##### Clean up the files
