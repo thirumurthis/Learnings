@@ -12,11 +12,12 @@
    - Each child itself a tree.
  
  ##### Binary Search Tree
-    - Same as binary tree
-    - Sorted Hierarchy of Data 
-    - There are no structural change this as same as binary tree, impose additional data rule.
-        - All the data are sorted
-        - `Smallest` value on the `left`
-        - `Largest` value on the `right`
+ 
+   - Same as binary tree
+   - Sorted Hierarchy of Data 
+   - There are no structural change this as same as binary tree, impose additional data rule.
+       - All the data are sorted
+       - `Smallest` value on the `left`
+       - `Largest` value on the `right`
         
  
