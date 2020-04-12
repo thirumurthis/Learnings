@@ -79,3 +79,76 @@ Removing the node 8, from the tree
     # once the node 8 is identified
     # promote the node 6 (on the left) to that identified node
  ```
+Scenario 2:
+   - Removing a node has right child no left child.
+   
+```
+                  4                       4
+                /   \                    /  \
+               2      6                 2     7*
+             /  \    /  \              / \   / \
+            1    3  5    7            1   3  5  8
+                           \
+                            8 
+    
+ # removing 6, has right child 7 which has no left child.
+ # promote the left child (7) node to at 6.
+ # Note 7 should become the parent.
+ The invariant structure of the tree is not breaked.
+ 
+```
+
+Scenario 3:
+  - The removing node has both right which has left node.
+  
+```
+                  4                        4                            
+                /   \                     /  \
+               2      6                  2    7*
+             /  \    /  \               / \  /  \ 
+            1    3  5    8             1   3 5   8
+                        /
+                       7 
+
+The node 6 has a right child 8 which has left child 7
+
+The right child's left most node will replace the searched/identified node.
+In this case 7 will replace the 6 node.
+The invariant structure is retained.
+                       
+```
+
+#### Tree Traversals
+   - Pre-order (Root node -> Left node -> Right node)
+   ```
+         4
+       /   \
+      2      6
+    /   \   /  \
+   1     3  5    7
+   
+   4 2 1 3 6 5 7 
+   ```
+`
+   - In-order  (Left node -> Root node -> right node) (SORT order)
+       - visit left, its left until no more left, then visit its root then right.
+   ```
+         4
+       /   \
+      2      6
+    /   \   /  \
+   1     3  5    7
+   1 2 3 4  5 6 7
+   ```
+   
+   - Post-order (Left node -> right node -> Root node)
+      
+
+   ```
+         4
+       /   \
+      2      6
+    /   \   /  \
+   1     3  5    7
+   1  3 2 5 7 6 4
+   ```
