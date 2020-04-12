@@ -152,3 +152,9 @@ The invariant structure is retained.
    1     3  5    7
    1  3 2 5 7 6 4
    ```
+
+Usage of Tree:
+  - Traversal (pre-order and post-order) is used in mathematical evaluation
+  - used in runtime behavioud of in compiler. like step 1 should operate before step 2, where the operation is stored as tree.  
+  
+  
