@@ -163,12 +163,57 @@ Usage of Tree traversal:
 ---------------------
 
 ## Hash Table
-  - Type of datastructure Associative Array
-  - Storage of key/Value pairs.
+- Type of datastructure Associative Array
+- Storage of key/Value pairs.
 - Each key is unique.
-- The key type is mapped to an index.
+
+The key type is mapped to an index.
 
 Adding a value, 
-  - find the index if we need to store for an object, this index is where the object to be stored.
+  - get the index (some function) to store the object using the hash function.
+  - store the information at the index in an array
+
+Hashing process derives a fixed size result for any arbitary input.
+  - Any string with any lenght will returns the fixed size result.
+  - Hash function returns the same size.
+
+Hash function should be `stable` (should be invariant)
+`Uniformity` the hash value should be uniformly distributed through available space.
+`Efficient` The cost of generating hash must be balanced with application needs
+`Security` the cost of finding data that produced a given hash is prohibitive.
+
+Sample hash function implementation
+`Additive`
+```
+# this is just an example (Additive).
+fo -> 102 111 = 324 (add each value since 32 bit)
+of  -> will also yield same result.
+```
+`Folding`
+```
+# better one using folding 
+use first 4 characters, with those bytes and scramble to 32 bit value. we have different values.
+
+ram is helping people
+ram -> hash
+is h -> hash (then add to the above hash value)
+..
+..
+```
+
+Note: Use the available Hashing function or algorithm, it is already provied.
+
+
+| Name | stable | Uniform | Efficient | Secure |
+|---|---|---|---|---|
+| Additive | Y | N | Y | N |
+| Folding | Y | Y | Y | N |
+| CRC32 | Y | Y | Y | N|
+| MD5 | Y | Y | N | N |
+| SHA-2 | Y | Y | N | Y |
+
+
+
+
   
  
