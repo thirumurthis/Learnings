@@ -60,7 +60,22 @@
    - non-leaf node
       - find the correct child, to replace the node that we are deleting.
       - 3 scenarios
+      
+Scenario: 1     
           - Remove node that has no right child
-             - matched node doesn't has no child on the right
+             - the serached/matched node doesn't has no child on the right
              - promote the left node to the identified node.
-  
+         
+Removing the node 8, from the tree         
+ ```
+ 
+                       4                                    4
+                    /     \                               /    \ 
+                   2        8                            2       6
+                 /   \     /                           /   \    /  \
+                1     3   6                           1     3   5   7
+                         / \
+                        5   7
+    # once the node 8 is identified
+    # promote the node 6 (on the left) to that identified node
+ ```
