@@ -153,8 +153,22 @@ The invariant structure is retained.
    1  3 2 5 7 6 4
    ```
 
-Usage of Tree:
+Usage of Tree traversal:
   - Traversal (pre-order and post-order) is used in mathematical evaluation
   - used in runtime behavioud of in compiler. like step 1 should operate before step 2, where the operation is stored as tree.  
   
+ Program:
+   Try to get list of words from the user and sort using binary tree.
+   
+---------------------
+
+## Hash Table
+  - Type of datastructure Associative Array
+  - Storage of key/Value pairs.
+- Each key is unique.
+- The key type is mapped to an index.
+
+Adding a value, 
+  - find the index if we need to store for an object, this index is where the object to be stored.
   
+ 
