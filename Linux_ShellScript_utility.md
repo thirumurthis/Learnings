@@ -1,6 +1,6 @@
 Below is code snippet to validate if the string container a value in bash script.
 
-##### Compare if string present in the bash script
+## Compare if string present in the bash script
 
 ```
 #/bin/bash
@@ -49,7 +49,7 @@ echo $TIME_DELAY
 ```
 
 We can use the below command to clean the file which was created last 24 hours and 5 hrs ago
-##### Clean up the files
+## Clean up the files
 
 ```
  find ~/path/*/log -mtime 0 -type f -name '*.log' -delete 
@@ -57,7 +57,7 @@ We can use the below command to clean the file which was created last 24 hours a
  
 ```
 
-##### using shell function
+## using shell function
 
 utilprog.sh
 
@@ -183,4 +183,44 @@ fi
 
 echo input year $INPUT_YEAR
 echo input month $INPUT_MONTH
+```
+
+## Printing first 10 and last 10 lines of the file using head and tail within shell function for list of files.
+```bash
+#!/bin/sh
+
+rm logInfo.txt
+# iterate the list of files, make sure that awk prints only the file name.
+for n in `ls -lrt /home/user/test/filename* | awk -F' ' '{print $9}'`
+do
+echo "performing file ${n}" 
+echo "File name: ${n}" >> logInfo.txt;
+lines_in_file=0;
+lines_in_file=$(wc -l "${n}" | awk -F' ' '{print $1}');
+head_only=0;
+head_num=10;
+tail_num=10;
+
+# if the file has only few lines no needs to print the tail
+if [ ${lines_in_file} -le ${head_num} ]
+then
+ head_only=1;
+fi
+head -n ${head_num} ${n} | sed 's/  //g' >> logInfo.txt;
+
+if [ ${head_only} == 0 ]
+then
+ tail_num=$(expr ${lines_in_file} - ${head_num})
+if [ ${tail_num} -ge ${head_num} ]
+then
+  tail_num=10;
+fi
+echo "....." >> logInfo.txt
+echo  >> logInfo.txt
+ tail -n ${tail_num} ${n} | sed 's/  //g' >> logInfo.txt;
+fi
+echo "_______________***_______________" >> logInfo.txt
+done;
+cat logInfo.txt;
+
 ```
