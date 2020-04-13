@@ -2,7 +2,7 @@ Below is code snippet to validate if the string container a value in bash script
 
 ## Compare if string present in the bash script
 
-```
+```bash
 #/bin/bash
 
 index=stringtest-*-$(date -u +"%Y.%m.%d");
@@ -20,7 +20,7 @@ echo $catchword
 ```
 ## check if the unput string is digit or ends with s/h/m
 
-```unix
+```bash
 #!/bin/sh
 
 
@@ -51,7 +51,7 @@ echo $TIME_DELAY
 We can use the below command to clean the file which was created last 24 hours and 5 hrs ago
 ## Clean up the files
 
-```
+```bash
  find ~/path/*/log -mtime 0 -type f -name '*.log' -delete 
  find ~/path/*/log -mtime +5 -type f -name '*.log' -delete
  
@@ -61,7 +61,7 @@ We can use the below command to clean the file which was created last 24 hours a
 
 utilprog.sh
 
-```unix 
+```bash 
 #!/bin/ksh
 function checkIsProcessRunning
 {
@@ -102,7 +102,7 @@ function checkIsProcessRunning
 ```
 
 callingfun.sh
-```unix
+```bash
 #!/bin/ksh
 
 # import the other shell, so the shell function can be called here
@@ -117,7 +117,7 @@ echo $PROCESS_STATUS
 ```
 
 To test
-```unix
+```bash
 # in terminal open
 $ vi somefile
 
@@ -129,7 +129,7 @@ $ sh callingfun.sh
 
 ## DATE manipulation
 
-```unix
+```bash
 #!/bin/ksh
 
 # input validation will be performed for 20,21 century
