@@ -234,7 +234,7 @@ cat logInfo.txt;
 
 if [ "$1" == "--help" ]; then
  echo "usage: sh ./$0 <year> <month> <timedelay>"
- echo "default values, year-2018, month-5, dealy 2h"
+ echo "default values, year-2008, month-5, dealy 2h"
  exit;
 fi
 #User input time delay
