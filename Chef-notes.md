@@ -660,3 +660,10 @@ Executing the chef-client should be done with caution, since it will look for ht
 `kinfe` - utility provides connectivity between local chef repostiory and chef infra server instance. Like query and work with the submit cookbook data and submit to infra server, qindex data, kick start the 
  
 `chef-run` - using ssh the temporary run-list can be created and run those in remote nodes directly no need for chef infra server.
+
+Hosted chef: manage.chef.io
+port used 443
+
+organization is group at highlevel mangaement in the chef host which contains cookbook, etc.
+Organisation should be unique, within the chef hosted server.
+
