@@ -471,6 +471,8 @@ To create a databags,
 After installation of the chef-DK executable, opens the PowerShell with the below exception, 
 [Link to fix above issue.](https://sqlwithmanoj.com/2017/06/09/powershell-error-import-module-file-azurerm-psm1-cannot-be-loaded-because-running-scripts-is-disabled-on-this-system/)
 
+##### [ >>UPDATE<< ] Chef-DK updates has been stopped by Chef community, use *`chef workstation`*
+
 ```
 Import-Module : File C:\opscode\chefdk\modules\chef\chef.psm1 cannot be loaded. The file
 C:\opscode\chefdk\modules\chef\chef.psm1 is not digitally signed. You cannot run this script on the current system.
@@ -644,3 +646,4 @@ Recipes:     lamp, lamp::default
 Platform:    centos 8.1.1911
 Tags:
 ```
+`chef-client` - 
