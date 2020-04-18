@@ -664,6 +664,10 @@ Executing the chef-client should be done with caution, since it will look for ht
 Hosted chef: manage.chef.io
 port used 443
 
-organization is group at highlevel mangaement in the chef host which contains cookbook, etc.
+ 
+Organization is group at highlevel mangaement in the chef host which contains cookbook, etc.
 Organisation should be unique, within the chef hosted server.
 
+`Chef infra client` - this gets installed in all the managed nodes, and registered to chef infra server. During registering it uses valid authenticated certificates.
+  this makes sure that the version in the infra server applicable is same as that in the chef infra client by syncing the cache of the node.
+ 
