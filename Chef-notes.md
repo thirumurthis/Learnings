@@ -211,7 +211,10 @@ end
 ```
 
 ### `Ohai` 
-Tool is used by chef DK to get the system information. 
+Tool to used by chef workstation for profiling system properties into json, which is more about the system information. 
+This profile data can be used dynamically.
+
+
 For example, ubuntu used apt-get package manager and centos uses Yum package manager, chef-client knows to use the appropriate package manger using the ohai utility
 
 Ohai is a command line utility for getting the system inventory, which is of json format.
@@ -646,4 +649,14 @@ Recipes:     lamp, lamp::default
 Platform:    centos 8.1.1911
 Tags:
 ```
-`chef-client` - 
+
+###### If you don't want the chef infra server to run chef cookbooks, then install the chef workstation in the local machine and use the `chef-client` to execute the cookbooks locally. This is used for executing and testing cookbook and recipes within the specific cookbook directory.
+
+Executing the chef-client should be done with caution, since it will look for hte cookbook and default information to be executed.
+
+### Utilities `chef` and `knife` to work with chef assest
+
+`chef`- utility used to generate resources like cookbook, recipies repostiory etc.  To manage the local chef work station itself like installing gems, etc.
+`kinfe` - utility provides connectivity between local chef repostiory and chef infra server instance. Like query and work with the submit cookbook data and submit to infra server, qindex data, kick start the 
+ 
+`chef-run` - using ssh the temporary run-list can be created and run those in remote nodes directly no need for chef infra server.
