@@ -810,4 +810,151 @@ $ kinfe serach 'cloud_provider:azure AND lsb_id:Ubuntu'
 
 ### Test kitchen
 
+uses either Bento or Packer, the testing should start with a clean virtualized vm. 
 
+infosec is used to validate the test cases to see if the desired output is achieved.
+
+```
+# assume a cookbook with resources
+
+cookbooks
+|_ example1
+    |_ recipies
+       |_ default.rb
+       |_ node-info.rb
+    |_ test
+       |_ integration
+          |_ defailt
+             |_ default-test.rb
+             |_ node-info_text.rb
+    |_ kitchen.yml
+```
+```
+# default.rb (below is the content of this file)
+  include_recipe 'example1::node-info'
+```
+```
+# node-info.rb (below is the content of this file)
+  
+  # ruby variable # is ruby comments
+  filename = 'node-info.txt'
+  
+  file '/#{filename}' do
+    content 'For test'
+  end
+```
+```
+ # kitchen.yml - (below is the content of this file)
+ 
+   driver: 
+      name: vagrant
+   
+   provisioner:
+       name: chef_zero
+   
+   verifier:
+       name: inspec
+       
+    platforms:
+      - name: ubuntu-19.04
+      
+    suites:
+      - name: default
+        verifier:
+           inspec_tests:
+              - test/integration/default
+        attributes:
+
+Notes:
+   - driver, test kitchen uses Hashicorp vagrant to provision the testing environment, there are other option to provision directly in Azure.
+   
+   - provisioner, the toolset which will be used to build and test the cookbook resources on temporary node is chef_zero. The chef_zero, doesn't require chef infro server instance for provisioning. 
+   
+   - verifier,is test verifier. /there is other option serverspec.
+   
+   - platforms: used to specify the testing environment, in this example a single ubuntu 19.04 is specified, but we can specify different version of ubuntu os itself here, in this case we can add the list here.
+   
+   - suites:
+        which will be executed against the node.
+      
+```
+```
+# default_test.rb - This file should be present under the test folde, which contains the default sample. 
+
+# example test, to be replaced with user own test
+unless os.windows?
+   describe user('root'), :skip do
+      it { should exist }
+   end
+end
+
+# example test, to be replaced with user own test
+describe port(80), "skip do
+  it { should_not be_listening }
+end
+```
+
+```ruby
+# node-info_test.rb (actual test cases for the cookbook example1)
+
+# native ruby variable declartion to store value
+filename = 'node-info.txt'
+
+describe file("/#{filename}") do
+  it { should exist }
+end
+
+describe file("/#{filename}") do
+  its('content') { should_not be nil }
+end
+
+describe file("/#{filename}") do
+  its('content') { should match 'For test' }
+end
+
+# it or its line above is insec language, not much decleartive.
+# which is not declerative check the online documentation.
+```
+Test kitchen requires access to virtialization layer like Virtualbox, Hyper V, VMWare. Some system doesn't support nested virtualization.
+
+```
+# command below provides the configuration of the cookbook test.
+# this command looks has to be executed from corresponding cookbook 
+# folder in this case example1
+# this command lists what action was taken earlier, whether the test was executed, etc.
+
+// list info using the kitchen.yml file within the cookbook folder, is any operation is performed earlier.
+$ kitchen list
+
+# to start the process for test, use below command.
+# this command will communicate with the vagrant and downloads the platforms info and caches it locally. 
+# by default the kitchen knows to communicate with Hyper v, etc
+# but the defaults can be overrided, in the kitchen.yml
+$ kitchen create
+
+# if we executed this below after kitchen create will list the previous execution state.
+$ kitchen list 
+
+# to bootstrap the test virtual machine with the chef-infra client 
+# and copies the cookbook resources with dependencies with the run list and reports the status
+# use the below command.
+$ ktichen converge
+
+# to manually verify the test cases execution manually, use
+# login to the test virtual vm box, and see whether the file exists in this case.
+$ kitchen login
+
+# To execute the inspec steps.
+# this is already defined, this provides the status of the code.
+$ kitchen verify
+
+# any change to cookbook, write the test cases first.
+
+# the below command will delete the virtual machine created and other information within that machine. 
+# Note that the vagrant cache image will not be deleted.
+$ kitchen destroy
+
+# Above is a step-by-step execution, in order to automate the above process, then use below command 
+$ kitchen test
+// all the above mentioned process is combined and executed.
+```
