@@ -686,13 +686,128 @@ Infra client checks with the chef infra server, to see which cookbooks are conta
 run-list, seems to be unique to every node and are calculated every time chef infra client runs even in case of no changes. Don't need to single run_list and assign same run_list to multiple nodes.
 
 Make use of roles to set the run-list  also `environments` can be used.
-`environment` gives control to specify versions and attributes, this gives ability to declare, for example the development environemnt uses the latest version and production development can use specifi  version of cookbook which can be achived by the environment construt.
-
-
-
-
+`environment` gives control to specify versions and attributes, this gives ability to declare, for example the development environemnt uses the latest version and production development can use specific  version of cookbook (may be older) which can be achived by the environment construct.
 
  ### Role
  
- - Assigning cookbooks to nodes using roles
+ - Assigning cookbooks to nodes using roles, where the run_list can be used to implement for sepcific nodes.
+ 
+ ```
+ if you have a role defined for specific to server and needs to be applied to specific node, define the role within in a chef-rep/role/server.json
+ ```
+
+Sample role json defintion file, assume the helloworld cookbook is already available.
+
+ ```json
+ {
+   "name" : "hello",
+   "chef_type" : "role",
+   "json_class" : "Chef::Role",
+   "default_attributes" : {
+   },
+   "description" : "Hello world example for roles",
+   "run_list" : [
+     "recipe[helloworld::default]"
+   ]
+   
+ ```
+ 
+ ```
+Then use the knife command to push to assign that role to a run list.
+There can be one or more roles assigned to a run list, and this will be executed in the specified order.
+ 
+ ```
+ 
+ #### Roles and run list:
+
+```
+# roles location within the chef-repo
+chef-repo
+  |_ .chef
+  |_ cookbooks
+  |_ databags
+  |_ ploicyfiles
+  |_ roles
+     |_ hello.json
   
+# to see the run list info on a specific node
+$ knife node show <node-name>
+...
+..
+Run List:
+...
+
+```
+
+```
+Upon setting up the run list to the nodes, the information can also be seen in the chef infra server UI. under policy section.
+
+# issuing chef client in managed node
+$ sudo chef-client
+// if there is no run list then there won't be any resources to converge.
+
+From the chef workstation. lets set the run list 
+
+$ knife node run_list set <node-name> 'role[hello]'
+
+# node the below command will display the run list setup
+$ knife node show <node-name> 
+
+# issuing the sudo chef-client now will use the cookbook specified in the role and executes that resource.
+
+NOTE:
+  if the run list is cleared out.
+  $ knife node run_list set <node-name> ''
+  Then, after issuing sudo chef-node on the mananged node will not deleted the previously executed resources by the previous role or cookbook.
+
+Removing the role from run list will not reverse the effect of already executed role or cookbook on that node.
+```
+
+ #### Approach to manage the chef nodes:
+ 
+  - 1. There are multiple ways to managing  chef nodes, this is one of approach the use of roles and run list was one recommeded way.
+ 
+ - 2. Recently, there was another apporach emerged, were to use policy files for managing. 
+ 
+ Still both the approach is applicable.
+  
+##### chef super market
+private supermarkets, requires chef infra server for Oauth.
+
+##### Kinfe search command example
+
+The hosted chef infra server has some list of properties and some nodes bootstrapped.
+
+Below are few commands to search the nodes.
+The ohai properties are synced about the node, under the attributes If you click the nodes and clicking the attributes tab.
+
+The ohai information is indexed and searchable.
+```
+// the details information of the nodes present in the chef infra server.
+
+// To search and display the instanced present in the chef infra server
+$ knife search node '*:*' -i
+   
+// To search and display different properties, the ohai parameters.
+$ knife serach node '*:*' -a lsb.description
+
+// if wanted to serach the specific id on the ohai properties (ie. the key of the json properties) with the values
+ $ knife search node 'lsb_id:Debian'
+ # note the usage of _
+ 
+$ knife search node 'cloud_provider:azure' -i 
+
+$ knife search node 'cloud_provider:azure' -a ipaddress -a fqdn
+
+$ knife search 'ipaddress:192.168.1.2'
+
+# wild card with ? - single character within 0-1..
+$ knife search 'ipaddress:192.168.1.?'
+
+# using boolean condition
+$ kinfe serach 'cloud_provider:azure AND lsb_id:Ubuntu'
+```
+
+### Test kitchen
+
+
