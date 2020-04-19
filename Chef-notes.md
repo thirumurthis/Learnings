@@ -939,7 +939,7 @@ $ kitchen list
 ```
 # to bootstrap the test virtual machine with the chef-infra client 
 # and copies the cookbook resources with dependencies with the run list and reports the status
-# use the below command.
+# use the below command, will install the chef-infra client to the virtual node/ test machine/box
 $ ktichen converge
 ```
 ```
@@ -965,3 +965,92 @@ $ kitchen destroy
 $ kitchen test
 // all the above mentioned process is combined and executed.
 ```
+
+#### Ruby recipe DSL
+ - define and declare resources within recipes
+ - pass node parameters and define call actions
+ - native ruby script can be used within recipe
+ 
+ `include_recipe` is an example, the order in which it is being used in default.rb, is the order of execution too.
+ if there are duplicate include_recipe of the same resources, only the first instance is executed subsequent includes are ignored.
+ 
+ Methods: 
+    DSL methods, can make use of attributes, data bags and serach results.
+    The recipe DSL has some in-built helper methods, for example file resouces  applicable on windows can have validation in helper method, so execution on non windows machine will not have an impact.
+    There are helper methods, to work with windows itself, if we need to working with Windows registry, etc.
+    The DSL can be used to declare, create, find, edit and delete resources.
+    Test using node properties, check if ip address present.
+    
+ ```
+ # sample repository code
+ 
+ apt_repository 'powershell' do
+   uri "https://packages.microsoft.com/ubuntu/#{node['lsb']['release']}
+   components ['main']
+   arch 'amd64'
+   key 'https://packages.microsoft.com/keys/microsoft.asc'
+   action :add
+ end
+ 
+ package 'apt-taransport-https' do
+   action :upgrade
+ end
+``` 
+```
+# write the test kitchen to check if the powershell is installed.
+$ kitchen test
+
+```
+
+Example for helper method
+```
+# in the previos example1 cookbook, node-info.rb file.
+# assume we are including below content, note the if 
+# here the platform_family is a helper method
+# below will be executed only on debian os not on windows os.
+# if we change the debian to windows and execute it the whole bloc k will be ignored.
+
+folder= '/'
+filename='node-info.txt'
+content='For test'
+if platform_family?("debian")
+  file "#{folder}#{filename} do
+     content "#{content}"
+  end
+end
+```
+
+##### Resource, recpie and cookbook all was developed using native Ruby.
+
+The chef itself ships with the ruby binaries, no need to install and manage the ruby installation separetly.
+But it is still possible to install ruby seperately and configure chef to use that specific installed ruby.
+
+For native ruby, check the ruby documentation itself.
+
+```
+# declaring variables
+ input1 = 1
+ 
+# executing mathemtics expression
+ 3 + 4 
+ 
+ # working with string, similar to bash shell, etc.
+ 'string is \' declared' # \ escape charater
+ 
+ # string manipulation can be achived using ruby function
+ input = test
+ input.upcase # TEST
+ 
+ '2 + 2' # this will be treated as string not exprestion.
+ 
+ # accessing the value
+ input = Hello
+ 
+ # double quotes (STRING INTERPLATION)
+ "#{input} World"  # output, Hello world - this is called string interpolation.
+ 
+ # single quotes, WYSIWYG
+ '#{input} World'  # ouput, #{input} World, treats everything as literal.
+ 
+```
+
