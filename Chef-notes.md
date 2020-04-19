@@ -931,29 +931,36 @@ $ kitchen list
 # by default the kitchen knows to communicate with Hyper v, etc
 # but the defaults can be overrided, in the kitchen.yml
 $ kitchen create
-
+```
+```
 # if we executed this below after kitchen create will list the previous execution state.
 $ kitchen list 
-
+```
+```
 # to bootstrap the test virtual machine with the chef-infra client 
 # and copies the cookbook resources with dependencies with the run list and reports the status
 # use the below command.
 $ ktichen converge
-
+```
+```
 # to manually verify the test cases execution manually, use
 # login to the test virtual vm box, and see whether the file exists in this case.
 $ kitchen login
-
+```
+```
 # To execute the inspec steps.
 # this is already defined, this provides the status of the code.
 $ kitchen verify
 
-# any change to cookbook, write the test cases first.
-
+# any change to cookbook, better write the test cases first.
+```
+```
 # the below command will delete the virtual machine created and other information within that machine. 
 # Note that the vagrant cache image will not be deleted.
 $ kitchen destroy
-
+```
+##### Automate testing
+```
 # Above is a step-by-step execution, in order to automate the above process, then use below command 
 $ kitchen test
 // all the above mentioned process is combined and executed.
