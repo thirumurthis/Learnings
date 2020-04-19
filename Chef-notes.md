@@ -1053,4 +1053,149 @@ For native ruby, check the ruby documentation itself.
  '#{input} World'  # ouput, #{input} World, treats everything as literal.
  
 ```
+##### Ruby Arrays
 
+```
+input= ['/home/user/a','/home/user/b']  # explicit array. the string are in single quotes, we can use double quotes in case we need to use the attributes of the node. known as expicit array.
+
+%w(/home/user/a /home/user/b)   # called whitespace array, ruby short cut to declare an explicit array, each element is separated by white space 
+
+# some usage create a folder iterating the array
+# path is a named element, it can be any thing
+# value of each element is represented here as path
+# whether are not to create a folder or not using the action
+%w(/home/user/a /home/user/b).each do |path|
+   directory path do
+     inherits true
+     action :create
+   end
+end
+```
+using the ruby native in chef recipe DSL
+
+```ruby
+
+# variables
+packages = [
+'ack',
+'silverseracher-ag',
+'htop',
+'jq',
+'pydf'
+]
+
+# using a helper method to check the os is debian
+if platform_family?("debian")
+  packages.each do |name|
+   package name do
+      action :upgrade
+   end
+  end
+ end
+```
+```
+# sample test code
+
+packages=[
+'ack',
+'silverseracher-ag',
+'htop',
+'jq',
+'pydf'
+]
+
+# os.debian is a helper method.
+# loop through the package and validate if installed.
+if os.debian?
+  packages.each do |name|
+     describe package(name) do
+        it { should be_installed }
+      end
+   end
+end
+
+# note using TEST & REPAIR method if the package is already installed you could see when using kitchen converge will not install and display message up to date.
+```
+
+##### Wrapper cookbooks
+  - This can be used to change the default behavior of the community cookbook, without duplicating or re-writting it.
+  - The chef supermarket has the exact same cookbook what you intended to develop, but that cookbook's default input values are not matching your requirement. This is one of situation where a wrapper cookbook comes in handy.
+  - wrapper cookbook calls the specific community cookbook and proivide your range of cookbooks.
+  - the `include_recipe` can be used to call multiple cookbook
+  - this approach can be also used to reduce or simplify the run list which can be minimized.
+  - wrapper cookbook can be used to pin specific version of the community cookbook. The version constraints can be provided in the wrapper cookbook, there is a limit in this approach, if the different version of the same community cookbook is used in different cookbook.
+  - Important: one Properties of wrapper cookbook doesn't define or declare any resources, if any resources needs to be used then use a different cookbook and use that in the wrapper.
+  
+```
+# Wrapper cookbook where there is no resources are defined
+cookbooks
+|_ example2
+    |_ metadata.rb
+    |_ recipes
+       |_ default.rb
+       
+# metadata.rb
+
+name 'node-linux'
+version '0.2.10'
+chef_version '~> 15.0'
+
+# this is the version constraint., if this is not specified
+# the when converging the resources chef can use any version.
+
+# example below chef-client version upto 11.3.5 not less than this minor version
+depends 'chef-client' ,'~> 11.3.5'
+depends 'packages', '< 1.1.0'
+
+----
+# recipes/default.rb
+
+include_recipe 'chef-client'
+include_recipe 'packages::default'
+ 
+```
+using wrapper cookbooks for roles
+```json
+{
+"name": "node-linux1",
+"description": "to linux node",
+"chef_type": "role",
+"json_class": "Chef::Role",
+"default_attributes": {
+},
+"override_attributes":{
+},
+"run_list": [
+   "recipe[example2::default]" // this is the wrapper cookbook, which will intern call the dependent cookbook.
+   ]
+}
+```
+Cookbook versioning:
+
+Semantic Versioning:
+  - If there are new functionality major or minor updates happens part of the development the version needs to be updated in order reflect this changes to the managed nodes.
+  - version number can also be contorlled using roles/environments/wrapper cookbook/ policy files.
+  - syntax, a.b or a.b.c (a or a.b.c.d are not allowed - no characters is allowed.)
+```
+Constraining cookbook version
+```
+ = 2.1.1 
+cookbook will use exactly uses that version (and only version 2.1.1)
+ 
+ > 2.1.1
+ node will be using any version greater than 2.1.1, which includes the major version too.) not that 2.1.1 version it can also include 3.0.0+
+ 
+ < 2.1.1
+ node will be using any version less than but not the 2.1.1 version
+ 
+ <= 2.1.1.
+ node use less than or equal to
+ 
+ ~> 2.1.1
+ (pesimesstic constraint or approximately greater than equal to)
+ Any version 2.1.1 or higher and NOT the major version 3.0.0. in here 3.0.0 will not be used, only within the major version 2 will be used.
+ 
+```
+
+  
+  
