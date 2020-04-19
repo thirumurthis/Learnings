@@ -671,3 +671,28 @@ Organisation should be unique, within the chef hosted server.
 `Chef infra client` - this gets installed in all the managed nodes, and registered to chef infra server. During registering it uses valid authenticated certificates.
   this makes sure that the version in the infra server applicable is same as that in the chef infra client by syncing the cache of the node.
  
+When a node is registered to the chef infra server, the chef-infra client int the managed node uses Ohai to profile the local node and send properties and metadata back to chef infra server.
+
+The infra server now has an perspective of that node as well as other node nodes under the organization.
+ 
+As chef organizer, have to administer which cookbook to be run on the node. One method to use the `role`, for example define a role web-server, to install apache2 server or nginx server. Each cookbook is tied to specific version for robustness.
+
+`run-list`: Then assign this role to nodes using run_lists, run-lists is modular, used to assign individual cookbook to node or list of cookbook to node.
+run_list contains all resources which the node needs, in order to converge on the desired outcome.
+When the node recieves this run_list from the infra server the chef infra client expands the implicit list of resources to develop an action plan, along with the necessary dependencies.
+ 
+Infra client checks with the chef infra server, to see which cookbooks are contained with the role, and generate the resources and actions.
+
+run-list, seems to be unique to every node and are calculated every time chef infra client runs even in case of no changes. Don't need to single run_list and assign same run_list to multiple nodes.
+
+Make use of roles to set the run-list  also `environments` can be used.
+`environment` gives control to specify versions and attributes, this gives ability to declare, for example the development environemnt uses the latest version and production development can use specifi  version of cookbook which can be achived by the environment construt.
+
+
+
+
+
+ ### Role
+ 
+ - Assigning cookbooks to nodes using roles
+  
