@@ -1197,5 +1197,67 @@ cookbook will use exactly uses that version (and only version 2.1.1)
  
 ```
 
+Products of chef on continuous delivery,
+- chef compliance
+- chef reporting
+- chef push jobs
+extend the functionality of chef server. This helps configuration manangement. 
+
+Chef Automate recent version v.2 is a dedicated to automation.
+Inspec can integrate with wider chef ecosystem by reporting the results and publishing reporting.
+Chef Habitat -  Application build automation tool. Using builder account to explore this feature in chef.
+
+Security and compliance:
+
+`DevSecOps:` The process of integrating security practises in to Development and operation tasks.
+Everyone becomes accountable for ensuring their solutions are secure.
+
+What is InSpec?
+ open source project for tesing infrastructure and applications.
+ InSpec containre per-defined resurces & support for custom resources.
+ To audit platform of the environment as part of governence.
+ Community profiles available for auditing profile from chef supermarket.
+ 
+ No need for Inspec code to be present within the cookbooks, we can create a profile. 
+ 
+```
+sample/app-profile
+ |_ Reamdme.md
+ |_ controls
+    |_ application1.rb
+ |_ libraries
+     |_ custom-resource.rb
+ |_ files
+     |_ services.yml  
+ |_ inspec.yml [ Contains the profile description, dependencies and supported platform ]
+     
+     
+     application.rb - contains the test
+     files/services.yml - contains files, static resource needed for testing. 
+     
+```
+InSpec Auditing Scenarios:
+  Test hardening Windows and Linux OS against official CIS benchmarks.
+  Test whether Azure resources are deployed and configured correctly.
+  Test database server config angainst DevSec baselines. (dev-sec.io)
+  
+ InSpec and Chef Automate:
+   Scan results can be sent to Chef Automate instance or via Chef server.
+   Compliance results are visible as a UI dashboard within chef automate.
+   Chef automate can centralize the results if multiple chef server is running.
+   use Audit cookbook, [Git](https://github.com/chef-cookbooks/audit)
+```
+
+ ```
+ # command used to directly execute the inspec to the corresponding nodes. Regardless of where the system is located, if we have access using ssh in this case we can execute the command to audit.
+ # vagarant:vagrant (user and password default)
+ # 192.168.1.3322 ip-address and redirect port
+ # last parameter is the inspec test location. we can use the git location in here too.
+ 
+  $ inspec exec -t ssh://vagrant:vagrant@192.168.1.33:22 .\test\integration\default\packages_test.rb
+  
+  inspec tool doesn't require any pre-requistes like ruby to installed, only requires an connectivity
+ ```
+  
   
   
