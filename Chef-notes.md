@@ -1424,3 +1424,88 @@ action :create do
    end
  end
 ```
+--------
+
+```
+# resources/website.rb
+
+# custom properties
+property: homepage, String , default: '<h1> hello </h1>'
+
+action :create do
+  folder = '/var/www/html/'
+  file = 'index.html'
+  
+  if platform_family?("debian")
+    apt_update
+   end
+   
+   package 'Install Apache' do 
+     case node[:platform]
+     when 'redhat','centos'
+        package_name 'httpd'
+        action :upgrade
+     when 'ubuntu' ,'debian' 
+        package_name 'apache2'
+        action :upgrade
+     end
+    end
+    
+    service 'Start Apache' do
+       case node[:platform]
+       when 'redhat' ,'centos'
+         service_name 'httpd'
+         action [:enable, :start]
+        when 'ubuntu', 'debian'
+          service_name 'apache2'
+          action [:enable, :start]
+         end
+        end
+   end
+ ```
+ ```
+ # recipes/site.rb calls the custom resource
+ 
+  # cookbook name is "node_site", website is the custom resource file name [if there is a custom name is provided then it can be used] 
+  node_site_website 'httpd' do
+     homepage 'Running on #{node['hostname'].captialized()}'
+   end
+ ```
+ ```
+ # test/integration/site_test.rb
+ 
+ if os.redhat?
+   describe package 'httpd' do
+      it { should be_installed }
+   end
+ end
+ 
+ if os.debian?
+   describe package 'apache2' do 
+     it { should be_installed }
+   end
+ end 
+ ```
+ ```
+ # kitchen.yml
+ ...
+ platforms:
+   - name: ubutntu-18.04
+   - name: centos-7
+ ...
+    verifier:
+       inspec_tests:
+         - test/integration/default
+ ...        
+ ```
+ ```
+ # The below will setup the resources.
+ $ kitchen converge
+ 
+ # the output will displayed in differen font colors, but the same resource will be used.
+ 
+ $ curl http://<ip-address-of-node-provisione>
+ 
+ $ kitchen verify
+ # to validate if the test passes
+ ```
