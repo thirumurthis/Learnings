@@ -1509,3 +1509,23 @@ action :create do
  $ kitchen verify
  # to validate if the test passes
  ```
+
+-----
+`Attributes`:
+   The `override_attributes` can be specified in `environment.json` and also within roles declaration under `roles/` as sample-role.json/sample-role.rb file.
+
+This can be used to refactor template, recipes, etc.
+
+Attributes has precedence or priority, the highest priorty attribute values is what chef will use when converting a recipe.
+   - Automatic attributes - ohai attributes like ip address.
+   - When declaring an attribute in Attribute file, it can be override its value in recpie, or environment, or role.
+   
+   ```
+   precendence order from top to bottom priorty
+ |  Automatic
+ | Attribute defined in a role
+ |  Defined in an environment
+ |  Defined in  recipe
+ |  Defined in Attribute file
+  ```
+   
