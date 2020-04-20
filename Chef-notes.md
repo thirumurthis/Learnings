@@ -1357,3 +1357,70 @@ cookbook 'base-linux::default'
   
   ```
   
+  
+  ### chef custom resources
+   - Extension of chef infra client to provide custom functionality.
+   - custom resources include as part of the cookbook structure
+   - defined as Ruby files (.rb), and stored in the /resources folder
+   - might be combination of built-in Chef resources and Custom Ruby (navtive ruby)
+   
+ Need for Custom Resources,
+   - apply organization-specific defaults without using attributes.
+   - for repeatable actions, we can create a custom resources and use it in other cookbook.
+   - minimize accidental inheritance.
+   
+Syntax:
+```
+# if the custom_name not provided, then chef will be 
+use cookbook-name_resource-name.  
+resource_name :custom_name
+
+# properties for custom resource, which will referenced internally  within custom resource.
+property :property_name, RubyType, default: 'value'
+
+# if we are making use custom resource in the native resource, the proerty name should be unique, for example using a file has name property then the custom resource shouldn't use those.
+if there is no value provided to the proeprties, the default value of the custom resource will be used.
+
+# action, can be the native action reference can be used. 
+action :action_name do
+ # this can contain one or more native chef resources 
+ # native ruby blocks, like variable and arrays.
+ # since this action is defined first, this will be executed as default.
+end
+
+# we can add multiple action to the custom resource
+# custom action can different action install, upgrade, etc.
+
+action :next_action_name do
+ # for example, get rid of the file and folder, then using a delete action will delete those.
+end
+```
+
+Custom resource example:
+```ruby
+# file ../resources/site.rb
+property :homepage, String, default: '<h1>Hello custom resource</h1>'
+
+# since create is first action, this is the default when this resource is called.
+action :create do
+  # using a native chef resource
+  package 'httpd'
+  
+  # there is an implict dependencies
+  service 'httpd' do
+    action [:enable, :start]
+  end
+  
+  file '/var/www/html/index.html do
+    # new_resource.homepage - refers to the custom property defined at the start of this rb file. with homepage
+    content new_resource.homepage
+  end
+ end
+ 
+ # if this action is called explicity the httpd will be deleted.
+ action :delete do
+   package 'httpd' do
+     action :delete
+   end
+ end
+```
