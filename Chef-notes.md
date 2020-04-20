@@ -1259,5 +1259,101 @@ InSpec Auditing Scenarios:
   inspec tool doesn't require any pre-requistes like ruby to installed, only requires an connectivity
  ```
   
+ In order to manage the dependency cookbook version use the version constraints. Specifiying the dependency within the metadata.rb file.
+ 
+ Use the = sign, this is best practise in case of production system.
+ 
+ Test cookbook thoroughly and detail dependencies as documentation.
+ 
+ Use dependency manager.
+ 
+ *`Berkshelf`* - is a open source chef cookbook depedency manager.
+ ```
+ # issue the command from the root of the cookbook directory. 
+ $ berks
+ 
+ ```
+ The berksfile.lock is created which contains the locked version.
+ if any change to the cookbook version then it will be loaded.
+ 
+ *`Policyfile`* -  default recommended approach for resolving dependency management replace berkshelf.
+ - When using chef to generate cookbook, now we need to specify whether to use cookbook to use berkshelf or policyfile. The policy file is default.
+ 
+Note: `Dependency tree is stored in Policyfile.lock, the primary difference is that the dependency are stored as generated hash calculated from the entire content of the cookbook. This is calculated each time.
+
+So if the dependent cookbook is updated without the version number since the content is change the hash value will be different.
+This adds a additional layer of security in the development processs.
+This also means, that node doesn't need to recalculate the dependency eachtime. This reduce compute time. (In case of berkshelf the dependencies are calculated everytime on each infra-client run.)`
+
+```
+# generate a cookbook using workstation, which contains a Policyfile.rb
+# policyfile will be at the root of the cookbook directory
+# this acts as a wrapper cookbook, for a devsecops linux hardening community cookbook.
+
+# by default this will be the name of the cookbook 
+# this is not directly connected, it can have different name too.
+name 'base-linux'
+
+# multiple sources can be provided internal source, source control path the policyfile iterates all the source until it finds the corresponding cookbook
+# external source, where to find the cookbooks
+default_source : supermarket
+
+# contains default recipe of this cookbook, this can be a different cookbook default recipe too. like dependencies.
+# chef-client will run the specified recipes in order
+run_list 'base-linux::default'
+
+# this is used to provide overrides, where can version constraint information could be provided.
+# specify a custom source for a single cookbook
+cookbook 'base-linux', path:'.'
+```
+
+```
+# Navigate to the root directory of the cookbook, base-linux
+
+# below command examines cookbook and generates a lock file
+$ chef install
+
+Plociyfile.lock.json will be created. This file contains many assest. when the chef-infra client runs, this will be used to resolve dependencies.
+
+
+# below command provides the generated hash of the cookbook
+$ chef describe-cookbook .
+```
+
+If the content of the cookbook is change, but the metadata.rb version is not updated. This unique hashes ensure the node only runs the correct version.
+ 
+ ```
+ # update the metadata.rb with the dependencies
+ # for example, depends 'os-hardening' community cookbook
+ 
+ $ chef update
+ 
+ # the above command will update the policy file.
+ 
+ ```
+ Adding versioning constarint to the policyfile.rb
+ ```
+ # refer the content above for the Policyfile.rb
+....
+cookbook 'base-linux::default'
+# the os-harderning community cookbook had 4.0.0
+# in order to constrain the version in policy file add below content
+ cookbook 'os-harderning','=3.2.1'
+ ```
+ ```
+ # issue below command to udpate the Policyfile.lock.json with the 3.2.1 os-harderning version.
+ $ chef update 
+ 
+ # the dependencies will be listed in the output. 
+ # from the demo, noticed the 3.2.1 included ohai and sysctl dependencies and cached
+ # when updated back to 4.0.0, there policyfile.lock.json was updated with the latest version.
+ ```
   
+  ```
+  # execute the below command from workstation so the node  installs chef infra client and syncs both base-linux, os-harderning cookbooks.
+  $ kitchen converge
+  
+  Note: Since we didn't specify the "include_recpie 'os-hardening::default'" in the default.rb file of base-linux cookbook, this cookbook resource didn't convert in the test node.
+  
+  ```
   
