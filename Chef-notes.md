@@ -805,7 +805,12 @@ $ knife search 'ipaddress:192.168.1.2'
 $ knife search 'ipaddress:192.168.1.?'
 
 # using boolean condition
-$ kinfe serach 'cloud_provider:azure AND lsb_id:Ubuntu'
+$ knife serach 'cloud_provider:azure AND lsb_id:Ubuntu'
+
+$ kinfe search node "role:node-linux-base" 
+
+$ knife search environment "name:dev*"
+
 ```
 
 ### Test kitchen
