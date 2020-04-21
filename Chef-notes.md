@@ -1663,3 +1663,35 @@ $ knife bootstrap <ip-address> -x <user-name> -P <password> -E development -r ''
 # node the role/node-linux-base.json use the default_attributes value will be used if we had message displayed 
 ```
    
+Chef client:
+
+- The client.rb is configuration for chef client, similar to knife.rb/config.rb
+- This file will be present at `/etc/chef/client.rb` or `c:\chef\client.rb` (windows)
+- TO manually provide config file for chef client run, use --config to override the default config.rb file. Used for troubleshooting.
+
+Chef-client is an agent runs on the node that is managed by the chef server.
+
+Chef client run - refers to the set of action each time chef-client runs on the manged node.
+
+   - chef client get the config data / comes from ohai
+   - once config is loaded then chef client authenticates the node with the server (name of the node is used part of this authentication process, if node name change cannot be authenticated)
+      - the certificate is used to authenticate, during the first run there is no certificate the chef validator used to generate certificate for the node.
+    - after authenticating the chef client pulls the node object from chef server, the object is rebuilt which sets the run list that needs to run. (first time the client will not have the object so it has a default run list )
+    - the client then expands the run list from the object this builds up the compete roles and recipe, and applied in the order.
+    - if the recipe is appears multiple time in run list, only included one time, and runs only once.
+    - once the run list is defined. the client then request  complete list of cookbooks from the chef server
+    - the server responds with the cookbook list
+    - client compares the cookbook the recived list with that of the cache list, anything missing or out of dated will be synced with the server.
+        - the client will reset the node object, then all the attributes are set to null. Then all the attributes are loaded like ohai is loaded, the roles, environment, etc.
+        - attributes precedence executed first, then roles, environment executed and then rebuilt node is updated
+        - libraries are loaded first, attributes, custom resource followed by recipes in the order. (compile resources)
+        - each resources are executed in order specified (converge node) also called as execution phase.
+        - updating the node object. This makes the data avialable for search.
+        - chef client stops, after the above process.
+
+
+        -
+    
+    
+    
+
