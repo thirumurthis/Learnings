@@ -1277,7 +1277,10 @@ InSpec Auditing Scenarios:
  if any change to the cookbook version then it will be loaded.
  
  *`Policyfile`* -  default recommended approach for resolving dependency management replace berkshelf.
- - When using chef to generate cookbook, now we need to specify whether to use cookbook to use berkshelf or policyfile. The policy file is default.
+ - When using chef to generate cookbook, now we need to specify whether to use cookbook to use berkshelf or policyfile. The policy file is default. Policy can be versioned, now we can tie a specific cookbook version to a role.
+ 
+ The policies are new feature, the cookbook is versioned and enviornment can be specifed which cookbook to be used, roles has the runlist and cannot be versioned. Policy fix this. 
+ 
  
 Note: `Dependency tree is stored in Policyfile.lock, the primary difference is that the dependency are stored as generated hash calculated from the entire content of the cookbook. This is calculated each time.
 
