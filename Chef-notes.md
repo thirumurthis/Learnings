@@ -1561,12 +1561,100 @@ Attributes has precedence or priority, the highest priorty attribute values is w
    - Automatic attributes - ohai attributes like ip address.
    - When declaring an attribute in Attribute file, it can be override its value in recpie, or environment, or role.
    
-   ```
+ ```
    precendence order from top to bottom priorty
  |  Automatic
  | Attribute defined in a role
  |  Defined in an environment
  |  Defined in  recipe
  |  Defined in Attribute file
+ ```
+
+------
+configuration for knife comes from config.rb / knife.rb file 
+   - This file has the necessary information for knife to connect to the chef infra server.
+   - this file will be loaded everytime knife runs.
+   - By default, this file is not avilable when downloading or installing chef workstation.
+   - This file is part of the chef starter kit downloaded from the chef infra server
+   - This file is located either at the `~/.chef/config.rb` or `chef-repo/.chef/config.rb` 
+   - Contains the authenticatin information (path to the certificate location)
+
+The config.rb contains:
+   cookbook_path directory where the cookbooks 
+   client_key : certificate key path
+   
+------
+knife plugin:
+   Almost all the cloud provider has knife plugin.
+   Kinfe-azure, kinfe-ec2, etc.
+ 
+Knife Azure plugin:
+```
+   config.rb in case of knife azure plugin
+     knife[:azure_subscription_id]- "xxxxxx"
+     knife[:azure_tenant_id] - "xxxxxx"
+     knife[:azure_client_id] - "xxxxx"
+     knife[:azure_cient_secret] - "xxxxx"
+```      
+ How to get the above values from the Azure portal, starts from 
+ Activity directory -> App registration -> Application -> Client ID.
+  Certificated & Secrets -> new client secret -> give a name -> copy the key one since it will not be avialable again.
+  Activity directory -> Default Directory -> tenant id
+  subscription id directorly by searching.
+  
+  Access control (IAM)-> assign the app to a role.
+     -> Add -> select contributer (role assignment)
+     -> save.
+  
+  To list the already avialable VM from the Azure subscription
+  
   ```
+  # below command lists the list of server so response 
+  # will list
+  $ knife azurerm server list
+  ```
+  ```
+  # Creating a vm for knife plugin
+  $ knife azurerm server create --azure-vm-name vm-name-01...
+  .... (check documenation for more details
+  ```
+  
+  knife bootstraping:
+     - Develop the cookbook, and push the details to chef infra server using knife command.
+     - after verifying and testing using knife test the from the workstation use knife bootstrap command to execute chef-client.
+    Note: In this case, the VM should be created already.
+    
+   Ideally, using the Azure ARM template, and powershell script create a VM, then use knife bootstrap command.
+     
+```
+# simple bootstrap command (below will create a node in chef-infra server
+
+$ knife bootstrap <ip-address> -x <user-name> -P <password> --sudo -N <nodeName>
+```
+###### using run list
+```
+# bootstrap using runlist
+$ kinfe bootstrap <ip-address> -x <user-name> -P <password> -r '''recipe[node-linux-base]'''
+
+-- when using power shell use '''runlist''' triple ' since powersell will not expand.
+
+# afte execution, then you can ssh to the node and see if the cookbook and node are setup
+
+```
+##### using environment
+```
+# bootstrap using environment
+$ kinfe bootstrap <ip-address> -x <user-name> -P <password> -E development -r '''recipe['node-linux-base']'''
+
+# note the environment.json should be pushed to the chef server already
+# ssh to the node and see if you are able to see the appropriate cookbook installation.
+```
+##### using role
+```
+$ knife bootstrap <ip-address> -x <user-name> -P <password> -E development -r '''role['node-linux-base']'''
+
+# role should be already pushed to the chef-server with that name.
+
+# node the role/node-linux-base.json use the default_attributes value will be used if we had message displayed 
+```
    
