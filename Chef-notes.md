@@ -1359,9 +1359,47 @@ cookbook 'base-linux::default'
   Note: Since we didn't specify the "include_recpie 'os-hardening::default'" in the default.rb file of base-linux cookbook, this cookbook resource didn't convert in the test node.
   
   ```
+  More policy:
+ * The policies are new feature, the cookbook is versioned and enviornment can be specifed which cookbook to be used, roles has the runlist and cannot be versioned. Policy fix this. {duplicate content}
   
+  ```
+  # policy file
+  # node-linux-base.rb
+  name  'node-linux-base'
   
-  ### chef custom resources
+  default_source :supermarket
+  
+  run_list 'recipe[chef-client::init_service]','node-linux-base::default'
+  
+  cookbook 'node-linux-base' ,path: '../cookbooks/node-linux-base'
+  
+  override['node-linux-base']['message'] = "linux example ploicy"
+ ```
+ 
+ Lets create a version lock
+ 
+```
+# update the policy version, in the lock file.
+$ chef install .\node-linux-base.rb
+
+# a lock file will be created, policyfile.lock.json
+```
+
+To update the policy file
+```
+$ chef update .\node-linux-base.rb
+```
+To upload the policy file to server
+```
+$ chef push node-linux-base
+
+# there is no UI to view the policy information
+
+$ chef show-policy
+# policy packages all the dependencies, roles, etc.
+```
+    
+### chef custom resources
    - Extension of chef infra client to provide custom functionality.
    - custom resources include as part of the cookbook structure
    - defined as Ruby files (.rb), and stored in the /resources folder
