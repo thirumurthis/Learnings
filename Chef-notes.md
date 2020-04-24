@@ -1689,9 +1689,88 @@ Chef client run - refers to the set of action each time chef-client runs on the 
         - updating the node object. This makes the data avialable for search.
         - chef client stops, after the above process.
 
+--------
+#### Automate the bootstraping process:
 
-        -
-    
-    
-    
+For one or few machine, when a VM is created, it can be bootstrapped using `knife` boostrap command.
 
+1. Create a base bootstrap image.
+     - validator pem = certifcate in the specific location /etc/chef
+     - create json =  that contains the nodes run list that contains all the roles, enviorment, attributes under /etc/chef
+     sample json file is below: 
+     Note:  There are not attribute mentioned, in this case it will be downloaded from the chef server
+     
+     ```json
+     {
+        "run_list" : ["role[node-linux-base]"]
+     }
+     ```
+     - client.rb = 
+          > sets the node for the name (node_name)
+          > URL for the chef server
+          > client validator perm name
+     ```
+       current_dir  File.dirname(__FILE__)
+       log_level       :info
+       log_location     STDOUT
+       node_name        "NODENAME"
+       client_key       "#{current_dir}/organization.pem"
+       chef_server_url   "https://api.chef.io/organizations/<organization-name>"
+       cookbook_path     ["#{current_dir}/../cookbooks"]
+     ```
+  Sample bootstrap script:
+  ```sh
+    cd /etc/chef
+    
+    curl -L https://omnitruck.chef.io/install.sh | bash || error_exit 'not able to install chef'
+    
+    # node name should be unique 
+    NODE_NAME=node-01
+    # we can use this to generate ra$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -z 4 | head -n 1)
+    
+    # back up the config.rb
+    mv config.rb config.template
+    
+    # replace the NODENAME from the client.rb
+    # use template since replace is not directly possible
+    sed -i 's/NODENAME/$NODE_NAME' config.template > config.rb 
+    
+    sudo chef-client -j /etc/chef/node_first_run.json
+  ```
+  
+ After the above script is executed, the node will be registred to the chef server and bootstrapped.
+  
+  
+  #### Chef-solo
+  After installing the chef-client on the managed node
+  Then to setup chef Solo, create the solo.rb file
+  
+  solo.rb - tells the chef-client, 
+  
+  sample solo.rb
+  ```
+  # gets the currrent directory
+  soloRoot = File.expand_path(File.dirname(__FILE__))
+  
+  file_cache_path soloRoot
+  cookbook_path  [
+                    soloRoot + "/cookbooks"
+                    ]
+   role_path       soloRoot + "/roles"
+   data_bab_path   soloRoot + "/data_bags"
+  ```
+  than define node.json which has the run list. attributes can be added if neeeded.
+ ```
+ {
+  "name" :"solo",
+  "description" : "example",
+  "run_list" : ["recipe[node-linux-base]" ],
+  "default" : {
+       "node_linux_base" : {
+       ...
+       }
+     }
+  }
+ ```
+     - 
+  
