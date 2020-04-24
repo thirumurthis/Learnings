@@ -1772,5 +1772,6 @@ For one or few machine, when a VM is created, it can be bootstrapped using `knif
      }
   }
  ```
-     - 
-  
+
+When the chef client run, any ruby code in the recipe is compiled and an resource collection is created for each resource block.
+Then during the exuection phase, each collection is fetched in order, checked for version, then TEST/REPAIR'ed to manage the desired state.
