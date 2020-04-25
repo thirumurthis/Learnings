@@ -400,11 +400,90 @@ OSArchitecture
 AMD64
 ```
 
-Filtering using the DNS, tracking the flow of www.boeing.com site.
+Filtering using the DNS, tracking the flow of boeing.com site.
 
 Under the Domain Name System section, first a signal is sent, and the response from the DNS is displayed below.
 
-![image](https://user-images.githubusercontent.com/6425536/80288628-00ae9000-86ee-11ea-8c6d-820b8014a371.png)
+![image](https://user-images.githubusercontent.com/6425536/80290586-fd6dd100-86fa-11ea-869d-dba04a00c31a.png)
+
+The client ip address, is requesting the DNS server for ip address for the name boeing.com
+
+The DNS server requests the root name server where the boeing.com for A record.
+
+One of the root name server responds with authoritive nameserver info of all the .com server, since it is not able to resolve the name to ip address. 
+
+-------
+
+### Ip routing / Network traffic routing.
+
+`Subnet` - is a collection of computer that can communicate to each other without using a router.
+
+A router connects different subnet. When a machine that wanted to talk to another machine with different subnet, the traffic needs to be routed by the router.
+
+Tools used to verify the routes, command to trace the route:
+
+##### `tracert` 
+ tracert - provide the hops happened to reach the server from the requested client machine.
+ ```
+ > tracert www.yahoo.com
+ Tracing route to atsv2-fp-shed.wg1.b.yahoo.com [2001:4998:c:1023::4]
+over a maximum of 30 hops:
+
+  1     3 ms     2 ms     5 ms  2601:601:1300:3da0:3e37:86ff:fe39:12a2
+  2    17 ms    30 ms    17 ms  2001:558:4082:5b::1
+  3    13 ms    13 ms    13 ms  po-303-1252-rur102.burien.wa.seattle.comcast.net [2001:558:a2:c061::1]
+  4    11 ms    12 ms    10 ms  2001:558:a0:17d::1
+  5     *        *        *     Request timed out.
+  6     *        *        *     Request timed out.
+  7    18 ms    17 ms    12 ms  10gigabitethernet2-12.core1.sea1.he.net [2001:470:0:3c5::1]
+  8    11 ms    21 ms    13 ms  v6-six2.yahoo.com [2001:504:16::306:0:2846]
+  9    20 ms    16 ms    15 ms  ae-7.pat1.gqb.yahoo.com [2001:4998:f007::1]
+ 10    18 ms    17 ms    16 ms  et-1-0-0.msr2.gq1.yahoo.com [2001:4998:f00f:208::1]
+ 11    97 ms    37 ms    14 ms  et-1-0-0.clr2-a-gdc.gq1.yahoo.com [2001:4998:c:fc22::1]
+ 12    17 ms    17 ms    22 ms  2001:4998:c:f801::1
+ 13    17 ms    15 ms    16 ms  media-router-fp1.prod1.media.vip.gq1.yahoo.com [2001:4998:c:1023::4]
+
+Trace complete.
+ 
+ ```
+
+ ##### `pathping`
+   This is more robust and provide more detail information about the routing.
+   
+   pathping - does additional statstical test to provide more relaiable results.
+ 
+   pathping pings each hop link with 100 request, to report the data packet loss and the statistics.
+   
+ ```
+ > pathping 
+ Tracing route to atsv2-fp-shed.wg1.b.yahoo.com [2001:4998:c:1023::5]
+over a maximum of 30 hops:
+  0  thirumurthi-HP.hsd1.wa.comcast.net. [2601:601:1300:3da0:c02e:c71b:28ac:4bdd]
+  1  2601:601:1300:3da0:3e37:86ff:fe39:12a2
+  2  2001:558:4082:5b::1
+  3  po-303-1252-rur102.burien.wa.seattle.comcast.net [2001:558:a2:c061::1]
+  4  2001:558:a0:17d::1
+  5     *        *     be-33650-cr01.seattle.wa.ibone.comcast.net [2001:558:0:f769::1]
+  6     *        *        *
+Computing statistics for 125 seconds...
+            Source to Here   This Node/Link
+Hop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address
+  0                                           thirumurthi-HP.hsd1.wa.comcast.net. [2601:601:1300:3da0:c02e:c71b:28ac:4bdd]
+                                0/ 100 =  0%   |
+  1    7ms     0/ 100 =  0%     0/ 100 =  0%  2601:601:1300:3da0:3e37:86ff:fe39:12a2
+                                0/ 100 =  0%   |
+  2   26ms     0/ 100 =  0%     0/ 100 =  0%  2001:558:4082:5b::1
+                                0/ 100 =  0%   |
+  3   18ms     0/ 100 =  0%     0/ 100 =  0%  po-303-1252-rur102.burien.wa.seattle.comcast.net [2001:558:a2:c061::1]
+                                0/ 100 =  0%   |
+  4   21ms     0/ 100 =  0%     0/ 100 =  0%  2001:558:a0:17d::1
+                                0/ 100 =  0%   |
+  5   19ms     0/ 100 =  0%     0/ 100 =  0%  be-33650-cr01.seattle.wa.ibone.comcast.net [2001:558:0:f769::1]
+
+Trace complete.
+ ```
+
+
 
 
 
