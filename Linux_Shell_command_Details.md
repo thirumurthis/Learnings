@@ -678,3 +678,20 @@ done
 # Parameter 1 : 3 
 
 ```
+
+# setting  arguments to next statement using `set` for next statment 
+```
+#!/bin/sh
+
+echo "$1 $2"
+set var1 var2
+echo "$1 $2"  # the input argument is set with this value
+set `date`
+echo $6  # prints the 6 item 
+
+#output : setCommandExample.sh test1 test2
+# test1 test2
+# var1 var2
+# PM <since date format was - day, month dd, yyyy hh:mm:ss PM>
+
+```
