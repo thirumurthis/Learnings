@@ -180,14 +180,26 @@ This would be helpful if we are migrating web server from one ip address to anot
 
 Latter it can be reverted.
 
-#### Record types in DNS
-   - default record type A, this turns the name to ip address
-   - name server record type [set type=NS] 
-   - mail exchange record type [set type=MX]
-   - canonical name (CNAME) record type [set type=CNAME], 
-         - kind of alias names
-	 - there can't be a CNAME on root of the domain like microsoft.com (note: no www as in www.microsoft.com will have conanical name check the below example.)
-   
+### `Record types in DNS`
+   - default record type `A`, this turns the name to ip address
+   - name server (`NS`) record type [set type=NS] 
+   - mail exchange (`MX`) record type [set type=MX]
+   - canonical name (`CNAME`) record type [set type=CNAME], 
+      - kind of alias names
+      - there can't be a CNAME on root of the domain like microsoft.com 
+	   (note: there is no www above, www.microsoft.com will have CNAME, check below)    - `AAAA` record type (Quad A) [set type=AAAA]
+      - This will provide an Ipv6 version of address     
+   - `wildcard` record type
+      - will return certain ip address for any name under certain domain.
+      - The was local website hosted as _localdev.us_.
+         - when using localdev.us, nslookup provided the ipaddress of the website.
+         - also www.localdev.us, nslookup provided the ip address.
+	 - when using client.localdev.us, nslookup provided the localhost ip address.
+      - This allows developer to set the local server configuration using their host names to grab certain name spaces without setting up DNS server , for example
+         - clientname1.localdev.us (this goes to certain ipaddress)
+	 - clientname2.localdev.us (this goes to certain ipaddress)
+       - use of wild card usage is certain ISPs will capture any failed DNS query will redirect to the ip address to their webserver. to avoid this use own DNS server which is costly setup.
+          
 `type=NS`
 ```
 > nslookup
@@ -275,3 +287,126 @@ Non-authoritative answer:
 www.microsoft.com       canonical name = www.microsoft.com-c-3.edgekey.net
 
 ```
+
+`type=AAAA`
+```
+C:\Users\thirumurthi>nslookup
+DNS request timed out.
+    timeout was 2 seconds.
+Default Server:  UnKnown
+Address:  2001:558:feed::1
+
+> server 8.8.8.8
+DNS request timed out.
+    timeout was 2 seconds.
+Default Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+> set type=AAAA
+> www.google.com
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+Name:    www.google.com
+Address:  2607:f8b0:400a:800::2004
+
+> www.microsoft.com
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+Name:    e13678.dspb.akamaiedge.net
+Addresses:  2600:1409:3800:186::356e
+          2600:1409:3800:1a3::356e
+          2600:1409:3800:187::356e
+Aliases:  www.microsoft.com
+          www.microsoft.com-c-3.edgekey.net
+          www.microsoft.com-c-3.edgekey.net.globalredir.akadns.net
+> exit
+```
+
+`wild card`
+```
+C:\Users\thirumurthi>nslookup
+DNS request timed out.
+    timeout was 2 seconds.
+Default Server:  UnKnown
+Address:  2001:558:feed::1
+
+> server 8.8.8.8
+DNS request timed out.
+    timeout was 2 seconds.
+Default Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+>
+> localdev.us
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+Name:    localdev.us
+Address:  3.13.31.214
+
+> www.localdev.us
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+Name:    www.localdev.us
+Address:  127.0.0.1
+
+> client1.localdev.us
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+Name:    client1.localdev.us
+Address:  127.0.0.1
+
+> client2.localdev.us
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+Name:    client2.localdev.us
+Address:  127.0.0.1
+
+> exit
+```
+Note: 
+   since the local host address is provided, many ISPs will try to forward or use their ip address server id's for failed DNS queries. For example, dockerhub.io
+   
+![image](https://user-images.githubusercontent.com/6425536/80287359-fb4d4780-86e5-11ea-8c89-ac9ec473c158.png)
+-----
+
+### `DNS Trace`
+
+`In order to trace the DNS, we can use WireShark utility tool, this provides the network log happened on the transaction.`
+
+Wireshark tool displays Mac address information also in the Source and Destinaton section.
+Tip of the day: 
+
+ `wmic` command to check if windows machine is 32 or 64 bit
+
+```
+## command and output:
+> wmic os get osarchitecture
+OSArchitecture
+64-bit
+
+> echo %PROCESSOR_ARCHITECTURE%
+AMD64
+```
+
+Filtering using the DNS, tracking the flow of www.boeing.com site.
+
+Under the Domain Name System section, first a signal is sent, and the response from the DNS is displayed below.
+
+![image](https://user-images.githubusercontent.com/6425536/80288628-00ae9000-86ee-11ea-8c6d-820b8014a371.png)
+
+
+
+
+
