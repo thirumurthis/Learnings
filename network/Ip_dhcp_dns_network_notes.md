@@ -29,7 +29,7 @@ Commands:
 
 ### How does a machine gets if IP Address info.
 
-### `DHCP (Dynamic Host Configuration protocol)`: 
+#### `DHCP (Dynamic Host Configuration protocol)`: 
    The machine gets the ip conifguration is from DHCP server which contains the ip address.
 
 DHCP server 
@@ -64,5 +64,214 @@ When the machine comes online,
    - Google, Bing, Akamai - June 8th 2011 truned on IpV6 for testing and latter on set it permanent.
    - Backward compitablity is still retained.
  
+### DNS 
+  - Name resolution process, the address typed in an browser needs to be converted to ip address info.
+  
+  - If the user wanted to use www.microsoft.com in browser, the client machine will check with the DNS server (name server1) to resolve the name. 
+  - If the DNS route name server1 exist then it will be sent back.
+  - If the DNS route name server1 doesn't have that value it will check the root NS server.
+  - If the root NS server doesn't contains the information it will check with other .com NS (for .com domain for major provider the route name server1 will contain the ip information.
+  
+  Note: Most of the heavy duty is done at the server-1 shown in the below diagram.
+  
+![image](https://user-images.githubusercontent.com/6425536/80284327-b4098b80-86d2-11ea-9403-5ddf45db7596.png)
 
+command:
 
+```
+# nslookup - used to query the DNS queries from command line.
+# command alone: will open up another interactive comand line to query
+> nslookup
+ > google.com
+ ...
+ ...
+ > exit
+ 
+# nslookup with address info
+
+> nslookup www.bing.com
+DNS request timed out.
+    timeout was 2 seconds.
+Server:  UnKnown
+Address:  2001:558:feed::1
+
+DNS request timed out.
+    timeout was 2 seconds.
+DNS request timed out.
+    timeout was 2 seconds.
+DNS request timed out.
+    timeout was 2 seconds.
+DNS request timed out.
+    timeout was 2 seconds.
+*** Request to UnKnown timed-out
+
+### in some cases it displayes
+### Name, Addresses, Aliases
+
+## below will take to the other DNS server from where we can query the website name.
+## refer the snapshot
+> nslookup
+  > server 8.8.8.8<ip address of different server to quyery of>
+  > boeing.com
+```
+
+![image](https://user-images.githubusercontent.com/6425536/80285507-59742d80-86da-11ea-819f-a9e6797461ea.png)
+ 
+### DNS Cache
+ - Concept of DNS
+ - The DNS server that we are querying will be cached that information for certain period of time (TTL)
+ - The local machine will also cache that information for certain period.
+ 
+```
+## in browser, just type www.hollywood.com
+## or use ping <url> command
+## then in the command prompt try the below command
+
+> ipconfig /displaydns
+# below will be displayed
+....
+
+    www.hollywood.com
+    ----------------------------------------
+    Record Name . . . . . : www.hollywood.com
+    Record Type . . . . . : 1
+    Time To Live  . . . . : 49
+    Data Length . . . . . : 4
+    Section . . . . . . . : Answer
+    A (Host) Record . . . : 52.34.76.207
+
+    Record Name . . . . . : www.hollywood.com
+    Record Type . . . . . : 1
+    Time To Live  . . . . : 49
+    Data Length . . . . . : 4
+    Section . . . . . . . : Answer
+    A (Host) Record . . . : 35.165.237.52
+ ....
+```
+Note: 
+  When changing DNS records, it will take sometime to propagate to internet.
+  
+##### Overriding the DNS in individual machine using `host` file
+
+- Navigate to C:/Windows/System32/dirvers/etc/, there should be file `host` (no extension)
+- Editing this file we can overrider the local DNS
+
+hosts file content, save it
+```
+## enter value like below spearated by tab space
+127.0.0.1	mysite1.com	www.mysite2.com  site2.com
+127.0.0.1	www.site.com
+192.168.40.16	supersite.com
+
+```
+use `ipconfig` command
+```
+
+> ipconfig /displaydns
+# this will display the content with the host file
+# editing the host file will clear the DNS cache
+# now if using ping for example 
+
+> ping www.site.com [this will ping local host address]
+> ping supersite.com [this will take to 192.168.40.16 ip address]
+```
+
+This would be helpful if we are migrating web server from one ip address to another ip address. Just put the new ip information in the host file and test it.
+
+Latter it can be reverted.
+
+#### Record types in DNS
+   - default record type A, this turns the name to ip address
+   - name server record type [set type=NS] 
+   - mail exchange record type [set type=MX]
+   - canonical name (CNAME) record type [set type=CNAME], 
+         - kind of alias names
+	 - there can't be a CNAME on root of the domain like microsoft.com (note: no www as in www.microsoft.com will have conanical name check the below example.)
+   
+`type=NS`
+```
+> nslookup
+> server 8.8.8.8  //I am going to the different DNS provider (google in this case)
+> set type=NS     // within that DNS server trying to set the record type as NS
+> microsoft.com   // querying the name microsoft.com
+
+## output looks something like below where the name resoultion process displays
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+microsoft.com   nameserver = ns2.msft.net
+microsoft.com   nameserver = ns3.msft.net
+microsoft.com   nameserver = ns4.msft.net
+microsoft.com   nameserver = ns1.msft.net
+> exit
+```
+
+`type=MX`
+```
+> nslookup
+> server 8.8.8.8  //I am going to the different DNS provider (google in this case)
+> set type=MX
+> microsoft.com
+## output looks like (when sending mails to microsoft.com it will use the below name)
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+microsoft.com   MX preference = 10, mail exchanger = microsoft-com.mail.protection.outlook.com
+
+> pluralsight.com
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+pluralsight.com MX preference = 1, mail exchanger = aspmx.l.google.com
+pluralsight.com MX preference = 10, mail exchanger = alt3.aspmx.l.google.com
+pluralsight.com MX preference = 10, mail exchanger = alt4.aspmx.l.google.com
+pluralsight.com MX preference = 5, mail exchanger = alt1.aspmx.l.google.com
+pluralsight.com MX preference = 5, mail exchanger = alt2.aspmx.l.google.com
+> exit
+```
+
+Note: 
+  Preference is order in which machine sends the mail to send to, if one exchange is missing will go to the next.
+  
+`type=CNAME` 
+```
+> nslookup
+> server 8.8.8.8
+DNS request timed out.
+    timeout was 2 seconds.
+Default Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+> set type=CNAME
+>
+> pluralsight.com // witout wwww
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+pluralsight.com
+        primary name server = ns-1441.awsdns-52.org
+        responsible mail addr = awsdns-hostmaster.amazon.com
+        serial  = 1
+        refresh = 7200 (2 hours)
+        retry   = 900 (15 mins)
+        expire  = 1209600 (14 days)
+        default TTL = 86400 (1 day)
+
+> www.pluralsight.com   // with www <- user input value
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+www.pluralsight.com     canonical name = www.pluralsight.com.cdn.cloudflare.net
+
+> www.microsoft.com
+Server:  [8.8.8.8]
+Address:  8.8.8.8
+
+Non-authoritative answer:
+www.microsoft.com       canonical name = www.microsoft.com-c-3.edgekey.net
+
+```
