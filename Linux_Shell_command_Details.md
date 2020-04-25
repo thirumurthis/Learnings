@@ -646,3 +646,35 @@ $ xz mytar
    echo ${#string} // prints length of the string
   ```
 [Reference](https://www.tldp.org/LDP/abs/html/string-manipulation.html)
+
+
+  # associated array usage is `-A` doesn't maintain the order, in case to maintain order use `-a` like below.
+  ```sh
+$ declare -a arr
+$ arr=( [2018]=5%12 [2019]=1%12 [2020]=1%2 )
+$ for year in "${!arr[@]}"; do printf '%s: %s\n' "${year}" "${arr[${year}]}"; done
+  ```
+  
+  Reference : (Link)[https://unix.stackexchange.com/questions/582347/for-loop-with-key-value-pair-the-key-is-sort-order-is-not-maintained]
+  
+  # In order to shift the arguments passed use `shift` option.
+  
+  ```sh
+  #!/bin/sh
+
+export idx=0 ;
+# if the first argument is not null then prints
+while [ "$1" != "" ]
+do
+  # just a counter
+  idx=$(expr ${idx} + 1);
+  echo "Parameter ${idx} : $1 $2 $3 " # Note just validate input arguments.
+  shift  # move all the positional parameter by one
+done
+
+# ouput : {input sh <script.sh> 1 2 3
+# Parameter 1 : 1 2 3 
+# Parameter 1 : 2 3 
+# Parameter 1 : 3 
+
+```
