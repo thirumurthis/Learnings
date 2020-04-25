@@ -60,7 +60,7 @@ end
 `Converge the instance ` is a state where the instance brought to desired state.
 
 `cookbook` fundamental unit of configuration and policy distribution.
-   Note: Create the cookbook under a `cookbooks directory` else when executing `sudo chef-client -z -r "recipe[cookbook-name::recpie]"` will work as expected. Else 
+   Note: Create the cookbook under a `cookbooks directory` else when executing `sudo chef-client -z -r "recipe[cookbook-name::recpie]"` will not work as expected. The usage of `sudo chef-cient -z -o "recipe[cookbook-name::recipe-name]"` { -o used to set runlist just for that chef-client run, -r overrides the run list}
 
 ```sh
 $ chef generate cookbook <cookbook-name>
