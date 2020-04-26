@@ -483,9 +483,135 @@ Hop  RTT    Lost/Sent = Pct  Lost/Sent = Pct  Address
 Trace complete.
  ```
 
+`subnet` is defined by combination of ip address and subnet mask.
+
+```
+              Network    | Node
+Ip address : 192.168.140 |.116
+Subnet mask: 255.255.255 |.000
+
+             Network | Node
+Ip address : 192.168 |.140.116
+subnetmask : 255.255 |.000.000
+
+Note when he subnet mask is off (0) those are representing node.
+```
+
+Representation of subnet mask of 255.255.255.000
+Example 1:
+```
+192.168.40.0/24
+or
+192.168.40.0/255.255.255.0
+or
+192.168.40.0 - 192.168.40.255 [range of possible ip address]
+```
+`Note:`
+  - So if a computer on this network reach an ip address within this subnet ipaddress range it can be reached directly.
+   
+  - So if a computer on this network needs to reach an ip address out of this subnet ip address range, it needs to go through the default route.
+
+Example 2:
+
+Subnet mask can also be, 255.255.254.0. this is called 23 bit subnet represented 
+
+```
+192.168.12.0/23
+or
+192.168.12.0/255.255.254.0
+or
+192.168.12.0 - 192.168.13.255
+```
+
+The 23 bit subnet, expands between two class c networks. (192.168.12, 192.168.13)
+
+Example 3:
+
+Subnet of 28 bits represented as below (this is a very small network)
+```
+192.168.12.16/28
+or
+192.168.12.16/255.255.255.240
+or
+192.168.12.16 - 192.168.12.21
+```
+
+#### How does an computer determine whether the ip address is on the same subnet or different subnet? How to reach other subnet?
+
+Answer is it is defined by the `route table`.
+
+Simplified route table:
+
+| Destination | Netmask | Gateway |
+| -------|-----------|-----------|
+|0.0.0.0 | 0.0.0.0 | 192.168.115.1|
+|127.0.0.0| 255.0.0.0| On-Link|
+|192.168.115.0| 255.255.255.0| On-Link|
+|255.255.255.255| 255.255.255.255| On-Link|
 
 
+When the traffic is sent, the most specific match possible .
 
+First row:
 
+Destination & Netmask 0.0.0.0  -> means any ip address and 192.168.115.1 is the default gateway
 
+Second row:
 
+Destination 127.0.0.0/8 - 127 network is always the local host. This means NO need to go through the default gateway. This means traffoc never leaves the physical computer.
+
+Third row:
+
+Destination 192.168.115.0/24 - This is the subnet currently the computer is located in.
+Traffic can be sent directly to this destination ip address.
+
+Fourth row:
+
+Is used for broadcast, sent traffic that is destint for the subnet. The broadcast do not cross routers, don't need to send to default gateway. Broadcast to the entire subnet.
+
+To help on the route, we can use `route` command.
+
+Most frequently used type of route command: (use command prompt of windows)
+```
+> route print  // to print the route table information
+
+==========================================================================
+Interface List
+ 62...78 ac c0 40 65 b9 ......Realtek PCIe GBE Family Controller
+ ....
+===========================================================================
+
+IPv4 Route Table
+===========================================================================
+Active Routes:
+Network Destination        Netmask          Gateway       Interface  Metric
+          0.0.0.0          0.0.0.0      192.168.0.1     192.168.0.11     50
+        127.0.0.0        255.0.0.0         On-link         127.0.0.1    331
+        127.0.0.1  255.255.255.255         On-link         127.0.0.1    331
+  127.255.255.255  255.255.255.255         On-link         127.0.0.1    331
+............
+        224.0.0.0        240.0.0.0         On-link      192.168.0.11    306
+  255.255.255.255  255.255.255.255         On-link         127.0.0.1    331
+  255.255.255.255  255.255.255.255         On-link      192.168.0.11    306
+===========================================================================
+Persistent Routes:
+  None
+
+IPv6 Route Table
+===========================================================================
+Active Routes:
+ If Metric Network Destination      Gateway
+  1    331 ::1/128                  On-link
+ ...........
+ 67    281 ff00::/8                 On-link
+ 35    306 ff00::/8                 On-link
+===========================================================================
+Persistent Routes:
+  None
+  
+  ----------------------
+  In the above Ip4 table Interface is the current ip address.
+  The metrics is a value, where the lowest cost will be used for traffic.
+```
+
+The default gateway is determined by the ip network configuration in the route table.
