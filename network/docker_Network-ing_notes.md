@@ -137,6 +137,112 @@ The docker bridge driver on a linux system, actually leverages the tested, matur
 
 `docker network create` with bridge driver will create a vswitch. This is entirely a  software vswitch. Once this is completed, we can set containers in the host.
 
+```
+$ docker network create -d bridge --subnet 10.0.0.1/24 demo-bridge
+## outputs id of network, with hashed value.
 
-  
+// use network ls command to see if the bridge is created
+$ docker network ls
+
+// use inspect to see the config
+$ docker network inspect demo-bridge
+## outputs the network configuration in json format
+
+## docker0 would be the default bridge
+## demo-bridge is the newly created bridge with 802.1d standard
+```
+
+```
+# list the bridge info in the linux both the docker0 and created one
+$ ip link show 
+```
+-------
+Tips: 
+
+In ubuntu linux to investigate the bridge network, install the package from `apt-get` package manager called `bridge-utils`. `$ sudo apt-get install bridge-utils`
+
+Once package is installed, use `$ brctl show` command to list the bridge info from kernel.
+
+---------
+
+#### Creating a container and attaching in the single host
+
+```
+# -d = detach mode
+# -t = tty (terminal - psedo terminal)
+# alpine is the image name. othe example, debian
+# sleep - container will be live for a day
+
+$ docker run -dt --name container1 --network demo-bridge alpine sleep 1d
+## output information about the container info.
+
+$ docker run -dt --name container2 --network demo-bridge alpine sleep 1d
+```
+
+Now inspecting the network will list the containers 
+```
+$ docker network inspect demo-bridge
+### in output check the container attribute
+### this means that both the containers can talk to each other 
+### since has got ip and mac address.
+```
+
+Info: After the containers are attached to the host, then `brctl show` command on the demo-bridge will list two interface ids for two containers.
+
+Representation:
+
+![image](https://user-images.githubusercontent.com/6425536/80316730-4897ea80-87b4-11ea-8d51-5e490094cba9.png)
+
+##### Testing the connectivity between the container1 and container2
+
+```
+
+$ docer exec -it container1 sh
+# takes to the terminal of the container1
+
+# Within the contained
+$ ip a
+## outputs the list of network
+
+$ ping <ip-address-of-other-container-obtained-by-network ls-containers-attribute>
+## output should see the ping successfully sending and receiving pacakges.
+
+$ ping container2
+```
+
+##### How does docker container was able to communicate with each other in above configuration?
+
+Starting docker 1.10 version, the every docker engine has embedded DNS server built in.
+
+So when we create a container with the name flag, the entry is added with the DNS server. And anyother container on the same network can ping it by the name.
+
+
+#### How to make the container accessible to external world?
+##### (or) In other words, how to make the container in one host to talk to another container in different host? 
+##### (or) In other words if the containers on a bridge network to be accessed outside of that network, another network or host?
+
+We need to publish the container service on the host network. 
+
+Right now the bridge created above, is not accessible to outside world.
+
+This is where the port forwarding comes in place, in case of an web server application.
+
+__` -p (host-port):(container-port)`__
+
+```
+# start the container with exposed port
+$ docker run -d --name web-container1 --network demo-bridge -p 5050:8080 mywebapp
+```
+
+Representation:
+
+![image](https://user-images.githubusercontent.com/6425536/80317480-e392c380-87b8-11ea-940f-6e6549cf1e48.png)
+
+Get the public external ip address of the network and use that with the port, `73.108.109.22:5050`.
+
+
+
+
+
+
    
