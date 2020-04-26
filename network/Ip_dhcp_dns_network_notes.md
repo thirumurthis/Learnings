@@ -615,3 +615,56 @@ Persistent Routes:
 ```
 
 The default gateway is determined by the ip network configuration in the route table.
+
+
+### NAT (Network Address Translation)
+
+There is a shortage of Ipv4 address, how this issue is resolved by the ISPs.
+
+ISP provides only one ip address.
+
+At home we have multiple device that connected to the router, all the device that are connected will get a private ip.
+
+`NAT` as a process converts the private ip address of the devices when the traffic exists the router and converts to the expternal public ip address (provided by the ISPs) as it reaches the internet. Also when the traffic comes back that is converted to correct internal ip address.
+
+When hosting a website in the internet, all we need is a public ip address.
+
+All the Linksys, etc router has the ability to forward request coming certain port to my public ip address to be routed to specific ip address internally.
+
+Say, any if we want to host a web server in local laptop, we can tell the router any traffic that is destint for port 80 (http) to route to internal ip address.
+The port cannot be used by two different ports.
+
+There are list of ip address for private purpose only. Those are
+```
+# Private Network Ranges:
+
+10.0.0.0/255.0.0.0 (8)
+172.16.0.0/255.240.0.0 (12)
+192.168.0.0/255.255.0.0 (16)
+``
+
+### `Port connectivity`:
+
+Transport layer protocol: `TCP` and `UDP`
+
+`TCP` - All the web traffic runs over this protocol. Http, Mail traffic,etc.
+
+Understanding TCP (Example: web application) and UDP (Example: Video confrencing) protocol.
+
+![image](https://user-images.githubusercontent.com/6425536/80295717-f7dbaf80-8729-11ea-8f4c-ae67d99167a9.png)
+
+
+
+
+
+
+```
+
+                    64.78.185.232 (public ip provided by ISP's)
+		      Router  (ip 192.168.1.1)
+		  /	  \           \ 
+		/ 	   \             \ 
+	     /               \              \
+	192.168.1.100     192.168.1.101    192.168.1.102
+	  device1             device2        device3
+```
