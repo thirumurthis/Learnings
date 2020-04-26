@@ -11,17 +11,17 @@ Docker container network contians three major part:
 
 
 `CNM` defines three main constructs
-    - `Sandbox` (a.k.a namespace in linux kenrel)
-       - Kind of fenced area of OS or isolated area of OS, where we can tweak and do changes in isolation without impacting other area.
-       - Once the sandbox is created, inside of it network stacks can created like ipconfig, DNS, Routing table and all network needed.
-       - Sandobx is like a container without no app running inside it.
+  - `Sandbox` (a.k.a namespace in linux kenrel)
+     - Kind of fenced area of OS or isolated area of OS, where we can tweak and do changes in isolation without impacting other area.
+     - Once the sandbox is created, inside of it network stacks can created like ipconfig, DNS, Routing table and all network needed.
+     - Sandobx is like a container without no app running inside it.
     
-    - `Endpoint` (Network interace)
-       - like eth0 in the linux world
-       - like LAN in the Windows world
+ - `Endpoint` (Network interace)
+     - like eth0 in the linux world
+     - like LAN in the Windows world
      
-    - `Network` 
-        - connected endpoints.
+ - `Network` 
+     - connected endpoints.
         
 `Libnetwork` (canoncial implementation of CNM)
    - libnetwork is the actual implementation of the CNM developed in Go/Golang code by Docker Inc.
@@ -30,7 +30,7 @@ Docker container network contians three major part:
    - The Libnetwork is written in Golang, so it is cross platform runs in ARM, etc.
    - plugable architecture
    
- `Drivers` (network specific detail implementation)
+`Drivers` (network specific detail implementation)
    - when `libnetwork` implements and defined the fundametal the sandbox, endpoint, network, management API, UX etc. 
    the actual specifics different network types local bridge network, multihost overlay leverage VXLAN are implemented in drivers
   
