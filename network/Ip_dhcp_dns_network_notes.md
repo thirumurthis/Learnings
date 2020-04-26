@@ -735,24 +735,38 @@ In case of there is a need to debug the firewall drop packets, enable the logs f
 ![image](https://user-images.githubusercontent.com/6425536/80296343-0d9fa380-872f-11ea-92f2-ef20cc3fef6d.png)
 
 Rules:
+
    Few of the Inbound and outbound rules are defined out of the box.
    
- Lets add new inbound rule, Right click the firewall inbound rule and click `add new rule`
-    - Program rule
-        - When specific executable is running what ever port it is going to listen on, we can enable those using this rule.
-	- select the action to perform either allow, etc.
-	- select profile
-	- save with a name.
+Lets add new inbound rule, Right click the firewall inbound rule and click `add new rule`
+  - Program rule
+    
+     - When specific executable is running what ever port it is going to listen on, we can enable those using this rule.
+       - select the action to perform either allow, etc.
+       - select profile
+       - save with a name.
     - Port rule 
         - say which port to open for TCP or UPD protocol, used in web server.
     - pre-defined rule
         - windows provided.
     - custom rule
         - provides handle more protocol
-	- ICMPv4 protocol is used by the `ping` command.
-	- follow the screen instruction.
+        - ICMPv4 protocol is used by the `ping` command.
+        - follow the screen instruction.
 
 ![image](https://user-images.githubusercontent.com/6425536/80296408-d54c9500-872f-11ea-8980-f7c9b2a4693b.png)
+
+### NAT (Network Address translation)
+  
+`NAT`- allows to translate multiple internal ip address to a single external ip address.
+
+`NAT Rule:`
+  - To be set in order to request the router to route traffic from external public ip on specific port to specific internal ip address. 
+   - This will be helpful to host web application from home using local machine, create a rule to route the traffic to the server.
+   
+To find the external public ip address, easiest way is to use www.whatismyip.com.
+
+![image](https://user-images.githubusercontent.com/6425536/80296800-c1566280-8732-11ea-98a0-8b671d4c47c3.png)
 
 
 
