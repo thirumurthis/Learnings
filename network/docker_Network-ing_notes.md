@@ -185,6 +185,51 @@ $ docker network inspect demo-bridge
 ### in output check the container attribute
 ### this means that both the containers can talk to each other 
 ### since has got ip and mac address.
+
+[
+    {
+        "Name": "demo-bridge",
+        "Id": "3225b6d141778b5b6c5a8007a8e4d82bbd1b41bc4f94339f0ff3c345242e2b5e",
+        "Created": "2020-04-26T19:37:50.796371923Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "10.0.0.1/24"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "a17ca1c4c7778f5fa352b131188663df631e0fc506a75027ccecc56758a22e8e": {
+                "Name": "container1",
+                "EndpointID": "d61969f1c1a0ad6e812ad708c015af76feb5e2d8bc52ccbf07db7b31e40c2e49",
+                "MacAddress": "02:42:0a:00:00:02",
+                "IPv4Address": "10.0.0.2/24",
+                "IPv6Address": ""
+            },
+            "e4d7fb1e3aeda536f8158d21be2914796ee198ab61057945a2a6f6deb87b36ad": {
+                "Name": "container2",
+                "EndpointID": "a542e5e41291a85c48db2273a737306cbcd3c9bae6ede79d1cf4ada9e1d8e142",
+                "MacAddress": "02:42:0a:00:00:03",
+                "IPv4Address": "10.0.0.3/24",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {}
+    }
+]
 ```
 
 Info: After the containers are attached to the host, then `brctl show` command on the demo-bridge will list two interface ids for two containers.
@@ -203,11 +248,33 @@ $ docer exec -it container1 sh
 # Within the contained
 $ ip a
 ## outputs the list of network
-
 $ ping <ip-address-of-other-container-obtained-by-network ls-containers-attribute>
 ## output should see the ping successfully sending and receiving pacakges.
+-----
+/ # ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+8: eth0@if9: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue state UP
+    link/ether 02:42:0a:00:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.2/24 brd 10.0.0.255 scope global eth0
+       valid_lft forever preferred_lft forever
+       
+/ # ping container2
+PING container2 (10.0.0.3): 56 data bytes
+64 bytes from 10.0.0.3: seq=0 ttl=64 time=0.181 ms
+64 bytes from 10.0.0.3: seq=1 ttl=64 time=0.185 ms
+64 bytes from 10.0.0.3: seq=2 ttl=64 time=0.180 ms
+64 bytes from 10.0.0.3: seq=3 ttl=64 time=0.186 ms
+64 bytes from 10.0.0.3: seq=4 ttl=64 time=0.182 ms
+^C
+--- container2 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 0.180/0.182/0.186 ms
 
-$ ping container2
 ```
 
 ##### How does docker container was able to communicate with each other in above configuration?
