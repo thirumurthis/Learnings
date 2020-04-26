@@ -95,7 +95,33 @@ For installing docker,
    - Issue to see if the docker is running  `$ sudo docker version` should display the docker server info.
    - Include the docker user to user group, check the links below.
 
+Trouble shooting for permission denied as vagrant user, 
+check (docker link post installation)[https://docs.docker.com/engine/install/linux-postinstall/]
 
+(link forum)[https://www.digitalocean.com/community/questions/how-to-fix-docker-got-permission-denied-while-trying-to-connect-to-the-docker-daemon-socket]
+
+```
+[vagrant@chefnode1 ~]$ docker version
+Client: Docker Engine - Community
+ Version:           19.03.8
+ API version:       1.40
+ Go version:        go1.12.17
+ Git commit:        afacb8b
+ Built:             Wed Mar 11 01:27:04 2020
+ OS/Arch:           linux/amd64
+ Experimental:      false
+Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.40/version: dial unix /var/run/docker.sock: connect: permission denied
+```
+
+To fix the permission denied issue.
+```
+$ sudo groupadd docker
+
+$USER will be vagrant in this case
+$ sudo usermod -aG docker $USER
+
+# restart the VM
+```
 Reference link:
 
   [Install docker in Centos 8](https://linuxconfig.org/how-to-install-docker-in-rhel-8)
