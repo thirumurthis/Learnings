@@ -112,7 +112,31 @@ $ docker network inspect bridge                                                 
 
 ##### `docker info` - displays the container info, check the Network it is connected to.
 
+----
 
+### Single-host Networking 
+
+How to create a user defined bridge network on a clean docker host? (below is on linux)
+
+We will create a single host bridge network named, demo-bridge.
+
+Note: The demo-bridge will be that specific Docker host, scope : local. If we have another docker host and create an single host named demo-bridge, this would be totally isolated.  
+
+Say there are two docker host, namely host1 and host2. Containers on the host1 can't talk to container on host2 even if the bridge name are same on both host.
   
+Let's create `802.1d bridge` device on docker single host. 
+
+What is `bridge` network? 
+  - `bridge` is a network term, but in VM world it means `virtual switch`.
+  - it is also known as `vswitch`.
+
+Creating a `802.1d bridge` network is going to create a virtual bridge/virtual switch inside the docker host. In the linux world this is like creating a linux bridge inside the Kernel. 
+
+`Notes:` 
+The docker bridge driver on a linux system, actually leverages the tested, mature, stable, fast linux bridge. Since it is in the kernel 2.0 it is fast.
+
+`docker network create` with bridge driver will create a vswitch. This is entirely a  software vswitch. Once this is completed, we can set containers in the host.
+
+
   
    
