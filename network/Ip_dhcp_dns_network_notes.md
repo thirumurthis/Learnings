@@ -664,3 +664,96 @@ Understanding TCP (Example: web application) and UDP (Example: Video confrencing
 
 ![image](https://user-images.githubusercontent.com/6425536/80295717-f7dbaf80-8729-11ea-8f4c-ae67d99167a9.png)
 
+##### Testing port connectivity:
+  
+  We can only test TCP port, since we can create a session in here. It is difficult test the UPD port. Use `telnet` command.
+  
+ ```
+  > telnet <site> port
+ ```
+ Explantion:
+ 
+   Once a connection is established using the telnet command at specific port, the server expects a GET/POST command assuming as browser is connected.
+   
+   If you issue cntr+c, then you would see HTTP 400 Bad request on the console. In some case we should close the command prompt.
+
+   If the port is opened on the server side, it will be listening on that port, if not then will display a timed out message or connection failed message.
+
+telnet is already available within the OS
+
+Standard Port usage
+```
+1433 - Sql Server 
+25 - SMTP port
+```
+#### `nmap` is an open source tool to scan the port.
+
+In case we don't know which port to connect, then `nmap` utlity can help.
+
+`nmap` tool will tell the list of port that is available in the server connecting to it.
+```
+> nmap -v site.com
+### displays the port that command was successfully connect to.
+```
+
+##### command to see which port is open and which process are listening on which ports.
+
+utility used is `netstat -ano'
+
+```
+> netstat -ano
+Active Connections
+
+  Proto  Local Address          Foreign Address        State           PID
+  TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       804
+  TCP    0.0.0.0:445            0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:3306           0.0.0.0:0              LISTENING       3996
+  TCP    0.0.0.0:5040           0.0.0.0:0              LISTENING       1672
+  TCP    0.0.0.0:5357           0.0.0.0:0              LISTENING       4
+  TCP    0.0.0.0:49664          0.0.0.0:0              LISTENING       760
+  TCP    [2601:601:1300:3da0:81e9:410f:18e1:f757]:59910  [2001:559:19:2886::57]:443  CLOSE_WAIT      12356
+  UDP    0.0.0.0:3702           *:*                                    2160
+  UDP    0.0.0.0:3702           *:*                                    2160
+  UDP    0.0.0.0:3702           *:*                                    4960
+  UDP    0.0.0.0:3702           *:*                                    4960
+```
+
+0.0.0.0 -> port listens to every avilable ip address on this machine
+
+The above will list the process id, under task id we can see the appropriate process information. (enable the process id tab, in the task manger of windows if needed)
+
+##### Firewall
+
+This determines which traffic is allowed and which are not.
+
+For example, there is a rule open 80 and block 25 (smtp), then the machine doesn't allow SMPT traffic.
+
+In windows we can see the firewall detail as in the below figure. 
+
+In case of there is a need to debug the firewall drop packets, enable the logs for troubleshooting.
+
+![image](https://user-images.githubusercontent.com/6425536/80296343-0d9fa380-872f-11ea-92f2-ef20cc3fef6d.png)
+
+Rules:
+   Few of the Inbound and outbound rules are defined out of the box.
+   
+ Lets add new inbound rule, Right click the firewall inbound rule and click `add new rule`
+    - Program rule
+        - When specific executable is running what ever port it is going to listen on, we can enable those using this rule.
+	- select the action to perform either allow, etc.
+	- select profile
+	- save with a name.
+    - Port rule 
+        - say which port to open for TCP or UPD protocol, used in web server.
+    - pre-defined rule
+        - windows provided.
+    - custom rule
+        - provides handle more protocol
+	- ICMPv4 protocol is used by the `ping` command.
+	- follow the screen instruction.
+
+![image](https://user-images.githubusercontent.com/6425536/80296408-d54c9500-872f-11ea-8980-f7c9b2a4693b.png)
+
+
+
+ 
