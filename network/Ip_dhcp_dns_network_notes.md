@@ -768,6 +768,18 @@ To find the external public ip address, easiest way is to use www.whatismyip.com
 
 ![image](https://user-images.githubusercontent.com/6425536/80296800-c1566280-8732-11ea-98a0-8b671d4c47c3.png)
 
+### Network capture tool
+ - Wireshark (open source)
+ - Fiddler (Http traffic capture)
 
+Package trace:
+   - In wireshark tool, start the capture check the documentation.
+   - To group the trace, on any of the TCP rows in wire shark right click and select Follow -> TCP stream.
+     - Red color represent sending data
+     - Blue color represent receiving data
 
- 
+For SSL, should see TLSv1.2, etc.
+
+Sample Http stream snapshot
+![image](https://user-images.githubusercontent.com/6425536/80297090-172c0a00-8735-11ea-9c3b-ad11343e94d7.png)
+   
