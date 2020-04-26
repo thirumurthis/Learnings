@@ -494,11 +494,11 @@ Subnet mask: 255.255.255 |.000
 Ip address : 192.168 |.140.116
 subnetmask : 255.255 |.000.000
 
-Note when he subnet mask is off (0) those are representing node.
+Note: when he subnet mask is off (0) those are representing node.
 ```
 
 Representation of subnet mask of 255.255.255.000
-Example 1:
+##### Example 1:
 ```
 192.168.40.0/24
 or
@@ -511,7 +511,7 @@ or
    
   - So if a computer on this network needs to reach an ip address out of this subnet ip address range, it needs to go through the default route.
 
-Example 2:
+##### Example 2:
 
 Subnet mask can also be, 255.255.254.0. this is called 23 bit subnet represented 
 
@@ -525,7 +525,7 @@ or
 
 The 23 bit subnet, expands between two class c networks. (192.168.12, 192.168.13)
 
-Example 3:
+##### Example 3:
 
 Subnet of 28 bits represented as below (this is a very small network)
 ```
@@ -554,22 +554,22 @@ When the traffic is sent, the most specific match possible .
 
 First row:
 
-Destination & Netmask 0.0.0.0  -> means any ip address and 192.168.115.1 is the default gateway
+   Destination & Netmask 0.0.0.0  -> means any ip address and 192.168.115.1 is the default gateway
 
 Second row:
 
-Destination 127.0.0.0/8 - 127 network is always the local host. This means NO need to go through the default gateway. This means traffoc never leaves the physical computer.
+   Destination 127.0.0.0/8 - 127 network is always the local host. This means NO need to go through the default gateway. This means traffoc never leaves the physical computer.
 
 Third row:
 
-Destination 192.168.115.0/24 - This is the subnet currently the computer is located in.
-Traffic can be sent directly to this destination ip address.
+   Destination 192.168.115.0/24 - This is the subnet currently the computer is located in.
+   Traffic can be sent directly to this destination ip address.
 
 Fourth row:
 
-Is used for broadcast, sent traffic that is destint for the subnet. The broadcast do not cross routers, don't need to send to default gateway. Broadcast to the entire subnet.
+   Is used for broadcast, sent traffic that is destint for the subnet. The broadcast do not cross routers, don't need to send to default gateway. Broadcast to the entire subnet.
 
-To help on the route, we can use `route` command.
+To view the route table we use `route` command in windows.
 
 Most frequently used type of route command: (use command prompt of windows)
 ```
@@ -627,21 +627,32 @@ At home we have multiple device that connected to the router, all the device tha
 
 `NAT` as a process converts the private ip address of the devices when the traffic exists the router and converts to the expternal public ip address (provided by the ISPs) as it reaches the internet. Also when the traffic comes back that is converted to correct internal ip address.
 
+Represetnation of the router public ip and private ip
+```
+
+                    64.78.185.232 (public ip provided by ISP's)
+		      Router  (ip 192.168.1.1)
+   		     /	         |             \ 
+		   /             |              \ 
+	          /              |               \
+	192.168.1.100     192.168.1.101    192.168.1.102
+	  device1             device2        device3
+```
+
 When hosting a website in the internet, all we need is a public ip address.
 
 All the Linksys, etc router has the ability to forward request coming certain port to my public ip address to be routed to specific ip address internally.
 
-Say, any if we want to host a web server in local laptop, we can tell the router any traffic that is destint for port 80 (http) to route to internal ip address.
-The port cannot be used by two different ports.
+Say, any if we want to host a web server in local laptop, we can tell the router any traffic that is destint for port 80 (http) to route to internal ip address. The port cannot be used by two different ip address.
 
-There are list of ip address for private purpose only. Those are
+There are list of `private ip address` range are :
 ```
 # Private Network Ranges:
 
 10.0.0.0/255.0.0.0 (8)
 172.16.0.0/255.240.0.0 (12)
 192.168.0.0/255.255.0.0 (16)
-``
+```
 
 ### `Port connectivity`:
 
@@ -653,18 +664,3 @@ Understanding TCP (Example: web application) and UDP (Example: Video confrencing
 
 ![image](https://user-images.githubusercontent.com/6425536/80295717-f7dbaf80-8729-11ea-8f4c-ae67d99167a9.png)
 
-
-
-
-
-
-```
-
-                    64.78.185.232 (public ip provided by ISP's)
-		      Router  (ip 192.168.1.1)
-		  /	  \           \ 
-		/ 	   \             \ 
-	     /               \              \
-	192.168.1.100     192.168.1.101    192.168.1.102
-	  device1             device2        device3
-```
