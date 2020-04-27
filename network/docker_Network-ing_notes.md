@@ -500,9 +500,20 @@ $ ping <container ip address>
 ```
 - IPVLAN doesn't require not PROMISCUOUS MODE.
 - Doesn't give every container a unique mac address.
+- Warning: The IP address range should be choosed correctly. (IPAM should be right, since DHCP server provides ip address)
 
 Representation:
 
 ![image](https://user-images.githubusercontent.com/6425536/80332944-427c2b00-8801-11ea-9802-4f05c9e6eaac.png)
 
 ---------
+
+### Network Services
+
+  - Service discovery
+  - Load balancing
+  - Port-based routing (routing mesh)
+  - App-aware routing (Http routing mesh)
+  
+  Service discovery: Discovering the service .
+  
