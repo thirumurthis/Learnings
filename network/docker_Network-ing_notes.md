@@ -595,10 +595,34 @@ $ docker service ps my-web-app
 ## in the webserver, use the ip address of the node 4 within the SWARM which is not serving the will be serving the request with response.
 ```  
   
+#### HTTP Routing Mesh (HRM)
+   - Built on top of port-based/L4 routing mesh
+   - (Application layer/ Layer 7)
+ 
+Limitation on the port-based routing:
+  - The single service on swarm cluster can listen on particular network port. In another words there can't be two services listening on the same port.
+  - Standard routing mesh operates on Layer 4/ Transport layer, there is no awareness of things happening in layer 7 (higher up)
   
+  The HTTP Routing mesh (HRM) address those limitations.
   
+  HRM - requires Docker Datacenter/ Docker universal control plane. This is Docker Inc. managed service, and pay for it. This might be different now, google more about this since the feature are changing frequently.
   
+ ```
+ ## Enable HRM feature in UCP - say we use Port 80
+ ## The active HRM, creates a network ucp-hrm and also global service (ucp-hrm)
+ ## Create your service
+ ## Attach the created service to the ucp-hrm network.
+ ## Multiple service and using the same port, using the HTTP headers.
+ ## This was not applicable in Standard routing mesh.
+ 
+ ## each service is created with the label and the ucp-hrm global service creates a key value pair with the service and label
+ ## the incoming request for both the service is coming to port 80, and ucp-hrm peaks the host part and routes to the corresponding service.
+ ```
   
+
+
+ 
+ 
   
 
     
