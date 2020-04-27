@@ -48,7 +48,8 @@ Docker container network contians three major part:
 `network` is a sub command within the docker
 
 ```
-$ docker network ls                                                                      NETWORK ID          NAME                DRIVER              SCOPE
+$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
 2fc7116b9f21        bridge              bridge              local
 9115882c1e94        host                host                local
 ce0dd5291963        none                null                local
@@ -306,6 +307,108 @@ Representation:
 ![image](https://user-images.githubusercontent.com/6425536/80317480-e392c380-87b8-11ea-940f-6e6549cf1e48.png)
 
 Get the public external ip address of the network and use that with the port, `73.108.109.22:5050`.
+
+------------------
+
+### Multi-host Overlay
+
+There are multiple docker host on different network and each connected by router. These are easily scalable.
+
+The `docker network create` a single a new network (layer 2 network/ layer 2 broadcast) expands to multple host.
+
+And container any of the host on the different network can talk, no need for port mapping. 
+
+This is achived by `docker network create <options>`
+
+Representation:
+
+![image](https://user-images.githubusercontent.com/6425536/80322359-63c92100-87d9-11ea-9989-dfad6a0b49c4.png)
+
+##### What happens in the background on multi-host overlay network communication in docker?
+
+Lets assume that there are two host/node in separate network connected by router.
+
+On each host we build a sandbox network, and within this sandbox we build the network stack. In this case a single bridge network (eg. brdg0).
+
+Then a VXLAN tunnel endpoint gets created and setup to that bridge. The eventually a VXLAN tunnel is established, this tunnel is the overlay network. This overlay tunnel is a single layer 2 broadcast domain.
+
+A layer 2 broadcast domain in network means any node connecting to it will get an ip address that can talk directly to each other without a need for router.
+
+The physical router doesn't knows aything about the traffic but it is still being used. The VXLAN encapsulation of packets in this stuff takes care of all of that transparently. This is called the __`layer 2 adjacency`__.
+
+Then create container in the host/node and set them in the overlay, the docker creating an virtual Eternet adapter inside the container and virutally cabeling to the bridge brdg0, will communicate with each other directly over the tunnel.
+
+All the above is hidden, and happens behind the scene. like TCP/UDP, ip address, mac address, etc.
+
+Representation:
+
+![image](https://user-images.githubusercontent.com/6425536/80322888-c1ab3800-87dc-11ea-89db-e6b6b82ef796.png)
+
+Demo:
+
+Open up the necessary ports 2789/upd, 2946/tcp/udp, 2377/tcp and Enable swarm mode on both nodes. Swarm node provide more handful tool
+
+Node 1:
+```
+# creating a 2 node swarm mode.
+$ docker swarm init
+## now the node1 is in swarm mode and running as a manager.
+## There will also be the command displayed for the node2 that needs to make this work.
+
+## after perofroming the node2 operation
+
+$ docker node ls
+## display the node information.
+
+$ docker network ls 
+## displays teh network information could see an ingress (named) network using overlay driver with scope swarm.
+
+# then create a network
+$ docker network create -d overlay demo-overlay 
+## 
+
+$ docker network ls
+## output should create a overlay created networks
+## at this point check the node2 (Without any container being created in there
+## the docker network ls command will not display the overlay we created here
+## this is because docker uses lazy approach to setup the network)
+## now in node2, create a container and run it at this point.
+
+# create service in node1
+$ docker service create --name demo-service --network demo-overlay --replicas 2 alpine sleep 1h
+
+$ docker service ps demo-service
+## displays tasks and replicas running on that node.
+
+$ docker network inspect
+## this displays info of the vxland id and the container info.
+## peers network info too.
+````
+
+Node 2:
+```
+# the below command is from the node1
+$ docker swarm join --token....
+## node 2 joins the node1 in swarm mode.
+## node 2 will be the worker now.
+
+# after the overlay network is created in the node1
+$ docker network ls
+
+## create a container, it needs to use the demo-overlay network
+## to create service in node 1, since we need to have service.
+
+$ docker network ls
+## will display the created network
+## we created the service in the container in the node1 and the load is dispatched over 
+## this node using replicas
+
+$ docker network inspect demo-overlay
+## displays only this container.
+## both nodes are on different network and on different underlay (physical router) network.
+
+```
+
 
 
 
