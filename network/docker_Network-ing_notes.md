@@ -408,7 +408,36 @@ $ docker network inspect demo-overlay
 ## both nodes are on different network and on different underlay (physical router) network.
 
 ```
+------------
 
+### MACVLAN driver
+
+MACVLAN is a Linux specific driver, there is no similar driver for windows. 
+
+Both `bridge` and `overlay` network driver are good but massively container centric. Both of these are great for connecting containers.
+
+What if we need to connect containers to an exising VLANs, exisiting VMs and existing physical service? 
+
+What we need to do if have to plum containers into these existing networks, this is where MACVLAN comes in.
+
+MACVLAN's makes the container visible and accessible on existing network and VLANs.
+
+MACVLANs VS Windows L2Bridge 
+The MACVLAN gives the very own IP and gets its own MAC address to the container on existing network.
+
+The widnows L2bridge network, give very own IP address and All containers share a common MAC address.
+
+With two node containing two container, with MACVLAN those containers are  treated as indvidual node like on existing network.
+
+Represenaton:
+
+![image](https://user-images.githubusercontent.com/6425536/80324955-1902d580-87e8-11ea-9794-4cb05aba2d7f.png)
+
+To make the MACVLAN to wokr, the network interface should be in `PROMISCUOUS MODE`. 
+ - Most of the public cloud providers don't allow it.
+ - To overcome it we use IPVLAN, since MACVLAN difficulties.
+ 
+ ### IPVLAN
 
 
 
