@@ -437,11 +437,72 @@ To make the MACVLAN to wokr, the network interface should be in `PROMISCUOUS MOD
  - Most of the public cloud providers don't allow it.
  - To overcome it we use IPVLAN, since MACVLAN difficulties.
  
- ### IPVLAN
+ ### IPVLAN driver
 
+This is also similar to MACVLAN.
 
+The IPVLAN also doesn't have bridge. The difference between the MACVLAN and the IPVLAN is the way IPVLAN handling the MAC address.
+ 
+ `MACVLAN` - Allocates each sub interface with its own ip and own mac address.
+ 
+ `IPVLAN` - Like the Windows L2Bridge, the IPVLAN also allocates own ip address, but uses the same MAC address.
+ 
+ There are chances that public cloud can have IPVLAN available.
+ 
+ Special consideration when working with DHCP, `DHCP server is configured to assign IP address based on MAC addresses`. That is not going to work with IPVLAN.
+ 
+ There are going to be many DHCP clients, requesting for IP address all having same MAC address. DHCP handles only one IP address for one MAC address. This issue can be overcome by using client id instead of MAC address (The IPVLAN is a new experimental feature) so the usage of client id is just a guess.
+ 
+The docker create command and use of docker run and docker service to set it up.
 
+For IPVLAN all containers have own ip address but share the parent interface mac address, so from inside the container, we can't ping the parent network interface, since kernel drops them. Worth noting that Linux kernel implementation filters request from containers to the IP address of parent interface, the kernel drops them.
 
+Demo:
 
+Node 1:
+```
+## the ipvlan require infrastructure to be setup
+## since the network 
 
-   
+## ipvlan_mode is l2 - is default which is layer2 network
+$ docker network create -d ipvlan \
+ --subnet-192.168.1.0/24 \
+ --gateway=192.168.1.254 \
+ --ip-range=192.168.1.0/28 \
+ -o ipvlan_mode=l2 \
+ -o parent=etho demo-ip
+ 
+ ## outputs the hash id on success
+ 
+ # create and run a container
+ $ docker run -dt --name container1 --network demo-ip alpine sleep 1hr
+ 
+ $ docker network inspect demo-ip
+ 
+ # login to the continer and checking the ip
+ $ docker exec -it container1 sh
+ 
+ > ip a
+ 
+ # ping the node2
+ > ping 192.168.1.91
+ 
+ # ping the node1, where the conatainer
+ > ping <ip-address-of-parent-node> # the linux kernel is blocking the request.
+ # ping is not working.
+ 
+```
+
+Node 2:
+```
+$ ping <container ip address>
+# this also works.
+```
+- IPVLAN doesn't require not PROMISCUOUS MODE.
+- Doesn't give every container a unique mac address.
+
+Representation:
+
+![image](https://user-images.githubusercontent.com/6425536/80332944-427c2b00-8801-11ea-9802-4f05c9e6eaac.png)
+
+---------
