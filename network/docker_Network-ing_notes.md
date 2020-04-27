@@ -515,5 +515,91 @@ Representation:
   - Port-based routing (routing mesh)
   - App-aware routing (Http routing mesh)
   
-  Service discovery: Discovering the service .
+  Service discovery: 
+    - Discovering the service.
+    - automatic in Docker, when containers are created using `--name` or `--alias`.
+    
+  DNS Service discovery in Docker:
+   - Every container gets a DNS name resolver (a light weight) and it is listening on `127.0.0.11:53` on every container. Port 53 is the standard DNS port.
+   - This resolver intercepts all request from the container, and  forwards requests to DNS server running on the local Docker host. 
+   - Then Docker host resolves the name, if not able to resolve it sends to the public DNS server to resolve the name. (The feature of Docker host reaching the public DNS server can be switched off.)
+    
+Service discovery is called network scoped, this means containers can resolve the name of other container that are present within the network.
+   - if the container are on the same network, the name will be resolve.
+   - if the container are on different network, the name will not be resolved.
+
+The way network scoping works is the container creating request creates a socket back to the DNS server on the host. This embedded DNS server traces the socket back to the network from where it came from. Once it know that, it fitlers request based on Origin network. This how the name gets resolved.
+
+#### VIP based Load Balancing:
+  - Each service gets a single virtual ip address (VIP) and this stay with the service the end of the service (entire life of service, one VIP to one service).
+  - When every service name gets resolved like the name, it will get resolved to service VIP.
+  - This is in turn get load balanced accross all the VIP that individual task that are healthy.
+  - Each service has one are more tasks, tasks are containers.
+  - Every task gets an IP and all those IPs are grouped under single service wide VIP.
+  - If the single VIP is hit with 5 times, it is going to round robin request to all those IPs (container).
+  - All the above are automatic, and internal load balancing.
+  
+###### Request coming from outside the same network (coming from other side of the planet). This is where Routing Mesh comes to play.
+  
+   - Introduced in Docker 1.12.
+   - Routing request that are coming from outside the network or coming from network.
+   - Any request coming outside from the internet, should be able to processed by SWARM.
+   
+How Routing Mesh works when the one worker node is down.
+
+```
+## Enable swarm mode, built swarm that manages worker node.
+## Initializing swarm creates couple of networks (refer previous section above)
+## one of the network is "ingress" overlay nework.
+## This is scoped to Swarm, and instantly made avialble to all managed worker.
+## create service using below command (check documenation - $ docker service create..)
+## (Assume) 3 task/container is created and published to a port 5000.
+## The port 5000 is published to all the ingress network.
+
+## Say there are 4 mananged worker node in swarm, and there are 3 tasks
+## All the 4 managed node are under the ingress overlay network
+## As mentioned above all the 4 mansged worker gets the request on port 5000.
+## Assume if the node 4 is not servicing any task
+## The node 4 handles the incoming request, does name resolution as discussed above.
+## Resolves the service to a VIP.
+## This request is forwarded to healthy node based on VIP based load balancer.
+```
+
+Demo:
+
+```
+## create 4 node and running docker service and under same network
+
+Node 1:
+## Enable Swarm init on all the node.
+$ docker swarm init
+## Create a overlay network 
+$ docker network creat -d overlay demo-overlay
+
+## create service 
+$ docker service create --name demo-service -p 5000:8080 --replicas 3 --network demo-overlay my-web-app
+### -p 5000:8080 (publishing to 5000 on the node on the SWARM, forwar to 8080 in container/task)
+
+## check the service status
+$ docker service ls 
+
+## inspect the ingress network
+$ docker network inspect ingress
+## check the container
+## the task from the my-web-app shows up, this was not attached manually.
+## Every task gets attached automatically to the ingress network.
+
+## check if the container is running in all the swarm services
+$ docker service ps my-web-app
+
+## in the webserver, use the ip address of the node 4 within the SWARM which is not serving the will be serving the request with response.
+```  
+  
+  
+  
+  
+  
+  
+
+    
   
