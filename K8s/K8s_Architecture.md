@@ -189,9 +189,7 @@ Data Plane [where the runs containers and application]
 Rarely interact with the `Data plane`, most of the controlling happens from the `Control plane`. 
  
  ##### Control Plane
- 
- 
- ```
+  ```
      Master Node -  responsible for maintaining the desired state of the cluster
      For availability and redendency, recommended to replicate the master node.
 
@@ -201,10 +199,9 @@ Rarely interact with the `Data plane`, most of the controlling happens from the 
      This comes with a trade off when upgrading the Kubernetes cluster, we need to make sure the Quroam on etcd or have to reboot instances.
      
  ```
-  
- Kubernetes Master:
  
- ```
+ Kubernetes Master:
+  ```
    API server [services rest operation and provides a frontend to the cluster shared state thorugh which all other components interacts.]
    
    Controller Manager [Is a Daemon this embeds core control loop came with the kubernetes, it polls the shared state of cluster thorugh the API server and make changes changs to attempt move the current state to desired state.]
@@ -264,7 +261,7 @@ Minikube - a single node K8s cluster, light weight uses Type 2 HyperViser (like 
 
 To build docker image use Docker desktop. It seemsly integrates with the Kubernetes.
 
-
+[Git Hello App Link](https://github.com/thirumurthis/Learnings/blob/master/K8s/K8s_dockerhub_Hello_app.md)
 
 
   
