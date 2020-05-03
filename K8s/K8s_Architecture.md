@@ -69,9 +69,111 @@ Pods:
  - Kube proxy opens a randomly chosen port on the local mode, for each new service. 
     - Any connection made to tht port are proxied to one of the corresponding backend pods.
     
-    
+----------------------
+
+### Kubernetes resources- POD:
+ ```
+ // app pod resource file should have the apiVerion and kind field
+ // metadata is mandtoary for all pod sample and it should have the name filed.
+ 
+  apiVersion: v1  // string identifies the version of the schema this object should have
+  kind: pod // this is the schema this object should have, in this case the object is pod
   
+  metadata:   // necessary field
+     name: firstapp-pod //mandatory field, this is used to uniquely identify the Pod among others, we can specify namespace and uid.
+     labels:    /map of string key and values used to orgnize and catagorize object
+       app: firstapp
+  spec:   //specification and defines the desire state of the object
+     containers:  // defines the list of containers belonging to the pod, static list and can't be changed at runtime
+     - name: name-of-container // name to the container
+       image: alpine //name of the docker image an java application
+     
+ ```
+ 
+ ### Kubernetes Resources- Deployment:
+   - Deployment object provides declarative updates for pods. 
+       - Describe the desire state in the deployment object. The `Kubernetes clusters` changes the actual state to desired state at controlled rate. 
+        - Multiple replicas of a pod can be created by specifing the number of replica.
+        - Roll out a new version of the Pod or roll back to a previous version
+
+```
+apiVersion: apps/v1
+kind: Deployment  // the schema is different
+metadata:
+   name: firstapp-deployment
+   lables:
+     app: firstapp
+spec:
+  replicas:3
+  selector:
+     matchLables:
+        app: firstapp
+     template:
+       metadata:
+          lables: 
+             app: firstapp
+          spec:
+             containers:
+             - name: firstapp-container
+               image: myapp
+               ports:
+               - containerPort: 8080
+```
+
+### Kubernetes Resources- Service:
   
+  Kubernets Pods are ephimeral, so the Ip address assigned to them cannot be relied upon for application to communicate.
+  
+  The `Kubernetes Service` provides logical collection of Pods and provides well defined API for application to communicate.
+  
+  `Kubernetes Service` also provides a simple light-wieght Layer 4 DNS based load balancing for the PODs beloning to the service.  
+  
+  Pods are loosely coupled using labels, `a service define a lables that must exists on a POD in order to be included as part of the lables`. Deployment will create the PODs using lables.
+  
+  Pods belonging to a service can be dynamically scalled up and down, the service name provdies a stable endpoint for other Services to refer.
+  
+  Kubernetes can be exposed outside the cluster, using cloud provided loadbalancer or specific ip address.
+  
+  ```
+  apiVersion: v1
+  kind: Service  //scehma or indicates this is service object
+  metadata:
+     name: firstapp-service
+  spec:
+    selector: // define label that must match on the pods, to be included in this service any traffic to this service is routed to the included pods.
+       app: firstapp
+    ports:  // port information
+      - port: 80
+        targetPort: 8080
+  ```
+  
+  Kubernets Resources:
+     
+   `DaemonSet`:
+        - Ensures that all or some node in the cluster runs the copy of the pod.
+        - As nodes added to the cluster, the pods are added to them.
+        - As nodes removed from the cluster, the pods are garbage collected.
+        - Deleting the DaemonSet will clean up the pods it created.
       
+   `Jobs`:
+        - Creates one or more pods and ensures the specified number of them are successfully terminitated.
+        - As pods successfully completes, the Job tracks successful completion.
+        - When the specified number of success completion is reached the job itself will be completed.
+        - Deleting the job will clean up the pods it created.
+        
+   `CronJob`:
+        - Creates a Job on time-based schedule. Similar to the crontab and specified in cron format. One Object refers to one line in the resource. 
+        
+   `StatefulSets`:
+        - Workload API object, used to manage statefull application. 
+        - It provides gaurantees of ordering and uniquely identifing pods.
+        - For example, this can be used for database workloads in containers. 
     
-   
+    
+    
+  
+  
+  
+  
+  
+
