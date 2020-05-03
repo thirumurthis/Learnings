@@ -50,20 +50,20 @@ CMD ["java", "-jar", "/app/test/customer-0.0.1-SNAPSHOT.jar"]
 ```
 _Note:_ RUN mkdir /app/test - didn't work in this case since and had to use WORKDIR
 
-## list the images created (revisiting)
+# list the images created (revisiting)
 ```
 # lists the docker image
 > docker images
 > docker image -ls 
 ```
 
-## build the images (revisiting)
+# build the images (revisiting)
 ```
 > docker build -t <image-name> 
   : -t is tagging a name
 ```
 
-## command to run the container (revisting)
+# command to run the container (revisting)
 ```
 > docker run -p 8080:8080 -d <containername> 
   : -p publish to port from container to the local
@@ -71,7 +71,7 @@ _Note:_ RUN mkdir /app/test - didn't work in this case since and had to use WORK
   Try default container ip <http://192.168.99.100:8080/>
 ```  
 
-##### Docker toolbox to identify the `default container ip` 
+# Docker toolbox to identify the `default container ip` 
 
 [Docker toolbox](https://devilbox.readthedocs.io/en/latest/howto/docker-toolbox/find-docker-toolbox-ip-address.html)
 
@@ -79,23 +79,23 @@ _Note:_ RUN mkdir /app/test - didn't work in this case since and had to use WORK
 > docker-machine ip default
 ```
 
-##### command to login to container and view the details
+# command to login to container and view the details
 ```
 > docker exec -it <container-id> /bin/bash
 ```
 
-##### command to troubleshoot the network
+# command to troubleshoot the network
 ```
 > docker network ls
   : lists the network info
 ```
   
-##### command to inspect network
+# command to inspect network
 ```
 > docker network inspect <network-name-from-network-ls-command>
 ```
 
-##### command to view the history of the image (jib maven plugin)
+# command to view the history of the image (jib maven plugin)
  - jib build oci/images in a layered fasion rather building the whole image
  - with jib no need for dockerfile, it has a opinated image which will be used for building
 
@@ -136,7 +136,7 @@ default   *        virtualbox   Running   tcp://192.168.99.107:2376           v1
 **Note:**
   The name of the machine is default
   
-##### Once logged into the machine, then sudo it using `sudo -i` to be as root user..
+# Once logged into the machine, then sudo it using `sudo -i` to be as root user..
 ```
 [docker@default] $ sudo su -
 or
