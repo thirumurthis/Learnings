@@ -263,7 +263,124 @@ To build docker image use Docker desktop. It seemsly integrates with the Kuberne
 
 [Git Hello App Link](https://github.com/thirumurthis/Learnings/blob/master/K8s/K8s_dockerhub_Hello_app.md)
 
+----------------
 
+## Helms Charts:
+
+   - Instead of deploying multiple resource manifest for deploying an application, Helms Charts helps to package the resource mainfest, so just deploying on manifest file would deploy the application. 
+   
+   For example, Helm chart can be used to deploy application with multiple microservices  with single resource.
+   
+   Helm: is a __`package manger`__, similar to yum, rpm etc.
+   
+ Helm offers way to package resources into single application and allows to manage multiple releases of it.
+ 
+ Helm packages multiple resource into single logical deployment unit called `chart`.
+ 
+ Helm chart are collection of Yaml template file.
   
-  
+ Installation of Helm chart in the Kubernetes cluster is known as `release`. Single chart can be installed in many times into same cluster and create different releases.
+ 
+ Using Helm install command with different release name, the same Helm chart resource can be executed multiple times.
+ 
+ 
+ `Repository`: Charts are stored in dedeicated Http servers known as chart repository. This repository can serve an index.yaml file, that describes batch of charts and provides information on where each chart can be downloaded.
+ 
+ Helm client, can point to 0 or more repository, by default it points to the official chart repository.
+ 
+ `Template` - Kubernetes configuration files in chart that are templatized, each configuration file is processed by a template rendering engine in helm, to generate a corresponding K8s manifest file. This file is used to create resources in Kubernetes cluster.
+ 
+```
+   Chart.yaml  
+   templates
+     |_ _helpers.tpl
+     |_ firstapp-deployment.yaml
+     |_ firstapp-services.yaml
+     |_ NOTES.txt
+   values.yaml
+```
+ 
+ Chart.yaml:
+ ```
+ apiVersion: v1
+ appVersion: "1.0" //optionat field tells the version of app
+ descritopn: |   //optional - single line field
+    Example descritiption
+ name: firstapp  //required- field name defined the name of cart
+ version: 0.1.0 // release marker defined using symantic version 2 
+                // packages can be identified by name-version ("firstapp-0.1.0.tgz")
+ ```
+ 
+ values.yaml - values is Yaml file (with nested yaml values) in which the pre-defined values are provided.
+ These are accessible in template files as values object.
+ ```
+ 
+ greeting:
+    image: firstapp
+    replicaCount: 1
+ image:
+    tag: latest
+    pullPolicy: IfNotPresent
+ service:
+   type: LoadBalancer
+   externalPort: 8080
+   internalPort: 8080
+   externalDebugPort: 8050
+   internalDebugPort: 8060
+  ```
+ 
+ firtapp-deployment.yaml (template file)
+ ```
+ appVersion: apps/v1
+ kind: Deployment
+ metadata:
+   name: firstapp
+   labels:
+     name: firstapp
+     {{- template "labels" . }} //template will resolve this using value object
+ spec:
+   replicas: {{ .Values.replicaCount }} // resolved using values object
+   ...
+   ...
+   // This files is similar to the Kubernets deployment resource file, allowing template structures. (DRY design pattern)
+ ```
+ 
+ #### Helm 2 Architecture:
+ ###### How a chart is converted to release?
+   
+   Helm client manages charts.
+   
+   Helm Server (Tiller) manages releases.
+   
+   ```    
+                                  Kubernetes cluster
+                                 _______________________________
+                                | Helm server        chart      |
+                                |   (tiller)         config     |
+   Helm Client ------------->   |       |                       |
+       |                        | k8s API server      Release   |
+       |                        |_______________________________|
+    Helm repository
+    {chart package)
+                                
+   Tiller - runs inside the Kubernetes cluster
+          - This manages the release and installation of charts.
+   
+   Charts can be stored in disk or can be fetched from remote repositories like Debian, REHL, etc.
+   
+   Helm Client and Server are developed in Go Programming language.
+   Interaction between client and server uses the gRPC protocal suite (REST and JSON).
+   
+   Helm Server:
+      - Tiller stores the configuration info about charts, using config maps in K8s. 
+   
+   Working:
+      Helm Client sends config instruction to tiller.
+      Tiller uses the configuration data then communicates with the K8s API Server, to create new release in chart.
+   ```
+ 
+ 
+ 
+ 
+ 
 
