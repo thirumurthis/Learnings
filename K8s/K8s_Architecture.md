@@ -379,7 +379,43 @@ To build docker image use Docker desktop. It seemsly integrates with the Kuberne
       Tiller uses the configuration data then communicates with the K8s API Server, to create new release in chart.
    ```
  
+ Helm demo:
+    After installing the Helm pacakge
+    
+ ```
  
+ $ helm version
+ // this command tells the informaiton whethe the Tilles is setup in the cluster
+ 
+ ## get the context and see which context is used by Kubectl
+ $ kubectl config get-contexts
+ 
+ $ helm init
+ ## the above will install the Tiller in the Kubernetes cluster.
+ 
+ //once tiller is installed in K8s cluster using kubectl check it
+ // tiller is installed as a component.
+ // The init command will install the helm component under the kube-system namespace.
+ $ get pods -n kube-system 
+ 
+ //To deploy helm chart as application to K8s cluster
+ // navigate to the helm charts location.
+ 
+ //helm install --name <name> <directory-where-charts-exist>
+ $ helm install --name firstapp firstapp-chart
+ ## creates a services deployment pod.
+ 
+ // use kubectl command to see the information from k8s cluster
+ 
+ $ kubectl get svc,deploment,pod
+ 
+ // Accessing the service directly after the deployment.
+ $ http://$(kubectl get svc/firstapp -0 jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/
+ 
+ 
+ //to delete resoruces.
+ $ helm delete
+ ```
  
  
  
