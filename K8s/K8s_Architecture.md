@@ -222,9 +222,51 @@ Rarely interact with the `Data plane`, most of the controlling happens from the 
    DNS [ provides Name resolution for the cluster]
  ```
   
-  Kubernetes Worker
+  `Kubernetes Worker (runs two process)`
   
+  ```
+   Kubelet (process)
+      - communicates with the Kubernetes Master and creates pods.
+      - Also ensure, that the container in Pods are running and healthy.
+      
+  Kube-proxy (process)
+      - Network proxy, provides networking service on each node.
+      - The Kubernetes master interacts with the nodes.
+  ```
   
+  How Kubernetes application deployment work?
+  
+  Both Control plane and Data plane work together in deployment process.
+  
+  Kubernetes resource manifest is used to define K8s resources.
+  
+  ```
+  
+  Kubectl (CLI)                        ---Talks->     Control Plane
+  (kubectl create -f deployment.yaml)                      |  <uses internal 
+                                                           |  component to create 
+                                                           |  resources on data plane>
+                                                           ˇ
+                                                       Data Plane
+  ```
+  
+  As a developer, repack the Docker image with the new application logic and update the resource manifest file and redeploy the resources.
+  
+  Multiple K8s resources can be easily deployed in K8s cluster.
+  
+  `Kubernetes Cluster`:
+  Can be deployed in 
+      - Desktop
+      - On-premises
+      - cloud
+  
+Minikube - a single node K8s cluster, light weight uses Type 2 HyperViser (like virtualbox).
+
+To build docker image use Docker desktop. It seemsly integrates with the Kubernetes.
+
+
+
+
   
   
 
