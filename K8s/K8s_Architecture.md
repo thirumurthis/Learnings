@@ -413,8 +413,8 @@ To build docker image use Docker desktop. It seemsly integrates with the Kuberne
  $ http://$(kubectl get svc/firstapp -0 jsonpath='{.status.loadBalancer.ingress[0].hostname}'):8080/
  
  
- //to delete resoruces.
- $ helm delete
+ //to delete resoruces. helm delete --purge <application name>
+ $ helm delete --purge firstapp
  ```
  
  
