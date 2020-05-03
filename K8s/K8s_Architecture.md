@@ -168,10 +168,61 @@ spec:
         - Workload API object, used to manage statefull application. 
         - It provides gaurantees of ordering and uniquely identifing pods.
         - For example, this can be used for database workloads in containers. 
-    
-    
-    
+ 
+ ---------------
+ ### How does a `Kubernetes Cluster` works?
+ 
+ ```
+ 
+Control Plane [Controls the running containers/application in data plane]
+
+   |  Cluster Manager  |                |  Scheduler |
+
+------------------------------------------------------
+     
+Data Plane [where the runs containers and application]
+   
+   Containers          containers          containers
+
+ ```
+ 
+Rarely interact with the `Data plane`, most of the controlling happens from the `Control plane`. 
+ 
+ ##### Control Plane
+ 
+ 
+ ```
+     Master Node -  responsible for maintaining the desired state of the cluster
+     For availability and redendency, recommended to replicate the master node.
+
+     etcd  - core presistent layer, etcd is distributed key value store. Cirtical data for the cluster is stored.  Along with the master etcd needs to be run.
+     
+     Note: The master node and the etcd can be co-located, which means, for availablity and redendency reasons by co-locating the master and etcd, we can use 3 nodes instead of 6 node.
+     This comes with a trade off when upgrading the Kubernetes cluster, we need to make sure the Quroam on etcd or have to reboot instances.
+     
+ ```
   
+ Kubernetes Master:
+ 
+ ```
+   API server [services rest operation and provides a frontend to the cluster shared state thorugh which all other components interacts.]
+   
+   Controller Manager [Is a Daemon this embeds core control loop came with the kubernetes, it polls the shared state of cluster thorugh the API server and make changes changs to attempt move the current state to desired state.]
+       Some of the controller manager:
+            - Replication controller
+            - Endpoint controller
+            - Namespace controller
+   
+   Scheduler [ Topology aware component]
+   
+   Cloud Controller [ Daemon ]
+   
+   Add-ons 
+   
+   DNS [ provides Name resolution for the cluster]
+ ```
+  
+  Kubernetes Worker
   
   
   
