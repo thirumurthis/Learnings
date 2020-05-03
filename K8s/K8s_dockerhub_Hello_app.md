@@ -107,7 +107,7 @@
 > kubectl delete pods -l run=hello-service
 ```
 
-# Kubectl - creates deployment yaml with the provided values when using `kubectl run --image=<image-name>`
+### Kubectl - creates deployment yaml with the provided values when using `kubectl run --image=<image-name>`
 ```
 apiVersion: v1
 items:
@@ -183,7 +183,9 @@ metadata:
   selfLink: ""
 ```
 
-# Kubectl to include health check `ReadinessProbes` and `LivenessProbes` - update the deployment yaml file under the container
+## Kubectl to include health check `ReadinessProbes` and `LivenessProbes` 
+   - update the deployment yaml file under the container
+   
 ReadinessProbes - http check
 Liveness - checks perodically if the pod is healthy
 
