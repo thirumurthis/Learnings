@@ -680,7 +680,7 @@ done
 ```
 
 # setting  arguments to next statement using `set` for next statment 
-```
+```sh
 #!/bin/sh
 
 echo "$1 $2"
@@ -693,5 +693,59 @@ echo $6  # prints the 6 item
 # test1 test2
 # var1 var2
 # PM <since date format was - day, month dd, yyyy hh:mm:ss PM>
+
+```
+
+# `while` loop usage example
+```sh
+#!/bin/sh
+
+i=0;
+while true 
+do
+i=$(($i+1));
+echo $i
+if [ $i == 10 ]; then
+ echo "$i"
+break;
+fi
+
+done;
+
+```
+
+# approximate month calculation, shell string to `date` conversion technique
+```sh
+#!/bin/sh
+
+#DATE1=$(date +'%m-%d-%Y')  # Way to convert string to date
+DATE1=$(date '+%s')  # %s is standard format of date
+
+echo $1
+
+# Input from user in format DD-Mom-yyyy
+INPUT="$1"
+
+if [[ -z "${INPUT}" ]]; then
+echo " no input"
+INPUT="01-MAY-2018";
+fi
+
+#DATE2=$(date -d ${INPUT} +'%m-%d-%Y')  # different format of date 
+DATE2=$(date -d $INPUT '+%s')
+
+echo DATE1 - DATE2= $DATE1 - $DATE2
+
+
+#Diff=$(date -u -d@$(($DATE1-$DATE2)) +%m:%d:%Y) # another way to find difference
+
+Diff=$((($DATE1-$DATE2)/(60*60*24)))
+echo $Diff days
+
+echo $(($Diff/30)) months 
+
+# single statement to provide the date in month difference, this is 30 days approximation
+
+echo $((($(date '+%s')- $(date -d $INPUT +'%s'))/(60*60*24*30))) months
 
 ```
