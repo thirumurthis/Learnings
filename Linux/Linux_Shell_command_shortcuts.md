@@ -655,7 +655,7 @@ $ arr=( [2018]=5%12 [2019]=1%12 [2020]=1%2 )
 $ for year in "${!arr[@]}"; do printf '%s: %s\n' "${year}" "${arr[${year}]}"; done
   ```
   
-  Reference : (Link)[https://unix.stackexchange.com/questions/582347/for-loop-with-key-value-pair-the-key-is-sort-order-is-not-maintained]
+  Reference : [stackexchange link](https://unix.stackexchange.com/questions/582347/for-loop-with-key-value-pair-the-key-is-sort-order-is-not-maintained)
   
   # In order to shift the arguments passed use `shift` option.
   
