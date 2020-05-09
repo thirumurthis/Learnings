@@ -57,7 +57,8 @@ Active MQ Terminology:
   - Complexity of the JMS message resides in the headers.
           
 `JMS message Headers`:
-  - Two types of headers which differ semantically
+ - Headers are set automatically by the clients `send()` method.
+ - Two types of headers which differ semantically
     - 1. `standard list of headers and methods to work with them`. 
     - 2. `message properties to facilitate custom headers based on primitive Java types`.
           
@@ -73,5 +74,18 @@ Active MQ Terminology:
 `Desitnation` 
   - Object to which messages are addressed and sent. Also from which the messages are received.
   
+  ------------
   
+  ##### JMS Message Header 
+  `Standard Header`
+   
+   - `JMSDeliveryMode` 
+     - Delivery mode is set on the producer and is applied to all the messages sent from that producer. This can be overriden for specific messages too.
+     - JMS supports two type of delivery modes for messages
+       - Persistent (default mode)
+          - Advices JMS provider to persist the message so it is not lost in case of provider failure.
+          - Also JMS provider should deliver the persistent mesasge once and only once.
+       - Non-persistent
+           - JMS provider will not persist the message, if the JMS Provider fails the message may get lost, but won't be delivered twice.
+    - The    
   
