@@ -25,16 +25,16 @@ Active MQ Terminology:
    - The JMs Provider should furnish an implementation of each of these interface.
    - Possible for JMS client to handle both sending and receiving messages.
      
-  `Non-JMS client` 
+ `Non-JMS client` 
    - Similar to JMS client, but wirtten using JMS provider's native client API.
    - Might offer additional features, for example utlilixing the CORBA IIOP protocol or different native protocol instead of Java RMI.
    - Many providers also provide a non-JMS client API.
   
-  `JMS producer` 
-    - Client application that created and sends JMS messages.
-    - client uses MessageProducer class for sending messages to a destination.
-    - Default destination is set when the producer is crated using `Session.createProducer()` method. This can be override for individual message using `MessageProducer.send() method`.
-    - MessageProducer provides method to set various message headers like `JMSDeliveryMode`, `JMSPriority`, `JMSExpiration` (using get/setTimeToLive()).
+ `JMS producer` 
+   - Client application that created and sends JMS messages.
+   - client uses MessageProducer class for sending messages to a destination.
+   - Default destination is set when the producer is crated using `Session.createProducer()` method. This can be override for individual message using `MessageProducer.send() method`.
+   - MessageProducer provides method to set various message headers like `JMSDeliveryMode`, `JMSPriority`, `JMSExpiration` (using get/setTimeToLive()).
       
 `JMS consumer` 
   - Client application that recieved and process JMS messages.
