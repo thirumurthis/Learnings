@@ -76,7 +76,7 @@ Active MQ Terminology:
   
   ------------
   
-  ##### JMS Message Header 
+  #####JMS Message Header 
   `Standard Header`
    - `JMSDestination`
      - The destination to which the message is being sent.
@@ -114,7 +114,7 @@ Active MQ Terminology:
      - The header denotes the time the message was sent by the producer to the JMS provider.
      - Producer can advice to disabe this using `Producer.setDisableMessageTimeStamp()` method. In this case the JMS provider will set this value to 0.
      
- ####### Optional headers
+ #####Optional headers
  
    - `JMSCorrelationID `
       - used to associate the current message with a previous message. 
@@ -135,8 +135,15 @@ Active MQ Terminology:
   - `JMSRedelivered`
      - Used to indicate that a message was previously delivered but not acknowledged.
      - This happens if a consumer fails to acknowledge delivery or JMS provider is not notified due to some exception thorwn that prevent the acknowledegment reaching the provider.
-     
-     
-       
- 
-       
+
+#####JMS Message Properties
+  - this are additional header that can be specifed on mesage.
+  - this can be used to set `custom headers` using generic methods (working with java primitive types like Boolean, byte, short, int, etc.).
+  - `propertyExits()` method is for testing whether the given property exists on a messge.
+  - `getPropertiesNames()` method returns an Enumeration of all the properties on a given message. To easily iterate through all of them.
+  
+  ```java  
+  public interface Message{
+     boolean getBooleanProperty(String name) throws JMSException;
+     ...
+  ```
