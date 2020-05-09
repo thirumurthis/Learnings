@@ -78,7 +78,10 @@ Active MQ Terminology:
   
   ##### JMS Message Header 
   `Standard Header`
-   
+   - `JMSDestination`
+     - The destination to which the message is being sent.
+     - Valuable for clients who consumer messages from more than one destination.
+     
    - `JMSDeliveryMode` 
      - Delivery mode is set on the producer and is applied to all the messages sent from that producer. This can be overriden for specific messages too.
      - JMS supports two type of delivery modes for messages
@@ -87,5 +90,53 @@ Active MQ Terminology:
           - Also JMS provider should deliver the persistent mesasge once and only once.
        - Non-persistent
            - JMS provider will not persist the message, if the JMS Provider fails the message may get lost, but won't be delivered twice.
-    - The    
+   
+   - `JMSExpiration`
+      - Default time to live is set to 0, which means the message will not expire.
+      - This value can be set using `setTimeToLive()` method globally on the all the messages sent by the producer.
+      - JMS providers shoudn't deliver messages that have expired, the JMS client should be developed in a way not to process expire message.
   
+   - `JMSMessageID` 
+      - String uniquely identifies a message that is assigned by the JMS provider.( __must begin with ID__)
+      - messageID can be used for meessage processing or for historical purposes in message storage mechanism. 
+      - the producer can advise JMS provider that the JMS application doesn't depend on the value of this header using `MessageProducer.setDisableMessageID()`, the JMS provider accepting this advice should set the message ID to null. But some JMS provider might ignore this and assign a message ID anyway.
+      
+  - `JMSPriority`
+      - assigns level of importance to a message.
+      - this header is also set on the message producer. If the priority is set on the producer, it applies to all messages sent from that producer. 
+      - the priority can be overridden for individual messages.
+      - Priority ranges 0 to 9, 0 being lowest and 9 the highest.
+          - Priorites (0-4) => finer granularities of the normal priority.
+          - Priorities (5-9) => finer granularities of expediated priorty.
+       - JMS providers aren't required to implement message ordering, but higher-priority messages should be delivered before lower-priority messages.
+      
+ - `JMSTimeStamp`
+     - The header denotes the time the message was sent by the producer to the JMS provider.
+     - Producer can advice to disabe this using `Producer.setDisableMessageTimeStamp()` method. In this case the JMS provider will set this value to 0.
+     
+ ####### Optional headers
+ 
+   - `JMSCorrelationID `
+      - used to associate the current message with a previous message. 
+      - commonly used to associate a response message with a request message.
+         - Provider-specific messageID (beings with ID)
+         - Application-specific String ( this must not start with ID)
+         - Provider-native byte[] value ( client assigns a specific value to match that expected by non-JMS clients) 
+        
+ - `JMSReplyTo`
+    - used to specify a destination where a reply should be sent.
+    - This header is commonly used for `request/reply style` of messaging.
+    - Messages with this header populated typically expects a response, but it's actually optional.
+    - Client must make the decision to respond or not.
+    
+ - `JMSType`
+     - Semanitcally identify message type, used by vendors not to anything with the payload of the JMS message.
+     
+  - `JMSRedelivered`
+     - Used to indicate that a message was previously delivered but not acknowledged.
+     - This happens if a consumer fails to acknowledge delivery or JMS provider is not notified due to some exception thorwn that prevent the acknowledegment reaching the provider.
+     
+     
+       
+ 
+       
