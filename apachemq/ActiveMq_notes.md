@@ -424,7 +424,7 @@ Note:
         - tcp://myhost1:61616,tcp://myhost2:61616 => composite URI
            - two low-level connector.
  
-#####How to configure transport connectors?
+##### How to configure transport connectors?
    - conf/activemq.xml
    ```
    <transportConnectors>
