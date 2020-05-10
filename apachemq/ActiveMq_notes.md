@@ -252,6 +252,15 @@ Example:
 #####Request/Reply messaging in JMS
   - JMS spec doen't define request/reply messaging as a formal messaging domain.
   - There are some message headers and couple of convenience classes for handling baskc request/reply messaging in an asynchronous back and forth conversational pattering in either PTP or pub/sub model.
+  - the comination of JMSReplyTo sepcifies the destination and JMSCorrelationID in the reply mesage specifies the JMSMessageID of the requeste message. These headers are used to link the reply to original request message.
+  - a Temporary destinations are those that are created only for the duration of a connection and only be consumed from, by the connection that created it.
+  - Convenience class `QueueRequestor` and `TopicRequestor` provide request() method that sends a request message and waits for reply message.
+  - These classes are useful only for basic form of request/reply, one reply per request. Not designed to handle complex cases of request/reply, in this case it would be development of new JMS application.
  
-      
- 
+#### Administered objects
+  - used to hide provider-specific details from the client and to abstract the JMS provider administration tasks.
+  - It's common to look up these objects via JNDI, but not required.
+  - Types of administered objects
+      - ConnectionFactory (JMS clients use the Connection factory to create connection to a JMS provider, connection typically represent an open TCP socket.)
+      - Destination ( This object encapsulates the provider specific address to which messages are sent and from which messages are consumed. Destination are created using `Session` object, lifetime matches the connection from thwich the session was created.
+          - Temporary destinations are unique to that connection that ws used to created them and live as long as the connection that created them, only the connection that created them can create consumers from them. This is commonly used for request/reply messaging. 
