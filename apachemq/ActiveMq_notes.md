@@ -306,3 +306,80 @@ Example:
        }
     
 ```
+
+Similar to send message, below is example of reveive message `synchronous` way
+```java
+
+// Synchronous way of sending message.
+    ...
+    ConnectionFactory connectionFactory;
+    Connection connection;
+    Session session;
+    Destination destination;
+    MessageConsumer consumer;
+    Message message;
+    boolean useTransaction = false;
+    try {
+    Context ctx = new InitialContext();
+    connectionFactory =
+    (ConnectionFactory) ctx.lookup("ConnectionFactoryName");
+    connection = connectionFactory.createConnection();
+    connection.start();
+    session = connection.createSession(useTransaction,
+    Session.AUTO_ACKNOWLEDGE);
+    destination = session.createQueue("TEST.QUEUE");
+    consumer = session.createConsumer(destination);
+    message = (TextMessage) consumer.receive(1000);
+    System.out.println("Received message: " + message);
+```
+
+Note:
+  - There is no timing consideration needed to make sure that the producer is sending messsage at the same time the consumer is available.
+  - All mediation and temporary storage of the message is the job of the JMS provider implementation.
+  - the consume must poll for messages over and over again in a loop.
+  
+ 
+ Example of consumer receiving message.
+ ```java
+ 
+ public class AsyncExampleMessageConsumer implements MessageListener {
+
+      ConnectionFactory connectionFactory;
+      Connection connection;
+      Session session;
+      Destination destination;
+      MessageProducer producer;
+      Message message;
+      boolean useTransaction = false;
+      try {
+          Context ctx = new InitialContext();
+          connectionFactory =
+          (ConnectionFactory) ctx.lookup("ConnectionFactoryName");
+          connection = connectionFactory.createConnection();
+          connection.start();
+          session = connection.createSession(useTransaction,
+          Session.AUTO_ACKNOWLEDGE);
+          destination = session.createQueue("TEST.QUEUE");
+          consumer = session.createConsumer(destination);
+          consumer.setMessageListener(this);
+      } catch (JMSException exe) {
+            System.Out.println("Exception occured "+ exe.getMessage());
+      } finally {
+            producer.close();
+            session.close();
+            connection.close();
+      }
+      
+      // implement the onMessage method from the MessageListener
+      public void onMessage(Message message) {
+          if (message instanceof TextMessage) {
+             System.out.println("Received message: " + message);
+           }
+      }
+  }
+ ```
+ 
+ Note:
+   - `onMessage` method override and implemented.
+   - Now `consumer` no need to poll for messages repeatedly, instead the MessageListener implementation is registered with JMS Provider. The message will be delivered automatically to the `onMessage()` method in an asynchronous manner.
+
