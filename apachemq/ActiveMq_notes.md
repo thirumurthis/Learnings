@@ -383,3 +383,7 @@ Note:
    - `onMessage` method override and implemented.
    - Now `consumer` no need to poll for messages repeatedly, instead the MessageListener implementation is registered with JMS Provider. The message will be delivered automatically to the `onMessage()` method in an asynchronous manner.
 
+`ConnectionFactory`,`Connection` and `Destination` object supports concurrent access.
+
+`Session`,`MessageProducer` and `Messageconsumer` objects don't support concurrent access and shouldn't be shared across threads in java application.
+
