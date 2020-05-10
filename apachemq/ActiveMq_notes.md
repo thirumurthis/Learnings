@@ -55,7 +55,8 @@ Active MQ Terminology:
   - Headers (JMSCorrelationID, JMSDeliveryMode, JMSDestination, JMSExpiration, JMSPriority, JMSMessageID, JMSRedeivered, JMSTimestamp, JMSType, etc.)
   - PayLoad (Text, binary etc)
   - Complexity of the JMS message resides in the headers.
-          
+  - Refer below for more details on messages.
+        
 `JMS message Headers`:
  - Headers are set automatically by the clients `send()` method.
  - Two types of headers which differ semantically
@@ -64,6 +65,7 @@ Active MQ Terminology:
           
 `JMS domains` 
   - Two domain, **point-to-point** and **Publish/subscribe**.
+  - Refer below for more information
   
 `Administered objects` 
   - Preconfigured JMS object, contains provider specific configuration data for use by client. These object are typically accessed by client using JNDI.
@@ -215,3 +217,37 @@ Example:
       - `StreamMessage` - A message with a payload containing a stream of primitive java types thats filled and read sequentially.
       - `ObjectMessage` - Used to hold a serializable java object. Usually complex java object. Also supports java collections.
       
+#####JMS Domains
+  - __point-to-point (PTP)__
+     - uses destinations known as `queues`
+     - messages sent and recieved either synchronously or asynchronously
+     - each message received on the queue is delivered once and only once to single consumer.
+     - multiple consumers can register on a single queue, but only one consumer will recive a given message and then it is upto the consumer to acknowledge the message.
+     -JMS provider is distributing the messages in a round-robin style across registered consumers.
+     
+  - __Publish/Subscribe (pub/sub)__   
+     - uses destination known as `topics`
+     - publisher sends messages to the topic, subscribers register to receive messages from the topic.
+     - any message sent to topic is deleivered automatically to _all consumers_. 
+     - topics don't hold messages unless explicitly instructed. This can be achieved via the use of __`durable subscription`__.
+     - using `durable subscription` when a subscriber disconnects from the JMS provide, its the responsibility of JMS provider to store messages for the subscriber. Upon reconnecting, the durable subsciber will recive all unexpired messages from the JMS provider.
+     - `durable subscription` used in case if subscriber disconnection should not miss any messages.
+     
+     
+ __`Message durablity and Message persistence` are different.__
+ 
+ - `durable subscription` is infinite.
+     - it's registered with the topic subscription to tell JMS provider to preserve subscription state in event that the subscriber disconnects.
+     - the JMS provider holds all messages unilt that subscriber connects again or until the subscriber explicitly unsubscribes from the topic.
+     
+  - `nondurable subscription` is finite.
+     -it's registered with the topic subscription to tell JMS provider to not preserve the subscription state in the event that subscriber disconnects.
+ 
+ 
+ `Message Persistence` is independent of message domain.
+   - Message persistence is a quaility of service used to indicate the JMS application ability to handle missing messages in the event of JMS provider failure.
+   - this is specified using `setDeliverMode` method using one of `JMSDeiveryMode` class `PERSISTENT` or `NON-PERSISTENT` properties as argument.
+ 
+ 
+      
+ 
