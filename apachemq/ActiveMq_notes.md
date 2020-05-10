@@ -264,3 +264,45 @@ Example:
       - ConnectionFactory (JMS clients use the Connection factory to create connection to a JMS provider, connection typically represent an open TCP socket.)
       - Destination ( This object encapsulates the provider specific address to which messages are sent and from which messages are consumed. Destination are created using `Session` object, lifetime matches the connection from thwich the session was created.
           - Temporary destinations are unique to that connection that ws used to created them and live as long as the connection that created them, only the connection that created them can create consumers from them. This is commonly used for request/reply messaging. 
+
+#####JMS Application
+  - 1. Acquire JMS connection factory
+  - 2. Create JMS Connection using connection factory
+  - 3. Start JMS connection
+  - 4. Create JMS session from connection
+  - 5. Acquire a JMS destination
+  - 6. A*) Create JMS producer (create JMS message and address it to a destination)
+  - 6. B*) Create JMS consumer ( if needed, register a JMS message Listener)
+  - 7. Send or receive JMS messages
+  - 8. Close all JMS resources (connection, session, etc.)
+  
+```java
+  // Sample for sending message
+    ConnectionFactory connectionFactory;
+    Connection connection;
+    Session session;
+    Destination destination;
+    MessageProducer producer;
+    Message message;
+    boolean useTransaction = false;
+    try {
+        Context ctx = new InitialContext();
+        connectionFactory =
+        (ConnectionFactory) ctx.lookup("ConnectionFactoryName");
+        connection = connectionFactory.createConnection();
+        connection.start();
+        session = connection.createSession(useTransaction,
+        Session.AUTO_ACKNOWLEDGE);
+        destination = session.createQueue("TEST.QUEUE");
+        producer = session.createProducer(destination);
+        message = session.createTextMessage("this is a test");
+        producer.send(message);
+    // catch exception
+    //finally close 
+    finally{
+       producer.close();
+       session.close();
+       connection.close();
+       }
+    
+```
