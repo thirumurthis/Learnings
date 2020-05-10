@@ -78,7 +78,7 @@ Active MQ Terminology:
   
   ------------
   
-  #####JMS Message Header 
+##### JMS Message Header 
   `Standard Header`
    - `JMSDestination`
      - The destination to which the message is being sent.
@@ -116,7 +116,7 @@ Active MQ Terminology:
      - The header denotes the time the message was sent by the producer to the JMS provider.
      - Producer can advice to disabe this using `Producer.setDisableMessageTimeStamp()` method. In this case the JMS provider will set this value to 0.
      
- #####Optional headers
+##### Optional headers
  
    - `JMSCorrelationID `
       - used to associate the current message with a previous message. 
@@ -138,7 +138,7 @@ Active MQ Terminology:
      - Used to indicate that a message was previously delivered but not acknowledged.
      - This happens if a consumer fails to acknowledge delivery or JMS provider is not notified due to some exception thorwn that prevent the acknowledegment reaching the provider.
 
-#####JMS Message Properties
+##### JMS Message Properties
   - this are additional header that can be specifed on mesage.
   - this can be used to set `custom headers` using generic methods (working with java primitive types like Boolean, byte, short, int, etc.).
   - `propertyExits()` method is for testing whether the given property exists on a messge.
@@ -150,7 +150,7 @@ Active MQ Terminology:
      ...
   ```
   
-#####`Headers` and `properties` are important for filtering the mesage received by a client subscribed to a destination. 
+##### `Headers` and `properties` are important for filtering the mesage received by a client subscribed to a destination. 
 
 __` Message Selectors`__
 
@@ -207,7 +207,7 @@ Example:
   
   ```
   
-####MESSAGE Body (`Payload`)
+#### MESSAGE Body (`Payload`)
   
    - JMS define 6 Java types for message body
       - `Message` - base message type. Used to send a message with no payload, only headers and proeprties. Typically used for event notification.
@@ -217,7 +217,7 @@ Example:
       - `StreamMessage` - A message with a payload containing a stream of primitive java types thats filled and read sequentially.
       - `ObjectMessage` - Used to hold a serializable java object. Usually complex java object. Also supports java collections.
       
-#####JMS Domains
+##### JMS Domains
   - __point-to-point (PTP)__
      - uses destinations known as `queues`
      - messages sent and recieved either synchronously or asynchronously
@@ -249,7 +249,7 @@ Example:
    - this is specified using `setDeliverMode` method using one of `JMSDeiveryMode` class `PERSISTENT` or `NON-PERSISTENT` properties as argument.
  
  
-#####Request/Reply messaging in JMS
+##### Request/Reply messaging in JMS
   - JMS spec doen't define request/reply messaging as a formal messaging domain.
   - There are some message headers and couple of convenience classes for handling baskc request/reply messaging in an asynchronous back and forth conversational pattering in either PTP or pub/sub model.
   - the comination of JMSReplyTo sepcifies the destination and JMSCorrelationID in the reply mesage specifies the JMSMessageID of the requeste message. These headers are used to link the reply to original request message.
@@ -257,7 +257,7 @@ Example:
   - Convenience class `QueueRequestor` and `TopicRequestor` provide request() method that sends a request message and waits for reply message.
   - These classes are useful only for basic form of request/reply, one reply per request. Not designed to handle complex cases of request/reply, in this case it would be development of new JMS application.
  
-#### Administered objects
+##### Administered objects
   - used to hide provider-specific details from the client and to abstract the JMS provider administration tasks.
   - It's common to look up these objects via JNDI, but not required.
   - Types of administered objects
@@ -265,7 +265,7 @@ Example:
       - Destination ( This object encapsulates the provider specific address to which messages are sent and from which messages are consumed. Destination are created using `Session` object, lifetime matches the connection from thwich the session was created.
           - Temporary destinations are unique to that connection that ws used to created them and live as long as the connection that created them, only the connection that created them can create consumers from them. This is commonly used for request/reply messaging. 
 
-#####JMS Application
+##### JMS Application
   - 1. Acquire JMS connection factory
   - 2. Create JMS Connection using connection factory
   - 3. Start JMS connection
@@ -332,7 +332,6 @@ Similar to send message, below is example of reveive message `synchronous` way
     message = (TextMessage) consumer.receive(1000);
     System.out.println("Received message: " + message);
 ```
-
 Note:
   - There is no timing consideration needed to make sure that the producer is sending messsage at the same time the consumer is available.
   - All mediation and temporary storage of the message is the job of the JMS provider implementation.
@@ -378,8 +377,7 @@ Note:
       }
   }
  ```
- 
- Note:
+Note:
    - `onMessage` method override and implemented.
    - Now `consumer` no need to poll for messages repeatedly, instead the MessageListener implementation is registered with JMS Provider. The message will be delivered automatically to the `onMessage()` method in an asynchronous manner.
 
@@ -390,11 +388,11 @@ Note:
 
 ![image](https://user-images.githubusercontent.com/6425536/81507140-1d32f680-92b0-11ea-993b-bc8372ecfe3c.png)
 
-#####Connecting to ActiveMq
+##### Connecting to ActiveMq
  - ActiveMQ provides `connector` a connectivity mechanism that provides `client-to-broker` (using `transport connectors`) and `broker-to-broker` communications (using `network connectors`).
  - ActiveMQ supports variety of protocols.
  
-#####URIs as per the spec
+##### URIs as per the spec
 
 ```
  <scheme>:<scheme-specific-part>
@@ -426,7 +424,7 @@ Note:
         - tcp://myhost1:61616,tcp://myhost2:61616 => composite URI
            - two low-level connector.
  
- #####How to configure transport connectors?
+#####How to configure transport connectors?
    - conf/activemq.xml
    ```
    <transportConnectors>
@@ -434,3 +432,26 @@ Note:
       <transportconnector name="stomp" uri="stomp://localhost:61616">
    <transportConnectors>   
    ```
+
+From the client, the transport connector URI is used to create a ocnnection to the broker to send and recive messages.
+```java
+  ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+  Connection connection = factory.createConnection();
+  connection.start();
+  Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+```
+The URI used above can be different for different protocols.
+
+ - `tcp connector` - is default and most widely used, since provides optimal performance.
+- `NIO connector` - which alos uses TCP network protocol underneath, but provides a bit better scalability than tcp connector.
+- `UPD connector` - UDP protocol introduces some performance advantages but not reliablie comparted to TCP protocol. (check networking notes TCP/IP vs UPD)
+
+|Protocol | Description
+|--------|-------------|
+|TCP| Default network protocol|
+|NIO| Provide better scalability for connection from producer and consumer to the broker|
+|UDP| Consider UPD protocol when need to deal with firewall between clients and broker.
+|SSL| SSL when wanted to secure communication between clients and broker.
+HTTP(S)| When wanted to deal with firewall between clients and broker.
+|VM| This is not a network protocal per se, VM protocal is used when broker and clients communicate with a broker that is embedded in same JVM.
+
