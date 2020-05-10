@@ -387,3 +387,6 @@ Note:
 
 `Session`,`MessageProducer` and `Messageconsumer` objects don't support concurrent access and shouldn't be shared across threads in java application.
 
+
+![image](https://user-images.githubusercontent.com/6425536/81507140-1d32f680-92b0-11ea-993b-bc8372ecfe3c.png)
+
