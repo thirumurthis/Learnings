@@ -205,7 +205,7 @@ Example:
   
   ```
   
-  ####MESSAGE Body (`Payload`)
+####MESSAGE Body (`Payload`)
   
    - JMS define 6 Java types for message body
       - `Message` - base message type. Used to send a message with no payload, only headers and proeprties. Typically used for event notification.
