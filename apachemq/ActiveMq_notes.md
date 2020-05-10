@@ -390,3 +390,47 @@ Note:
 
 ![image](https://user-images.githubusercontent.com/6425536/81507140-1d32f680-92b0-11ea-993b-bc8372ecfe3c.png)
 
+#####Connecting to ActiveMq
+ - ActiveMQ provides `connector` a connectivity mechanism that provides `client-to-broker` (using `transport connectors`) and `broker-to-broker` communications (using `network connectors`).
+ - ActiveMQ supports variety of protocols.
+ 
+#####URIs as per the spec
+
+```
+ <scheme>:<scheme-specific-part>
+ 
+ Example:
+ 
+  mailto:mail@domain.com
+  mailto - scheme
+  mail@domain.com - email address uniquely identify both the service and particuar resources within that service.
+  
+  Hierarcihal URIs (known as URL Uniform resource Locator)
+  
+  <scheme>://<authority><path><?query>
+  
+  http://www.websitename.com/forum/hello.jsp?id=1111
+  http - scheme
+  query - used to specify additional parameters.
+  
+  ## ActiveMq uses the Hierarcihal type of uri
+  tcp://localhost:61616
+ ```
+ 
+ - `tcp://localhost:61616` is a typical hierarchial URI used in ActiveMq which means `to create a TCP connection to localhost on port 61616`.
+ - In ActiveMQ, using this kind of simple hierarchial URI pattern are referred to as __`low-level connectors`__
+ - `tcp://localhost:61616?trace=true` - query => trace=true extends by telling broker to log all commands sent over this connector.
+ - `failover` transport in ActiveMq supports automatic reconnecton as well as ability to connect to another borker in case the brokder to which a client is currently connected is unavailable. ActiveMQ makes this easy using __`composite URIs`__. 
+    - ` static:(tcp://myhost1:61616,tcp://myhost2:61616)`, note there are no spaces, which is important to note.
+        - static => scheme
+        - tcp://myhost1:61616,tcp://myhost2:61616 => composite URI
+           - two low-level connector.
+ 
+ #####How to configure transport connectors?
+   - conf/activemq.xml
+   ```
+   <transportConnectors>
+      <transportconnector name="openwire" uri="tcp://localhost:61616">
+      <transportconnector name="stomp" uri="stomp://localhost:61616">
+   <transportConnectors>   
+   ```
