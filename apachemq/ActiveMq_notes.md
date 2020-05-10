@@ -249,5 +249,9 @@ Example:
    - this is specified using `setDeliverMode` method using one of `JMSDeiveryMode` class `PERSISTENT` or `NON-PERSISTENT` properties as argument.
  
  
+#####Request/Reply messaging in JMS
+  - JMS spec doen't define request/reply messaging as a formal messaging domain.
+  - There are some message headers and couple of convenience classes for handling baskc request/reply messaging in an asynchronous back and forth conversational pattering in either PTP or pub/sub model.
+ 
       
  
