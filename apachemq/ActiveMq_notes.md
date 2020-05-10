@@ -147,3 +147,71 @@ Active MQ Terminology:
      boolean getBooleanProperty(String name) throws JMSException;
      ...
   ```
+  
+#####`Headers` and `properties` are important for filtering the mesage received by a client subscribed to a destination. 
+
+__` Message Selectors`__
+
+Example:
+  - JMS client is subscribed to a given destination, but it may want to filter the types of message it recives. This is exactly where the headers and properties can be used.
+  - If a consumer registered to receive messages from a queue and only interested in messages about particular stock symbol. The JMS client (consumer) can utlize JMS message selectors to inform the JMS provider that it only wants to receive mesasages containing particular values in a particular property.
+  
+  - Message selector allows JMS client to specify which messages it want to receive from the destination based on values in message header.
+  - `Selectors are conditional expression` passed as string arguments defined using a subset of SQL92.
+  - Using Boolean logic, message selector use headers and prperties as criteria for simple boolean evaluation, if messages not maching these expression then those are not delieverd to the client (consumer).
+  - `Message selector can't reference a message payload`, only the message headers and properties.
+  
+  - When creating a session the selector conditional expression defined as string can be passed as an argument `javax.jms.Session` object method.
+  
+  ```
+  # JMS selector syntax.
+  Item => values
+  Literals => TRUE/FALSE; numbers 5,-4,+8,+1.021,2E8
+  Identifiers => header or property field
+  Operators => AND, OR, BETWEEN, LIKE, = <> , <,>, IS NULL, IS NOT NULL, +, *, -, =>, <=
+  ```
+  
+  Sample Message selector code in the Producer/consumer
+  
+  ```java
+ //Producer  
+  public void sendMessage(Session session, MessageProducer producer, Desitnation destination, String load, String selectorSymbol, double price) throws JMSException {
+    
+    TextMessage textMessage= session.createTextMessage();
+    textMessage.setText(load);
+    textMessage.setStringProperty("SYMBOL", selectorSymbol);
+    textMessage.setStringProperty("PRICE", price);
+    producer.send(destination, textMessage);
+    }
+   
+  // consumer example with message selector
+  // MSFT is the stock symbol for mcirosoft and below consumer get only those info
+  // the selector is directly added as string value
+   MessageConsumer consumer = session.createConsumer(destination, "MSFT");
+  
+  // expression where the price is provided already to this object
+  // The stock matching microsoft and price greater than previous price
+  String conditionSelector = "SYMBOL = 'MSFT' AND PRICE > " + getPreviousPrice();
+  MessageConsumer consumer = session.createConsumer(destination, conditionSelector);
+  
+  
+  // more selector example 
+  // PE (price to earning ratio)
+  
+  String conditionalSelector= "SYMBOL IN ('MSFT','BA') AND PRICE >"
+              + getPreviousPrice() +" AND PE_RATIO < "
+              + getCurrentPERationAvg();
+  MessageConsumer consumer = session.createConsumer(destination, conditionalSelector);
+  
+  ```
+  
+  ####MESSAGE Body (`Payload`)
+  
+   - JMS define 6 Java types for message body
+      - `Message` - base message type. Used to send a message with no payload, only headers and proeprties. Typically used for event notification.
+      - `TextMessage` - Message whose payload is a String. commonly used to send texts, XML data.
+      - `MapMessage` - Uses a set of name/value pairs as payload. Names are String and Values are a Java primitive type.
+      - `BytesMessage` - contains an array of initerpreted bytes as the payload.
+      - `StreamMessage` - A message with a payload containing a stream of primitive java types thats filled and read sequentially.
+      - `ObjectMessage` - Used to hold a serializable java object. Usually complex java object. Also supports java collections.
+      
