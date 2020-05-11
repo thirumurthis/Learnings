@@ -790,4 +790,58 @@ Represenation of complex network of browkers:
        - `fanout connector` enables client to send messages to multiple brokers.
     
     
+##### Static connector:
+   - used to create a static configuration of multiple brokers in a network.
+   
+   Syntax example
+  ```
+   static:(uri1,uri2,..)?key=value
+   
+   // config/activeMq.xml
+   
+   <networkConnectors>
+     <networkConnector name="custom network" uri="static://(tcp://host1:61616,tcp://host2:61616)" />
+   </networkConnectors>  
+    
+    // This configuration is for the broker on localhost and brokers on hosts host1 and host2 which are up and running. (this could be seen the log message when the MQ starts)
+    
+    //The output, indicates in this case that the broker on localhost has successfully configured forwarding bridge with other brokers running on two remote hosts host1 and host2.
+  ```
 
+
+ Forward bridging example:
+ 
+ BrokerA (seperate ActiveMQ instance)
+ ```xml
+ // activemq-brokerA.xml
+<broker xmlns="http://activemq.apache.org/schema/core" brokerName="BrokerA" dataDirectory="${activemq.base}/data">
+	<transportConnectors>
+		<transportConnector name="openwire" uri="tcp://localhost:61616" />
+	</transportConnectors>
+	<networkConnectors>
+		 <networkConnector uri="static:(tcp://localhost:61617)" />
+	</networkConnectors>
+</broker>
+ ```
+ 
+ Broker B (seperate ActiveMQ instance)
+ ```xml
+ // activemq-brokerA.xml
+<broker xmlns="http://activemq.apache.org/schema/core" brokerName="BrokerB"  dataDirectory="${activemq.base}/data">
+	<transportConnectors>
+	       <transportConnector name="openwire" uri="tcp://localhost:61617" />
+	</transportConnectors>
+</broker>
+ ```
+
+Note:
+
+  -  Start the ActiveMq instance
+  
+  ` ${ACTIVEMQ_HOME}/bin/activemq console xbean:src/main/resources/brokerA.xml`
+  
+  ` ${ACTIVEMQ_HOME}/bin/activemq console xbean:src/main/resources/brokerB.xml`
+  
+  Messages are published to BrokerA, these mesages are then forwarded to BrokerB where they are recived by consumer.
+  
+  
