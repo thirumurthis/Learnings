@@ -843,5 +843,166 @@ Note:
   ` ${ACTIVEMQ_HOME}/bin/activemq console xbean:src/main/resources/brokerB.xml`
   
   Messages are published to BrokerA, these mesages are then forwarded to BrokerB where they are recived by consumer.
+
+**The network address should be known when using with the static protocol.**
+
+Scenario where the static protocol can be used and its advantage.  
+```
+  - Clients are in remote location and connecting to a specific location (Say service running at local laptop a home)
+  - Depending on number of clients in each remote location, there might be way more network connections into the specific location.
+  - The above might burden over the network.
+  - To minimize the connection, one approach is to place a broker on each remote location, and allow static network connection between brocker in remote location and broker in specific loaction.
+  - This will miminize the number of network connections between the remote location and hte specfic location, it allows the client applications to operate more efficiently.
+  - thus less latency and less waiting for the client application.
+```
+
+#### Failover protocol:
+   - Clients have been configured to connect to a specific broker. `What happens if it is not able to connect to specfic broker or connection fails due to some reason?`
+   - The client either die gracefully or tries to connect to the same broker or other broker to resume work.
+   - __`failover connector`__ implements automatic reconnection mechanism.
+   
+ URI Syntax:
+ ```
+ 
+ failover:(uri1,uri2....)?key=value
+ 
+ or
+ 
+ failover:uri1,uri2...
+ ```
+    - failover protocol uses random algorithm to choose one of the underlying connectors.
+    - If connection fails, the transport will pick another URI and try to make connection.
+    - default configuration also implements `reconnection delay logic`, that is delay of 10ms for first attempt and dobules the delay on further attempts till 30000ms.
+    - reconnection logic tries to reconnect indefinitely.
+    
+```java
+	factory = new ActiveMQConnectionFactory("failover:(tcp://host1:61616,tcp://host2:61616)");
+    	connection = factory.createConnection();
+        connection.start();
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+```
+
+##### Example of Failover protocol and when it can be helpful?
+Due to its reconnection capabilities, it’s highly advisable that you use the failover protocol for all clients, even if a client will only be connecting to a single broker. 
+
+For example, the following URI will try to reestablish a connection to the same broker in the event that the broker shuts down for any reason:
+```
+failover:(tcp://localhost:61616)
+```
+
+The advantage of this is that clients don’t need to be manually restarted in the case of a broker failure (or maintenance, and so forth). As soon as the broker becomes available again the client will automatically reconnect. This means far more robustness for your applications by simply utilizing a feature of ActiveMQ. 
+
+----------------
+
+####### Dynamic networks:
+  - Several mechanisms implemented in ActiveMq which can be used by brokers and clients to find each other and establish connection (when broker URI is not specified).
   
-  
+  - IP multicast is a network technique used for easy tranmission of data from one soruce to a group of recievers (1-to-Many communication) over an IP network.
+  - The fundamental concept of IP multicast is `group address`.
+  - The `group address` in an IP address in the range of 224.0.0.0 to 239.255.255.255 used by both soruce and recivers.
+        - source use this address as destination for data
+	- recivers use it to express interest in ata from the group
+   
+   - when IP multicast is configured, ActiveMQ broker use the multicast protocol to advertise their services and locate the services of other brokers.
+   - Clients use multicast to locate brokers and establish a connection with them.
+   
+URI syntax example:
+```
+   multicast://ipaddress:port?key=value
+```
+   
+Sample configuration:
+```xml
+   <broker xmlns="http://activemq.apache.org/schema/core" brokerName="multicast" 
+dataDirectory="${activemq.base}/data">
+<networkConnectors>
+      <networkConnector name="default-nc" uri="multicast://default"/>
+</networkConnectors>
+<transportConnectors>
+      <transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
+</transportConnectors>
+</broker>
+
+//Group name used here is default, instead of specfic ip address
+
+//transport connector discoveryUri attribute is used to advertise this transports URI on the default group.
+
+//All clients interested in finding avialable broker would use this connector.
+
+// uri on the network connector is used to serach for avialable brokers and create network with them. in this case, the broker acts like a client and uses multicast for lookup purpose.
+
+ ```
+##### Example use of the multicast protocol, where can it be used? 
+   - Multicast protocol provides automatic discovery of other brokers (not like static list of brokers)
+   - Multicast protocol is common where brokers are added and removed frequently and in case where brokers Ip address changes frequently.
+   - In this case instead of reconfiguring each broker manually it is easier to utilize a discovery protocol.
+   
+ Disadvantage:
+   - all the brokers are discovered automatically, in case if we don't want the broker to not discover automatically the initial configuration should be setup correctly.
+   - Segmentation of broker networks is important, message might wind up in broker netowkr where they don't belong.
+   - Excessively chatty over network.
+   
+
+##### change the broker name using config/activemq.xml
+```
+<broker xmlns="http://activemq.apache.org/schema/core" brokerName="custom-broker1" dataDirectory="${activemq.base}/data">
+
+// helps when searching log file on specifi broker logs
+```
+
+##### Discovery Protocol
+   - `discovery transport connector` is on client side of ActiveMq multicast functionality.
+   - `discovery connector` is same as failover protocol in its behavior.
+   - This connector will multicast to discvoer brokers and randomly choose one to connect.
+   
+ URI syntax:
+ ```
+  discovery:(discoveryAgentURI)?key=value
+ ```
+ 
+ 
+ ##### PEER protocol
+    - `peer connector` allows to easity network embedded brokers.
+    - utility that creates `peer-to-peer` netwokr of embedded brokers.
+ 
+ URI syntax:
+ ```
+ peer://peergroup/brokerName?key=value
+ 
+ //when embedded broker starts with peer connector, wil also configure the broker to establish network connectios to other brokers in the local network with the same group name.
+ ```
+ Sample code for producer
+ ```java
+ 	factory = new ActiveMQConnectionFactory("peer://group1");
+    	connection = factory.createConnection();
+        connection.start();
+        session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+ ```
+ 
+ Representation of Peer-to-Peer network on embedded broker
+ ```
+______________                                  ______________
+| Publisher   |                                 | consumer    |
+| application |                                 | application |
+ ______________                                  _____________
+    \                                           /
+     \ vm:             N/W                     / vm:   
+      \_________     connector    __________ /
+      |  Broker |  <-----------> | Broker   |
+       _________                  __________
+ 
+ ```
+ 
+ The configuration xml for the ActiveMq instance is started with 
+ ` $ /bin/activemq console xbean:src/main/resource/activemq-multi.xml
+ ```
+ // store this in activemq-multi.xml (other content similar to default activemq.xml
+ 
+  <networkConnectors>
+          <networkConnector name="default-nc" uri="multicast://default"/>  
+      </networkConnectors>
+
+      <transportConnectors>
+          <transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
+      </transportConnectors>
+ ```
