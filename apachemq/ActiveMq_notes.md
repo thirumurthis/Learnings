@@ -620,3 +620,73 @@ similarly we need to create client keystore and certificate.
 	
      Start the activemq $ /bin/activemq console
  ```
+
+##### Enabling and disabling SSL Ciphers
+   - There are long list of cipher suites avialble defined by JSSE.
+   - In a situation if we need to disable certain chipers, we can do it using the option `transport.enabledCipherSuites`
+ 
+ Example:
+ 
+ ```
+ <transportConnectors>
+    <transportConnector name="ssl" uri="ssl://localhost:61617?transport.enabledCipherSuites=SSL_RSA_WITH_RCA_128_SHA" />
+ </transportConnectors>
+ 
+## note that  the multiple Ciphers can be provided as comman seperated values
+ 
+ Payment Card Industry (PCI) cipher is weak to leave them enabled.
+ ```
+ 
+ 
+ ##### HTTP/HTTPS
+    - many environments has firewalls which allows only basic servies such as web access and email. 
+    - in this situation, ActiveMQ can be used with HTTP transport connector.
+    - HTTP transmit hypertext (HTML) pages over the web, it uses TCP as underlying network protocol and adds some additional logic for communication between browser and web servers.
+    - ActiveMQ implements `HTTP transport connector` which provides for the exchange of xml-formatted messages with the broker.
+    - This is what allows AciveMq to bypass strict firewall rules.
+    
+ Syntax:
+ 
+ ```
+For http,
+  http://hostname:port?key=value
+  
+For https,
+  https://hostname:port?key=value
+ ```
+ ```
+ <transportConnectors>
+  <transportConnector name="tcp" uri="tcp://localhost:61616?trace=true"/>
+  <transportConnector name="http" uri="http://localhost:8080?trace=true"/>
+</transportConnectors>
+ ```
+ 
+ Note:
+    - in order to run the client using the HTTP protocol additional dependency is need `activemq-optional` module.
+    
+ ```xml
+<dependency>
+   <groupId>org.apache.activemq</groupId>
+   <artifactId>activemq-optional</artifactId>
+   <version>5.4.1</version>
+</dependency>
+ ```
+If we don't need this module to be included part of the maven, include below jars in the classpath
+```
+$ACTIVEMQ_HOME/lib/optional/activemq-optional-<version>.jar
+$ACTIVEMQ_HOME/lib/optional/commons-httpclient-<version>.jar
+$ACTIVEMQ_HOME/lib/optional/xstream-<version>.jar
+$ACTIVEMQ_HOME/lib/optional/xmlpull-<version>.jar
+```
+
+Note:
+
+  - In HTTP transport, all broker-to-client communication is performed by sending XML messages. This type of communication can impact performance comparted to the TCP. Just find the workaround on firewall issues.
+  
+
+##### ActiveMQ inside the virtual machine (VM connector)
+   - used by application to launch an `embedded broker` and connect to it.
+   - in VM connector no network connection are created between clients and embedded broker. Communication is performed thorugh direct method invocation of broker objects.
+   - no network stack, performance is improved significantly.
+   - all subsequent VM transport connector from the same VM will connet to the same broker.
+ 
