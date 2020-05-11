@@ -520,12 +520,103 @@ Two main differences between them:
 When should you use the UDP transport instead of the TCP transport? 
  
 Two such situations where the UDP transport offers an advantage:
-    - The broker is located behind a firewall that you don’t control and you can access it only over UDP ports.
-	- when using time-sensitive messages and you want to eliminate network transport delay as much as possible.
+
+  - The broker is located behind a firewall that you don’t control and you can access it only over UDP ports.
+  - when using time-sensitive messages and you want to eliminate network transport delay as much as possible.
 	
  Pitfalls regarding the UDP connector:
     
   - Since UDP is unreliable, end up losing some of the messages, application should know how to deal with this situation.
   - Network packets transmitted between clients and brokers aren't just messages, but can also contain so-called control commands. If some of these `control commands` are lost due to UDP unreliability, the JMS connection could be endangered.
   
+##### Secure Socket Layer protocol (SSL)
+   - Secure the data transfer
+   - `SSL protocol` designed to transmit encrypted data over `TCP` network protocol.
+      - It uses a pair of keys (private and public keys) to ensure secure communication channel.
+   - ActiveMQ provides SSL Layer over the TCP communication channel between `client and broker`.
+   - SSL involves keys and certificates which can be configured.
+   - ActiveMQ uses `Java Secure Socket Extension (JSSE)` to implement its SSL functionality.
+   
+Syntax example:
+```
+ssl://hostname:port?key=value
+```
+Configuring the SSL in `activemq.xml`
+```
+<transportConnectors>
+  <transportConnector name="ssl" uri="ssl://localhost:61617?trace=true"/>
+</transportConnectors>
+```
+_Note:_
+   - SSL transport needs SSL certificates, and other items to work properly.
+   - JSSE defines two types of files for storing keys and certificates, `keystore` and `truststore`.
+        - __`keystore`__ => holds your own private certificates with their corresponding private key.
+	- __`truststore`__ => trusted certificates of other application (entitites) are stored in `truststores`.
+    - The default `keystore` and `truststore` distributed with ActiveMQ are located under ${ACTIVEMQ_HOME}/conf. 
+        - `borker.ks` - default broker certificate
+	- `broker.ts` - hold trusted client certificates.
+
+  For production usage, use custom generated keystore and truststore.
   
+  Exeucting producer (client) with ssl scheme uri and not providing SSL certificates, will result in `SSLHandshakeException`.
+  
+  Broker log will have `Coult not accept connection: Recieved fatal alert : certiicate unkown.`.
+  
+  In order to pass the certificates to the Producer and consumer, we need to start the service passing the SSL parameters listed below.
+    - `javax.net.ssl.keyStore` - keystore the client should use
+    - `javax.net.ssl.keyStorePassword` - defines the password for keystore
+    - `javax.net.ssl.trustStore` - defines an appropriate truststore client shoud use.
+  
+ ```
+ // When starting the producer or consumer pass this values as JVM arguments.
+ 
+  -Djavax.net.ssl.keyStore=${ACTIVEMQ_HOME}/conf/client.ks \
+  -Djavax.net.ssl.keyStorePassword=password \
+  -Djavax.net.ssl.trustStore=${ACTIVEMQ_HOME}/conf/client.ts \
+
+ ```
+ 
+ ##### Creating our own SSL resources
+ 
+ ```
+ ## create a keystore
+ $ keytool -genkey -alias broker -keyalg RSA -keystore custombroker.ks
+ 
+ ## Export this certificate from the keystore, so it can be shared with the brokers clients.
+ 
+$ keytool -export -alias broker -keystore custombroker.ks -file custombroker_cert
+
+"custombroker_cert" file is the broker certificate
+
+similarly we need to create client keystore and certificate.
+ 
+ $ keytool -genkey -alias client -keyalg RSA -keystore customclient.ks
+ 
+ # Client truststore must be created and the broker certifcate must be imported into it <NOTE BELOW COMMAND IMPORT, not using EXPORT like in broker> 
+ 
+ # the broker certificate will be used to create the trust store.
+ $ keytool -import -alias broker -keystore customclient.ts -file custombroker_cert
+ ```
+ 
+ Different ways to use this files to start the broker
+ ``
+  1. Replace the existing keystore and truststore under ${ACTIVEMQ_HOME}/conf and restart the broker as $ /bin/activemq console
+  
+  2. Copy the stores and ceritficate to ${ACTIVEMQ_HOME}/conf and pass the certificate as input when starting the broker as
+     $ /bin/activemq console  \
+     -Djavax.net.ssl.keystore=${ACTIVEMQ_HOME}/conf/custombroker.ks \
+     -Djavax.net.ssl.keystore=password-provided-when-creating-keystore.
+     
+  3. configuring sslContext in the activeMq.xml.
+      <broker xmlns="http://activemq.apache.org/schema/core"  brokerName="localhost" dataDirectory="${activemq.base}/data">
+	<sslContext>
+	<sslContext keyStore="file:${activemq.base}/conf/custombroker.ks"
+	keyStorePassword="password-used-when-creating-keystore"/>	
+	</sslContext>
+	<transportConnectors>
+            <transportConnector name="ssl" uri="ssl://localhost:61617" />
+	</transportConnectors>
+	</broker>
+	
+     Start the activemq $ /bin/activemq console
+ ```
