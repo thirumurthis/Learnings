@@ -688,5 +688,70 @@ Note:
    - used by application to launch an `embedded broker` and connect to it.
    - in VM connector no network connection are created between clients and embedded broker. Communication is performed thorugh direct method invocation of broker objects.
    - no network stack, performance is improved significantly.
-   - all subsequent VM transport connector from the same VM will connet to the same broker.
+   - all subsequent VM transport connector from the same VM will connect to the same broker.
+   - embedded broker doesn't lack any standard ActiveMq features.
+   - When all the client that use VM transport to the broker close their connection, the broker will automatically shut down.
+   
+   URI Syntax:
+   ```
+   vm://brokerName?key=value
+   
+   // brokerName plays important role in VM transport connector URI which uniquely identifies the broker.
+   // two different embedded brokers created by specifying different broker names.
+```
+  - Transport options are set using query prt of the URI.
+  - These options are used to configure the broker.
+  - option or query name prefixed with `broker` is used to tune the broker.
+ ```
+ vm://embeddedbroker1?marshal=false&broker.persistent=false
  
+ // above example starts the broker with the persistent disabled.
+ ```
+    
+Alernative URI syntax for VM connector
+```
+vm:broker:(transportURI,network:networkURI)/brokerName?key=value
+
+Example:
+  vm:broker:(tcp://localhost:6000)?brokerName=embeddedbroker&persistent=false
+   
+   // created a embedded borker named embeddedbroker, with tcp connector on port 6000 and persistence disabled.
+ ```
+
+So referring the above VM connector example, the embedded broker exposes tcp and client with the same JVM will connect using VM connector.
+
+Java application outside will connect using tcp connector. Refer the representation below.
+
+![image](https://user-images.githubusercontent.com/6425536/81521315-a15e9b80-92fb-11ea-81e3-c4cc7b732111.png)
+
+
+##### Embedded broker with external configuration file
+  - using transport option (query) `brokerconfig`
+```
+vm://localhost?brokerConfig=xbean:activemq.xml
+
+// the activemq.xml file should be within the classpath, which will be identified using xbean: protocol.
+
+// this provides the capablity to configure the embeddedbroker like the standalone ActiveMQ broker.
+```
+
+Sample code:
+  - Where the publisher/producer will start the embedded broker without the need to start extenrally.
+  
+```java
+ private static transient ConnectionFactory factory;
+    private transient Connection connection;
+    private transient Session session;
+    private transient MessageProducer producer;
+   
+    factory = new ActiveMQConnectionFactory("vm://localhost");
+    connection = factory.createConnection();
+    connection.start();
+    session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+    producer = session.createProducer(null);
+   
+```
+   - Embedded broker are suited when one java application needs a single broker
+   - when many java application uses embedded broker it creates maintenance problem when trying to consitently configure each broker. In this case create a small cluster of standalone broker.
+   
+   
