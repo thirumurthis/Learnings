@@ -993,16 +993,10 @@ ______________                                  ______________
  
  ```
  
- The configuration xml for the ActiveMq instance is started with 
- ` $ /bin/activemq console xbean:src/main/resource/activemq-multi.xml
+###### Example scneario where the peer connector can be used.
  ```
- // store this in activemq-multi.xml (other content similar to default activemq.xml
- 
-  <networkConnectors>
-          <networkConnector name="default-nc" uri="multicast://default"/>  
-      </networkConnectors>
+Consider an application that resides on the laptop of a field sales representative who often disconnects from the company network but still needs the application to run successfully in a disconnected mode. 
+This is a common scenario where the client application needs to continue working regardless of whether the network is available. This is a case where the peer protocol can be utilized for an embedded broker to allow the application on the laptop to keep running successfully. 
 
-      <transportConnectors>
-          <transportConnector name="openwire" uri="tcp://localhost:61616" discoveryUri="multicast://default"/>
-      </transportConnectors>
- ```
+In reality, while in disconnected mode, the application is simply sending messages to the local broker, where they’re queued up to be sent at a later time when the network is available again. The sales rep can still log client calls, visits, and so on while the laptop is disconnected from the network. When the laptop is again connected to the network, all of the queued messages will be sent along based on the demand from consuming clients.
+```
