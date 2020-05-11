@@ -498,3 +498,34 @@ Syntax of NIO connector (same as the TCP only the scheme and port changes)
 ![image](https://user-images.githubusercontent.com/6425536/81514098-ed9ce200-92e1-11ea-9d4a-3fe29b91b42d.png)
 
 
+#### UDP vs TCP
+
+`User Datagram Protocol (UDP)` along with `TCP` make up the core of internet protocols.
+The purpose of these two protocols is identical to send and receive data packets
+(datagrams) over the network. 
+
+Two main differences between them:
+
+  - _`TCP is a stream-oriented protocol`_, which means that the `order of data packets is guaranteed`. There’s no chance for data packets to be duplicated or arrive out of order. _`UDP, on the other hand, doesn’t guarantee packet ordering`_, so a receiver can expect data packets to be duplicated or arrive out of order.
+
+  - _`TCP also guarantees reliability of packet delivery`_, meaning that packets won’t be lost during the transport. This is ensured by maintaining an active connection between the sender and receiver. On the contrary, _`UDP is a connectionless protocol`_, so it can’t make such guarantees.
+  
+  Syntax example:
+  ```
+   udp://hostname:port?key=value
+  ```
+  
+  Warnings:
+  
+When should you use the UDP transport instead of the TCP transport? 
+ 
+Two such situations where the UDP transport offers an advantage:
+    - The broker is located behind a firewall that you don’t control and you can access it only over UDP ports.
+	- when using time-sensitive messages and you want to eliminate network transport delay as much as possible.
+	
+ Pitfalls regarding the UDP connector:
+    
+  - Since UDP is unreliable, end up losing some of the messages, application should know how to deal with this situation.
+  - Network packets transmitted between clients and brokers aren't just messages, but can also contain so-called control commands. If some of these `control commands` are lost due to UDP unreliability, the JMS connection could be endangered.
+  
+  
