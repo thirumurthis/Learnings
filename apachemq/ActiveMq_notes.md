@@ -754,4 +754,40 @@ Sample code:
    - Embedded broker are suited when one java application needs a single broker
    - when many java application uses embedded broker it creates maintenance problem when trying to consitently configure each broker. In this case create a small cluster of standalone broker.
    
+
+##### How to make the ActiveMQ broker highly available and highly scalable?
+   - This can be achieved using `network of brokers`
+   - A network of brokers creates a cluster composed of multiple ActiveMQ isntances which are interconneted to meet more advanced scenarios.
    
+   - Network connctors are channels that are configured between brokers so that those brokers can communicate with each other.
+   - The `Network connector is` __`unidirectional`__ `channel by default`.
+        - A given broker communincates in one direction by only forwarding messages it recives to the brokers on the other side. This setup is referred as __`forwarding bridge`__.
+   - The network connector can also be set in `bidirectinal communication`.
+        - A bidirectional channel between brokers - a channel that communitcates not only outward to the broker on the other side of the connection, but also recived message from other brokers on the same channel.
+        - This is referred to as __`duplex connector`__.
+
+Represenation of complex network of browkers:
+
+![image](https://user-images.githubusercontent.com/6425536/81525469-aa566980-9309-11ea-8d7b-f2f949b3784f.png)
+
+###### How to configure network connectors?
+   - The same way we do for transport connectors, using the config/activemq.xml file.
+   - Example configuration:
+   ```
+    <networkConnectors>
+       <networkConnector name="default-nc" uri="multicast://default" />
+    </networkConnectors>
+   ```
+   - __`discovery`__ - is a process of detecting remote broker services.
+       - client usually want to discover all available brokers.
+       - Brokers, usually want to find other avialable brokers so they can establish a network of brokers.
+       - when we have the exact network address of each broker, then it is easy to configure the network statically and also connect client to predefined broker URIs. This is seen inr production, total control of all resources.
+       
+       - What happens if the client and broker don't know each other's network address, there must be some kind of discovery mechanism to dynamically locate the avilable brokers. This setup is often found in development environment, easy to setup & maintain.
+       - The IP mutlicast is used by brokers to advertise their service and locate other avialable brokers using the multicast connector.
+       - Clients use the `multicast connector` to discover brokers using a `discovery connectors`.
+       - `peer connector` makes creating network of embedded brokers very simple.
+       - `fanout connector` enables client to send messages to multiple brokers.
+    
+    
+
