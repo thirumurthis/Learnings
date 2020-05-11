@@ -1000,3 +1000,37 @@ This is a common scenario where the client application needs to continue working
 
 In reality, while in disconnected mode, the application is simply sending messages to the local broker, where they’re queued up to be sent at a later time when the network is available again. The sales rep can still log client calls, visits, and so on while the laptop is disconnected from the network. When the laptop is again connected to the network, all of the queued messages will be sent along based on the demand from consuming clients.
 ```
+#### Fanout connector
+   - utility connector used by clients to simultaneously connect to multiple brokers and replicate operations to those brokers.
+   
+URI syntax:
+```
+fanout:(fanoutURI)?key=value
+
+Example:
+
+fanout:(static:(tcp://host1:61616,tcp://host2:61616,tcp://host3:61616))
+// in above case client will try to connect to three brokers statically
+
+// Above example can also be accomplished simply as below URI:
+
+fanout:(multicast://default)
+// This assumes that brokers are configured to use multi cast to advertise their transport connectors.
+```
+  - By default `fanout connector` will wait until it connects to at least two brokers and won't replicate command to queues (only topics)
+  - The default behavior can be configured using transport options.
+  - This is not recommended for consuming messages.
+  - Its only purpose is to produce messages to multiple brokers.
+  - Recommended fanout protocol for publishing messages to multiple non-connected brokers. If broker in same network of brokers, it's likely that certain consumer will receive duplicate messages.
+  
+  
+  |Protocol | Description |
+  |--------|-------------|
+  | static| used with known addresses|
+  | failover| provides reconnection logic for clients to connect to single or network of brokers|
+  | multicast| defining dynamic networks of broker |
+  | discovery | used by clients to connect to dynamic network of brokers|
+  | peer | used to connect to multiple embedded brokers|
+  | fanout| used to produce message to multiple non-connected brokers|
+  
+  
