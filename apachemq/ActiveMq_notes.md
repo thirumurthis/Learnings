@@ -449,9 +449,52 @@ The URI used above can be different for different protocols.
 |Protocol | Description
 |--------|-------------|
 |TCP| Default network protocol|
-|NIO| Provide better scalability for connection from producer and consumer to the broker|
+|NIO (New I/O API protocol)| Provide better scalability for connection from producer and consumer to the broker|
 |UDP| Consider UPD protocol when need to deal with firewall between clients and broker.
 |SSL| SSL when wanted to secure communication between clients and broker.
 HTTP(S)| When wanted to deal with firewall between clients and broker.
 |VM| This is not a network protocal per se, VM protocal is used when broker and clients communicate with a broker that is embedded in same JVM.
+
+TCP connectors:
+ - Before exchanging messages over the network, it needs to serialized to a suitable form. 
+ - Messages must be serialized in and out of a byte sequence to be sent over the wire using what’s known as a `wire protocol`. The default wire protocol used in ActiveMQ is called `OpenWire`.
+ - `OpenWire` isn't specific to TCP network standards.
+ - TCP syntax,
+    `tcp://hostname:port?key=value&key=value` -> query part (key=value) is optional.
+
+```
+<transportConnetors>
+   <transportConnector name="tcp" uri="tcp://localhost:61616?trace=true"/>
+</transportConnetors>
+   
+```
+
+Like trace=true, TCP connector has many query properties, refer the documentation.
+
+ _Note: After modifying the config/activemq.xml, the ActiveMQ needs to be restarted_
+ 
+ `New I/O API protocol (NIO)`:
+   - an alternative apporach to network progreamming to access to some low-level I/O operations of modern operating system.
+   - Prominant feature of NIO are `selectors` and `non-blocking` I/O programming. Allowing developers to use the same resource to handle more network clients and heavier loads on servers.
+   - NIO transport connector is same as TCP, only underlying implementation in NIO is performed using NIO API.
+   
+When to use NIO Connector?
+   - when large number of clients want to connect to the broker.
+      - Number of clients that can connect to a broker is limited by the number of threads supported by the OS, since NIO connector implementation starts few threads per client than the TCP connector we can use NIO when TCP doesn't meet the needs.
+   - when there is a heavy network traffic to the broker.
+      - Better performance (uses less resources on broker side)
+ 
+Syntax of NIO connector (same as the TCP only the scheme and port changes)
+ 
+ ```
+ <transportConnectors>
+    <transportConnector name="tcp" uri="tcp://localhost:61616?trace=true">
+    <transportConnector name="nio" uri="nio://localhost:61618?trace=true">
+ </transportConnectors>
+ ```
+ 
+ Producer can be using the NIO, the consumer can use TCP connector as depicted in the below image.
+
+![image](https://user-images.githubusercontent.com/6425536/81514098-ed9ce200-92e1-11ea-9d4a-3fe29b91b42d.png)
+
 
