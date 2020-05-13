@@ -762,7 +762,7 @@ Sample code:
    - Network connctors are channels that are configured between brokers so that those brokers can communicate with each other.
    - The `Network connector is` __`unidirectional`__ `channel by default`.
         - A given broker communincates in one direction by only forwarding messages it recives to the brokers on the other side. This setup is referred as __`forwarding bridge`__.
-   - The network connector can also be set in `bidirectinal communication`.
+   - The network connector can also be set in `bidirectional communication`.
         - A bidirectional channel between brokers - a channel that communitcates not only outward to the broker on the other side of the connection, but also recived message from other brokers on the same channel.
         - This is referred to as __`duplex connector`__.
 
