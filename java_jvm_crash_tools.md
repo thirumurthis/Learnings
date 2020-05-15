@@ -1,3 +1,24 @@
+
+```java
+public class Crash{
+
+final sstatic Unsafe UNSAFE = getUnsafe();
+
+public static void chrash(int x){
+  UNSAFE.putInt(0x99,x);
+}
+
+public static void main(String argd []){
+  crash(0x42);
+}
+
+}
+
+```
+
+
+
+
 ![image](https://user-images.githubusercontent.com/6425536/82088091-fc9ae000-96a5-11ea-96a9-6fd0bfc8a3dc.png)
 
 
