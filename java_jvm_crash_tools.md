@@ -5,7 +5,7 @@ public class Crash{
 final sstatic Unsafe UNSAFE = getUnsafe();
 
 public static void chrash(int x){
-  UNSAFE.putInt(0x99,x);
+  UNSAFE.putInt(0x99,x); // address 99 is not accessible which crash the program
 }
 
 public static void main(String argd []){
@@ -16,6 +16,28 @@ public static void main(String argd []){
 
 ```
 
+```java
+  public class Crashint{
+  
+  int[] a = new int[1];
+  
+  final static Unsafe UNSAGE = getUnsafe();
+  
+  public int crash(){
+   retrun a.length();
+   }
+   
+   public static void main(String [] args){
+      ChrashInt c = new CrashInt();
+      // writing the value this crash 
+      Unsafe.putLong(c,12L , 0xbadbabe);
+      c.crash();
+    }
+  }
+```
+`
+$ javap -c class-name-with-package-name
+`
 
 
 
