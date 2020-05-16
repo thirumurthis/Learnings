@@ -110,6 +110,11 @@ In this case there will be replay_pid file.
 
 ![image](https://user-images.githubusercontent.com/6425536/82088091-fc9ae000-96a5-11ea-96a9-6fd0bfc8a3dc.png)
 
+
+##### out of memory
+![image](https://user-images.githubusercontent.com/6425536/82108797-2247d980-96e6-11ea-9218-24f0cbd70898.png)
+
+
 [oracle ref-1](https://www.oracle.com/technetwork/java/javase/felog-138657.html)
 
 [Oracle ref-2](https://docs.oracle.com/cd/E13150_01/jrockit_jvm/jrockit/geninfo/diagnos/dumpfile.html)
