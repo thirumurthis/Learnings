@@ -28,11 +28,11 @@ Below is the depiction of using `Router (layer 3)` connection between two networ
      - 2. `NAT`
      - 3. `host-only`
      
-`Bridge connection`
-    - The VM directly connect to the physical network through host machine physcial NIC.
-    - From the below representation, the host machine's physical NIC acts as a `bridge` for the three VMs to the physcial network.
-    - Just like any host and physcial computer, `the VM's obtain IP address infromaton from `__`DHCP`__` server on the physical network`. (DHCP server will be within the router itself).
-    - When VM's connected using `bridge network mode`, the VM's appears to other nodes as just another computer/host on the network.
+__`Bridge connection`__
+ - The VM directly connect to the physical network through host machine physcial NIC.
+ - From the below representation, the host machine's physical NIC acts as a `bridge` for the three VMs to the physcial network.
+ - Just like any host and physcial computer, `the VM's obtain IP address infromaton from `__`DHCP`__` server on the physical network`. (DHCP server will be within the router itself).
+ - When VM's connected using `bridge network mode`, the VM's appears to other nodes as just another computer/host on the network.
 
 Representation of the connection to physical network.    
 ![image](https://user-images.githubusercontent.com/6425536/82129844-c1b6ac00-977a-11ea-98f9-42471f5244e3.png)
