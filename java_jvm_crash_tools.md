@@ -145,32 +145,32 @@ Below image, the GC process is not able to free up Old gen memory space. This me
 
 ![image](https://user-images.githubusercontent.com/6425536/82109410-6fc64580-96ea-11ea-965e-5c1e5486e02e.png)
 
- Full GC's check the GC log for back to back full GC's.
+Full GC's check the GC log for back to back full GC's.
    
- GC logs showing long pauses, represented in the below image. in below case, it takes 50 sec for GC.
+GC logs showing long pauses, represented in the below image. in below case, it takes 50 sec for GC.
  
- ![image](https://user-images.githubusercontent.com/6425536/82109470-f4b15f00-96ea-11ea-8080-5ddf9723667a.png)
+![image](https://user-images.githubusercontent.com/6425536/82109470-f4b15f00-96ea-11ea-8080-5ddf9723667a.png)
   
-   -__`Heap dump`__
-      - How to collect Heap dump?
-         - use `-XX:+HeapDumpOnOutOfMemoryError` option when starting the java application.
-         - Other tools like `jcmd <pid/mainclass> GC.head_dump dump.dmp`
-         - `jmap -dump:format=b,file=snapshot.jmap <pid>`
-         - Jconsole, usign MBean Hotspot diagnostic
-         - Java Mission Control Hotspot diagnostics or MBean Diagnosticcommands
-      - `parallel collector` can continuously collects or reclaim space in heap space, though returns are minimal. In this case we can instruct GC not to put much effort where gain is minimum. `parallel collector` delays application restart on its own.
-          - We can set time limit, `-XX:GCTimeLimit` and `-XX:GCHeapFreeLimit`
-          - `-XX:GCTimeLimit` => sets upper limit in amount of time the GC can spend in % of time (default value is 98%) Decreasing this value will reduce the time spent in GC.
-          -`-XX:GCHeapFreeLimit` => sets a lower limit on amount of space that should be free after the GC operation, percentation of maximum heap. default 2%.  (increasing value means more heap space will be reclaimed during GC operation)
-          - Adjusting the two options prevents back-to-back full GCs.
+ -__`Heap dump`__
+  - How to collect Heap dump?
+     - use `-XX:+HeapDumpOnOutOfMemoryError` option when starting the java application.
+     - Other tools like `jcmd <pid/mainclass> GC.head_dump dump.dmp`
+        - `jmap -dump:format=b,file=snapshot.jmap <pid>`
+        - Jconsole, usign MBean Hotspot diagnostic
+        - Java Mission Control Hotspot diagnostics or MBean Diagnosticcommands
+     - `parallel collector` can continuously collects or reclaim space in heap space, though returns are minimal. In this case we can instruct GC not to put much effort where gain is minimum. `parallel collector` delays application restart on its own.
+        - We can set time limit, `-XX:GCTimeLimit` and `-XX:GCHeapFreeLimit`
+            - `-XX:GCTimeLimit` => sets upper limit in amount of time the GC can spend in % of time (default value is 98%) Decreasing this value will reduce the time spent in GC.
+            -`-XX:GCHeapFreeLimit` => sets a lower limit on amount of space that should be free after the GC operation, percentation of maximum heap. default 2%.  (increasing value means more heap space will be reclaimed during GC operation)
+            - Adjusting the two options prevents back-to-back full GCs.
               
   - __`Heap Histogram`__ ( gives object in the heap)
-     - How to collect it?
-       - `-XX:+PrintClassHistogram` option when starting the java process and SIGQUIT on Posix platform, SIGBREAK on windows 
-       - `jcmd <process id/mainclass> GC.class_histogram  filename=histofile`
-       - `jmap -histo pid`
-       - `jhsdb jmap` (option on java 9)
-       - `java Mission Control`
+    - How to collect it?
+     - `-XX:+PrintClassHistogram` option when starting the java process and SIGQUIT on Posix platform, SIGBREAK on windows 
+     - `jcmd <process id/mainclass> GC.class_histogram  filename=histofile`
+     - `jmap -histo pid`
+     - `jhsdb jmap` (option on java 9)
+     - `java Mission Control`
   
 ![image](https://user-images.githubusercontent.com/6425536/82108797-2247d980-96e6-11ea-9218-24f0cbd70898.png)
 
