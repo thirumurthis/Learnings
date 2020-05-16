@@ -231,7 +231,11 @@ The out of memory in this case is due to CCS. There is no room to load more clas
 
 ##### Out of memory for Native memory
 
-Tools to use for Native memory (out of memory error)
+ - This out of memory issue is because JVM not able to allocate from native memory
+ - The out of memory might due to other process on the system utilizing the memory.
+ - Basically the JVM cannot make room for more native heap, possible fix would be to reduce the Java Heap, Metasapce, number of threads and/or their stck sized. Reducing the number of process running at that time.
+
+Tools to use for Native memory (out of memory error) kind of 
   - possible this might be within the JVM
   - Else might be out side the JVM
   
@@ -239,16 +243,15 @@ Tools to use for Native memory (out of memory error)
 
 Platform related tool like pmap, libumen, valgrid (outside java)
 
-#### Native Memory tracker :
+How to collect the data and analyse it
+#### Native Memory tracker tool
    - is internal to the JVM, it can only track memory allocated by the JVM. (used internally by JVM)
    - It cann't track memory outside the JVM or by native libraries
   
   How to collect info?
-  Start the java process for this with `-XX:NativeMemoryTracking=summary` or `-XX:NativeMemoryTracking=detail`, the output level is summary or details.
-   
- Once started with that flag, then we can use the `jcmd <pid> VM.native_memory` to get the native memory usage detail.
-   
- This command outputs, the memroy usage of different component with the JVM like heap, compilerspace, etc. 
+  - Start the java process for this with `-XX:NativeMemoryTracking=summary` or `-XX:NativeMemoryTracking=detail`, the output level is summary or details.
+  - Once started with that flag, then we can use the `jcmd <pid> VM.native_memory` to get the native memory usage detail.
+  - This command outputs, the memroy usage of different component with the JVM like heap, compilerspace, etc. 
    
  Gives an idea of which area is growing more memory.
    
@@ -258,6 +261,7 @@ Platform related tool like pmap, libumen, valgrid (outside java)
    
 `Explicit GC invocations is also a case of memory leak.`
    
+-----------
 
 [oracle ref-1](https://www.oracle.com/technetwork/java/javase/felog-138657.html)
 
