@@ -2,7 +2,7 @@
 ```java
 public class Crash{
 
-final sstatic Unsafe UNSAFE = getUnsafe();
+final static Unsafe UNSAFE = getUnsafe();
 
 public static void chrash(int x){
   UNSAFE.putInt(0x99,x); // address 99 is not accessible which crash the program
@@ -72,7 +72,6 @@ $ java --add-modules jdk.hotspot.agent --add-exports .. <class name> <java-locat
 There should be only one represenation of CPP class represenation of JAVA in the heap.
 ```
 
-
 ##### hs_err_pid .log `internal exception` provides the last 10 exception event occured before vm crashed.
 
 ```java
@@ -110,8 +109,9 @@ In this case there will be replay_pid file.
 
 ![image](https://user-images.githubusercontent.com/6425536/82088091-fc9ae000-96a5-11ea-96a9-6fd0bfc8a3dc.png)
 
-
-##### out of memory
+------------------------
+------------------------
+### out of memory
 
   - Long GC pauses
   - Excessive GC 
@@ -134,73 +134,75 @@ If `not` able to connect to the running process,
    - Recommendation is to set this value same as `-Xms` which sets the initial heap size.
    
 Diagnoising the Heap :
-   - GC logs
-         - GC logs tells us about `Excessive GCs` and `Long GC pauses`
-         - How to collect?
-              - Java 9 :  G1: -Xlog:gc*, gc+phases=debug:file=garbagecollect.log
-                          Non-G1: -Xlog:gc*:file=garbagecollect.log
-              - older java:  -XX:+PrintGCDetails, -XX:+PrintGCTimeStamps, -XX:+PrintGCDateStamps, -Xloggc:<garbagecollect log file name>
+  - GC logs
+    - GC logs tells us about `Excessive GCs` and `Long GC pauses`
+      - How to collect?
+         - Java 9 :  G1: -Xlog:gc*, gc+phases=debug:file=garbagecollect.log
+                     Non-G1: -Xlog:gc*:file=garbagecollect.log
+         - older java:  -XX:+PrintGCDetails, -XX:+PrintGCTimeStamps, -XX:+PrintGCDateStamps, -Xloggc:<garbagecollect log file name>
    
-   Below image, the GC process is not able to free up Old gen memory space. This means the old gen memory size is not sufficient to hold the data at runtime.
-  ![image](https://user-images.githubusercontent.com/6425536/82109410-6fc64580-96ea-11ea-965e-5c1e5486e02e.png)
+Below image, the GC process is not able to free up Old gen memory space. This means the old gen memory size is not sufficient to hold the data at runtime.
 
-   Full GC's check the GC log for back to back full GC's.
+![image](https://user-images.githubusercontent.com/6425536/82109410-6fc64580-96ea-11ea-965e-5c1e5486e02e.png)
+
+ Full GC's check the GC log for back to back full GC's.
    
-   GC logs showing long pauses, represented in the below image. in below case, it takes 50 sec for GC.
-   ![image](https://user-images.githubusercontent.com/6425536/82109470-f4b15f00-96ea-11ea-8080-5ddf9723667a.png)
+ GC logs showing long pauses, represented in the below image. in below case, it takes 50 sec for GC.
+ 
+ ![image](https://user-images.githubusercontent.com/6425536/82109470-f4b15f00-96ea-11ea-8080-5ddf9723667a.png)
   
    -__`Heap dump`__
-        - How to collect Heap dump?
-           - use `-XX:+HeapDumpOnOutOfMemoryError` option when starting the java application.
-           - Other tools like `jcmd <pid/mainclass> GC.head_dump dump.dmp`
-           - `jmap -dump:format=b,file=snapshot.jmap <pid>`
-           - Jconsole, usign MBean Hotspot diagnostic
-           - Java Mission Control Hotspot diagnostics or MBean Diagnosticcommands
-        - `parallel collector` can continuously collects or reclaim space in heap space, though returns are minimal. In this case we can instruct GC not to put much effort where gain is minimum. `parallel collector` delays application restart on its own.
-            - We can set time limit, `-XX:GCTimeLimit` and `-XX:GCHeapFreeLimit`
-            - `-XX:GCTimeLimit` => sets upper limit in amount of time the GC can spend in % of time (default value is 98%) Decreasing this value will reduce the time spent in GC.
-              -`-XX:GCHeapFreeLimit` => sets a lower limit on amount of space that should be free after the GC operation, percentation of maximum heap. default 2%.  (increasing value means more heap space will be reclaimed during GC operation)
-              - Adjusting the two options prevents back-to-back full GCs.
+      - How to collect Heap dump?
+         - use `-XX:+HeapDumpOnOutOfMemoryError` option when starting the java application.
+         - Other tools like `jcmd <pid/mainclass> GC.head_dump dump.dmp`
+         - `jmap -dump:format=b,file=snapshot.jmap <pid>`
+         - Jconsole, usign MBean Hotspot diagnostic
+         - Java Mission Control Hotspot diagnostics or MBean Diagnosticcommands
+      - `parallel collector` can continuously collects or reclaim space in heap space, though returns are minimal. In this case we can instruct GC not to put much effort where gain is minimum. `parallel collector` delays application restart on its own.
+          - We can set time limit, `-XX:GCTimeLimit` and `-XX:GCHeapFreeLimit`
+          - `-XX:GCTimeLimit` => sets upper limit in amount of time the GC can spend in % of time (default value is 98%) Decreasing this value will reduce the time spent in GC.
+          -`-XX:GCHeapFreeLimit` => sets a lower limit on amount of space that should be free after the GC operation, percentation of maximum heap. default 2%.  (increasing value means more heap space will be reclaimed during GC operation)
+          - Adjusting the two options prevents back-to-back full GCs.
               
-   - __`Heap Histogram`__ ( gives object in the heap)
-       - How to collect it?
-           - `-XX:+PrintClassHistogram` option when starting the java process and SIGQUIT on Posix platform, SIGBREAK on windows 
-           - `jcmd <process id/mainclass> GC.class_histogram  filename=histofile`
-           - `jmap -histo pid`
-           - `jhsdb jmap` (option on java 9)
-           - `java Mission Control`
+  - __`Heap Histogram`__ ( gives object in the heap)
+     - How to collect it?
+       - `-XX:+PrintClassHistogram` option when starting the java process and SIGQUIT on Posix platform, SIGBREAK on windows 
+       - `jcmd <process id/mainclass> GC.class_histogram  filename=histofile`
+       - `jmap -histo pid`
+       - `jhsdb jmap` (option on java 9)
+       - `java Mission Control`
   
 ![image](https://user-images.githubusercontent.com/6425536/82108797-2247d980-96e6-11ea-9218-24f0cbd70898.png)
 
 ##### Tools to use for Native memory (out of memory error)
+  
   - possible this might be within the JVM
+  
   - Else might be out side the JVM
+  
 ![image](https://user-images.githubusercontent.com/6425536/82108848-866a9d80-96e6-11ea-9753-7226b61a1657.png)
 
 Platform related tool like pmap, libumen, valgrid (outside java)
 
-Native Memory tracker 
-    - is internal to the JVM, it can only track memory allocated by the JVM. (used internally by JVM)
-    - It cann't track memory outside the JVM or by native libraries
-    
-   Start the java process for this with `-XX:NativeMemoryTracking=summary` or `-XX:NativeMemoryTracking=detail`, the output level is summary or details.
+Native Memory tracker :
+   - is internal to the JVM, it can only track memory allocated by the JVM. (used internally by JVM)
+   - It cann't track memory outside the JVM or by native libraries
+  
+  How to collect info?
+  Start the java process for this with `-XX:NativeMemoryTracking=summary` or `-XX:NativeMemoryTracking=detail`, the output level is summary or details.
    
-   Once started with that flag, then we can use the `jcmd <pid> VM.native_memory` to get the native memory usage detail.
-   This command outputs, the memroy usage of different component with the JVM like heap, compilerspace, etc. Gives an idea of which area is growing more memory.
+ Once started with that flag, then we can use the `jcmd <pid> VM.native_memory` to get the native memory usage detail.
    
-   The NMT output can be gathered at different stages of time like a snapshot, and compared with each other setting one as base line.
+ This command outputs, the memroy usage of different component with the JVM like heap, compilerspace, etc. 
    
-   Memory analyzer using dump, __`Eclipse MAT`__ is community tool.
+ Gives an idea of which area is growing more memory.
    
-   `Explicit GC invocations is also a case of memory leak.`
+ The NMT output can be gathered at different stages of time like a snapshot, and compared with each other setting one as base line.
    
+ Memory analyzer using dump, __`Eclipse MAT`__ is community tool.
    
+`Explicit GC invocations is also a case of memory leak.`
    
-   
-   
-    
-    
-
 
 [oracle ref-1](https://www.oracle.com/technetwork/java/javase/felog-138657.html)
 
