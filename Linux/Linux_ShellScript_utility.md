@@ -359,3 +359,31 @@ done;
 
 ```
 
+## Shell script to exeucte the a block in case of exception in another block. Catching exception and handling it, using || operator.
+```
+#!/bin/sh
+
+echo " hello"
+
+#Block without function name.
+{
+        echo "block1";
+        if [[ -z ${a} ]]; then
+                echo "test"
+                # //Below will throw exception  
+                $((ls -orps));
+        fi;
+} || {
+        echo "block2";
+}
+
+```
+ output:
+ ```
+  sh scriptFunction.sh
+ hello
+block1
+test
+scriptFunction.sh: line 9: 0: command not found
+block2 //the second block executed in case of exception.
+ ```
