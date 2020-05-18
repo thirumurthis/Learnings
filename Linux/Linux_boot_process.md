@@ -110,9 +110,10 @@ __`systemd`__
    - NOTE: `/sbin/init` points to `/lib/systemd/systemd`. systemd takes over the init process.
    
   `systemctl` command of `systemd` is used for most basic tasks.
-  Example: 
-    ```
-    ///starting and stopping nfs service
+
+Example: 
+```
+    //starting and stopping nfs service
     $ sudo systemctl start nfs.service
     $ sudo systemctl stop nfs.service
     
@@ -122,4 +123,45 @@ __`systemd`__
     $ sudo systemctl restart nfs.service
     
     Note: the .service can be ommited.
-    ```
+```
+
+filesystem
+   - conventional disk filesystems: ext2,ext3,ext4,XFS,NTFS,Btrfs,JFS
+   - Flash storage filesystems: ubifs,JFFS2,YAFFS
+   - Speical purpose: procfs,sysfs,tmpfs,squashfs,debugfs
+
+Partition is a physically contiguous section of disk.
+
+Filesystem is a method of storing/finding files on hard disk (usually in a partition). Partition is a container in which filesystem resides.
+
+|Name | windows convnetions | Linux |
+|-------|----------|------------|
+| partition | Disk | /dev/sda1|
+| filesystem type| NTFS | Ext3/4/Bfrts|
+| Mounting parameters | DriveLetter | MountPoint|
+| Base Folder |  C:\, D:\ | / |
+
+__`File Hierarchy Standard (FHS)`__
+  - Linux uses '/' characer to separate paths. (like windows doesn't have drive letter)
+  - Multiple dirves and/or partitions are mounted as directories in the single fiesystem.
+  - if user name is "user" a USB drive in FEDORA listed as /run/media/user/FEDORA.
+
+
+```
+ /
+         /boot - static files of the boot loader  
+         /dev  - device files 
+         /etc - Host specific system configuration (opt,xml directories)
+         /home - user home directories (/home/user1, /home/user2...)
+         /lib - essential shared libraries and kernel modules  
+         /media - mount point for removalbe media  
+         /mnt - mount point for a temporary mounted filesystem   
+         /opt - add-on application packages  
+         /sbin - system binaries   
+         /srv - Data for services  
+         /tmp - Temporary files  
+         /usr - multi-user utilities  application   (/usr/local -> /usr/local/bin, /usr/local/games,...)
+         /root - root user home directory
+         /proc - virtual filesystem, process status as text files
+         /var - variable files
+```
