@@ -76,9 +76,50 @@ Distros      |               |             |
               
  ```
 
-`boot loader` - boots the operating system, __`GRUB`__ and __`ISOLINUX`__.
-`service` - a program running as an background process.
-`filesystem` - `etx3`,`ext4`,`FAT`,`XFS`, `NTFS`, and `btrfs`.
-`desktop environment` - GUI on top of OS, example `GNOME`, `KDE`, `Xfce` and `Fluxbox`.
-`shell` - CLI intepreter that interprets the command input. `bash`,`tcsh`, `zsh`.
+ - `boot loader` - boots the operating system, __`GRUB`__ and __`ISOLINUX`__.
+ - `service` - a program running as an background process.
+ - `filesystem` - `etx3`,`ext4`,`FAT`,`XFS`, `NTFS`, and `btrfs`.
+ - `desktop environment` - GUI on top of OS, example `GNOME`, `KDE`, `Xfce` and `Fluxbox`.
+ - `shell` - CLI intepreter that interprets the command input. `bash`,`tcsh`, `zsh`.
 
+-------------
+
+ - once the boot loader loads both the Kernel and initial RAM-based file directly to the memory.
+ - the kernel initializes and configures the computers memory and all hardware attached to the system (all processes, I/O subsystem, storage device, etc).
+ - Kernel runs `/sbin/init`, once all hardware and mounted root filesystem is set up.
+    - The `/sbin/init` process is the initial process which then starts other processes to get the system running.
+    - The init is responsible for keeping the system running and shutting down cleanly. This manges non-kernel processes; cleans upon completion; etc.
+    
+    The init process was old conventional one (System V conventions), the newer distribution includes `systemd` and `Upstart` methods.
+    
+SysVinit was a serial process which didn't allow parallel processing.    
+Now since use of containers which require almost instantneous startup times a alternative methods are used.
+    
+- `Upstart` 
+    - Developed by Ubuntu.
+    - Adopted in Fedora 9 and in RHEL 6.
+- `systemd`
+    - Adpoted by Fedora first
+    - Adopted by RHEL 7 and SUSE
+    - This replaced Upstart in Ubuntu 16.04+.
+    
+__`systemd`__
+   - start up faster than init methods.
+   - replaced serialed set of steps with parallelization techiniques.
+   - multile service can be initiated simultatneously.
+   - NOTE: `/sbin/init` points to `/lib/systemd/systemd`. systemd takes over the init process.
+   
+  `systemctl` command of `systemd` is used for most basic tasks.
+  Example: 
+    ```
+    ///starting and stopping nfs service
+    $ sudo systemctl start nfs.service
+    $ sudo systemctl stop nfs.service
+    
+    /// Enable/ disable system service from starting up at system boot
+    $ sudo systemctl enable nfs.service
+    $ sudo systemctl disable nfs.service
+    $ sudo systemctl restart nfs.service
+    
+    Note: the .service can be ommited.
+    ```
