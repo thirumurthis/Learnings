@@ -165,3 +165,14 @@ __`File Hierarchy Standard (FHS)`__
          /proc - virtual filesystem, process status as text files
          /var - variable files
 ```
+
+##### Choosing distribution:
+Which one to choose Server or desktop version?
+
+ `Server` => RHEL/CentOs, Ubuntu Server, SLES, Debian.
+ `Desktop` => Ubuntu, Fedora, Linux Mint, Debian.
+ `Embedded` => Yocto, Open Embedded, Android.
+ 
+ Hardware - x86, ARM, PPC.
+ 
+ 
