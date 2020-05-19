@@ -55,6 +55,10 @@ Linux Boot process Steps:
    - `init` starts a number of text mode login prompts, at end of the boot process. This will be text mode or GUI prompt for user name and password.
       
  ------------------
+ ##### Advanced security frameworks:
+   - `SELinux` in Red Hat-based systems.
+   - `AppArmor` in Ubuntu.
+ -------------------
  `Kernel` - makes the interaction between the Hardware and the application possible.
  Version [Linux Kernel](kernel.org)
  
