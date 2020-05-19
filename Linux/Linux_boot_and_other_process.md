@@ -295,3 +295,312 @@ __`mtr`__ :
   $ sudo mtr --report-cycles 3 8.8.8.8
   -- 8.8.8.8 google dns server
   ```
+
+##### syntax and special character used in shell scripts
+
+| char | descrption |
+|-------|-----------|
+| # | used to add comment, except when used `\#` or `#!` |
+| \ | used ad the end of the line to indicate continuation on the next line |
+| ; | used to interpret, what follows as a new commend (delimiter) |
+| $ | Indicates what follows is an environment variable |
+| > | redirect ouput |
+| >> | append output |
+| < | redirect input |
+| | | pipe the result into next command| 
+
+
+Splitting long command
+```
+$ echo hello \
+> this \
+> is test 
+
+hello this is test
+```
+
+|command | description |
+| ----- | ----- |
+| `$ echo one; echo two; echo three` | executed one after other, even if the preciding command fails.|
+|`$ echo one && test 1 == 2 && echo three` | executes the following command only when the preceding command is successful |
+| `$ echo one && test 1 == 3 && echo three` | same as above, if want to abort subsequent command when an earlier one fails.?|
+| `$ test 2==1 || echo 2 || echo 3` | Procceds until something succeeds and then stop executing any furtehr steps |
+
+
+### How to display the list of bash shell commands? Answer is `$ help`.
+
+##### shell parameters and arguments 
+
+`$ myshell.sh 1 2 3` 
+
+| parameter | description |
+| --- | ---- |
+| $0 | script name |
+| $1 | first parameter|
+| $2| second parameter |
+| $* | All parameter |
+|$# | number of arguments |
+
+
+### Command Substitution:
+
+To substitute the result of a command as portion of another command.
+ - `$( )` 
+ - (\`) - this is deprecatd in new scripts.
+ 
+```
+$ ls -lrt /lib/modules/$(uname -r)/
+```
+
+### How to make the variable avialable to the child processes (sub shells)?
+```
+ export VAR=value
+ or 
+ VAR=value; export VAR;
+ 
+ ## if the child process changes the value of this variable, the parent process won't see that change.
+```
+
+### function
+```
+function_name () {
+ commands.
+ }
+```
+
+#### How to pass arguments to function?
+The first argument will be $1, second $2, ....
+
+##### `if-else`
+
+```
+if TEST-CONDITION; then COMMANDS; fi
+
+or 
+
+if condition
+then
+   statement
+else 
+   statement
+fi
+
+example:
+
+if [ -f "$1" ]; then
+  echo file "$1" exits
+else
+  echo file not exists
+fi
+
+# [] is to delineate the test condition
+```
+
+__`NOTE:`___
+  - the use of `[[ ]]` in if test condition is not an error. This avoids problem when referring to an empty environment variable without surrounding it in double quotes.
+  
+  | condition | descrption |
+  |----|-----------|
+  | -e file |check if file exists|
+  |-d file | check if file is a directory |
+  | -f file | check if the file is a regular file (not a symbolic link, device node, directory, etc. |
+  | -s file | checks if the file is of `non-zero size` |
+  | -g file | checks if the file has `sgid` set |
+  | -u file | checks if the file has `suid` set |
+  | -r file | checks if the file is readable |
+  | -w file | checks if the file is writable |
+  | -x file | checks if the file is executable|
+  
+##### Boolean Expression:
+   - && AND
+   - || OR
+   - ! NOT
+   
+  - `[ -e <filename> ]` - check if file exists
+  - `[ $num1 -gt $num2 ]` - num1 greater than num2
+  
+##### How to compare Strings?
+   - Compare string using the operator __`==`__.
+   
+   ```
+   if [ str1 == str2 ]; then 
+      echo mathced
+   fi 
+   // sample code
+   VAR=test
+   if [ "$VAR" == test ]; then 
+     echo matched
+    fi
+   ```
+ 
+ | operator | description|
+ |---------|----------|
+ | -eq | equalt to|
+ | -ne | not equal to |
+ | -gt | greater than |
+ | -lt | less than |
+ | -ge | greater than or equal to |
+ | -le | less than or equal to|
+ 
+ ### Arthiemtic Expressions:
+  - Using `expr` utilitly (this is standard but deprecated)
+     - ```expr 8 + 8 ``` 
+  - Using $(( .... )) syntax.
+     - ``` $ echo $((x+1)) ```
+  - Using the built in shell command __`let`__. 
+     - ```$ let x=( 1+3 ); echo $x ; ```
+ 
+ Note: The `expr` is replaced with `$((...))` in modern scripts.
+ 
+### String manipulation:
+
+| operator | description |
+|---|-------|
+| `[[ str1 > str2 ]]` | compares the sorting order of str1 and str2 |
+| `[[ str1 == str2 ]]` | compares the characters in str1 with str2 |
+| `length=${#str1}` | stores the lenght of str1 in the variable length |
+
+
+#### How to compare only part of string? 
+  - To extract the first `n` chars of a string use ``` ${string:0:n}``` here, 0 is the offset in the string (from which char to start with).
+  - To extract charactes in a string after a dot (.), ```${string#*.}```
+  
+```
+VAR=Sample.Text
+echo ${VAR:0:4}; # Samp
+echo ${VAR#*.}; # Text , string after the .
+```
+
+### `case` statement:
+
+```
+case expression in 
+   pattern1) execute commands;;
+   pattern2) execute commands;;
+   *)  execute default commands or nothing ;;
+esac
+
+# example:
+
+echo "input (y/n)"
+read response
+
+case "$response" in
+  "y")  echo user selected y
+  "n")  echo user selected n
+  *) echo use not selected y/n
+esac
+exit 0
+```
+
+### Looping :
+  - `for` 
+     ```
+       for variable-name in list 
+       do
+           command;
+       done;
+       
+       # example
+       val=0
+       for i in 1 2 3 4 5
+       do 
+          val=$(( $val + $i ))
+       done
+      ```
+       
+  - `while`
+      ```
+      while condition is true 
+      do 
+         commands;
+      done;
+      // codition is often enclosed with []
+      
+      i=0;
+      while [ $i < 10 ]
+      do
+        echo $i
+        i=$(($i+1))
+      done;
+      exit 0;
+      ```
+  - `until`
+     ```
+     until condition is true
+     do
+        commands;
+     done;
+     
+     # example 
+     
+     i=0;
+     until [ $i < 10 ]
+     do
+       echo $i
+       i=$(($i+1));
+     done;
+     ```
+
+### How to debug a shell script?
+  - by executing the shell using `-x` debug mode
+  - bracketing parts of the script with `set -x` and `set +x`.
+     - `set -x` => turns the debugging on
+     - `set +x` => turns the debugging off
+     
+### How to redirect errors to File and Screen ?
+
+  | file stream | description | file descriptor |
+  | -----|-------|--------|
+  |stdin| Standard input, by default the keyboard/terminal for programs run from the command line | 0 |
+  | stdout | Standard output, by default the screen for program run form the comand line | 1| 
+  | stderr | standard error, where output error messages are shown | 2|
+  
+  
+  ```
+  # using redirection, we can save teh stdot and stderr output streams to one file or two separate files for later analysis after a program executed.
+  
+  #!/bin/sh
+  val=0
+  for i in 1 2 3 4
+  do 
+    val=(($val+$i)) # intentionally not added $
+  done
+  echo $val
+  ls some!@file
+  
+  $ ./script1.sh 2> error.log
+  $ cat error.log
+  ```
+  
+  __`mktemp`__ utility (create temporary file and directory to store data for a short time.
+  
+  The data will be stored in temp file and only available to that specific program, and can be delted.
+  
+  ```TEMP=$(mktemp /tmp/tempfile.XXXXXX)``` -> create a temporary file.
+  ```TEMPDIR=$(mktemp -d /tmp/tempdir.XXXXX)``` -> create a temporary directory.
+  
+  
+ ### Discarding output with /dev/null:
+   - commands like `find` will produce voluminous amounts of output along with message if not able to access directory due to permission issue.
+   - to avoid this we can redirect the large output to a special file (device node) called `/dev/null`.
+   
+   ```
+    ls -lR /tmp > dev/null # entire std output stream is ignored, errors will appear in console.
+    
+    $ ls -lR /tmp >& /dev/null  # both stdout and stderr will be dumped to /dev/null
+   ```
+   
+### How to generate random number in shell script? using __`$RANDOM`__.
+   ```
+   $ echo $RANDOM 
+   # linux kernel build in random number generator or by the openSSL library function.
+   ```
+  -  Some servers have hardware random number generators that take as input different types of noise signals, such as thermal noise and photoelectric effect. 
+  - A transducer converts this noise into an electric signal, which is again converted into a digital number by an A-D converter. This number is considered random. However, most common computers do not contain such specialized hardware and, instead, rely on events created during booting to create the raw data needed.
+ - Regardless of which of these two sources is used, the system maintains a so-called entropy pool of these digital numbers/random bits. Random numbers are created from this entropy pool.
+  - The Linux kernel offers the `/dev/random` and `/dev/urandom` device nodes, which draw on the entropy pool to provide random numbers which are drawn from the estimated number of bits of noise in the entropy pool.
+   - `/dev/random` is used where very high quality randomness is required, such as one-time pad or key generation, but it is relatively slow to provide values. /dev/urandom is faster and suitable (good enough) for most cryptographic purposes.
+   - Furthermore, when the entropy pool is empty, /dev/random is blocked and does not generate any number until additional environmental noise (network traffic, mouse movement, etc.) is gathered, whereas /dev/urandom reuses the internal pool to produce more pseudo-random bits.
+   
+   
