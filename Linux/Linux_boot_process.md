@@ -6,7 +6,7 @@ Linux Boot process Steps:
   - Boot Loader (example: GRUB)
   - Kerner (Linux OS)
   - Initial RAM disk (initramfs image)
-  - /sbin/init (parent process)
+  - `/sbin/init` (parent process)
   - Command shell (using getty)
   - X Window System (GUI)
   
@@ -179,4 +179,18 @@ Which one to choose Server or desktop version?
  
  Hardware - x86, ARM, PPC.
  
+--------------
+
+##### GUI
+ - Linux machine use X Windows system, simply called as X.
+ - X is a old software, and recently `Wayland` a newer system is superseding it as a default display in Fedora, RHEL 8.
  
+`X` 
+  - A desktop environment consits of a session manager.
+  - The session manager starts and maintains the components of graphical session, wndows manger and utilities.
+  
+  Even if the display manager is not started by default runlevel, it can be started in different way after logging on to the text mode in console.
+     - By running `startx` from the command line. (or display managers `gdm`, `lightdm`, `kdm`, `xdm`)
+     - The default display mangeer for `GNOME` is called `gdm`. (lightdm is used in ubuntu before 18.04)
+     
+     
