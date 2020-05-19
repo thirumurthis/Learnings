@@ -281,5 +281,17 @@ $ curl -o page.html https://<somesite>.com
 # output stored on page.html
 ```
 
+__`ssh`__:
+ - `ssh system-name`
+ - `ssh -l user1 systemname` - to login as some user
+ - `ssh system-name command` - to run a command on remote machine.
 
-
+__`scp`__ (secure copy):
+  - `scp <localfile> <user@remotesystem>:/home/username/`
+  
+__`mtr`__ :
+  - enhanced version of traceroute
+  ```
+  $ sudo mtr --report-cycles 3 8.8.8.8
+  -- 8.8.8.8 google dns server
+  ```
