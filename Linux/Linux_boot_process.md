@@ -256,6 +256,30 @@ $ route -n
 | mtr | combines funtionality of ping and traceroute to continuously update display|
 |dig| Test DNS working status. Replacement for host and nslookup.|
 
+##### Browser:
+ - Graphical
+    - Firefox, Chrome, Konqueror
+ - Non-Graphical
+     - Lynx (text-based web browser), 
+     - ELinks (based on lynx, displays tables and frames), 
+     - w3m (text-based web browser)
+   
+__`wget`__ : To download files and information from CLI.
+  - Large file downloads
+  - Recursive downloads (web page referring another web page etc)
+  - password required downloads
+```
+# example
+$ wget <url>
+```
+
+__`curl`__: Obtains information about a URL, such as the source code being used.
+```
+$ curl <url>
+
+$ curl -o page.html https://<somesite>.com
+# output stored on page.html
+```
 
 
 
