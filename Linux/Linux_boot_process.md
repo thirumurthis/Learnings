@@ -192,5 +192,70 @@ Which one to choose Server or desktop version?
   Even if the display manager is not started by default runlevel, it can be started in different way after logging on to the text mode in console.
      - By running `startx` from the command line. (or display managers `gdm`, `lightdm`, `kdm`, `xdm`)
      - The default display mangeer for `GNOME` is called `gdm`. (lightdm is used in ubuntu before 18.04)
+     - __`gnome-tweak-tool`__ or __`gnome-tweak`__ use Alt - F2 and type the name to customize the options.
      
-     
+------------
+#### Networking
+   - DNS and Name resolving in Ubuntu, config file to display the host information
+      - `$ cat /etc/hosts`
+      - `$ cat /etc/resolv.conf`
+   - Commands to resolve name,
+      - `$ host google.com`
+      - `$ dig google.com`
+      - `$ nslookup google.com`
+
+##### Network configuration files:
+   - The network files are located under `/etc`.
+      - `/etc/network` - for Debian family. 
+      - `/etc/sysconfig/network` - for Fedora, SUSE family.
+   - low level utility __`nmtui`__ and __`nmcli`__ doesn't change much in any of the Linux distro.   
+   
+###### Network interface:
+  - connecting channel between a device and network.
+  - Physically, network interface proceed through a network interface card(NIC). It can be implemented as software code.
+  - Information about particular or all network interface can be displayed by `ip` and `ifconfig` utlities.  (`/sbin/ifconfig`). `ip` (`/sbin/ip`) command is newer one.
+  - Some distro, doesn't install net-tools package, in that case install them manually.
+  
+```
+# usage to display ip address
+$ /sbin/ip addr show
+
+# usage to display route information
+$ /sbin/ip route show
+```
+
+##### route
+  - data moves from source to destination by passing thorough series of routers and networks.
+  - The ip routing protocols enable routers to build up a forwarding table that correlates final destination with the next hop address.
+
+```
+# newer with the ip aommand.
+$ ip route
+
+$ route -n 
+```
+
+| Description | command |
+|----|---|
+| Display current routing table | `$ route -n` or `$ ip route` |
+| Add static route |  `$ route add -net address` or `$ ip route add` |
+| delete static route | `$ route del -net address` or `$ ip route del` |
+
+`traceroute` - utility used to inspect the route which the data packet takes to reach teh desitnation host. Used to troubleshoot network delays.
+` $ traceroute <address>`
+
+##### More network tools/ utilities:
+
+| Tools/utilities | description |
+|------------|-------------|
+| ethtool | queries network interface and can also set varous parameter like speed|
+|netstat | Display all active connections and routing table info.|
+|nmap | scans open ports on a network, used for security analysis|
+|tcpdump | Dumps network traffoc for analysis (wireshark) |
+|iptraf | monitors network traffic in text mode|
+| mtr | combines funtionality of ping and traceroute to continuously update display|
+|dig| Test DNS working status. Replacement for host and nslookup.|
+
+
+
+
