@@ -935,3 +935,111 @@ rwx : rwx : rwx
  # group will lose write permission
  
 ```
+
+### Linux Graphical use interface and finding tools:
+
+ - press `ALT + F2`
+ - enter command:
+   - GNOME: `gnome-help` or `yelp`
+   - KDE: `khelpcenter`
+ gnome-help works of ubuntu.
+ 
+ #### package documentation can be found at `/usr/share/doc`.
+ 
+ #### online resources
+  - [Centos](https://wiki.centos.org/Documentation)
+  - [Ubuntu](https://help.ubuntu.com/)
+ 
+ #### opening up the graphical help from command line `$ yelp man:cat`
+ 
+ #### How to open terminal using the Graphical command interface?
+ ```
+ Press ALT + F2
+ Enter: gnome-terminal or konsole
+ ```
+ 
+ ## How to setup `sudo` if it is not enabled?
+  
+   - 1. As superuser (root), since the sudo command is not available, we use `su`, At commandline prompt type `su` and hit enter.
+   - 2. will be prompted with the root password
+   - 3. Create a `/etc/sudoers.d/` directory to create a configuration file to enable user accont to use sudo.
+      - if the user name is `user1` after performing the above steps, create the file and content
+        ```
+        # echo "user1 ALL=(ALL) ALL" > /etc/sudoers.d/user1
+        ```
+   - 4. Change permission on this file `$ chmod 440 /etc/sudoers.d/user1`.
+       
+ 
+ ### what is `virtual terminal` (VT) in linux?
+  - VT are console session that use the entire display and keyboard outside of a graphical environment.
+  - There can be multiple active terminal but only one is visible at a time.
+  
+  - This would help when the graphical desktop is running into issues.
+  - To switch between VTs screen press
+     ` CTRL -ALT- function key`
+   - `CTRL+ALT+F2` ,` CTRL+ALT+F3`, ` CTRL+ALT+F4` ...
+   - After switching the one VT (you should see the tty1, etc) just use `ALT+ F4` to switch to another VT (no need for CTRL).
+
+  
+  ### how to turn off the Graphical Desktop?
+  - For newer systemd-based distribution, the display manager runs as a service.
+  - To stop GUI desktop, we can use `systemctl` utility.
+  - Most distribution will also workg with `telinit` command.
+  ```
+  # to stop the display manager
+  $ sudo systemctl stop gdm  (or) $ sudo telinit 3
+  
+  # to restart the display manager
+  $ sudo systemctl start gdm  (or) $ sudo teminit 5
+  
+  # for ubuntu 18.04 uses lightdm instead of gdm
+  ```
+   
+ ### how to shut down machine using command line?
+   - `halt` and `poweroff` command issues `shutdown -h` to halt system.
+   - `reboot` issues `shutdown -r` to reboot instead of shutting down.
+   - To perform this operation need to be as root user.
+ 
+ When administrating multi-user system, we can notify and shutdown.
+ ```
+ $  sudo shutdown -h 10:00 "Shutting down notification" 
+ ```
+   
+ #### command to locate applications, `$ which diff` and `$ whereis diff`. 
+  
+ #### how to change to the previous directory using `-`? `$ cd -` 
+  
+### `Absolute` and `Relative` path:
+   - multiple slashes ////usr//bin is valid, but system sees it as /usr/bin.
+   - `absolute pathname` : `$ cd /usr/bin`
+   - `relative pathname` : `$ cd ../../usr/bin`
+   - `.` - present directory
+   - `..` - parent directory
+   - `~` - home directory
+ 
+- `tree` utility to see the directory in hierarical structure.
+
+-__`Hard Links`__:
+  - a file file1 already exists, a hard link can be created using 
+  ```
+   $ ln file1 filelink2
+   # the above command creates another file reference,
+   
+   $ ln -il file1 filelink2 
+   # -i => displays the inode number, for those two files it will be same.
+  ```
+    Note: editing the file name in most modern system shouldn't cause issue, but in some case it might create two objects or files.
+    
+ __`Soft Links`__:
+   - soft links are created with `-s` option in `ln`.
+   ```
+    $ ln -s file1 filelink1
+    $ ln -li file1 filelink1
+      filelink1 -> file1
+    $ cat filelink1  # outputs the content of file1  
+    # the filelink1 now not looks like a regular file. it points to file1
+   ```
+   - Symbolic links takes no extra space unles the name is very long.
+   - easily modified to point to different place.
+   - it is like creating a shortcut.
+   - unlike `hard link`, `soft link` can point to objects even on different file systems, partition and/or disk and other media which may or may not be currently available or even exist.
