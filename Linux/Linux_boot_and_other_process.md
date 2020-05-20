@@ -816,10 +816,122 @@ aunt.* => matches whole sentence
    - `cut`
      - cut is used for manipulating column based files and extract specified columns. default is tab char.
      
-     ```
+   ```
      $ ls -l | cut -d" " -f3
      -d => delemiter
      -fN =>field number
-     
-     ```
+  ```
    
+#### Environment variables:
+  - holds specific values which may be utlized by the command shell, like bash 
+  - `set`,`env` or `export` - ways ot view the values currently set in environment.
+  
+  ```
+  $ echp $SHELL => value of specific variable
+  
+  # exporting new variable
+  $ export VARIABLE=value (or VARIABLE=value; export VARIABLE)
+  
+  # to make the variable availabe when the shell opens (that is permanently)
+  # 1. edit ~/.bashrc file add the line 
+  #    export VARIABLE=value
+  # 2. issue 
+  #    $ source ~/.bashrc   #or 
+  #    $ .~/.bashrc     # or 
+  #    $ bash  # (opens a new bash shell)
+  ```
+  
+ - `HOME` 
+   - is an environment variable that represents the home or login.
+   - ` $ echo $HOME` shows the value of the HOME environment. (/home/user1)
+ 
+ - `PATH` 
+    - is an ordered list of directories, which is scanned when the command is given to find the appropriate program.
+    - each path is separated by colons (:)
+    - `:path1:path2` or `path1::path2`
+  
+  example:
+ ```
+ $  export PATH=$HOME/bin:$PATH
+ $ echo $PATH
+ ```
+  
+  - `SHELL` 
+     - this points ot the default shell and contains the path name to the shell
+     - ` $ echo $SHELL`
+  
+  - `PS1` variable
+     - PS1 is primary prompt variable which controls what command line promt looks like
+     - `\u` -username
+     - `\h` - hostname 
+     - `\w` - current working directory
+     - `\!` - History number of this command
+     - `\d` - date
+   
+  Example
+  ```
+ $ echo $PS1
+ 
+ $ export PS1='\u@\h:\w$ '
+  user1@hostname:~$ #
+  
+  # restore the PS1
+  $ OLD_PS1=$PS1
+   # experiment with the ps1 and then if needed replace it.
+  $ PS1=$OLD_PS1
+  ```
+  
+  Few more env variables,
+    - `HISTFILE` (location of history file),
+    -`HISTFILESIZE` (maximium number if lines in history file default 500),
+    - `HISTSIZE` (max number of command in history file), `HISTCONTROL` (how commands are stored), 
+    - `HISTIGNORE` (which command lines can be unsaved).
+  
+  ### How to execute the previous command? using `!!` (pronunced as bang-bang)
+  `CTRL - R ` used for historic search for the history commands
+  
+  ##### Executing previous commands
+  ```
+  ! - start a history substituion
+  !$ - refer to the last argument in a line
+  !n - refer to the nth command line in history
+  !string - refer to most recent command starting with string.
+  ```
+  Example:
+  ```
+  $ sleep 20
+  $ !sl
+  sleep 20
+  ```
+  
+### Keyboard  Shortcut commands on shell:
+  
+  |Shortcut|	Task|
+|-------|-----|
+|CTRL-L	|Clears the screen|
+|CTRL-D	|Exits the current shell|
+|CTRL-Z	|Puts the current process into suspended background|
+|CTRL-C	|Kills the current process|
+|CTRL-H	|Works the same as backspace|
+|CTRL-A	|Goes to the beginning of the line|
+|CTRL-W	|Deletes the word before the cursor|
+|CTRL-U	|Deletes from beginning of line to cursor position|
+|CTRL-E	|Goes to the end of the line|
+|Tab	|Auto-completes files, directories, and binaries|
+  
+  
+### File permission
+
+```
+rwx : rwx : rwx
+ u:    g:    o
+ 
+ u - user/owner
+ g - group
+ o - others
+ 
+ $ chmod uo+x,g-w file  
+ # above command provides user and other to execute permission
+ # group will lose write permission
+ 
+```
