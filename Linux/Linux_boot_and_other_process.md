@@ -1,5 +1,5 @@
 
-Linux Boot process Steps:
+#### Linux Boot process Steps:
   - Power ON
   - BIOS
   - Master Boot Record (MBR) [first sector of the Hard disk]
@@ -603,4 +603,223 @@ exit 0
    - `/dev/random` is used where very high quality randomness is required, such as one-time pad or key generation, but it is relatively slow to provide values. /dev/urandom is faster and suitable (good enough) for most cryptographic purposes.
    - Furthermore, when the entropy pool is empty, /dev/random is blocked and does not generate any number until additional environmental noise (network traffic, mouse movement, etc.) is gathered, whereas /dev/urandom reuses the internal pool to produce more pseudo-random bits.
    
+#### `sed` Stream editor tool
+
+ | command | description |
+ |-----|-----------|
+ | `sed -e command <filename>` | performs the command operation on the file and display output to stdout |
+ | `sed -f sedcommandscript <file>` | specify the sed commmand in sedcommandscript file , the output will be displayed on the screen |
+  
+  `-e` option is used for multiple editing command.
+  
+  ```
+  $ sed -e s/hello/HELLO/g /home/user1/sample.txt
+  
+  $ cat sample.txt
+  hello help hello
+  ```
+
+##### Replacing option
+
+| command | description |
+|---|----|
+| `sed s/pattern/replace_string/ filename` | substitute the first string occureance in every line|
+| `sed s/pattern/replace_string/g filename` | substitute all string occurrence in every line of file (g -global) |
+| `sed 1,3s/pattern/replace_string/g filename` | substitue all string occurrences in a range of lines |
+| `sed -i s/pattern/replace_string/g filename` | save changes for string substitution in `same file`|
+
+use `-i` since it will replace the existing file, which is not reversible.
+
+Example:
+```
+$ sed -e 's/one/1/' -e 's/two/2/' -e 's/three/3/' filename
+```
+
+#### `awk` utility
+ - Authors Alfred `A`ho, Peter `W`einberger, Brain `K`ernighan
+ - powerful interpreted language.
+ 
+| command | description |
+|------|--------|
+| `awk 'command' file | specifying command directly at command line |
+| `awk -f scriptfle file` | specfying a file which contains the script to be executed |
+
+Example :
+```
+$ awk '{print $0}' /home/user1/sample.txt  # prints entire file
+
+$ awk -F: '{print $1}' /home/user1/sample.txt # prints first field of every like when the data looks like one:1 (1 will be output)
+
+$ awk -F: '{print $1 $3}' /home/user1/sample.txt # prints 1st and 3rd field of every line
+```
+
+##### File Manipulation utilities
+ - `sort`:
+  sort is used to rearrange lines of a text file
+  
+  | syntax | description |
+  |----|----|
+  |`sort <filename>` | sort the line according to the char at start of line |
+  |`cat file1 file2 | sort` | combine 2 files and sort the lines |
+  |`sort -r <filename>` | sort lines in reverse order |
+  |`sort -k 3 <filename>` | sort the lines by the 3rd field on each line instead of starting char |
+  
+  `-u` option is used for `unique` values after sorting the records, similar to running `uniq` command.
+  
+ - `uniq`
+   - uniq removes duplicate consecutive lines in a text file.
+    
+    ```
+      $ sort file1 file2 | uniq > temp.txt
+      
+      $ sort -u file1 file2 > temp.txt 
+      // Both the above command performs the same operation
+      
+      $ uniq -c filename  ## Counts the number of duplicate char in a file.
+    ```
+    
+ - `paste`
+   - paste command can be used to create a single file combining multiple columns from different files.
+   - `-d` option is for specifing delimiters instead of tab.
+   - `-s` option cause past to append the data in series rather than in parallel (horizontal rathern than vertical fashion)
+   
+  ```
+  $ cat file1
+  12345
+  67890
+  11111
+  
+  $ cat file2
+  Tom
+  Bob
+  Ram
+  
+  $ paste file1 file2
+  12345    Tom
+  67890    Bob
+  11111    Ram
+  
+  $ paste -d ':' file1 file2
+  ```
+   
+  - `join` 
+    - If we have two files with some similar columns, example phone number in two file one with first name and the other with last name.
+    - the data can be combined wihout repeating the data using `join` and `paste`
+    
+  ```
+  
+  $ cat file1
+  1111 file1one 
+  2222 file1two
+  3333 file1three
+  
+  $ cat file2
+  1111 file2one
+  2222 file2two
+  3333 file3three
+  
+  $ join file1 file2
+  1111 file1one file2one
+  2222 file1two file2two
+  3333 file1three file2three
+  
+  // if any of the file has additional rows the join will ignore that.
+  ```
+  
+  - `split`
+    - split is used to break up or split file into equal sized segments for easier viewing and manipulation.
+    - we can split a file into 1000 line segments.
+    - the original file remains unchanged, a set of files with same name and prefix is created.
+  
+  ```
+  $ split infile <prefix>
+  ```
+  
+ ##### Regular expression:
+ 
+ | Search pattern | description |
+ | ------ | --------- |
+ | . | Match any single char|
+ | a|z | Match a or z |
+ | $ | Match end of string (meta character)|
+ | ^ | Match start of the string |
+ | * | Match preceding item, 0 or more times (meta character) |
+
+
+```
+# aunt made nice coffee
+a..  => matches aun
+m.|n.  => matches both ma and ni
+..$ => matches ee
+n.* => matches nice coffee
+n.*e => matches nice
+aunt.* => matches whole sentence
+```
+
+ - `grep`
+    - is a text searching tool
+    
+  | command | description |
+  |-------|---------|
+  | `grep [pattern] <filename>` | search for pattern in a file print matching lines|
+  | `grep -v [pattern] <filename>` | print all liines does NOT match the pattern|
+  | `grep [0-9] <filename>` | print the lines that contain number 0 to 9 |
+  | `grep -C 3 [pattern] <filename>` | print context of lines (specified number of lines above and below the pattern) for matching pattern. |
+  
+  
+  - `strings`
+     - used to extract all printable characters strings found in the file or files passed as argument.
+     - it is useful in locating human-readable content embedded in binary file.
+     - for text file can use grep.
+     
+     ```
+     $ strings book.csv | grep match_string
+     # csv are commana seperated file
+     ```
+ 
+ - `tr` utility
+    - tr used to translate specified characters into other characters or delete them.
+    - syntax: ` tr [options] set1 [set2]`
+    - it requires at least 1 argument and max 2.
+    
+  Example:
+  ```
+  tr abcde ABCDE => convert lower case to upper case for abcde
+  tr '{}' '()' < infile > outfile => Translated braces into parenthesis 
+  echo "help is on the way" | tr [:space:] '\t' => translate white space to tab
+  echo "This   is   working" | tr -s [:space:] => squeeze repetition of chars 
+  echo "this is delete" | tr -d 't' => delete specified character using -d 
+  echo "my emp id is 1235" | tr -cd [:digit:] => complement the sets using -c and prints only number
+  tr -cd [:print:] < infile.txt => remove all non-prinable chars from a file
+  tr -s '\n' ' ' < infile.txt => join all the lines in a file into single line
+  ```
+   
+  - `tee`
+     - tee takes the output from any command and while sending it to standard ouput, it also saves it to a file.
+     
+     ```
+     $ ls -lrt | tee outputfile.txt
+     ```
+  
+  
+  - `wc`
+     - word count
+     - `-l` option displays number of lines
+     - `-c` option displays number of bytes
+     - `-w` option displays number of words
+   
+   ```
+   $ wc -l filename
+   $ wc *txt
+   ```
+   
+   - `cut`
+     - cut is used for manipulating column based files and extract specified columns. default is tab char.
+     
+     ```
+     $ ls -l | cut -d" " -f3
+     -d => delemiter
+     -fN =>field number
+     
+     ```
    
