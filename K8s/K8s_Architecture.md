@@ -61,7 +61,7 @@ Pods:
      - perform network streaming or round-robin forwarding accross a set of backend nodes
   - Service cluster ip and port are currently found through Docker compitable env variables specifying ports opened by the service proxing
   
-  ###### Modes of kube proxy:
+  ##### Modes of kube proxy:
     - user space (commonly used mode) 
     - iptables 
     - ipvs mode
@@ -73,18 +73,18 @@ Pods:
 
 ### Kubernetes resources- POD:
  ```
- // app pod resource file should have the apiVerion and kind field
- // metadata is mandtoary for all pod sample and it should have the name filed.
+ // applcation pod resource file should have the apiVerion and kind field
+ // metadata is mandatory for all pod sample and it should have the name field.
  
-  apiVersion: v1  // string identifies the version of the schema this object should have
-  kind: pod // this is the schema this object should have, in this case the object is pod
+  apiVersion: v1  // is a string which identifies the version of the schema the object should have
+  kind: pod // this defines the schema for the object, in this case the object is pod
   
   metadata:   // necessary field
      name: firstapp-pod //mandatory field, this is used to uniquely identify the Pod among others, we can specify namespace and uid.
-     labels:    /map of string key and values used to orgnize and catagorize object
+     labels:    //a map key and values strings used to organize and catagorize object (pod)
        app: firstapp
-  spec:   //specification and defines the desire state of the object
-     containers:  // defines the list of containers belonging to the pod, static list and can't be changed at runtime
+  spec:   //specification, defines the desire state of the object
+     containers:  // defines the list of containers belonging to the pod, this is a static list and can't be changed at runtime
      - name: name-of-container // name to the container
        image: alpine //name of the docker image an java application
      
@@ -122,7 +122,7 @@ spec:
 
 ### Kubernetes Resources- Service:
   
-  Kubernets Pods are ephimeral, so the Ip address assigned to them cannot be relied upon for application to communicate.
+  Kubernetes Pods are ephimeral, so the Ip address assigned to them cannot be relied upon for application to communicate.
   
   The `Kubernetes Service` provides logical collection of Pods and provides well defined API for application to communicate.
   
@@ -271,7 +271,7 @@ To build docker image use Docker desktop. It seemsly integrates with the Kuberne
    
    For example, Helm chart can be used to deploy application with multiple microservices  with single resource.
    
-   Helm: is a __`package manger`__, similar to yum, rpm etc.
+   `Helm` is a __`package manger`__, similar to yum, rpm etc.
    
  Helm offers way to package resources into single application and allows to manage multiple releases of it.
  
@@ -396,7 +396,7 @@ To build docker image use Docker desktop. It seemsly integrates with the Kuberne
  //once tiller is installed in K8s cluster using kubectl check it
  // tiller is installed as a component.
  // The init command will install the helm component under the kube-system namespace.
- $ get pods -n kube-system 
+ $ kubectl get pods -n kube-system 
  
  //To deploy helm chart as application to K8s cluster
  // navigate to the helm charts location.
