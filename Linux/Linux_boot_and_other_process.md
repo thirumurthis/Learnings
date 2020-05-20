@@ -1043,3 +1043,67 @@ rwx : rwx : rwx
    - easily modified to point to different place.
    - it is like creating a shortcut.
    - unlike `hard link`, `soft link` can point to objects even on different file systems, partition and/or disk and other media which may or may not be currently available or even exist.
+
+
+### Redirection
+
+|name | symbolic name | value | example|
+|--|--|--|--|
+|standard input| stdin |0 | keyboard|
+|standard output| stdout | 1| terminal |
+|standard error | stderr| 2| log file|
+
+Redirecting error to error file:
+```
+$ command_to_do_something 2> error_file
+```
+
+Redirecting the output to a file
+```
+$ command_to_do_something 1> output_file
+```
+##### short-hand notation to send anything written to file descriptor 2 (stderr) to same place as file descriptor 1 (stdout) : 2>&1
+```
+ $ command_do_something > output_file 2>&1
+ 
+ $ command_do_something >& output_file # this is same as the above 
+```
+
+ - __`Searching for files`__:
+   - `locate`
+      - utility program search takine advantage of previously constructed database of files and directories on the system.
+      - ` $ locate zip | grep bin ` - list all files and directories with both zip and bin in their name.
+      - `locate` utlizes a database created by a related utility, __`updatedb`__.
+      - `updatedb` can be executed any time but as a root user.
+      
+   - `find`
+     - `$ find /usr -name gcc` => search for files and direcories named gcc
+     - `$ find /usr -type d -name gcc` => serach for directories named gcc
+     - `$ find /usr -type f -name fcc` => search for regular file named gcc
+     - Advanced option
+        - `$ find -name "*.swp" -exec rm {} ';' => {} is place holder
+        - end the above command with either `';'` or `'\;'`.
+        - use `-ok` option instead of `-exec`, in `-ok` it will prompt for user action before executing.
+        
+        - find file based on time
+           - `$ find / -ctime 3` => -ctime is when the inode metadata last changed. (file ownership)
+           - `-atime` => last accessed/last read
+           - `-mtime` => modified/last written
+           - n => number of days
+           - +n => greater than that number
+           - -n => less than that number.
+           - -cmin, -amin and -mmin
+         - `$ find / -size 0` 
+         - `$ find / -size +10M -exec command {} ';'`
+##### Wild cards and matching file name:
+
+| wildcard | description|
+|--|--|
+| ?  | matches any single char|
+| * | matches any string of char|
+|[set]| matches any char in the set, eg [abd]|
+|[!set] | matches any char NOT in the set|
+
+
+  
+  
