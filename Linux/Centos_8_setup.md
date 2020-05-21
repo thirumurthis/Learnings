@@ -12,12 +12,14 @@
     - Add the file (with username as filename) and include the content `thiru ALL=(ALL) ALL` Note: thiru is username.
  
 In the brand new setup, below will be displayed, no IPV4 ip setup.
+
 ![image](https://user-images.githubusercontent.com/6425536/82537228-86133d80-9afe-11ea-89c7-775e52afda42.png)
 
 In order to add a static ip address navigate to `/etc/sysconfig/network-scripts/` folder copy the `ifcfg-esp0s3`
 or `ifcfg-lo` (lo - is loopback address/localhost).
 
 Content (completely comment out the IPV6 configs)
+
 ![image](https://user-images.githubusercontent.com/6425536/82538907-5154b580-9b01-11ea-95a7-b33b67e8d847.png)
 
 use `$ sudo nmtui` command for UI based setup of host and network name.
