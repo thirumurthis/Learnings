@@ -9,8 +9,12 @@
  - Agreeing upon the license
  - use `ifconfig` to see the network ip address.
  - When issuing `sudo yum update -y` displayed sudo access not provided.
-    - Add the file (with username as filename) and include the content `thiru ALL=(ALL) ALL` Note: thiru is username.
- 
+    - Add the file (with username as filename) and include the content `thiru ALL=(ALL) ALL` 
+    - Note: thiru is username, and the best practice to name the file same as the username, this if for maintanbility.
+    - sudoer.d contains files and can be configured so user will be able to execute specific task as sudo user 
+    - `username ALL=(ALL) NOPASSWD:/usr/bin/du,/usr/bin/ping`
+  - Other option in case of RHEL and Centos is to add to the default wheel group ` $ usermod -aG wheel username`, but this is not working for some reason. Note: adding the file in sudoers.d worked.
+  
 In the brand new setup, below will be displayed, no IPV4 ip setup.
 
 ![image](https://user-images.githubusercontent.com/6425536/82537228-86133d80-9afe-11ea-89c7-775e52afda42.png)
@@ -28,3 +32,10 @@ once updated restart the networks service `$ systemctl start NetworkManager` if 
 Also note that use the `$ dnf check-update`, after the above steps, it will update the system. initially the network was slow.
 
 But after sometime dnf command downloaded the package. `$ ping -c 5 google.com` should output correctly.
+
+Note:
+  - During the centos 8 installation step, after editing the network selection modifying the hostname.
+  - for some reason there was NO need to edit the `/etc/sysconfig/network-scripts` ifcng-enp0s3 file.
+  - After allowing sudo access, `$ sudo nmtui`, selected `enps03` network option, hit Edit, selected "Automatically connect"
+  - after hitting OK, restarted the Networkmanager server `$ sudo systemctl restart NetworkManager`. 
+  - upon `$ ip a` and `$ ifconfig` able to see an allocated ipaddress.
