@@ -73,3 +73,16 @@ Banana:
            make: Toyota
            type: sedan
  ```
+
+```yaml
+-  Corolla:
+      build: 
+         make: Toyota
+         model: 2020
+      type: sedan
+-  Nissan
+      build:
+         make: Sentra
+         model: 2000
+      type: sedan
+```
