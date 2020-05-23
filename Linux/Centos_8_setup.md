@@ -95,6 +95,10 @@ After selecting the resolution (there is a vertical scroll bar)
 
 ![image](https://user-images.githubusercontent.com/6425536/82739403-22526580-9cf4-11ea-83e9-ea15b5746be2.png)
 
+
+Further more i checked, `/var/log/xOrg.0.log` file listed some driver 
+Refer [Link](https://www.linuxquestions.org/questions/centos-111/cannot-change-screen-resolution-on-unknown-display-in-centos7-4175583712/)
+
 ------
 
 
