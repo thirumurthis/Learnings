@@ -86,3 +86,28 @@ Banana:
          model: 2000
       type: sedan
 ```
+
+### Ordering on List and Dictionaries:
+   - Dictionary are unorderd collection
+   - List are ordered collection
+   
+ ##### Dictionary  
+```
+# Below two representation are valid for dictionary, 
+# though items are NOT in order 
+# both represent the SAME (the values should match).
+
+Bird:                      |    Bird:        
+    name: sparrow          |        name: sparrow
+    weight: 30 g           |        type: small
+    type: small            |        weight: 30 g
+```
+
+##### List
+```
+# Below two list are NOT the same since order is not correct.
+Bird:                     |     Bird:
+- sparrow                 |     - crow     
+- crow                    |     - parrot
+- parrot                  |     - sparrow
+```
