@@ -288,7 +288,20 @@ services:
   - ` unshare -fp /bin/bash` - same option as above.
   - each process namespace in this case gets it own process filesystem.
   - to read and display the processes inside the process namespace it should be mounted on the `/proc` directory.
-  
+  - after the process is started, it can be mounted.
+  ` mount -t proc proc /proc`
+```
+$ sudo unshare -fp /bin/bash
+
+# navigate to the thin file system fnsroot and chroot it
+$ sudo chroot fnsroot /bin/sh
+ / # mount -t proc proc /proc
+ / # ps -ef 
+ ## lists the specific process
+ ## the /bin/bash would be allocated with the pid 1
+```
+ 
+ Now if this process is moved to different container it will carry the process id value too.
 
   
   
