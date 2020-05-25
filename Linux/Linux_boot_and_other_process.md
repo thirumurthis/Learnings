@@ -1186,3 +1186,33 @@ $ command_to_do_something 1> output_file
 
 ##### How are hardwares represented in Linux?
   - `/dev/sd*`
+
+#### How to use password algorithm?
+   - The SHA-512 algorithm is widely used for security application and protocols.
+   - This also includes, TLS, SSL, PHP, SSH, S/MIME and IPSec.
+   - SHA-512 is most tested hashing algorithm.
+   
+  - To test the SHA-512 encoding try below
+  ```
+  echo -n user1 | sha512sum
+  ```
+  
+  Password practices:
+    - configure password expirey information for users.
+    - PAM (Pluggable Authentication Modules) can be configured to automatically verify that password created or modified using the passwd utility is suffciently strong. (This is implemented using a library called `pam_cracklib.so`, which can also be replaced by `pam_passwdqc.so`.
+    - Installing password cracking program, jhon the ripper, to secure the password file and detect weak password entries.
+  
+  Command to check the exipriation of the password __`chage`__
+  ```
+  $ chage --list <user-name>
+  ```
+
+### Securing the boot loader ?
+  - providing password prompt during boot process is not sufficient to protect the boot loader proces.
+  - There is a possbility to use alternate boot media such as optical disks or pen drives.
+  
+  - For older GRUB 1 boot method, it is relatively easy to set a password for grub.
+  - For GRUB 2 version, this is little complicated.( more flexible and take advantage of user-specific passwords.
+  - Never edit `grub.cfg` directly.
+  - instead modify the configuration files in `/etc/grub.d` and `/etc/defaults/grub`.
+  - after modification run, `$ update-grub` or `$ grub2-mkconfig` and save new configuration file.
