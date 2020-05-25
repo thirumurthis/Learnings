@@ -1,6 +1,10 @@
-
+### how to run a docker container
 ```
 $ docker run <image-name>
+### image name can be obtained from the hub.docker.com
+### in case of the personal image, uploaded use the user name. 
+
+### official repos mostly don't have the user name info.
 
 $ docker run ngnix
 ```
@@ -85,4 +89,27 @@ $ docker attach <container-id, just few chars of sha>
 ## this command will attach the already running container 
 ```
 
+### docker to run an ubuntu/centos image and prompt the bash automatically login to it.
+```
+$ docker run -it ubuntu bash
 
+## option -it allows to display the interactive terminal.
+## this code will logs directly into container.
+```
+
+### Exit code in `docker ps -a`
+  - when force fully stopping a container `docker container stop <container-name>` then the exit code will be non-zero.
+  
+### Removing the container. (reclaims disk space)
+```
+ $ docker rm <container-name or container-id>
+ 
+ ## to remove multiple container at same time.
+ $ docker rm <container-id1> <container-id2> ...
+```
+
+- `busybox` is a light weight small image to play.
+
+### Docker images can be removed using `docker rmi <image-id>`.
+  - Note, if the container running or exited, the `rmi` command will not allow to delete the image.
+  
