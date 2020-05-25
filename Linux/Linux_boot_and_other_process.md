@@ -1104,6 +1104,85 @@ $ command_to_do_something 1> output_file
 |[set]| matches any char in the set, eg [abd]|
 |[!set] | matches any char NOT in the set|
 
+### User creation
+  - `useradd` and `userdel` command line tools are used for creating and removing accounts.
+  - Each user is identified by a unique integer (user id or UID).
+  - a separate database associaes a username with each UID.
+  - upon creation new user information is added to the user database.
+  - the user's home directory must be created and populated with some essential files.
+  
+  - structure of `/etc/passwd` file
 
+|field Name | Details | description |
+|--------| -----------| -----------|
+|username | user login name| should be between 1 - 32 character long|
+|password| user password (char x if password is stored in `/etc/shadow` file in encrypted format| Not shown in Linux when it being typed.|
+|user id (UID) | Every user should have a user id| UID 0 - reserved for root; UID 1-99 - reserved for predefined accounts; UID 100-999 - reserved for system accounts and groups; UID 1000+ - reserved for normal users;|
+|Group Id (GID) | primary group ID stored in `/etc/group` file| -|
+|User Info | Optional field allows insertion of extra info about user| name of user |
+| Home directory | Absolute path of user home directory | /home/user1|
+|shell | Absolute path of default shell | /bin/bash|
+
+##### Types of accounts
+  - Linux distingushes between several account types:
+    - root
+    - system
+    - normal
+    - network
+  -__`last`__ utility shows the last time each user logged into the system.  
+    - This command also provides inactive user information.
   
+  `root` - is the most privileged account, when signed in as root shell prompt displays `#` (if using bash and not have customized the PS1)
   
+  - SUID (Set owner User ID upon exection) special kind of file permissing given to a file. use of SUID provides temporary permissions to a user to run a program with the permissions of the file owner(root) instead of permission held by the user.
+  
+  Below are some operation which doesn't require root access
+   - running a network client
+   - using devices like printer
+   - operation on files that the user has permission to access
+   - Running SUID-root applicaition (executing programs such as passwd).
+   
+ #### What is `sudo` and `su`?
+   - sudo or su temporarily gran root access to a normal user.
+   
+ | su | sudo|
+ |--|--|
+ | when elevating privilege, need to enter the root password.| when elevating privilege, you need to enter the user's password not the root password.|
+ |Once a user elevates to the root account using `su`, the user can do anything that the root user can do. | offers more feature and is considered more secure and more configurable. Exactly what the user is allowed to do can be precisely controlled and limited.(user always give their pssword to do further operation or can aviod doing configurable time interval.|
+ |limited logging feature | detailed logging feature |
+ 
+ 
+ `sudo` has the ability to keep track of unsuccessful attemps at gaining root access.
+ 
+ - users authorization for using sudo is based on configuraton stored in the `/etc/sudoers` file and in `/etc/sudoers.d` directory.
+ - `/var/log/secure` file contains the log information upon `sudo bash` check the log message.
+ 
+ ##### Working of sudoers file:
+   - when sudo is invoked, the program will look at `/etc/sudoers` and the file in `/etc/sudoers.d` to determine if the user has right to use sudo.
+   - The basic structure of the entried in these files are 
+   ```
+   who where = (as_whom) what
+   ```
+   
+   - New Linux distribution allows to use file with the same username under /etc/sudoers.d
+   
+   #### Where to check the sudo logs?
+    - `/var/log/auth.log` in case of Debian distrubution for any failures.
+    - `var/log/mesages` or `/var/log/secure` in other systems.
+    
+  ### Process isolation:
+    - Process are naturally isolated and due to this Linux is considered to be more secure.
+    - One process cannot access resources of another process, even if the process if running with the same user privileges.
+    - Linux thus makes it difficult for viruses and security exploits to access and attach random resources on a system.
+    
+  - Below feature or security mechanisms that limit risk:
+    - control groups (cgroups)
+       - Allow system admin to group processes and associate fine resources to each group.
+    - containers
+        - Makes possible to run multiple isolated linux containers on single system by relying on cgroups.
+    - Virtualization
+        - Hareware is emilated in such a way that not only process can be isolated, but entire systems isolated and execute on one physical host.
+
+
+##### How are hardwares represented in Linux?
+  - `/dev/sd*`
