@@ -303,6 +303,45 @@ $ sudo chroot fnsroot /bin/sh
  
  Now if this process is moved to different container it will carry the process id value too.
 
+ #### Network Namespace (netns)
+  - Each network namespace, has its own set of interfaces, ip addresses, tcp, upd port address etc.
+  ```
+  # to create a new network namespace
+  $ ip add netns <name>
+  
+  # to access and execute the created namespace
+  $ ip netns exec <name> <command>
   
   
+  # like the process that can be access at /proc directory 
+  ## the newly created netns can also accessed or seen at directory
+  $ cd /var/run/netns 
+  ```
   
+### how to create a network name space and add an veth0 ethernet interface.
+```
+$ sudo ip netns add demonetns
+$ sudo ip netns exec demonetns /bin/bash
+# create a new virtual interface
+$ sudo ip link add type veth
+# to start up the virtual interface veth, use below command.
+$ sudo ifconfig veth0 up
+## verify using ifconfig
+
+```
+Alternate command to perform the network namespace creation
+```
+$ nsenter --net=/var/run/netns/demonetns /bin/bash
+```
+
+##### How to execute namespaces in single command.
+ - create `fnsroot`, `procfs`, `netns`
+ ```
+ $ sudo nsenter --net=/var/netns/demonetns \
+ > unshare -fp --mount-proc=fnsroot/proc \
+ > chroot fnsroot/ /bin/sh
+ ```
+  
+ #### This is basically the magic of Linux kernel, where the namespace provides a way to create a container. So docker is the wrapper over the namespaces info.
+ 
+ 
