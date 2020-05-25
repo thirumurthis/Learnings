@@ -127,3 +127,75 @@ or
 
 $d docker exec -id <cotnainer-id> /bin/bash
 ```
+
+-----------
+### Manually building the docker container
+ - use `docker run -it alpine` to modify the alpine image.
+ - the above command will started the thin linux box, and pormpts for user action
+ - Create a simple nodejs code ui appliation.
+ - Dowload the nodejs app `apk add nodejs` once downloaded.
+ - Verify if the application is executing successfully by `node app.js`.
+ - exit out of the container (cntrl +c).
+ 
+ - get the container id of existing alpine container to see the difference.
+ -  `$ docker container diff <container-id>` changes will be listed.
+ - Now we need to create the new image since we made changes to the base with the nodejs app.
+ - __How to create the image with the modified container?__
+   - ` $ docker container commit <container-id>`
+   - Giving a name to container, just tag it using below command.
+   - `$ docker image tag <image-id> <tag-name-from-user(username/appname:version)>`
+   - `$ docker image ls -a` lists all the local images.
+- Upload the image to the dockerhub.
+- ` docker push <image-name (username/application:version)>`
+   
+Note: when the images are pushed only the layer will be pushed to the hub. Since we made changes only to the alpine base, over it added nodejs app.
+
+---------
+
+#### How to build image using `Dockerfile`?
+ - at the level where the application code exists (in this case the nodejs application) create the Dockerfile
+ - Sample docker file looks like below,
+ ```
+ FROM alpine:latest
+ RUN apk update & apk add nodejs
+ RUN mkdir -p /usr/src/app
+ WORKDIR /usr/src/app
+ COPY ./app.js /usr/src/app
+ EXPOSE 80
+ CMD ["node","app.js"]
+ ```
+ - to build the image, use `docker image buid -t app-name:v1.1 .` (. - path of the dockerfile.)
+
+----------
+
+### Stateless application:
+Previously, we looked at the stateless application, which doesn't have any data storage requirements.
+
+### Persistent storage:
+- Containers have `Ephemmeral Storage`
+- So when the container dies, the data within the container is lost.
+- One way is to make the container data persisted is to mount peristent storage volumes from the host machine to the container. 
+  - Doing this will persist the data even when the container dies.
+  - Since storage volume is external to the container, it is persisted. 
+  - The storage in the host machine can be `directly connected storage volume `, `network storage volume` or `cloud storage volume`. 
+  
+### How to create and configure a persistent storage?  
+##### check if there are docker volumes available?
+`$ docker volume ls`
+
+##### Create a persistent storage volume in host machine:
+`$ docker volume create mysql-data0`
+
+##### Mount this `mysql-data0` volume to say mysql data container.
+`$ docker run --name demo-sql -v mysql-data0:/bar/lib/mysql -e MYSQL_ROOT_PASSWORD=password -d mysql:latest`
+   - -v => maps the data to volume
+   - -e => set environment properties
+ 
+ Note: Above command will download the image mysql and runs it.
+
+##### once the container is started, then use `dokcer exec -it demo-sql /bin/bash`, and in prompt navigate to `cd /var/lib/mysql`. 
+   - in the host machine inspect the volume
+   ` $ dokcer volume inspect mysql-data0` => this will list the mountpoint of the data in host machine.
+   - from the host machine list the info from the mountpoint path.
+   
+   
