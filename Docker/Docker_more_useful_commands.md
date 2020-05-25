@@ -198,4 +198,6 @@ Previously, we looked at the stateless application, which doesn't have any data 
    ` $ dokcer volume inspect mysql-data0` => this will list the mountpoint of the data in host machine.
    - from the host machine list the info from the mountpoint path.
    
-   
+##### We can also create a directory and map that to volume.
+  - in the same docker command with -v use the direcrory path /home/user/<dir-to-mount>
+ 
