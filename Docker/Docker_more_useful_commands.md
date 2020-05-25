@@ -225,3 +225,71 @@ services:
      image: "redis:alpine"
 ```
 - above docker compose will set the web and redis backend instance. 
+
+
+### What are container? 
+  - Containers are set of processes running in virutal  isolated sandbox environment.
+  - The isolated environment contains (below virtual of its own)
+    - filesystem
+    - process if
+    - network interfaces
+    - devices 
+    - CPU
+    - memory
+
+ #### How linux OS creates this virtual environments?
+  - Linux has virtualization (Linux Kernel) primitives, such as 
+     - `namespaces`
+     - `CGroups`
+   - Linux also has Virtualization tools and drivers
+     - `libcontainer`
+     - `libvirt`
+  - Docker containers are wrapper written over this linux tools and primitives.
+ 
+ ##### What is namespace? 
+  - analogus to the Class in java, the attributes are available within that class only.
+  - Linux has different namespaces:
+    - filesystem namespace (rootfs)
+    - Process Namespace (procfs)
+    - Network Namespace (netns)
+    - Device/Mount Namespace
+    - User Namespace
+ 
+ - When there are multple container, the each container has its own namespace.
+ - Also Processes running on one namespce cannot access the process running on another namespace.
+ 
+##### Filesystem Namespace:
+  - Filesystem is a hierarichal and starts with root.
+  - To create a new filesystem namespace, download the root of tar ball in host machine. Paste the tar ball to any first tree of directory.
+  - Then use the `chroot` command where the tarball file is located.
+  
+ Simple Demo of filesystem namespace: 
+-  Download the filesystem from [link](https://alpinelinux.org/downloads/) mini file system. 
+ - Generally this filesystem namespace doesn't contain any kernel info.
+ 
+ - In the linux host, create a firectory "fsnroot"
+ -  `mkdir fsnroot`;`cd fsnroot`, 
+ - `wget <location-to-download-the-tarball>`
+ - untar the file `sudo tar xvf <tar.gz>`
+ - changing the root filesystem and the new one.
+   - `sudo chroot fsnroot /bin/bash` {chroot <directory> <command-to-execute-after-creation>}
+  - After executing the last command, it would be a new root filesystem, try `whoami`, `pwd`, `ls`, etc.
+ - typing `exit` to go back to host filesystem.
+ - to login again using `sudo chroot...` command.
+ 
+##### Process Namespace
+  - isolated environment, for a group of process to run without intereption by other processess.
+  - process running under one namespace is not even aware of process running on the other namespace.
+  - process are numbered 1 to n, running on one namespace. When a process moved from one container to another the process id doesn't change since each container has its own namespace and numbered 1 to n.
+  - each process in linux are represented as files in linux. (its easy for ps command to read these files for status.)
+  - The process filesystem is mounted on /proc directory in linux. The ps command reads the files mounted on the /proc directory.
+  - To create a separate process namespace use command,
+  - ` unshare --fork --pid /bin/bash `-> this command will fork a child process and runs it in its own process namespace.
+  - ` unshare -fp /bin/bash` - same option as above.
+  - each process namespace in this case gets it own process filesystem.
+  - to read and display the processes inside the process namespace it should be mounted on the `/proc` directory.
+  
+
+  
+  
+  
