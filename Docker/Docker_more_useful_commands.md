@@ -113,3 +113,17 @@ $ docker run -it ubuntu bash
 ### Docker images can be removed using `docker rmi <image-id>`.
   - Note, if the container running or exited, the `rmi` command will not allow to delete the image.
   
+
+### How to view the container logs in docker?
+```
+$ docker container logs <container-id/name>
+```
+
+### To login to the docker container using `exec`
+```
+$ docker exec -id <container-id>
+
+or 
+
+$d docker exec -id <cotnainer-id> /bin/bash
+```
