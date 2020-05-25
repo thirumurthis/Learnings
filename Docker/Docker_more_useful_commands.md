@@ -201,3 +201,27 @@ Previously, we looked at the stateless application, which doesn't have any data 
 ##### We can also create a directory and map that to volume.
   - in the same docker command with -v use the direcrory path /home/user/<dir-to-mount>
  
+----------
+
+### `Docker Compose` 
+ - tool for defining an running multi-container docker application.
+ - a yaml file used to define the applicaton services.
+ 
+ - once the Dockerfile is defined for example say frontend, backend.
+ - then create the `docker-compose.yml` file, so this can run the service in isolated environment.
+ - finally use `dokcer-compose up` command to start and run entire app.
+ 
+To perform the docker-compose to execute, install the docker-compose.
+
+Sample docker compose file:
+```
+versrion: '1'
+services:
+   web:
+     build: .
+     ports:
+      - "5050:5000"
+   redis:
+     image: "redis:alpine"
+```
+- above docker compose will set the web and redis backend instance. 
