@@ -32,11 +32,11 @@ Docker container network contians three major part:
    
 `Drivers` (network specific detail implementation)
    - when `libnetwork` implements and defines the fundametal sandbox, endpoint, network, management API, UX etc. 
-   the actual specifics of different network types like local bridge network, multihost overlay leverage VXLAN are implemented in 'drivers'
+   the actual specifics of different network types like local bridge network, multihost overlay leverage VXLAN are implemented in `drivers`
   
-  Type of drivers:
-    - `local` => native
-    - `remote` => third party drivers implementing the specs defined by libnetwork.
+Type of drivers:
+  - `local` => native
+  - `remote` => third party drivers implementing the specs defined by libnetwork.
   
   | CNM | Libnetwork | Drivers |
   | --- | ----- | ----|
