@@ -1,4 +1,4 @@
-##### Helm's - is defined as a pakcage manager for Kubernetes.
+##### Helm's - is defined as a package manager for Kubernetes.
 This makes deploying application to k8s easy and configurable.
 
 Still uses manifest files defined for k8s but makes it configurable.
