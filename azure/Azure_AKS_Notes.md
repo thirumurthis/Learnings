@@ -153,6 +153,99 @@ $ az aks install-cli
 
  - Next we need the credentials to talk to the AKS cluster
     - There are two types of credentials
-       - admin level
-       - user level
+       - admin level (creating storage, network resources)
+       - user level (normal operation) 
 
+##### below command retrives the credentials and stores it in the location where the `kubectl` command expects to see it. (configuring the credentials)
+```
+$ az aks get-credentials --resource-group demo-rg --name demoAKSCluster --admin
+## we are storing the credentials and assigning a admin
+## merges the credentials infochanges to the ~/.kube/config location
+```
+
+#### use `kubectl version` command to verify the version of the client and the server info.
+```
+$ kubectl version
+## sometimes the client version might be greater than the Server version 
+## which is acceptable
+```
+
+#### After the above setup, how to make sure we are able to communicate with the AKS Cluster.
+```
+$ kubectl get nodes
+## refer the the az aks create command we mentioned to include 1 node,
+## and we should be able to see one node in the output
+```
+
+#### How to manage the worker node size and other attributes.
+ - The minimum Azure osdisk space is ~30G. in some scenarios we might need a large disk size.
+ - Attributes that mostly changes on the worker node after deployment.
+   - `--node-osdisk-size`
+   - `--node-vm-size`
+   - `--max-pods` (scale limit is 110; default is 30)
+
+##### List the available Vm disk size in specific location
+```
+$ az vm list-size -l westus -o table
+```
+
+#### How to deploy the application to AKS.
+ - manifest file needs to be created, example: firstapp.yml.
+ - This manifest file needs to include the ACR Name and include this part of the image name. <ACR_NAME>/<image-name>:version
+
+- To get the ACR name use the below command
+```
+az acr list --resource-group demo-rg --query "[].{acrLoginServer.loginServer}" -o tsv
+## lists the image info
+```
+
+- To deploy the yml file (firstapp.yml)
+- Navigate to the yml file location
+
+- Command to launch the application
+```
+$ kubectl apply -f firstapp.yml
+ ## the yml file has a deployment and service resource object.
+```
+
+- After the deployment, command to view the service
+```
+$ kubectl get svc firstapp -w 
+ # option -w is watch the status. (just hit ctrl + c to quit.
+```
+
+- To verify the output of the deployed application
+```
+$ curl http://<ip-address-obtained-from-service-command>(optional port number)
+```
+
+#### How to scale pods and nodes:
+
+__`Manual:`__
+ - The scaling can also be done manually by defining the number of pods with below command 
+```
+$ kubectl scale --replicas=5 deployment/firstapp-v1
+```
+
+ - After the scalling, use the below to see the pods scaled
+```
+$ kubectl get pods
+```
+
+__`Automatic:`__
+ - There is a automated way to configure scalling when the CPU or resource utlization is more. 
+ ```
+ # in the firstapp.yml we need to configure it to turn on the autoscale
+ ...
+ ...
+    resources: 
+       requests:
+          cpu: 250m
+       limits:
+          cpu: 500m
+ ...
+ ```
+  Note:
+    - After updating this with the yaml file use `kubectl apply` command so that auto scalling will be enabled.  
+ 
+ 
