@@ -221,8 +221,14 @@ $ curl http://<ip-address-obtained-from-service-command>(optional port number)
 
 #### How to scale pods and nodes:
 
+##### Scaling pods:
+
 __`Manual:`__
- - The scaling can also be done manually by defining the number of pods with below command 
+ - The scaling can be done manually by defining the number of pods with below command.
+ - Turning up the number of replicas will increase the number of pods running.
+ - when we created the cluster we mentioned the number of pods as 10 (refer above)
+ 
+Using the command below if we need to scale it, just by increasing the replicas.
 ```
 $ kubectl scale --replicas=5 deployment/firstapp-v1
 ```
@@ -232,7 +238,9 @@ $ kubectl scale --replicas=5 deployment/firstapp-v1
 $ kubectl get pods
 ```
 
-__`Automatic:`__
+__`Automatic:`__ 
+ - Based on the resources utlization we can tell AKS to auto scale.
+ - By updating the scalable group.
  - There is a automated way to configure scalling when the CPU or resource utlization is more. 
  ```
  # in the firstapp.yml we need to configure it to turn on the autoscale
@@ -240,12 +248,107 @@ __`Automatic:`__
  ...
     resources: 
        requests:
-          cpu: 250m
+          cpu: 250m   # minum
        limits:
-          cpu: 500m
+          cpu: 500m   # maximum
  ...
  ```
   Note:
     - After updating this with the yaml file use `kubectl apply` command so that auto scalling will be enabled.  
  
+ - Defining an autoscale using below command:
+ ```
+# using command if the pods resource are not used heavily the pods will scale to 3 
+$ kubectl autoscale deployment firstapp-v1 --cpu-percent=50 --min=3 --max=10
+ ```
  
+  - check status of the pods after autoscalling with
+  ```
+  # hpa - horizontal pod autoscaler.
+  $ kubectl get hpa
+  ```
+  
+  #### Scaling the worker node automatically (node level autoscalling)
+    - When the cluster is created with 10 nodes and say if we need to create 25 replicas. (which increasing the pods).
+    - So when we update the AKS will autoatically allocate more nodes to execute the pods.
+ 
+ ```
+ # delete the already created autoscale group:
+ # we are trying to check the other option node level autosacling.
+ $ kubectl delete hpa firstapp-v1
+ ## horizontal pod autoscaler will be deleted.
+ ```
+ - Lets now try to increase ther replicas manually
+ ```
+  $ kubectl scale --replicas=25 deployment/firstapp-v1
+ ```
+ 
+ - Monitor the pods status (include -o wide option to display the hostname)
+ ```
+ $ kubectl get pods -o wide -w
+ # since we are watching it will take few minutes to see multiple nodes getting created
+ # this is because we created the cluster with number 10 nodes.
+ ```
+ 
+ Note: 
+  -Cluster autoscaling feature along with AKS auto scaling, this is because we set the cluster as 10 when we create, but the AKS autscales since we scaled the replicas to 25.
+ 
+ 
+#### Setup the node 
+  - Lets make the cluster to have two nodes (more than one node)
+```
+# disable the autoscale option on the cluster.
+$ az aks update --disable-cluster-autoscaler --resource-group demo-rg --name demoAKSCluster 
+
+## update the node count to 2 
+ $ az aks scale --resource-group demo-rg --name demoAKSCluster --node-count 2
+```
+  - We will label the node
+```
+$ kubectl get nodes
+$ kubectl label node <new_node_name> key=value
+## key and value to set lable to particular machine.
+## we can say that this node has GPU capable.
+```
+   - Using the label, we can force the pod to be deployed on that particular node/machine.
+  ```
+  ## the key value will be used in the `firstall-value.yml` file 
+  ## spec section of the deployment resource is going to be updated.
+  ## this means when this file is deployed it will be running on that specfic node.
+  ...
+  template:
+     metadata:
+     ...
+     ...
+     spec:
+      -image:...
+      ....
+       key: value # This tags that this particular set of pods to  run on the node label defined key : value.
+       ...
+  ```
+  
+  Note:
+    - Right now AKS support only one node pool.
+    - The above will helps if multi node pool is supported by AKS.
+ 
+ - After updating the firstapp-value.yml and firstapp.yml deploy those.
+  ```
+  # The below will create a single pod and the node.
+   $ kubectl apply -f firstapp.yml
+   
+   # monitor the pods 
+   $ kubectl get pods -o wide
+   
+   # deploy the firstapp-value.yml
+   $ kubectl appy -f firstapp-value.yml
+   // This will deploy the pod in the specifice node,
+   
+   $ kubectl get pods -o wide 
+   
+   also pass this output to awk like, | awk '{print $1 $7}' to print less content
+  ```
+  
+### AKS storage options
+  - `Local` scratch space (fast/SSD storage)
+    - when the pod dies the storage will not be available.
+    - Auto-provisioned persistence
