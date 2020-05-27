@@ -479,9 +479,164 @@ $ kubectl get pod
 
  - The File type resoruce is availabe by SMB service model, the AKS provides that option (refer the above notes). So the shared resource can be used by multiple pods to read and write. The management of the file type resource is handled by Azure using connectors.
  
- - In order to use the File storage resource we need to connect this  file storage resoruce with our AKS cluster. This can be achived by below steps.
-    - Discover the specific storage resource name.
-    - Use that to create a storage account using that name (the storage name should start with `MC_`).
+ - In order to use the File storage resource we need to connect this  file storage resource with our AKS cluster. This can be achived by below steps.
+    - Discover the specific storage resource name, using below command.
+    ```
+    $ az aks show --resource-group demo-rg --name demoAKSCluster --query "nodeResourceGroup" -o tsv
+    ## This command gives the resource name which is concatenated string of resource group cluster name and location
+    ```
+    - Use that name to create a storage account (the storage name should be all lowercase, and that group should start with `MC_`). Below is to create the file storage
+    ```
+    $ az storage account create -n demoaksstorageaccount -g MC_demo-rg_demoAKSCluster_westus -l westus --sku Standard_LRS
+     ## the resource group is used to create the account, here the standard is used.
+     ## check the documentation whether premium storage can be used 
+    ```
+  ##### After creating the file resource, now update the manifest file to create a new storage class. Like mount the created storage account.
+   ```
+   
+   kind: StorageClass
+   apiVersion: storage.k8s.io/v1
+   metadata:
+       name: azfile
+   provisioner: kubernetes.io/azure-file
+   mountOnOptions:
+     - dir_mode=0777
+     - file_mode=0777
+     - uid=1000
+     - gid=1000
+   parameters:
+     skuName: Standard_LRS
+     storageAccount: demoaksstorageaccount # the storage account we created in above step (not storage class)
+     
+   ```
+ ##### create the storage class using below command
+   ```
+   ## content of the file-storageclass.yml is above
+   $ kubectl apply -f file-storageclass.yml
+   ```
  
+ - Create a Role Based Access (RBAC) role binding, this is needed since the provisioner actually needs some data and store that data in this storage within the Kubernetes environment in order to make sure the connection continue to happen and we have right data so that the backend storage engine that are part of Azure environment to be able to talk to this file service when we created persistent volume claim and associate with the resource.
  
+ `Note:` 
+   -Before (refer the above steps) we created the Perisistent volume claim (PVC) part of the same deployment manifest. 
+   - Now we will perform the PVC separetly, since this will be shared among multiple nodes.(create the PVC seprately and then associate it to the resource)
+ 
+ ```
+ ## the pvc roles and the content of file looks like below
+ ## this contains two section a clusterRole and clusterRolebinding
+ ## ClusterRole - defines the policy, we have the metadata name. get or create secrets
+ ##  This role is being used by the resource, cannot be see this we need this for file provider to work
+ ## ClusterRoleBinding - use the Role at the cluster level and bind to the resource (which is a service account) part of AKS pvc. we are making these to talk to each other. 
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole  # this 
+metadata:
+  name: system:azure-cloud-provider
+rules:
+- apiGroups: ['']
+  resources: ['secrets']  
+  verbs: ['get','create']  
+  # we are allowing to read and create secrets, this secrets are used to allow file
+  # connection to backend
+---
+apiBersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: system:azure-cloud-provider
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: system:azure-cloud-provider
+subjects:
+- kind: ServiceAccount
+  name: persistent-volume-binder
+  namespace: kube-system
+ ```
+ 
+ - Use the below command to deploy the above content place in a file-pvcrole.yml file
+ ```
+ $ kubectl apply -f file-pvcrole.yml
+ ## this will create two resource defined as above clusterrole and clusterbinding.
+ ```
+##### As mentioned earlier, we create the PVC separately.
 
+```
+## the pvc file content.
+## The name: azurefile => is the name for pvc which is used to identify and used to identify further.
+
+apiVersion: v1
+kind: PersistenceVolumeClaim
+metadata:
+   name: azurefile  ## This is the name for the preistence volume claim we will be using
+spec:
+  accessModes:
+     - ReadWriteMany  ## allowing many pod to read and write.
+  storageClassName: azurefile
+  resources:
+     requests:
+        storage: 10Gi  ## requesting for 10gb 
+```
+
+ - To deploy the above content store in file_pvc.yml
+ ```
+ $ kubectl apply -f file_pvc.yml
+ ## creates the pvc resource
+ 
+ ## verify the created pvc and list it using below command
+ $ kubectl get pvc
+ 
+ 
+ ## To check the persistent volume and list it use below command
+ ## also display the reclaim policy
+ $ kubectl get pv
+ ```
+ 
+ #### since we have created the shared volume, we can create pod resources to access those.
+ ```
+ ....
+    spec:
+       volumes:
+        - name: azurefile ## the created PVC
+          persistentVolumeClaim:
+             claimName: azurefile 
+       containers:
+        - image: <ACR_name>/<image>:version
+          imagePullPolicy: Always
+          name: firstapp
+          volumeMounts:
+             - mountPath: "/www"
+               name: azurefile  ## name of the PV
+---
+apiVersion: v1
+kind: Service
+....
+....
+ ```
+ 
+  - Use the above content store in a file-storageclass.yml file and use below command to deploy.
+  ```
+  $ kubectl apply -f file-storageclass.yml
+  ```
+ 
+ ### once the deployment is successful, how can we write some info to the PV or file resource.
+ 
+ - below command will execute the shell commad just writting the hostname to a file to the mounted www location.
+ ```
+ ## the inner command gets the pod resource and get the hostname and writes it to a file.
+ 
+ $ kubectl exec -it $(kubectl get pod -l app=firstapp-file -o jsonpath='{.items[0].metadata.name}') --sh -c 'hostname > /www/hostname; cat /www/hostname'
+ ```
+ 
+ ##### Cleaning up the storage:
+  - Persistent storage is cleaned up `automatically` if the reclaim policy is set to Delete.
+  - How to manually delete if we had reclaim policy `retain`, we need to find the underlying resources.
+  
+  ```
+  $ kubectl get pvc
+  $ kubectl get pv
+  
+  $ kubectl delete deployment <deploymentname>
+  $ kubectl delte pvc <pbcName>
+  $ kubectl dlete pv <pvName>
+  ```
+ 
