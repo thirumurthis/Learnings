@@ -349,6 +349,139 @@ $ kubectl label node <new_node_name> key=value
   ```
   
 ### AKS storage options
-  - `Local` scratch space (fast/SSD storage)
-    - when the pod dies the storage will not be available.
-    - Auto-provisioned persistence
+- AKS has multiple storage options, most common one is `local storage` to which the pod has directly associated with node, which is mapped to the underlying filesystem on which node it is getting deployed.
+
+- When deploying the Kubernetes environment we are defining the availability and type of the local scratch space (fast/SSD storage). 
+
+- There is no peristent, that is when the pod dies the storage also dies and is not available.
+
+- There are persistent model available as part of Kubernetes environment, which is also supported by AKS. 
+   - Classic block storage model 
+      - This is a persistent model which can be configured to delete along with the persistent volume claim. (i.e. This persistent claim owns the persistent volume) 
+      - Single pod to single block storage connection.
+      - Like a static storage, it can be reclaimed if needed.
+    
+   - AKS offers `auto-provisioning` of file, using `SMB` file service model.
+       - This gives the ability that multiple pods can read and write
+       - That is we can have one underlying provisioned file resources that shared access accross multiple pods that has read and write access.
+
+##### What are storage class and how to create a new storage class?
+   - There are two storage class
+       - default (low general purpose, managed disk)
+       - managed-premium (high performance)
+   - Both of these storages has a reclaim policy which indicates that the underlying Azure disk will be deleted when the pod used it dies or deleted. (this reclaimpolicy can be set in deployment resource.)
+   - Both of these reclaim the disk after deleting the persistent volume claim.
+      - In kubernetes there are two components to persistent volume and mapping persistent volume claim.
+          - persistent volume
+          - persistent volume claim
+       -> If we create a persistent volume claim and there is no underlying persistent volume, to associate with that claim. Kubernetes backend storage sub system will create the volume for us.
+       -> In the above case if we delete the persistent volume claim and if the underlying persistent volume doesn't have the reclaimpolicy as `retain`,  the claim will also delete the persistent volume.
+       -> So in this case, when a persistent volume is associated with the Pod, and when the pod is restarted the persistent volume(same storage) will be available, but if we delete the pod and also delete the persistent volume claim the persistent volume also gets deleted.
+        
+ - When the defineing the `reclaimPolicy: retain` in the deployment manifest, it will retain the persistent volume even after the pod is deleted.
+ 
+ ```
+ # manifest that will create storage class content
+ 
+ kind: StorageClass
+ apiVersion: storage.k8s.io/v1
+ metadata:
+   name: managed-premium-retain
+ provisioner: kubernetes.io/azure-disk
+ reclaimPolicy: Retain
+ parameters:
+    storageaccounttype: Premium_LRS
+    kind: Managed
+    ...
+ ```
+ 
+##### To create the storage, use the mainfest in the below command.
+ ```
+ $ kubectl apply -f storage-class.yml
+ ```
+ 
+ ##### How to verify the storage classes?
+ ```
+ $ kubectl get storageclasses
+ # lists the storage classes with the details
+ ```
+ 
+  - A persistentVolumeClaim request either Disk or file storage of particular storageClass, access mode and size.
+  - Kubernetes API server can dynamically provision the underlying storage resources in Azure if there are no existing resources to fulfill the claim. ( i.e. it creates the storage volume).
+  - Pod definition includes the volume mount once the volume has been connected to the pod.
+  
+````
+## manifest file
+## creating a filename-pvc and mounting them to the container.
+....
+# deployment
+   spec:
+      volumes:
+       - name: firstacpp-pvc
+         persistentVolumeClaim:
+             claimName: firstapp-pvc
+      containers:
+        - image: <ACR_name>/<image-name>:<version>
+          imagePullPolicy: Always
+          name: firstapp
+          volumeMounts:
+             - mountPath: "/www"
+               name: firstapp-pvc
+         ....
+ ---
+ # service
+ apiVersion: v1
+ kind: Service
+ metadata:
+   labels:
+      app: firstapp-volume
+      name: firstapp-volume
+ spec:
+    ports:
+    - name: web
+      port: 80
+      protocol: TCP
+      targetPort: 80
+    type: LoadBalancer
+    selector:
+       app: firstapp-volume
+---
+### used to defing the claim which specifies the type of storage, mode and size (check the description above).
+### Doing this, this storage claim will be for particular pod
+### If we need to create another pod we need to define the its own persistent volume claim
+### This is common for standard database style environment
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: firstapp-pvc
+spec:
+  storageClassName: managed-premium-retain
+  accessModes:
+    - ReadWriteOnce
+  resources:
+     requests:
+        storage: 2Gi
+....
+````
+##### use below command to deploy the manifest.
+```
+$ kubectl apply -f firstapp-volume.yml
+
+## use the below command to check the pod
+$ kubectl get pod
+
+## the pods takes some time to bring up the pods since pvc resource creation
+```
+
+##### Above defined persistent volume store is specific to single pod. What if we need to have a shared persistent or storage, so that multiple pods needs to write and read from the storage class?
+ - That is multiple client can read and write to the persistent storage.
+ - File type resource where clients need to write/read to it from multiple pods.
+
+ - The File type resoruce is availabe by SMB service model, the AKS provides that option (refer the above notes). So the shared resource can be used by multiple pods to read and write. The management of the file type resource is handled by Azure using connectors.
+ 
+ - In order to use the File storage resource we need to connect this  file storage resoruce with our AKS cluster. This can be achived by below steps.
+    - Discover the specific storage resource name.
+    - Use that to create a storage account using that name (the storage name should start with `MC_`).
+ 
+ 
+
