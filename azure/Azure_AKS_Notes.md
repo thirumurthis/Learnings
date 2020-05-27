@@ -640,3 +640,18 @@ kind: Service
   $ kubectl dlete pv <pvName>
   ```
  
+#### AKS Networking
+  - Azure CNI or kubenet
+     - CNI model - exposes the pod level ip addressed to the environment (advanced)
+     - kubnet - hides the ipaddress info behind the node ip address.
+   Note: 
+     - The CNI networking needs to be determined before we deploying an AKS cluster.
+     - kubenet is simple to start
+     
+  Additional services:
+     - internal load balancer
+     - external SLB 
+     
+  Ingress controller:
+      - default host router module (uses DNS on top of load balancer Front end)
+      
