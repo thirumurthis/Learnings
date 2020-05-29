@@ -552,9 +552,9 @@ _Note:_
    - JSSE defines two types of files for storing keys and certificates, `keystore` and `truststore`.
       - __`keystore`__ => holds your own private certificates with their corresponding private key.
       - __`truststore`__ => trusted certificates of other application (entitites) are stored in `truststores`.
-    - The default `keystore` and `truststore` distributed with ActiveMQ are located under ${ACTIVEMQ_HOME}/conf. 
-        - `borker.ks` - default broker certificate
-	- `broker.ts` - hold trusted client certificates.
+   - The default `keystore` and `truststore` distributed with ActiveMQ are located under ${ACTIVEMQ_HOME}/conf. 
+      - `borker.ks` - default broker certificate
+      - `broker.ts` - hold trusted client certificates.
 
   For production usage, use custom generated keystore and truststore.
   
