@@ -563,9 +563,9 @@ _Note:_
   Broker log will have `Coult not accept connection: Recieved fatal alert : certiicate unkown.`.
   
   In order to pass the certificates to the Producer and consumer, we need to start the service passing the SSL parameters listed below.
-    - `javax.net.ssl.keyStore` - keystore the client should use
-    - `javax.net.ssl.keyStorePassword` - defines the password for keystore
-    - `javax.net.ssl.trustStore` - defines an appropriate truststore client shoud use.
+   - `javax.net.ssl.keyStore` - keystore the client should use
+   - `javax.net.ssl.keyStorePassword` - defines the password for keystore
+   - `javax.net.ssl.trustStore` - defines an appropriate truststore client shoud use.
   
  ```
  // When starting the producer or consumer pass this values as JVM arguments.
@@ -599,7 +599,7 @@ similarly we need to create client keystore and certificate.
  ```
  
  Different ways to use this files to start the broker
- ``
+ ```
   1. Replace the existing keystore and truststore under ${ACTIVEMQ_HOME}/conf and restart the broker as $ /bin/activemq console
   
   2. Copy the stores and ceritficate to ${ACTIVEMQ_HOME}/conf and pass the certificate as input when starting the broker as
