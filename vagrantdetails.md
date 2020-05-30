@@ -268,20 +268,35 @@ Right click on the adapter whose Name or the Device Name matches with VirtualBox
      Now go back to your Terminal/Powershell/Command window and repeat the vagrant up command. (use the admin command prompt) 
      It should work fine this time.
    ```
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
-      
+  
+  ##### Vagrant K8s node setup:
+   - The First issue was the host machine was not able to access the Virtual machine VM's, the main thing is to setup the hostonly network.
+  
+  - After cloning the github project justmeandopensource for k8s playground.
+  - I had to modfiy the vagrant file for network, kmaster yum update script.
+  ```
+  ## network change was to add a public and private network as below
+    
+    kmaster.vm.network "private_network", ip: "172.42.42.100"
+    kmaster.vm.network :public_network, :bridge => "Intel(R) WiFi Link 1000 BGN", auto_config: false
+    
+    workernode.vm.network "private_network", ip: "172.42.42.10#{i}"
+    workernode.vm.network :public_network, :bridge => "Intel(R) WiFi Link 1000 BGN", auto_config: false
+    
+    ## The above changes include 1. HostOnly network, since this resulted in the above 
+    ## Network exception i had to install the driver on that adapter.
+  ```
+ 
+ After fixing the expected is, the three adapter was displayed as exepceted and were accessed uing ping command on that specific 172.42.42.100
+ ```
+ ==> kmaster: Preparing network interfaces based on configuration...
+    kmaster: Adapter 1: nat
+    kmaster: Adapter 2: hostonly
+    kmaster: Adapter 3: bridged
+==> kmaster: Forwarding ports...
+    kmaster: 22 (guest) => 2222 (host) (adapter 1)
+==> kmaster: Running 'pre-boot' VM customizations...
+==> kmaster: Booting VM...
+==> kmaster: Waiting for machine to boot. This may take a few minutes...
+    kmaster: SSH address: 127.0.0.1:2222
+ ```
