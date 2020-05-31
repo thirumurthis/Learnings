@@ -77,6 +77,7 @@ There are multiple maven plugins to perform docorization,
  </project>
 ```
 
+##### The `Dockerfile` content.
 ```
 FROM openjdk:8-jre-alpine
 
@@ -95,13 +96,13 @@ If the `Docker Toolbox`, then start that and login
  - After login use `$ mvn install` will build and push the image.
 ```
 name@name MINGW64 /c/sboot_app/eclipse-ws/HelloFromDocker
-$ docker login                                                                                                                                                                                                                  Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+$ docker login                                                                                                                            Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
 Username (docker-user-name): docker-user-name
 Password:
 Login Succeeded
 
 name@name MINGW64 /c/sboot_app/eclipse-ws/HelloFromDocker
-$ mvn install                                                                                                                                                                                                                   [INFO] Scanning for projects...
+$ mvn install                                                                                                                            [INFO] Scanning for projects...
 [INFO]
 [INFO] --------------------< sample.demo:HelloFromDocker >---------------------
 [INFO] Building HelloFromDocker 1.0.0
@@ -203,3 +204,15 @@ $ mvn install                                                                   
 [INFO] Finished at: 2020-05-30T21:33:47-07:00
 [INFO] ------------------------------------------------------------------------
 ```
+
+ - Docker toolbox was installed in case of windows 10 home edition.
+
+##### After successful build, use `$ docker images` to view the built images.
+  - To run the docker container use command, `$ docker run -p 8000:8080 -d <container-id>`
+  - To validate in case of docker toolbox, (Windows 10 home edition) version, use `$ docker-machine ip` to find the ip.
+  - Then after container is up and running, use `$ curl http://<ip-address>:8000/` this will display the content.
+
+##### This image can be used within the Kubernetes, to create deployment and service object.
+ - The image is stateless, meaning there is no database.
+ 
+ 
