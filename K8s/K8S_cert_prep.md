@@ -88,3 +88,8 @@ $ kubectl edit pod <pod-name>
 ```
 $ kubectl apply -f <pod-descriptor file>
 ```
+
+#### Comand to get the yaml file for a given pod
+```
+$ kubectl get pod <pod-name> -o yaml  > file-to-redirect.yml
+```
