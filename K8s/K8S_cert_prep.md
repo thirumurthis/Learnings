@@ -48,7 +48,7 @@ pod/myapp-pod created
 
 ##### To check the status of deployed pod
 
-- The status of the pod `ContainerCreating`
+- The status of the pod 'Pending` or `ContainerCreating`
 ```
 C:\thiru\learn\k8s\certs\prog1>kubectl get pods
 NAME        READY   STATUS              RESTARTS   AGE
