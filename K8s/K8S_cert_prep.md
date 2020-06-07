@@ -62,3 +62,17 @@ NAME        READY   STATUS    RESTARTS   AGE
 myapp-pod   1/1     Running   0          40s
 ```
 
+#### Creating an pod directly without yml file
+```
+$ kubectl run nginix --image=ngnix
+```
+
+#### To get the information of the pods running on which node.
+```
+$ kubectl get pods -o wide
+```
+
+#### To get the images used in the pod
+```
+$ kubectl describe pod <pod-name>
+```
