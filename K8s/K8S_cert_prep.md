@@ -93,3 +93,48 @@ $ kubectl apply -f <pod-descriptor file>
 ```
 $ kubectl get pod <pod-name> -o yaml  > file-to-redirect.yml
 ```
+
+### Managing Labels:
+##### After the pod is running how to view the label name.
+  - The labels are already added in the deployment manifest yaml file (firstapp.yml).
+ ```
+ $ kubectl get pod myapp-pod --show-labels
+ NAME        READY   STATUS    RESTARTS   AGE   LABELS
+ myapp-pod   1/1     Running   0          46s   app=myapp,type=testpod
+ ```
+ 
+ ##### `Adding a label to a pod` running in the node.
+ ```
+ C:\thiru\learn\k8s\certs\prog1>kubectl label pod myapp-pod env=demo1
+ pod/myapp-pod labeled
+
+ C:\thiru\learn\k8s\certs\prog1>kubectl get pod myapp-pod --show-labels
+ NAME        READY   STATUS    RESTARTS   AGE     LABELS
+ myapp-pod   1/1     Running   0          5m54s   app=myapp,env=demo1,type=testpod
+ ```
+ 
+ ##### `Removing label to a pod` running in the node.
+ ```
+ ## Note the - sign at the end
+ C:\thiru\learn\k8s\certs\prog1>kubectl label pod myapp-pod env-
+ pod/myapp-pod labeled
+
+  C:\thiru\learn\k8s\certs\prog1>kubectl get pod myapp-pod --show-labels
+  NAME        READY   STATUS    RESTARTS   AGE     LABELS
+  myapp-pod   1/1     Running   0          7m36s   app=myapp,type=testpod
+ ```
+ 
+ ##### `Overwrite/update the label to a pod` running in the node.
+  - add a label first as env=dev-demo1 and then update that to env=dev1
+ ```
+C:\thiru\learn\k8s\certs\prog1>kubectl get pod myapp-pod --show-labels
+NAME        READY   STATUS    RESTARTS   AGE   LABELS
+myapp-pod   1/1     Running   0          10m   app=myapp,env=dev-demo1,type=testpod
+
+C:\thiru\learn\k8s\certs\prog1>kubectl label --overwrite pods myapp-pod env=dev1
+pod/myapp-pod labeled
+
+C:\thiru\learn\k8s\certs\prog1>kubectl get pod myapp-pod --show-labels
+NAME        READY   STATUS    RESTARTS   AGE   LABELS
+myapp-pod   1/1     Running   0          11m   app=myapp,env=dev1,type=testpod
+ ```
