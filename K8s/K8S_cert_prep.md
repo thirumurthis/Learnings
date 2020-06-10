@@ -195,3 +195,31 @@ $ kubectl delete pods --all
 ```
 
 Note: if there are some deployments associated to the pod, stop the deployment and then delete the pod.
+
+##### `readinessProbe` 
+  - Used to know when the container is ready to take up the traffic.
+```yaml 
+    readinessProbe:
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          # Probe for http
+          httpGet:
+            # Path to probe
+            path: /
+            # Port to probe
+            port: 80
+```
+
+##### `livenessProbe`
+```yaml
+        livenessProbe:
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          # Probe for http
+          httpGet:
+            # Path to probe
+            path: /
+            # Port to probe
+            port: 80
+```
+  
