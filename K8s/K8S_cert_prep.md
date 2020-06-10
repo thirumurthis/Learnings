@@ -222,4 +222,76 @@ Note: if there are some deployments associated to the pod, stop the deployment a
             # Port to probe
             port: 80
 ```
+
+With the `livenessProbe`, the Pods and Deployment will be in running state, but notice the RESTARTS of the pods. In this case the pods will be restarted often.
+  - At some point the pod will land up or goes to __`CrashLoopBackOff`__ status
+ 
+ 
+#### How to investigate what went wrong in the pod or deployment, using `describe`: 
+```
+## under the event section should be able to see the log message
+## container info will be available over here too ( -o wide)
+$ kubectl describe pod <pod-name>
+```
+
+#### How to upgrade the deployment.
+  - Say we have deployed a application with image version 1.0, using `$ kubectl create -f <deployment.yaml>` file.
+  - If we have the image updated with the new version, we simply set the image to the deployment, like below:
+  ```
+  $ kubectl set image deployment/<previous-deployment-name> <new-image-version-name>
+  ```
+  - After setting the image, if we see the deployment, the new deployment is pdated.
+  - At this moment, if you see the replicasets `$ kubectl get rs` should see two set of pods.
+       - where there are two unique guid attached, and one is at the desired state with 1 or more replica set.
+       
+NOTE:
+  - if the create command is started with `--record` option (will record)
+  - after setting the latest version of image
+  - using the command `$ kubectl rollout history deployment/<deployment-name>` will display the changes happened on the deployment, the revision happened.
   
+##### How to `rollout` to the previous version  
+```
+$ kubectl rollout undo deployment/<deployment-name>
+```
+
+##### if we need to rollout to a specific version, then use
+```
+$ kubectl rollout undo deployment/<deployment-name> --to-revision=<version-number>
+```
+
+#### Troubleshooting the pods:
+```
+## from deployment perspective
+$ kubectl describe deployment <deployment-name>
+```
+
+```
+## pod name is obtained using kubectl get pod command
+$ kubectl describe po/<pod-name>
+
+or 
+
+$ kubectl describe pod <pod-name>
+
+## check the Events section which has the messages and info
+```
+
+#### Troubleshooting using the `logs` files:
+```
+## get the deployments info using kubectl get deployments.
+## get the associated pods for that specific deployments. <pod-name>
+
+$ kubectl logs <pod-name>
+## the above command will return logs info of the pod
+```
+
+#### Trobuleshooting inside the pod itself using `exec` command:
+```
+## below command will take to the pod itself.
+$ kubectl exec -it <pod-name> /bin/bash
+root@pod-name:/#
+```
+##### Since we have multiple containers with the pod, in that case we need to exec to that container use below command `-c <pod-name>`
+```
+$ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
+```
