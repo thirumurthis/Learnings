@@ -139,8 +139,52 @@ NAME        READY   STATUS    RESTARTS   AGE   LABELS
 myapp-pod   1/1     Running   0          11m   app=myapp,env=dev1,type=testpod
  ```
 
-##### Another representation of lable overwrite command
+##### Another representation of label overwrite command
 ```
 ## note the pod/<pod-name> representation
 $ kubectl label pod/myapp-pod env=demo --over-write
+```
+
+### `Searching` using labels.
+ - When manifest with many pods defined with labels and those are running.
+ 
+```
+## Say we need to know the list of pods that are having the label env=demo
+
+$ kubectl get pods --selector env=demo
+
+## To display the labels of the selector
+
+$ kubectl get pods --selector env=demo --show-labels
+
+```
+
+##### How to apply multiple labels in the selector, when searching for pods
+```
+# the below will find the pods that contains the labels as stated with comma separated value.
+$ kubectl get pods --selector env=demo,app=myapp
+```
+
+##### Applying `!=` search in the selector
+```
+# note the != in the selector
+$ kubectl get pods --selector env!=demo,tier=front-end
+```
+
+### `--selector` has a short form `-l`, lets use this in searching with set operator using `in`
+```
+## use " quotes when using from windows, since using ' reports exception "name cannot be provided for selector"
+$ kubectl get pods -l "version in (1.0,2.0)"
+
+```
+##### using `notin` within selector
+```
+$ kubectl get pods -l "version notin (1.0,2.0)"
+```
+
+##### Performing delete for a group of lables 
+```
+## below will delete all the pods that has the matchin label env=demo
+## note the resource name pods in this case. (it can be deployment, services, etc.)
+ $ kubectl delete pods -l env=demo
 ```
