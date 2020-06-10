@@ -138,3 +138,9 @@ C:\thiru\learn\k8s\certs\prog1>kubectl get pod myapp-pod --show-labels
 NAME        READY   STATUS    RESTARTS   AGE   LABELS
 myapp-pod   1/1     Running   0          11m   app=myapp,env=dev1,type=testpod
  ```
+
+##### Another representation of lable overwrite command
+```
+## note the pod/<pod-name> representation
+$ kubectl label pod/myapp-pod env=demo --over-write
+```
