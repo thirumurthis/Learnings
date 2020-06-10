@@ -188,3 +188,10 @@ $ kubectl get pods -l "version notin (1.0,2.0)"
 ## note the resource name pods in this case. (it can be deployment, services, etc.)
  $ kubectl delete pods -l env=demo
 ```
+
+##### `Delete all pods`
+```
+$ kubectl delete pods --all
+```
+
+Note: if there are some deployments associated to the pod, stop the deployment and then delete the pod.
