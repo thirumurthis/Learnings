@@ -96,7 +96,7 @@ $ kubectl get pod <pod-name> -o yaml  > file-to-redirect.yml
 
 ### Managing Labels:
 ##### After the pod is running how to view the label name.
-  - The labels are already added in the deployment manifest yaml file (firstapp.yml).
+  - The labels are already added in the Pod manifest yaml file (firstapp.yml).
  ```
  $ kubectl get pod myapp-pod --show-labels
  NAME        READY   STATUS    RESTARTS   AGE   LABELS
