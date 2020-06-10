@@ -291,7 +291,9 @@ $ kubectl logs <pod-name>
 $ kubectl exec -it <pod-name> /bin/bash
 root@pod-name:/#
 ```
-##### Since we have multiple containers with the pod, in that case we need to exec to that container use below command `-c <pod-name>`
+##### Since we have multiple containers with the pod, in that case we need to exec to that container use below command `-c <container-name>`
+  - Mostly we don't use -c since we execute single container in one pod.
+  - but in case if we use multipe container, we can use below command.
 ```
 $ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
 ```
