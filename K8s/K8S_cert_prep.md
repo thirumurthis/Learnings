@@ -357,3 +357,66 @@ $ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
                   key: log_level # read the key from the config map key
  ```
  
+ ##### To view the information about the `configMap`s:
+ ```
+ ## list the config map in for default namespace, for specific name space use -n
+ $ kubectl get configmaps
+ ```
+ ```
+ ## To list the contents of the configMap 
+ $ kubectl get configmap/logger -o yaml
+ ```
+
+Note: 
+ - Logs cannot be viewed on the deployments. 
+ 
+ ### `secrets` in kubernetes:
+  - Sensitive informaiton can be stored in Kubernetes as secrets.
+  
+##### how to create a secret:
+ - 1. Creating the secret
+  ```
+  ## below is the syntax to create a generic secret
+  $ kubectl create secret generic <name-for-secret> --from-literal=somekey=somevalue
+  
+  $ kubectl create secret generic mytoken --from-literal=mytokenkey=123456
+  ```
+  -2. To view the secret info
+  ```
+  $ kubectl get secret <name-for-secret>
+  $ kubectl get secret mytoken
+  ```
+  ```
+  ## to display the contents 
+  $ kubectl get secret mytoken -o yaml
+  ## note the secret value will be encoded with base64 since we used generic
+  ```
+  
+  3. How to use the Kubernetes secrets within the deployment manifest. (`secretKeyRef`)
+  ```yaml
+  apiVersion: extensions/v1
+  kind: Deployment
+  metadata:
+    name: secretreader
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          name: secretreader
+      spec:
+        containers:
+        - name: secretreader
+          image: thirumurthi/secretapp:latest
+          env:
+          - name: mytoken
+            valueFrom:
+               secretKeyRef:
+                  name: mytoken  # name of the secret created
+                  key: mytokenkey # the key used to set the value of the secret.
+  ```
+  
+  
+  
+  
+ 
