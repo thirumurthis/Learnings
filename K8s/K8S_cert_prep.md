@@ -298,6 +298,46 @@ root@pod-name:/#
 $ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
 ```
 
+####`ReplicationController` This is old way of implementing, new way is `replicaSet`.
+ - Sample yaml manifest file for replication controller, this makes sure the number of pods running.
+ 
+```yaml
+# rcontroller-demo.yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: app-rc
+  labels:
+     app: app-demo
+     type: ngnix-demo
+spec:
+  template:
+     metadata:
+       name: app-demo
+       labels:
+         app: app-demo
+         type: nginx-demo
+     spec:
+       containers:
+       - name: nginx-containers
+         image: nginx
+  replicas: 3
+```
+ - Deployment and List the repilcation controller.
+```
+$ kubectl create -f rcontroller.yaml
+
+$ kubectl get replicationcontroller
+
+$ kubectl get pods
+```
+
+###`replicaSets` 
+  - Difference between the ReplicationController and ReplicaSets is ReplicaSets has `selector` section.
+  - ReplicaSet considers other pods which are already started into consideration.
+  
+----
+
 ### `ConfigMaps`
   - Application needs a way to pass data to them that can be changed at deploy time.
   - This is where the `configMaps` are used in Kubernetes.
