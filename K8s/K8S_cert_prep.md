@@ -547,7 +547,8 @@ spec:
   ```
  - once the labels is added to the node 
  - in the yaml file we can add the nodeselctor.
-   ```yaml
+   
+```yaml
  apiVersion: apps/v1
  kind: DaemonSet
  metadata:
@@ -580,4 +581,16 @@ spec:
         terminationGracePeriodSeconds: 30
         nodeSelector:
            env: "development"
+```
+  - Deploy the above yaml and list the daemon set to check the status.
+
+
+### `StatefulSet`
+ - statefulset manage deployment and scaling of the pods.
+ - This guarantees abount the order and the uniqueness of these pods.
+ - unlike deployment, statefulset manages the sticky identity for each pods.
+
+To list the statefulset.
+```
+$ kubectl get statefulsets
 ```
