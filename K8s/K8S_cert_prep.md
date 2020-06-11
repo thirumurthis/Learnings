@@ -297,3 +297,63 @@ root@pod-name:/#
 ```
 $ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
 ```
+
+### `ConfigMaps`
+  - Application needs a way to pass data to them that can be changed at deploy time.
+  - This is where the `configMaps` are used in Kubernetes.
+    - For example a log level like (debug, error, etc) that needs to be passed at the start time.
+    - Instead of hard coding this values we can pass these values as environment variables to the containers.
+ 
+ ##### We have a deployment and we need to pass the log level as `env` variable, below is the example.
+   - This can be acheived using the `configMap` as well
+ ```yaml
+ apiVersion: extension/v1
+ kind: Deployment
+ metadata:
+    name: loggerapp
+ spec:
+    replicas: 1
+    template:
+       metadata:
+          labels:
+            name: loggerapp
+       spec:
+         containers:
+         - name: loggerapp
+           image: thirumurthi/loggerapp:latest
+           env:
+           - name: log_level
+             value: "info"
+ ```
+ 
+ #### Using `configMap` to change the environment variable at deployment time.
+ - 1. Create the configMap using kubectl command, as below.
+ ```
+ ## we will be passing the log_level=info as environment variables during deployment.
+ $ kubectl create configmap logger --from-literal=log_level=info
+ ```
+ - 2. How to refer the ConfigMap values from the deployment manifest.
+ ```yaml
+ 
+ apiVersion: extension/v1
+ kind: Deployment
+ metadata:
+    name: loggerapp-configmap
+ spec:
+    replicas: 1
+    template:
+       metadata:
+          labels:
+            name: loggerapp-configmap
+       spec:
+         containers:
+         - name: loggerapp-configmap
+           image: thirumurthi/loggerapp:latest
+           env:
+           - name: log_level
+             valueFrom:
+               configMapKeyRef:
+                  name: logger  # name of the configmap created 
+                  key: log_level # read the key from the config map key
+ ```
+ 
