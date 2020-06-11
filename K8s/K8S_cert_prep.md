@@ -298,7 +298,7 @@ root@pod-name:/#
 $ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
 ```
 
-####`ReplicationController` This is old way of implementing, new way is `replicaSet`.
+#### `ReplicationController` This is old way of implementing, new way is `replicaSet`.
  - Sample yaml manifest file for replication controller, this makes sure the number of pods running.
  
 ```yaml
