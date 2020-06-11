@@ -415,8 +415,169 @@ Note:
                   name: mytoken  # name of the secret created
                   key: mytokenkey # the key used to set the value of the secret.
   ```
-  
-  
-  
-  
+
+### `jobs` in Kubernetes:
+  - Jobs runs a pod once and then stop.
+  - The output is kept around until it is deleted explicitly.
+
+Sample job manifiest file
+```yaml
+## job-demo.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: countdownjob
+spec:
+  template:
+     metadata:
+        name: countdownjob
+     spec:
+        containers:
+        - name: counter
+          image: busybox
+          command:
+            - bin/sh
+            - -c
+            - "for i in 5 4 3 2 1 ; do echo $i; done"
+         restartPolicy: Never    # other options, Always or onFailure
+```
+ - Like other manifest file we can use create command to deploy the jobs
+ ```
+ $ kubectl create -f job-demo.yaml
+ ```
  
+ ##### How to list the jobs and check the status?
+ ```
+ $ kubectl get jobs
+ 
+ ## find the pods and check the logs
+ ```
+ 
+ ### `Cronjobs` in Kubernetes:
+  - These are jobs which can run periodically like linux crontab.
+ 
+ Sample cronjob manifest file:
+ ```yaml
+ ## cronjob-demo.yaml
+ apiVersion: batch/v1
+ kind: CronJob
+ metadata:
+   name: crondemo
+ spec:
+   schedule: "*/5 * * * *" # Crontab format runs every 5 mins 
+   jobTemplate:
+     spec:
+       template:
+          spec:
+            containers:
+            - name: crondemo
+              image: busybox
+              args:
+              - /bin/sh
+              - -c
+              - date; echo Print from k8s
+            restartPolicy: OnFailure  # other values Always or Never
+    suspend: false  # true or false, if we don't wanted to be halted and 
+                    # started at later point of time, the deployment will 
+                    # be available not deleted. at jobtemplate level 
+ ```
+    - List the cronjobs using 
+    ```
+    $ kubectl get cronjob
+    ```
+    - List the jobs to see the cron triggered the jobs
+    ```
+    $ kubectl get job
+    ```
+    - Edit the cronjobs using below command in order to pause the job (set suspend to true)
+    ```
+    $ kubectl edit cronjob/crondemo
+    ## opens up vi or editor configured edit and save the suspend to true.
+    ```
+  
+ #### `Daemonset` in kubernets.
+   - `DaemonSet` ensures that all nodes run a copy of a specific pod.
+   - When a node is added to the cluster. pods are added to them as well.
+    - Example: would be runing logging or monitoring agent on all of our nodes.
+ 
+ Sample DaemonSet manifest file:
+ ```yaml
+ apiVersion: apps/v1
+ kind: DaemonSet
+ metadata:
+   name: daemonset-demo
+   namespace: default
+   labels:
+      app: daemonset-demo   
+ spec:
+   selector:
+      matchLabels:
+        name: daemonset-demo
+   template:
+      metadata:
+        labels:
+           name: daemonset-demo
+      spec:
+        containers:
+        - name: daemonset-demo
+          image: busybox
+          args:
+          - /bin/sh
+          - -c
+          - date; sleep 1000
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+        terminationGracePeriodSeconds: 30  
+```
+  - Deploy the above daemonset manifest.
+  - To list the Daemonset
+  ```
+  $ kubectl get daemonset
+  ```
+  
+  ##### in order to make the daemonset to work on specific nodes use `nodeSelector`
+  ```
+  ## refer the yaml file above on how to add labels.
+  ## if the nodes have labels it can be listed
+  $ kubectl get nodes --show-labels
+  ```
+ - once the labels is added to the node 
+ - in the yaml file we can add the nodeselctor.
+   ```yaml
+ apiVersion: apps/v1
+ kind: DaemonSet
+ metadata:
+   name: daemonset-demo
+   namespace: default
+   labels:
+      app: daemonset-demo   
+ spec:
+   selector:
+      matchLabels:
+        name: daemonset-demo
+   template:
+      metadata:
+        labels:
+           name: daemonset-demo
+      spec:
+        containers:
+        - name: daemonset-demo
+          image: busybox
+          args:
+          - /bin/sh
+          - -c
+          - date; sleep 1000
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+        terminationGracePeriodSeconds: 30
+        nodeSelector:
+           env: "development"
+```
