@@ -332,7 +332,7 @@ $ kubectl get replicationcontroller
 $ kubectl get pods
 ```
 
-###`replicaSets` 
+### `replicaSets` 
   - Difference between the ReplicationController and ReplicaSets is ReplicaSets has `selector` section where this is not mandatory in Replication controller.
   - ReplicaSet considers other pods which are already started into consideration.
 
