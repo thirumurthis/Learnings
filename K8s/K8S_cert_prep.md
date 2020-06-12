@@ -355,8 +355,8 @@ spec:
            type: frontend
      spec:
         containers:
-        - name: nginix-containers
-          image: nignix
+        - name: nginx-containers
+          image: nginx
   replicas: 3
   selector:    # This specifies which pods to be replicated 
       matchLabels:
@@ -399,6 +399,45 @@ app-replicaset-74jkq   1/1     Running   0          7m34s
 app-replicaset-csl5m   1/1     Running   0          7m34s
 app-replicaset-pgppm   1/1     Running   0          65s
 app-replicaset-zl598   1/1     Running   0          6m22s
+```
+
+### `Deployments`
+  - Deployments are used in case of production deployments of pods.
+
+yaml file has the four basic properties, even in case of deployment.
+```
+apiVersion
+kind
+metadata
+spec
+```
+
+  The yaml file is similar to the above replicaset only change is the kind: Deployment
+  
+```yaml
+# deployment-demo.yaml
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: app-deployment
+  labels:
+     app: myapp
+     type: frontend
+spec:
+  template:
+     metadata:
+        name: myapp-pod
+        labels:
+           app: myapp
+           type: frontend
+     spec:
+        containers:
+        - name: nginx-containers
+          image: nginx
+  replicas: 3
+  selector:    # This specifies which pods to be replicated 
+      matchLabels:
+         type: frontend
 ```
 ----
 
