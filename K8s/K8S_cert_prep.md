@@ -333,8 +333,35 @@ $ kubectl get pods
 ```
 
 ###`replicaSets` 
-  - Difference between the ReplicationController and ReplicaSets is ReplicaSets has `selector` section.
+  - Difference between the ReplicationController and ReplicaSets is ReplicaSets has `selector` section where this is not mandatory in Replication controller.
   - ReplicaSet considers other pods which are already started into consideration.
+
+```yaml
+#This is different from the replication
+#controller only this version is supporting replicaset
+apiVersion: apps/v1 
+kind: ReplicaSet
+metadata:
+  name: app-replicaset
+  labels:
+     app: myapp
+     type: frontend
+spec:
+  template:
+     metadata:
+        name: myapp-pod
+        labels:
+           app: myapp
+           type: frontend
+     spec:
+        containers:
+        - name: nginix-containers
+          image: nignix
+  replicas: 3
+  selector:    # This specifies which pods to be replicated 
+      matchLabels:
+         type: frontend
+```
   
 ----
 
