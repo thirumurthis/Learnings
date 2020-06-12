@@ -298,7 +298,7 @@ root@pod-name:/#
 $ kubectl exec -it <pod-name> -c <pod-name-without-uid> /bin/bash
 ```
 
-#### `ReplicationController` This is old way of implementing, new way is `replicaSet`.
+### `ReplicationController` This is old way of implementing, new way is `replicaSet`.
  - Sample yaml manifest file for replication controller, this makes sure the number of pods running.
  
 ```yaml
@@ -362,7 +362,44 @@ spec:
       matchLabels:
          type: frontend
 ```
-  
+
+#### How to scale the replicaset values?
+ - Different ways are there 
+   - 1. using `kubectl replace`, in this case edit the yaml file, replicaset: 6 and issue below command
+   
+   ` $ kubectl replace -f replicaset-demo1.yaml`
+   
+   - 2. using `kubectl scale`, in this case the replica set value will not be updated in the yaml file.
+       - when using the yaml manifest file
+       `$ kubectl scale --replicas=6 -f replicaset-demo1.yaml`
+       - when wanted to use the replicaset name `kubectl get replicaset`
+       `$ kubetl scale --replicas=6 replicaset app-replicaset`
+       or `$ kubectl scale --replicas=6 replocaset/app-replicaset`
+       
+    - 3. Auto scaling based on the resources, that is based on the load and resource usage.
+    
+sample output:
+```
+>kubectl get pods -l type=frontend
+NAME                   READY   STATUS    RESTARTS   AGE
+app-replicaset-74jkq   1/1     Running   0          3m28s
+app-replicaset-csl5m   1/1     Running   0          3m28s
+app-replicaset-zl598   1/1     Running   0          2m16s
+
+>kubectl get rs
+NAME             DESIRED   CURRENT   READY   AGE
+app-replicaset   3         3         3       3m33s
+
+>kubectl scale --replicas=4 replicaset/app-replicaset
+replicaset.apps/app-replicaset scaled
+
+>kubectl get pods
+NAME                   READY   STATUS    RESTARTS   AGE
+app-replicaset-74jkq   1/1     Running   0          7m34s
+app-replicaset-csl5m   1/1     Running   0          7m34s
+app-replicaset-pgppm   1/1     Running   0          65s
+app-replicaset-zl598   1/1     Running   0          6m22s
+```
 ----
 
 ### `ConfigMaps`
