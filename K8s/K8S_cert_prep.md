@@ -486,6 +486,105 @@ $ kubectl create deployment --image=redis:alpine redis-backend
 ### note there is no dry run option for the scale command.
 $ kubectl scale deployment/redis-backend --replicas=5
 ```
+
+### `namespaces` 
+ - To run a pod in a name space, use --namespace or -n option.
+ ```
+ 
+ # using command
+ $ kubectl run --generator=run-pod/v1 busybox --image=busybox -n dev --dry-run
+ 
+ ## if wanted to create pod in a name space that is not having a namespace described
+ ## dev is the namespace
+ $ kubectl create -f <manifest file yaml> -n dev
+ 
+ ## to use within the manifest file, under metadata properties of yaml include namespace: <value for namespace>
+ $ kubectl create -f <manifest yaml file>
+ ```
+
+##### To access the service from one namespace to another?
+
+```
+## to access the service from antoher namespace
+<service-name>.<namespace-name>.svc.cluster.local
+
+svc => resources
+cluster.local => is the domain
+
+```
+
+For a service running in a name space dev and needs to be accessed from test namespace:
+```
+# list the services running using 
+$ kubectl get svc --all-namespaces -o wide
+
+# pick the service to access from another namespace (from dev to access a test service)
+$ redis-service.test.svc.cluster.local
+
+# to access a service within the same name space just use the service name.
+```
+##### `default` is the K8s has a default namespace comes when installed or setup in cluster.
+
+#### To change the namespace within the current context where the kubectl command executes
+```
+## create namespace
+$ kubectl create namespace demo
+
+$ kubectl get namespace
+
+## to change the default or existing namespace to different namespace.
+## previous was default in this case
+$ kubectl config --current-context --namespace=demo
+
+## to get the current context information 
+$ kubectl config view
+# check the namspace in the output
+
+## to change back to the default namespace
+$ kubectl config set-context --current --namespace=default
+
+Or 
+
+$ kubectl config set-context $(kubectl config current-context) --namespace=demo
+```
+
+#### Creating namespace using the manifest file
+```yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: demo
+# save the mainfest file and run the kubectl create -f <file.yaml>  
+```
+
+ - To list all the pods within all namespace
+ ```
+  ## note the namespaces (s at the end)
+ $ kubectl get pods --all-namespaces
+ ```
+ 
+### `ResourceQuota` 
+ - Used to limit the number of resources within the namespace
+ 
+ Creating a ResourceQuota using manifest file:
+```yaml
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resourcequota-demo
+  namespace: demo
+  labels:
+     type: compute-quota
+spec:
+  hard:
+   request.cpu: "2"
+   request.memory: 1Gi
+   limits.cpu: "5"
+   limits.memory: 5Gi
+
+# use kubectl create -f <manifest yaml file>
+```
 ----
 
 ### `ConfigMaps`
