@@ -412,7 +412,7 @@ metadata
 spec
 ```
 
-  The yaml file is similar to the above replicaset only change is the kind: Deployment
+The yaml file is similar to the above replicaset only change is the kind: Deployment
   
 ```yaml
 # deployment-demo.yaml
@@ -462,11 +462,21 @@ $ kubectl run --generator=run-pod/v1 redis-pod --image=redis:alpine --labels=typ
 ```
 
 #### Create a service for the redis pod and expose the port with label type=backend-service
+ type ClusterIP, so that the port is exposed within the cluster.
 ```
 $ kubectl expose pod/redis-pod --port=6379 --name=redis-svc --labels=type=backend-service --dry-run
 
 ## Execution
 $ kubectl expose pod/redis-pod --port=6379 --name=redis-svc --labels=type=backend-service
+
+
+## This approach has no option to provide label, this will expect app=redis-pod as selector
+$ kubectl create service clusterip redis-pod --tcp=6379:6379
+```
+
+#### Expose using the type:NodePort, expose port outside cluster
+```
+$ kubectl expose pod/redis-pod --port=6379 --name=redis-svc --type=NodePort
 ```
 
 #### Create a deployment and scale the pods to 5 replicas
