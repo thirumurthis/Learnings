@@ -441,6 +441,28 @@ spec:
 ```
 ----
 
+#### Creating pods and generating pods using imperative commnad
+
+ - Create an ngnix pod
+```
+## to verify the command execution
+$ kubectl run --generator=run-pod/v1 nginx-pod --image=ngnix:alpine --dry-run
+
+## to print the output as yaml file
+$ kubectl run --generator=run-pod/v1 nginx-pod --image=ngnix:alpine -o yaml
+
+## to create the pod
+$ kubectl run --generator=run-pod/v1 nginx-pod --image=ngnix:alpine 
+```
+
+- Create an redis pod, with label type:backend
+```
+## we can use --dry-run or -o yaml/json/name
+$ kubectl run --generator=run-pod/v1 redis-pod --image=redis:alpine --labels=type=backend
+```
+
+----
+
 ### `ConfigMaps`
   - Application needs a way to pass data to them that can be changed at deploy time.
   - This is where the `configMaps` are used in Kubernetes.
