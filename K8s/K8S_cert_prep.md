@@ -578,12 +578,47 @@ metadata:
      type: compute-quota
 spec:
   hard:
-   request.cpu: "2"
-   request.memory: 1Gi
+   requests.cpu: "2"
+   requests.memory: 1Gi
    limits.cpu: "5"
    limits.memory: 5Gi
 
 # use kubectl create -f <manifest yaml file>
+```
+
+#### Using items in the resourcequota manifest file with Kind `List`
+```
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: pods-high
+  spec:
+    hard:
+      cpu: "1000"
+      memory: 200Gi
+      pods: "10"
+    scopeSelector:
+      matchExpressions:
+      - operator : In
+        scopeName: PriorityClass
+        values: ["high"]
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: pods-medium
+  spec:
+    hard:
+      cpu: "10"
+      memory: 20Gi
+      pods: "10"
+    scopeSelector:
+      matchExpressions:
+      - operator : In
+        scopeName: PriorityClass
+        values: ["medium"]
 ```
 ----
 
