@@ -443,7 +443,7 @@ spec:
 
 #### Creating pods and generating pods using imperative commnad
 
- - Create an ngnix pod
+##### Create an ngnix pod
 ```
 ## to verify the command execution
 $ kubectl run --generator=run-pod/v1 nginx-pod --image=ngnix:alpine --dry-run
@@ -455,12 +455,27 @@ $ kubectl run --generator=run-pod/v1 nginx-pod --image=ngnix:alpine -o yaml
 $ kubectl run --generator=run-pod/v1 nginx-pod --image=ngnix:alpine 
 ```
 
-- Create an redis pod, with label type:backend
+##### Create an redis pod, with label type:backend
 ```
 ## we can use --dry-run or -o yaml/json/name
 $ kubectl run --generator=run-pod/v1 redis-pod --image=redis:alpine --labels=type=backend
 ```
 
+#### Create a service for the redis pod and expose the port with label type=backend-service
+```
+$ kubectl expose pod/redis-pod --port=6379 --name=redis-svc --labels=type=backend-service --dry-run
+
+## Execution
+$ kubectl expose pod/redis-pod --port=6379 --name=redis-svc --labels=type=backend-service
+```
+
+#### Create a deployment and scale the pods to 5 replicas
+```
+$ kubectl create deployment --image=redis:alpine redis-backend
+
+### note there is no dry run option for the scale command.
+$ kubectl scale deployment/redis-backend --replicas=5
+```
 ----
 
 ### `ConfigMaps`
