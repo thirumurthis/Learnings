@@ -436,7 +436,7 @@ spec:
       matchLabels:
          type: frontend
 ```
- ##### DOCKER ENTRYPOINT, CMD on docker file with that of the Manifest command and args 
+ ##### Docker ENTRYPOINT, CMD on docker file with that of the Manifest command and args 
  - ENTRYPOINT in docker is where the command is provided
  - CMD in docker is where the default arguments set.
  
@@ -842,6 +842,7 @@ spec:
 
  In Kubernetes, the security can be applied at Pod level or Container level, if enabled at the pod level it will be applicable to all the containers within the pod.
   - The security can be set in the manifest file, refer the below pod manifest file.
+  
   ```yaml
   apiVersion: v1
 kind: Pod
@@ -863,6 +864,90 @@ spec:
        capabilities:
           add: ["MAC_ADMIN"]
   ```
+Note: When the security context is provided at the container level, that will take precedence even though it is mentioned at the pod level.
+
+### `ServiceAccount`
+  - In Kubernetes resource to resource communication happens using service account.
+  - Authentication and Authorization.
+
+##### How to create a serviceaccount?
+```
+## creation of service account
+$ kubectl create serviceaccount testsa
+
+> kubectl get serviceaccount
+NAME      SECRETS   AGE
+default   1         26h
+testsa    1         6m28s
+
+> kubectl describe serviceaccount testsa
+Name:                testsa
+Namespace:           demo
+Labels:              <none>
+Annotations:         <none>
+Image pull secrets:  <none>
+Mountable secrets:   testsa-token-tqtxv
+Tokens:              testsa-token-tqtxv
+Events:              <none>
+
+> kubectl describe secrets testsa-token-tqtxv
+Name:         testsa-token-tqtxv
+Namespace:    demo
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: testsa
+              kubernetes.io/service-account.uid: aa9a70ac-6cb8-4474-8778-c0fad3d91c09
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1025 bytes
+namespace:  4 bytes
+token:      eyJhbGciOiJS.......
+```
+
+- If an third party application that needs to access say a the REST service exposed in the Kubernetes cluster,
+  - Then a serviceaccount needs to be created.
+  - This intern creates a secret to hold the token.
+  - This token needs to be used as Bearer token when accessing the service from outside the cluster.
+
+```
+# when using curl command
+$ curl -k <url-of-the-k8s-appp> --header "Authorization: Bearer eyJhGciOiJS..."
+```
+
+- But in case if the application is within the Kubernets cluster, then the above step of creating and exporting the token is not required.
+  - The serviceaccount can be created and monunted to the pod, so the application can use it.
+
+In order to use the different service account on the pod manifest file to tell the pod to use serviceaccount other than default:
+ ```yaml
+ apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pod-demo
+  name: pod-demo
+spec:
+    containers:
+    - image: busybox
+    serviceAccount: testsa
+ ```
+Note about `serviceaccount`:
+  - For every namespace a default service account is created automatically.
+  - Whenever the pod is created the default serviceaccount and its token is automatically mounted to that pod as volume mount.
+   `kubectl describe secret <secret-name>` check the volume mount.
+  - the default serviceaccount has very limited access.
+  - serviceaccount cannot edited on the pod using `kubect edit pod/<pod-name>`.
+  - In case of deployment manifest, the service account can be edited.
+ 
+ In order to not use the default service account, we can specify it in the manifest file using 
+ ```
+ # in the spec under container use the below if we don't want to mount the default serviceaccount.
+ automountServiceAccountToken: false 
+ ```
+
+----
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
   - The output is kept around until it is deleted explicitly.
