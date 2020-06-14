@@ -156,7 +156,6 @@ $ kubectl get pods --selector env=demo
 ## To display the labels of the selector
 
 $ kubectl get pods --selector env=demo --show-labels
-
 ```
 
 ##### How to apply multiple labels in the selector, when searching for pods
@@ -175,8 +174,8 @@ $ kubectl get pods --selector env!=demo,tier=front-end
 ```
 ## use " quotes when using from windows, since using ' reports exception "name cannot be provided for selector"
 $ kubectl get pods -l "version in (1.0,2.0)"
-
 ```
+
 ##### using `notin` within selector
 ```
 $ kubectl get pods -l "version notin (1.0,2.0)"
@@ -193,7 +192,6 @@ $ kubectl get pods -l "version notin (1.0,2.0)"
 ```
 $ kubectl delete pods --all
 ```
-
 Note: if there are some deployments associated to the pod, stop the deployment and then delete the pod.
 
 ##### `readinessProbe` 
@@ -225,7 +223,6 @@ Note: if there are some deployments associated to the pod, stop the deployment a
 
 With the `livenessProbe`, the Pods and Deployment will be in running state, but notice the RESTARTS of the pods. In this case the pods will be restarted often.
   - At some point the pod will land up or goes to __`CrashLoopBackOff`__ status
- 
  
 #### How to investigate what went wrong in the pod or deployment, using `describe`: 
 ```
@@ -439,6 +436,31 @@ spec:
       matchLabels:
          type: frontend
 ```
+ ### DOCKER ENTRYPOINT, CMD on docker file with that of the Manifest command and args 
+ - ENTRYPOINT in docker is where the command is provided
+ - CMD in docker is where the default arguments set.
+ 
+ In Kubernetes, the ENTRYPOINT value is overrided by the command, and the CMD is overrided by args.
+ 
+ - Sample manifest file
+ ```
+ apiVersion: v1
+kind: Pod
+metadata:
+  name: command-demo
+  labels:
+    purpose: demonstrate-command
+spec:
+  containers:
+  - name: command-demo-container
+    image: ubuntu
+    command: 
+    - "sleep"
+    - "1200"    
+  restartPolicy: OnFailure
+ ```
+ 
+ 
 ----
 
 #### Creating pods and generating pods using imperative commnad
