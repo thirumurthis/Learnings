@@ -501,6 +501,25 @@ $ kubectl create service clusterip redis-pod --tcp=6379:6379
 $ kubectl expose pod/redis-pod --port=6379 --name=redis-svc --type=NodePort
 ```
 
+##### Exposing and image from docker and exposing the service:
+```
+## below creates deployment and pod (uses python flask to create web application)
+$ kubectl run webapp-color --image=kodekloud/webapp-color 
+
+## kubectl expose pod for 8080 port (make sure the application exposes uses that port, check docker file)
+
+$ kubectl expose pod/<webapp-color-podname> --name webapp-color-service --port=8080 --type=NodePort --dry-run
+### After service is created
+
+$ kubectl get svc -o wide 
+## check the pod hostname in my case it was kworker1.example.com and the namespace was demo.
+
+## port name can be found using the kubectl get svc command.
+> curl -k http://kworker1.example.com:31277 
+### displayed the web page contents.
+
+```
+
 #### Create a deployment and scale the pods to 5 replicas
 ```
 $ kubectl create deployment --image=redis:alpine redis-backend
