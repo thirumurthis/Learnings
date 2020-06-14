@@ -835,6 +835,34 @@ spec:
 
 ```
 
+###`SecruityContext` in kuberentes, refer the Docker securtiy context.
+  - Docker by default runs the process as root, this case be changed.
+    - when executing the image use `user` arguments.
+    - specify it when creating the image using `user` in Dockerfile
+
+ In Kubernetes, the security can be applied at Pod level or Container level, if enabled at the pod level it will be applicable to all the containers within the pod.
+  - The security can be set in the manifest file, refer the below pod manifest file.
+  ```yaml
+  apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntupod
+spec:
+# for pod level, specify secrutiy context at this level
+  securitycontext:
+     runAsUser: 1000
+     capabilities:
+        add: ["MAC_ADMIN"]
+  containers:
+  - image: ubuntu
+    name: ubuntupod
+    command: ["sleep","1200"]
+    # for container level security specify at this level
+    securitycontext:
+       runAsUser: 1000
+       capabilities:
+          add: ["MAC_ADMIN"]
+  ```
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
   - The output is kept around until it is deleted explicitly.
