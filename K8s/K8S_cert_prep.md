@@ -436,15 +436,15 @@ spec:
       matchLabels:
          type: frontend
 ```
- ### DOCKER ENTRYPOINT, CMD on docker file with that of the Manifest command and args 
+ ##### DOCKER ENTRYPOINT, CMD on docker file with that of the Manifest command and args 
  - ENTRYPOINT in docker is where the command is provided
  - CMD in docker is where the default arguments set.
  
  In Kubernetes, the ENTRYPOINT value is overrided by the command, and the CMD is overrided by args.
  
- - Sample manifest file
- ```
- apiVersion: v1
+ - Sample manifest file for passing commands from manifest
+```yaml
+apiVersion: v1
 kind: Pod
 metadata:
   name: command-demo
@@ -458,12 +458,26 @@ spec:
     - "sleep"
     - "1200"    
   restartPolicy: OnFailure
+```
+- using args to pass the value
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: command-demo
+  labels:
+    purpose: demonstrate-command
+spec:
+  containers:
+  - name: command-demo-container
+    image: ubuntu
+    command: ["sleep"]  # this is the command 
+    args: ["1200"]  # args passed to sleep 
+  restartPolicy: OnFailure
  ```
- 
- 
 ----
 
-#### Creating pods and generating pods using imperative commnad
+#### Creating pods and generating pods using `imperative` command (not using the manifest file)
 
 ##### Create an ngnix pod
 ```
@@ -654,41 +668,6 @@ spec:
 
 # use kubectl create -f <manifest yaml file>
 ```
-
-#### Using items in the resourcequota manifest file with Kind `List`
-```
-apiVersion: v1
-kind: List
-items:
-- apiVersion: v1
-  kind: ResourceQuota
-  metadata:
-    name: pods-high
-  spec:
-    hard:
-      cpu: "1000"
-      memory: 200Gi
-      pods: "10"
-    scopeSelector:
-      matchExpressions:
-      - operator : In
-        scopeName: PriorityClass
-        values: ["high"]
-- apiVersion: v1
-  kind: ResourceQuota
-  metadata:
-    name: pods-medium
-  spec:
-    hard:
-      cpu: "10"
-      memory: 20Gi
-      pods: "10"
-    scopeSelector:
-      matchExpressions:
-      - operator : In
-        scopeName: PriorityClass
-        values: ["medium"]
-```
 ----
 
 ### `ConfigMaps`
@@ -727,7 +706,6 @@ items:
  ```
  - 2. How to refer the ConfigMap values from the deployment manifest.
  ```yaml
- 
  apiVersion: extension/v1
  kind: Deployment
  metadata:
@@ -749,6 +727,29 @@ items:
                   name: logger  # name of the configmap created 
                   key: log_level # read the key from the config map key
  ```
+ 
+ - When we wanted to pass the __whole__ `configMap` to the pod. This is with the example of the python webapp (dockerfile reference)
+   - Step 1: Create config map
+     `$ kubectl create configmap --from-literal=APP_COLOR=green`
+   - Step 2: Update the manifest file of pod: (note the use of envFrom not valueFrom)
+      ```yaml
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: webapp
+        labels:
+          app: webapp
+      spec:
+        containers:
+        - image: kodekloud/webapp-color
+          name: webapp
+          ports:
+            - name: webapp
+              containerPort: 8080
+          envFrom:
+          - configMapRef:
+             name: webapp-config
+      ```
  
  ##### To view the information about the `configMap`s:
  ```
