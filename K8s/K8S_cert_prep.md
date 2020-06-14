@@ -809,6 +809,31 @@ Note:
                   name: mytoken  # name of the secret created
                   key: mytokenkey # the key used to set the value of the secret.
   ```
+- To pass secret as an env using `envFrom`
+  - Step 1: create a secret.
+  `$ kubectl create secret generic <secret-name> --from-literal=user=username --from-literal=password=paswd`
+  - Step 2: view the secret info
+  `$ kubectl get secret/<secret-name> -o yaml
+  - Step 3: Manifest file to pass the secret as environment values
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp
+  labels:
+    app: webapp
+spec:
+  containers:
+  - image: kodekloud/webapp-color
+    name: webapp
+    ports:
+      - name: webapp
+        containerPort: 8080
+    envFrom:
+    - secretRef:
+       name: <secret-name>
+
+```
 
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
