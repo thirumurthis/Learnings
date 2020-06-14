@@ -520,6 +520,34 @@ $ kubectl get svc -o wide
 
 ```
 
+Dockerfile from hub.
+```
+FROM python:3.6
+RUN pip install flask
+COPY . /opt/
+EXPOSE 8080
+WORKDIR /opt
+ENTRYPOINT ["python", "app.py"]
+```
+
+Manifest pod file for the above docker refer the containerPort: (save as webapp-pod.yaml)
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: webapp
+  labels:
+    app: webapp
+spec:
+  containers:
+  - image: kodekloud/webapp-color
+    name: webapp
+    ports:
+      - name: webapp
+        containerPort: 8080
+```
+- use the above manifest file `$ kubectl create -f webapp-pod.yaml`
+
 #### Create a deployment and scale the pods to 5 replicas
 ```
 $ kubectl create deployment --image=redis:alpine redis-backend
