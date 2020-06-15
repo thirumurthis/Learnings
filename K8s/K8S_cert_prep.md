@@ -1039,6 +1039,50 @@ Note:
  ```
  $ kubectl taint node <node-name> key:value-
  ```
+
+### `nodeselector` - Why is needed?
+  - Say in a case if we have a 3 node cluster, out of which one node is more powerful in terms of CPU, Memory, etc.
+  - We need the specfic workloads to be executed in specific node which is powerful node.
+  - To achived this we can use `nodeSelector`
+  - In order to perform this we need to define the node label in the pod defintion/manifest file. Note, the node should be set with the node before.
+  
+  Sample defintion or manifest file:
+  ```yaml
+  #...
+  spec:
+    containers:
+      - image: ngnix
+    nodeSelector:
+      size: Large # the node label in this case, already set.
+  ```
+Note:
+  - we are using a single label in this case.
+  - we can't provide expression in the defintion yaml.
+  
+ ##### The nodeSelector is straight forward, assume a scenario where we need to run pod in highly powerful node and a moderately powerful node? Or Not to execute in specific set of nodes but on few other nodes in the cluster?
+   - The answer to solve this is `Node Affinity` and Anti Affinity can be used.
+
+### `Node Affinity`
+  - To ensure that the pods are hosted in specific nodes.
+ 
+ ```yaml
+ # under the spec: at the level of container
+ 
+ affinity:
+   nodeAffinity:
+     requiredDuringSchedulingIgnoredDuringException:
+       nodeSelectorTerms:
+         - matchExpressions:
+           - key: size
+             operator: In  # operators NotIn, Exists can be used
+             values:  # label of the nodes
+              - Large
+              - Medium
+ ```
+Note: 
+  - Exists operator can be used, this one will not check the values instead check to see if the key size exists in the labels on the nodes.
+  
+
 ----
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
