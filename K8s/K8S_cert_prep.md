@@ -972,6 +972,22 @@ The docker container has not limits to the resource consumption, which suffocati
 
 If the container tries to allocate more memory repeatedly greater than the specified limit, the pod will be terminated.
 
+ - In order to set the default value of these limit to a pod.
+    - The `requests` and `limits` value should be set at the namespace.
+    - below is applicable to default namespace.
+ ```yaml
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: mem-limit-range
+spec:
+  limits:
+  - default:
+      memory: 1Gi
+    defaultRequest:
+      memory: 256Mi
+    type: Container
+ ```
 
 ----
 ### `jobs` in Kubernetes:
