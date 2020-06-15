@@ -1015,7 +1015,8 @@ Note:
 ##### How to set `toleration` to the pod?
  - in the manifest or pod definiton files. 
  - under the containers level add `tolerations`
-```
+```yaml
+#....
 spec:
   containers:
     -image: nginx
@@ -1024,7 +1025,8 @@ spec:
      operator: "Equal"
      value: "blue"
      effect: "Noschedule"
- # tolerations value are string so added in double quotes.    ```
+ # tolerations value are string so added in double quotes.   
+ ```
 
 Note:
  - There is no gaurantee that the tolerated pod will be executed in the Tainted node.
@@ -1033,6 +1035,10 @@ Note:
 
  - To check the taint, ` $ kubectl describe node <master-node-name> | grep -i taint`
  
+ ##### How to remove taints?
+ ```
+ $ kubectl taint node <node-name> key:value-
+ ```
 ----
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
