@@ -959,11 +959,19 @@ spec:
       requests:
          memory: 1Gi
          cpu: 1
+      limits:
+         memory: 3Gi
+         cpu:2 
 ```
 - What is the cpu mean?
  - when specificing 1 it means 1 vCPU unit. (and the lowest unit would 1m, m - stands for milli)
 
-Memory reporesentaton 1G and 1Gi is different in terms of memory.
+- Memory representaton 1G and 1Gi is different in terms of memory.
+
+The docker container has not limits to the resource consumption, which suffocating the native process. A limit can be set in the pod manifest file. using limit as added under requests in manifest file above.
+
+If the container tries to allocate more memory repeatedly greater than the specified limit, the pod will be terminated.
+
 
 ----
 ### `jobs` in Kubernetes:
