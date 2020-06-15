@@ -531,7 +531,6 @@ $ kubectl get svc -o wide
 ## port name can be found using the kubectl get svc command.
 > curl -k http://kworker1.example.com:31277 
 ### displayed the web page contents.
-
 ```
 
 Dockerfile from hub.
@@ -593,7 +592,6 @@ $ kubectl scale deployment/redis-backend --replicas=5
 
 svc => resources
 cluster.local => is the domain
-
 ```
 
 For a service running in a name space dev and needs to be accessed from test namespace:
@@ -760,11 +758,10 @@ spec:
  ## To list the contents of the configMap 
  $ kubectl get configmap/logger -o yaml
  ```
-
 Note: 
  - Logs cannot be viewed on the deployments. 
  
- ### `secrets` in kubernetes:
+### `secrets` in kubernetes:
   - Sensitive informaiton can be stored in Kubernetes as secrets.
   
 ##### how to create a secret:
@@ -786,7 +783,7 @@ Note:
   ## note the secret value will be encoded with base64 since we used generic
   ```
   
-  3. How to use the Kubernetes secrets within the deployment manifest. (`secretKeyRef`)
+  - 3. How to use the Kubernetes secrets within the deployment manifest. (`secretKeyRef`)
   ```yaml
   apiVersion: extensions/v1
   kind: Deployment
@@ -832,7 +829,6 @@ spec:
     envFrom:
     - secretRef:
        name: <secret-name>
-
 ```
 
 ###`SecruityContext` in kuberentes, refer the Docker securtiy context.
@@ -843,8 +839,8 @@ spec:
  In Kubernetes, the security can be applied at Pod level or Container level, if enabled at the pod level it will be applicable to all the containers within the pod.
   - The security can be set in the manifest file, refer the below pod manifest file.
   
-  ```yaml
-  apiVersion: v1
+```yaml
+apiVersion: v1
 kind: Pod
 metadata:
   name: ubuntupod
@@ -862,8 +858,8 @@ spec:
     securitycontext:
        runAsUser: 1000
        capabilities:
-          add: ["MAC_ADMIN"]
-  ```
+          add: ["SYS_TIME"]
+```
 Note: When the security context is provided at the container level, that will take precedence even though it is mentioned at the pod level.
 
 ### `ServiceAccount`
@@ -916,7 +912,7 @@ token:      eyJhbGciOiJS.......
 $ curl -k <url-of-the-k8s-appp> --header "Authorization: Bearer eyJhGciOiJS..."
 ```
 
-- But in case if the application is within the Kubernets cluster, then the above step of creating and exporting the token is not required.
+- In case if the application is within the Kubernets cluster, then the above step of creating and exporting the token is not required.
   - The serviceaccount can be created and monunted to the pod, so the application can use it.
 
 In order to use the different service account on the pod manifest file to tell the pod to use serviceaccount other than default:
@@ -946,6 +942,28 @@ Note about `serviceaccount`:
  # in the spec under container use the below if we don't want to mount the default serviceaccount.
  automountServiceAccountToken: false 
  ```
+----
+### Specifing the resource requirement within the pod manifest file.
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: pod-demo
+  name: pod-demo
+spec:
+    containers:
+    - image: busybox
+    resources:
+      requests:
+         memory: 1Gi
+         cpu: 1
+```
+- What is the cpu mean?
+ - when specificing 1 it means 1 vCPU unit. (and the lowest unit would 1m, m - stands for milli)
+
+Memory reporesentaton 1G and 1Gi is different in terms of memory.
 
 ----
 ### `jobs` in Kubernetes:
