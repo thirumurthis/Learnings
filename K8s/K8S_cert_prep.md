@@ -988,7 +988,51 @@ spec:
       memory: 256Mi
     type: Container
  ```
+### `Taints and Toleration`
+  - Taints - are sort of restriction over the nodes in cluster that doesn't allow the pods to be set up by the scheduler in master.
+  - Toleration - is adding some specification, so that specific pods can be added to the tainted nodes.
+  
+Note:
+  - Taints are set on nodes
+  - Toleration is set on the pods.
+  
+##### How to `taint` the node?
 
+Specify the taint to the node using node name. It is a key value pair
+```
+$ kubectl taint nodes node-name key=value=taint-effect
+
+## taint-effect values := NoScheduled | PrefereNoSchedule| NoExecute.
+## taint-effect means what to do if taint is not tolerated.
+
+## key=value; if we need the taint to be applied for the node where the pod has the app=blue, then it would be used
+
+$ kubectl taint nodes kworker1.example.com app=blue:NoSchedule
+```
+Note:
+  These pods might have scheduled before the taint was applied.
+
+##### How to set `toleration` to the pod?
+ - in the manifest or pod definiton files. 
+ - under the containers level add `tolerations`
+```
+spec:
+  containers:
+    -image: nginx
+  tolerations:
+   - key: "app"
+     operator: "Equal"
+     value: "blue"
+     effect: "Noschedule"
+ # tolerations value are string so added in double quotes.    ```
+
+Note:
+ - There is no gaurantee that the tolerated pod will be executed in the Tainted node.
+ 
+##### The master node in the cluster has a Taint set up by default so that not pods are scheduled, but this can be overriden, but the best practice is not to run any pod on the master.
+
+ - To check the taint, ` $ kubectl describe node <master-node-name> | grep -i taint`
+ 
 ----
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
