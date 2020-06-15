@@ -1082,6 +1082,28 @@ Note:
 Note: 
   - Exists operator can be used, this one will not check the values instead check to see if the key size exists in the labels on the nodes.
   
+Different types of `Node Affinty`:
+ - requiredDuringSchedulingIgnoredDuringExecution
+ - preferredDuringSchedulingIgnoredDuringExecution
+ - requiredDuringSchedulingRequiredDuringExecution (* - planned)
+
+So when the labels are not avialbe during the pod execution, we use type to inform what action to be taken by the scheduler.
+
+`requiredDuringSchedulingIgnoredDuringExecution` 
+   - which means when scheduler couldn't identify matching nodes with the labels specified it will NOT schedule the pod.
+   - In other case if the node has the matching label, this node will be used for running the pod.
+   - This is to be used when the placing of pod in specific node is crucial.
+   
+`preferredDuringSchedulingIgnoreDuringExecution` 
+   - which means when scheduler couldn't identify mathcing nodes with the labels specified it will schedule the pod on any available nodes simply ignoring the affinity. (In a way telling the scheduler to identify the best node for the workload)
+   - This can be used when the pod placement is not important.
+   
+ `requiredDuringSchedulingRequiredDuringExecution`
+   - This is the new option, where the change effecting affinity (like change in the label) after the pods are scheduled and running it will be impact the pod by evicting (or removed) the pod from the node.
+  
+  In both the case the part `IgnoredDuringExecution` means when the pod has been scheduled and running, if there are changes done that  affects the affinity for example say changing the label. 
+   - In this secinario that changes to the label after the scheduler scheduled the pod on the node will not impact the running pod, which will be ignored.
+   
 
 ----
 ### `jobs` in Kubernetes:
