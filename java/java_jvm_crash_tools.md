@@ -155,13 +155,13 @@ GC logs showing long pauses, represented in the below image. in below case, it t
   - How to collect Heap dump?
      - use `-XX:+HeapDumpOnOutOfMemoryError` option when starting the java application.
      - Other tools like `jcmd <pid/mainclass> GC.head_dump dump.dmp`
-        - `jmap -dump:format=b,file=snapshot.jmap <pid>`
-        - Jconsole, usign MBean Hotspot diagnostic
-        - Java Mission Control Hotspot diagnostics or MBean Diagnosticcommands
+       - `jmap -dump:format=b,file=snapshot.jmap <pid>`
+       - Jconsole, usign MBean Hotspot diagnostic
+       - Java Mission Control Hotspot diagnostics or MBean Diagnosticcommands
      - `parallel collector` can continuously collects or reclaim space in heap space, though returns are minimal. In this case we can instruct GC not to put much effort where gain is minimum. `parallel collector` delays application restart on its own.
-        - We can set time limit, `-XX:GCTimeLimit` and `-XX:GCHeapFreeLimit`
-            - `-XX:GCTimeLimit` => sets upper limit in amount of time the GC can spend in % of time (default value is 98%) Decreasing this value will reduce the time spent in GC.
-            -`-XX:GCHeapFreeLimit` => sets a lower limit on amount of space that should be free after the GC operation, percentation of maximum heap. default 2%.  (increasing value means more heap space will be reclaimed during GC operation)
+       - We can set time limit, `-XX:GCTimeLimit` and `-XX:GCHeapFreeLimit`
+           - `-XX:GCTimeLimit` => sets upper limit in amount of time the GC can spend in % of time (default value is 98%) Decreasing this value will reduce the time spent in GC.
+           - `-XX:GCHeapFreeLimit` => sets a lower limit on amount of space that should be free after the GC operation, percentation of maximum heap. default 2%.  (increasing value means more heap space will be reclaimed during GC operation)
             - Adjusting the two options prevents back-to-back full GCs.
               
   - __`Heap Histogram`__ ( gives object in the heap)
