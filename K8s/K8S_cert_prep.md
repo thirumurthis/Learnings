@@ -249,7 +249,7 @@ With the `livenessProbe`, the Pods and Deployment will be in running state, but 
 ## container info will be available over here too ( -o wide)
 $ kubectl describe pod <pod-name>
 ```
-
+### `rollout`
 #### How to upgrade the deployment.
   - Say we have deployed a application with image version 1.0, using `$ kubectl create -f <deployment.yaml>` file.
   - If we have the image updated with the new version, we simply set the image to the deployment, like below:
@@ -275,7 +275,51 @@ $ kubectl rollout undo deployment/<deployment-name>
 $ kubectl rollout undo deployment/<deployment-name> --to-revision=<version-number>
 ```
 
-#### Troubleshooting the pods:
+Demo:
+ - Create a deployment for nginx:1.16 version impertively
+ ```
+ $ kubectl create deployment nginx --image=nginx:1.16
+ ```
+ 
+ - Check the `status of the rollout`, whenever a deployment happens, k8s will create a rollout.
+ ```
+ $ kubectl rollout status deployment nginx
+ or
+ $ kubectl rollout status deployment/nginx
+ ```
+ 
+ - Check the `rollout history` using below command, not that the output will have `<none>` in change-cause. (If we need to change-cause, we can use ` --record` option 
+  ```
+  $ kubectl rollout history deployment nginx
+ ```
+    - To view the deployment revision details for specific revision use below,
+      ```
+      $ kubectl rollout history deployment/nginx --revision=1
+      ```
+      
+  - Update nginx to new version, deployment using command
+  ```
+  $ kubectl set image deployment nginx nginx=nginx:1.17 --record=true
+  ```
+      - Use `kubectl rollout history deployment/nginx` to see the change-cause
+  
+  - Update nginx to latest version, deployment using `kubectl edit`
+    ```
+    $ kubectl edit deployment/nginx
+    ## edit the image version to latest
+    
+    ####check the rollout history for details
+    $ kubectl rollout history deployment nginx --revision=3
+    ```
+  
+  ##### How to undo changes, in the deployment.
+  ```
+  $ kubectl rollout undo deployment nginx
+  
+  ### check the history of the deployment rollout, notice the latest nginx is not available.
+  ```
+    
+### Troubleshooting the pods using `logs`, `describe` or `exec`:
 ```
 ## from deployment perspective
 $ kubectl describe deployment <deployment-name>
