@@ -269,3 +269,5 @@ How to collect the data and analyse it
 
 [Other ref-3](http://fahdshariff.blogspot.com/2012/08/analysing-java-core-dump.html)
 
+
+[Link describing the native memory and metaspace vs heap info pictorical](https://stackoverflow.com/questions/39675406/difference-between-metaspace-and-native-memory-in-java)
