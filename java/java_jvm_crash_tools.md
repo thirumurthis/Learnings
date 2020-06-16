@@ -271,3 +271,5 @@ How to collect the data and analyse it
 
 
 [Link describing the native memory and metaspace vs heap info pictorical](https://stackoverflow.com/questions/39675406/difference-between-metaspace-and-native-memory-in-java)
+
+[Link to metaspace](http://karunsubramanian.com/websphere/one-important-change-in-memory-management-in-java-8/)
