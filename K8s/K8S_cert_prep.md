@@ -194,8 +194,11 @@ $ kubectl delete pods --all
 ```
 Note: if there are some deployments associated to the pod, stop the deployment and then delete the pod.
 
-##### `readinessProbe` 
+### `readinessProbe` 
   - Used to know when the container is ready to take up the traffic.
+  - Without the Pod status will be running, though the application is still not available for serving the traffic.
+  - Readiness probe performs a test, in the below we have httpGet, and within the app we can se the path: /get/ready -> if the respone recived the status of the pod will be running.
+  - By default, if the application is not ready by three attempts the probe will stop. we can use `failureThreshold` option in the readiness probe.
 ```yaml 
     readinessProbe:
           initialDelaySeconds: 10
@@ -207,8 +210,23 @@ Note: if there are some deployments associated to the pod, stop the deployment a
             # Port to probe
             port: 80
 ```
-
-##### `livenessProbe`
+Other differen probes that can be used:
+- TCP socket
+ ```yaml
+  # within the pod defintion file use the readiness like below
+  readinessProbe:
+     tcpSocket:
+        port: 8080
+ ```
+ - Exec command
+ ```
+  readinessProbe:
+     exec:
+       command:
+       - cat
+       - /opt/app_readiness.txt
+ ```
+### `livenessProbe`
 ```yaml
         livenessProbe:
           initialDelaySeconds: 10
@@ -220,7 +238,8 @@ Note: if there are some deployments associated to the pod, stop the deployment a
             # Port to probe
             port: 80
 ```
-
+ - similar to readinessProbe, livenessProbe also has TCPScoket (for database scenario) and exec probes (based on command ensuer the pods are healthy).
+ 
 With the `livenessProbe`, the Pods and Deployment will be in running state, but notice the RESTARTS of the pods. In this case the pods will be restarted often.
   - At some point the pod will land up or goes to __`CrashLoopBackOff`__ status
  
