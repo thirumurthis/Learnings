@@ -250,6 +250,11 @@ With the `livenessProbe`, the Pods and Deployment will be in running state, but 
 $ kubectl describe pod <pod-name>
 ```
 ### `rollout`
+  - Recreate statergy 
+     - all the previous version of pods will be scale down to 0 and new pods will be deployed.
+  - Rolling update statergy (default one in k8s)
+     - Will ensure that rolling update happens, meaning scale down and scale up happens gradually. one pod in previous version terminates and new pod gets created.
+  
 #### How to upgrade the deployment.
   - Say we have deployed a application with image version 1.0, using `$ kubectl create -f <deployment.yaml>` file.
   - If we have the image updated with the new version, we simply set the image to the deployment, like below:
