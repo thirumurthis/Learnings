@@ -1177,6 +1177,12 @@ So when the labels are not avialbe during the pod execution, we use type to info
 ### `jobs` in Kubernetes:
   - Jobs runs a pod once and then stop.
   - The output is kept around until it is deleted explicitly.
+  - by default the jobs are ran in sequential way
+  - using `parallelism` options, the jobs can be started parallely.
+  - in order to run the job in multiple pods, we can use `completion` similar to replicaset.
+  
+Why we need Jobs, the pod can do the same operation but the schduler tries to restart the pods till the threshold is reached.
+ - Deleting the job will delete the pods.
 
 Sample job manifiest file
 ```yaml
