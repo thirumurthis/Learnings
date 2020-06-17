@@ -1178,10 +1178,14 @@ So when the labels are not avialbe during the pod execution, we use type to info
   - Jobs runs a pod once and then stop.
   - The output is kept around until it is deleted explicitly.
   - by default the jobs are ran in sequential way
-  - using `parallelism` options, the jobs can be started parallely.
+  - using `parallelism` options, the jobs can be started parallely. This will make sure to start specified number of pods when started.
   - in order to run the job in multiple pods, we can use `completion` similar to replicaset.
   
-Why we need Jobs, the pod can do the same operation but the schduler tries to restart the pods till the threshold is reached.
+Why we need Jobs?
+ - The pod can do the same operation but the scheduler tries to restart the pods till the threshold is reached default `restartPloicy` is always. this can be set to Always.
+ - For large process that can run parllelly, we can execute the process in n number of pods, and for some reason any of the pod has error, the job can manage to run the desired number of pod to process the jobs.
+ - A job makes sure the set of pods running to achive the success status.
+
  - Deleting the job will delete the pods.
 
 Sample job manifiest file
