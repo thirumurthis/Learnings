@@ -1362,3 +1362,10 @@ To list the statefulset.
 ```
 $ kubectl get statefulsets
 ```
+
+#### `Ingress`:
+
+Representation of Nginx Ingress controller
+
+Representation:
+![image](https://user-images.githubusercontent.com/6425536/84986054-b5639d00-b0f2-11ea-92e6-9b9005710240.png)
