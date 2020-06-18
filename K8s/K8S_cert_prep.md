@@ -1368,4 +1368,5 @@ $ kubectl get statefulsets
 Representation of Nginx Ingress controller
 
 Representation:
-![image](https://user-images.githubusercontent.com/6425536/84986054-b5639d00-b0f2-11ea-92e6-9b9005710240.png)
+
+![image](https://user-images.githubusercontent.com/6425536/84986401-594d4880-b0f3-11ea-981b-9f27c0475287.png)
