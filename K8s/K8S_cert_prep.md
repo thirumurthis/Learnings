@@ -1369,4 +1369,5 @@ Representation of Nginx Ingress controller
 
 Representation:
 
-![image](https://user-images.githubusercontent.com/6425536/84986401-594d4880-b0f3-11ea-981b-9f27c0475287.png)
+![image](https://user-images.githubusercontent.com/6425536/84987118-7cc4c300-b0f4-11ea-96e0-e295bbdd4138.png)
+
