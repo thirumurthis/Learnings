@@ -1371,3 +1371,76 @@ Representation:
 
 ![image](https://user-images.githubusercontent.com/6425536/84987118-7cc4c300-b0f4-11ea-96e0-e295bbdd4138.png)
 
+### `Network Policy`
+All the Pods can access other pods in the cluster accross different nodes.
+This is basic requirement of K8s, but with network policy we can restrict this.
+Setting up ingress and engress network policy we can tell one pod to allow traffic from another pod on specific port.
+
+network policy is associated with the pod using 
+yaml:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: network1-policy
+spec:
+   podSelector: # pod on which the n/w policy should be applied DB
+      matchLabels:
+        role: pod-name-selector
+   policyTypes: # allow ingress/ engress traffic is specified here
+   - Ingress:
+   ingress:
+   - from: # from which pod the ingress is allowed. API use selector
+     - podSelector:
+         matchLabels:
+           role: pod-from-which-traffic-flow 
+     ports:  # port that needs to be allwoed
+     - protocol: TCP
+       port: 3306
+```
+
+There are different providers of network solution available:
+  Kube-router
+  Calico
+  Romana
+  Weave-net
+ 
+ Flannal - doesn't support the network policy check docs.
+ 
+ Ingress/Egress traffic detail representation from the pod perspective:
+ 
+ ![image](https://user-images.githubusercontent.com/6425536/85107974-b44e7080-b1c3-11ea-9bb6-1beea1abec0c.png)
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: example-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      name: <pod-on-which-the-policy-to-be-applied>
+  policyTypes:
+  - Egress
+  - Ingress
+  ingress:
+    - {}
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          name: <backend-database-pod-which-recieves-egress-traffic>
+    ports:
+    - protocol: TCP
+      port: 3306
+
+  - to:
+    - podSelector:
+        matchLabels:
+          name: <another-Pod-which-access-the-service>
+    ports:
+    - protocol: TCP
+      port: 8080
+```
