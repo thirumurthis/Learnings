@@ -745,7 +745,7 @@ spec:
  ##### We have a deployment and we need to pass the log level as `env` variable, below is the example.
    - This can be acheived using the `configMap` as well
  ```yaml
- apiVersion: extension/v1
+ apiVersion: v1
  kind: Deployment
  metadata:
     name: loggerapp
@@ -1549,3 +1549,23 @@ In that case it needs to be done manually, but we can isntruct the claims to del
 This is because, if the claim is delted and the volume is not avialable for another claim until it is deleted/recycled and created.
 
 The policy properties value: `persistentVolumeReclaimPolicy: Recycle` other options are `Retain`, `Delete`.
+
+##### Where to use the persistent volume claim?
+  - with the pod or deployment defintion yaml manifest file.
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod1
+spec:
+  containers:
+    - name: myfrontend
+      image: nginx
+      volumeMounts:
+      - mountPath: "/var/www/html"
+        name: mypd
+  volumes:
+    - name: mypd
+      persistentVolumeClaim:
+        claimName: pvc-demo
+```
