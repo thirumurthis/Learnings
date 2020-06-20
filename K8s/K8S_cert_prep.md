@@ -1445,7 +1445,7 @@ spec:
       port: 8080
 ```
 
-### `persistence` volume:
+### `volumes and persistence`
 
 Sample manifest to use volumemount store to use the host directory. 
 
@@ -1492,3 +1492,60 @@ spec:
       fsType: ext4
 # ...      
  ```     
+
+# persistence volume defintion
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvolume1
+spec:
+  accessMode:
+   - ReadWriteOnce # other type: ReadOnlyMany, ReadWriteMany
+  capacity:
+     storage: 1Gi
+  hostPath:   # storage type Use NFS, Flocker, etc type
+     path: /data
+# don't use hostPath type in production.
+
+# persistence volume claims to make storage availabe to node
+
+PersistentVolume and PersistentVolumeclaim are two different object in the namespace.
+
+Administrator creates the PersistentVolume
+Developer/user creates the PersistentVolumeClaims to use the storage 
+
+K8s binds the persistence voulme to persistence volume claim based on request and properties set on the volume.
+
+Every persistent volume claim is bound to single peristent volume. During binding process K8s tries to find a persistent volume that has sufficitent capacity as requested by the claim and any other properties like access mode, volume modes, storage class.
+
+If there are multiple matches for the persistent volume, still we can use labels and selectors to choose specific volumes.
+
+A smaller claim can get bound to a larger vloume if that is a suitable match and there are no other option. There is 1-1 relation to the claims to the volume. So in this case the rest of the volume will not be used by another claim.
+
+Creating a peristent volume claim:
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-demo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+     requests:
+        storage: 500Mi
+```
+##### refer the previously create volume defition, the storage is 1 Gi there.
+
+```
+$ kubectl get persistentvolumeclaims
+```
+##### What happens when deleting pvc?
+When deleting the persistentvolumeclaim, the persistent volume does not get deleted since the default policy is retain.
+
+In that case it needs to be done manually, but we can isntruct the claims to delete it automatically or recycle it.
+This is because, if the claim is delted and the volume is not avialable for another claim until it is deleted/recycled and created.
+
+The policy properties value: `persistentVolumeReclaimPolicy: Recycle` other options are `Retain`, `Delete`.
