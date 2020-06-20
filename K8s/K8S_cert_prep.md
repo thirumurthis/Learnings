@@ -1444,3 +1444,51 @@ spec:
     - protocol: TCP
       port: 8080
 ```
+
+### `persistence` volume:
+
+Sample manifest to use volumemount store to use the host directory. 
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+   name: persistence
+   labels:
+      type: volume
+spec:
+    containers:
+    - image: alpine
+      name: alpine
+      command: ["/bin/sh","-c"]
+      args: ["shuf -i 0-100 -n 1 >> /opt/random.out;"]
+      volumeMounts:
+      - mountPath: /opt  # directory of the container itself
+        name: data-volume
+    volumes:
+    - name: data-volume
+      hostPath:
+        path: /data  # data folder should be available in the worker node host machine
+        type: Directory
+```
+
+- Different types of volume available:
+  - GlusterFS
+  - NFS
+  - Amazon webservice
+  - Azure disk
+  - Flocker
+  - ceph
+  - Scaleio
+  - google
+
+ Amazon webservice example
+ ```yaml
+ # ...
+ volumes:
+  - name: data-volume
+    awsElasticBlockStore:
+      volumeID: <volume-id-of-aws-store>
+      fsType: ext4
+# ...      
+ ```     
