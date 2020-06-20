@@ -838,52 +838,56 @@ Note:
   - Sensitive informaiton can be stored in Kubernetes as secrets.
   
 ##### how to create a secret:
- - 1. Creating the secret
-  ```
-  ## below is the syntax to create a generic secret
-  $ kubectl create secret generic <name-for-secret> --from-literal=somekey=somevalue
+ - Creating the secret
+    ```
+    ## below is the syntax to create a generic secret
+    $ kubectl create secret generic <name-for-secret> --from-literal=somekey=somevalue
+
+    $ kubectl create secret generic mytoken --from-literal=mytokenkey=123456
+    ```
+ - To view the secret info
+    ```
+    $ kubectl get secret <name-for-secret>
+    $ kubectl get secret mytoken
+    ```
+    ```
+    ## to display the contents 
+    $ kubectl get secret mytoken -o yaml
+    ## note the secret value will be encoded with base64 since we used generic
+    ```
   
-  $ kubectl create secret generic mytoken --from-literal=mytokenkey=123456
-  ```
-  -2. To view the secret info
-  ```
-  $ kubectl get secret <name-for-secret>
-  $ kubectl get secret mytoken
-  ```
-  ```
-  ## to display the contents 
-  $ kubectl get secret mytoken -o yaml
-  ## note the secret value will be encoded with base64 since we used generic
-  ```
-  
-  - 3. How to use the Kubernetes secrets within the deployment manifest. (`secretKeyRef`)
-  ```yaml
-  apiVersion: extensions/v1
-  kind: Deployment
-  metadata:
-    name: secretreader
-  spec:
-    replicas: 1
-    template:
-      metadata:
-        labels:
-          name: secretreader
-      spec:
-        containers:
-        - name: secretreader
-          image: thirumurthi/secretapp:latest
-          env:
-          - name: mytoken
-            valueFrom:
-               secretKeyRef:
-                  name: mytoken  # name of the secret created
-                  key: mytokenkey # the key used to set the value of the secret.
-  ```
-- To pass secret as an env using `envFrom`
+ - How to use the Kubernetes secrets within the deployment manifest. (`secretKeyRef`)
+    ```yaml
+    apiVersion: extensions/v1
+    kind: Deployment
+    metadata:
+      name: secretreader
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            name: secretreader
+        spec:
+          containers:
+          - name: secretreader
+            image: thirumurthi/secretapp:latest
+            env:
+            - name: mytoken
+              valueFrom:
+                 secretKeyRef:
+                    name: mytoken  # name of the secret created
+                    key: mytokenkey # the key used to set the value of the secret.
+    ```
+    
+- To pass secret as an `environment` variable using `envFrom`
+
   - Step 1: create a secret.
   `$ kubectl create secret generic <secret-name> --from-literal=user=username --from-literal=password=paswd`
+  
   - Step 2: view the secret info
-  `$ kubectl get secret/<secret-name> -o yaml
+  `$ kubectl get secret/<secret-name> -o yaml`
+  
   - Step 3: Manifest file to pass the secret as environment values
 ```yaml
 apiVersion: v1
@@ -904,14 +908,19 @@ spec:
        name: <secret-name>
 ```
 
-###`SecruityContext` in kuberentes, refer the Docker securtiy context.
+### `SecruityContext` 
+  - Refer the Docker securtiy context.
   - Docker by default runs the process as root, this case be changed.
     - when executing the image use `user` arguments.
     - specify it when creating the image using `user` in Dockerfile
 
- In Kubernetes, the security can be applied at Pod level or Container level, if enabled at the pod level it will be applicable to all the containers within the pod.
-  - The security can be set in the manifest file, refer the below pod manifest file.
-  
+In Kubernetes, the security can be applied at Pod level or Container level.
+    - If security is enabled at the pod level it will be applicable to all the containers within the pod.
+    - The security can be set in the manifest file, refer the below pod manifest file.
+
+Note: 
+   When the security context is provided at the container level, that will take precedence even though it is mentioned at the pod level.
+   
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -933,7 +942,6 @@ spec:
        capabilities:
           add: ["SYS_TIME"]
 ```
-Note: When the security context is provided at the container level, that will take precedence even though it is mentioned at the pod level.
 
 ### `ServiceAccount`
   - In Kubernetes resource to resource communication happens using service account.
@@ -975,7 +983,7 @@ namespace:  4 bytes
 token:      eyJhbGciOiJS.......
 ```
 
-- If an third party application that needs to access say a the REST service exposed in the Kubernetes cluster,
+- If third party application that needs to access say a the REST service exposed in the Kubernetes cluster,
   - Then a serviceaccount needs to be created.
   - This intern creates a secret to hold the token.
   - This token needs to be used as Bearer token when accessing the service from outside the cluster.
