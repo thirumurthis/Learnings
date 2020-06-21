@@ -252,16 +252,19 @@ Demo:
   ```
   $ kubectl rollout history deployment nginx
  ```
-    - To view the deployment revision details for specific revision use below,
-      ```
+  - To view the deployment revision details for specific revision use below,
+    
+     ```
       $ kubectl rollout history deployment/nginx --revision=1
       ```
       
   - Update nginx to new version, deployment using command
-  ```
-  $ kubectl set image deployment nginx nginx=nginx:1.17 --record=true
-  ```
-      - Use `kubectl rollout history deployment/nginx` to see the change-cause
+  
+     ```
+     $ kubectl set image deployment nginx nginx=nginx:1.17 --record=true
+     ```
+     
+  - Use `kubectl rollout history deployment/nginx` to see the change-cause
   
   - Update nginx to latest version, deployment using `kubectl edit`
     ```
@@ -276,7 +279,7 @@ Demo:
   ```
   $ kubectl rollout undo deployment nginx
   
-### check the history of the deployment rollout, notice the latest nginx is not available.
+   ### check the history of the deployment rollout, notice the latest nginx is not available.
   ```
     
 ### Troubleshooting the pods using `logs`, `describe` or `exec`:
