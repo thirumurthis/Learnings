@@ -1514,7 +1514,8 @@ spec:
  ```
 
 # persistence volume defintion
----
+
+```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -1526,22 +1527,22 @@ spec:
      storage: 1Gi
   hostPath:   # storage type Use NFS, Flocker, etc type
      path: /data
-##### don't use hostPath type in production.
-
+# don't use hostPath type in production.
+````
 ##### persistence volume claims to make storage availabe to node
 
 PersistentVolume and PersistentVolumeclaim are two different object in the namespace.
 
-Administrator creates the PersistentVolume
-Developer/user creates the PersistentVolumeClaims to use the storage 
+ - Administrator creates the PersistentVolume
+ - Developer/user creates the PersistentVolumeClaims to use the storage 
 
-K8s binds the persistence voulme to persistence volume claim based on request and properties set on the volume.
+ - K8s binds the persistence voulme to persistence volume claim based on request and properties set on the volume.
 
-Every persistent volume claim is bound to single peristent volume. During binding process K8s tries to find a persistent volume that has sufficitent capacity as requested by the claim and any other properties like access mode, volume modes, storage class.
+ - Every persistent volume claim is bound to single peristent volume. During binding process K8s tries to find a persistent volume that has sufficitent capacity as requested by the claim and any other properties like access mode, volume modes, storage class.
 
-If there are multiple matches for the persistent volume, still we can use labels and selectors to choose specific volumes.
+ - If there are multiple matches for the persistent volume, still we can use labels and selectors to choose specific volumes.
 
-A smaller claim can get bound to a larger vloume if that is a suitable match and there are no other option. There is 1-1 relation to the claims to the volume. So in this case the rest of the volume will not be used by another claim.
+ - A smaller claim can get bound to a larger vloume if that is a suitable match and there are no other option. There is 1-1 relation to the claims to the volume. So in this case the rest of the volume will not be used by another claim.
 
 Creating a peristent volume claim:
 
