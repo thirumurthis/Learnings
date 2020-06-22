@@ -659,7 +659,7 @@ With the `livenessProbe`, the Pods and Deployment will be in running state, but 
  $ kubectl create -f <manifest yaml file>
  ```
 
-##### To access the service from one namespace to another?
+##### To access the service from one `namespace` to another?
 
 ```
 ## to access the service from antoher namespace
@@ -719,7 +719,7 @@ metadata:
   ## note the namespaces (s at the end)
  $ kubectl get pods --all-namespaces
  ```
- 
+---
 ### `ResourceQuota` 
  - Used to limit the number of resources within the namespace
  
@@ -836,6 +836,8 @@ spec:
 Note: 
  - Logs cannot be viewed on the deployments. 
  
+--- 
+
 ### `secrets` in kubernetes:
   - Sensitive informaiton can be stored in Kubernetes as secrets.
   
@@ -910,7 +912,7 @@ spec:
     - secretRef:
        name: <secret-name>
 ```
-
+---
 ### `SecruityContext`
 
   - Refer the Docker securtiy context.
@@ -919,8 +921,8 @@ spec:
     - specify it when creating the image using `user` in Dockerfile
 
 In Kubernetes, the security can be applied at Pod level or Container level.
-    - If security is enabled at the pod level it will be applicable to all the containers within the pod.
-    - The security can be set in the manifest file, refer the below pod manifest file.
+ - If security is enabled at the pod level it will be applicable to all the containers within the pod.
+ - The security can be set in the manifest file, refer the below pod manifest file.
 
 Note: 
    When the security context is provided at the container level, that will take precedence even though it is mentioned at the pod level.
@@ -943,11 +945,12 @@ spec:
     # for container level security specify at this level
     securitycontext:
        runAsUser: 1000
+       # runAsGroup: 3000 # for group id
        capabilities:
           add: ["SYS_TIME"]
 ```
 
-### `ServiceAccount`
+### `ServiceAccount`:
   - In Kubernetes resource to resource communication happens using service account.
   - Authentication and Authorization.
 
@@ -1073,7 +1076,7 @@ spec:
       memory: 256Mi
     type: Container
  ```
-### `Taints and Toleration`
+### `Taints and Toleration`:
   - Taints - are sort of restriction over the nodes in cluster that doesn't allow the pods to be set up by the scheduler in master.
   - Toleration - is adding some specification, so that specific pods can be added to the tainted nodes.
   
@@ -1144,7 +1147,7 @@ Note:
   - we are using a single label in this case.
   - we can't provide expression in the defintion yaml.
   
- ##### The nodeSelector is straight forward, assume a scenario where we need to run pod in highly powerful node and a moderately powerful node? Or Not to execute in specific set of nodes but on few other nodes in the cluster?
+##### The `nodeSelector` is straight forward, assume a scenario where we need to run pod in highly powerful node and a moderately powerful node? Or Not to execute in specific set of nodes but on few other nodes in the cluster?
    - The answer to solve this is `Node Affinity` and Anti Affinity can be used.
 
 ### `Node Affinity`
@@ -1188,7 +1191,6 @@ So when the labels are not avialbe during the pod execution, we use type to info
   
   In both the case the part `IgnoredDuringExecution` means when the pod has been scheduled and running, if there are changes done that  affects the affinity for example say changing the label. 
    - In this secinario that changes to the label after the scheduler scheduled the pod on the node will not impact the running pod, which will be ignored.
-   
 
 ----
 ### `jobs` in Kubernetes:
@@ -1229,7 +1231,7 @@ spec:
             - "for i in 5 4 3 2 1 ; do echo $i; done"
          restartPolicy: Never    # other options, Always or onFailure
 ```
-##### How to run the jobs in multiple pods?
+#### How to run the jobs in multiple pods?
  - Use the completions option to the spec (`spec.completions : <number>` in the defintion file).
  - By default the jobs run the pods sequentially, one after the other. 
  - When including `completions`, in case of failures in pod, the job will makes sure to run additonal pods until completions value is met.
@@ -1345,7 +1347,7 @@ spec:
   $ kubectl get daemonset
   ```
   
-  ##### in order to make the daemonset to work on specific nodes use `nodeSelector`
+##### in order to make the daemonset to work on specific nodes use `nodeSelector`
   ```
   ## refer the yaml file above on how to add labels.
   ## if the nodes have labels it can be listed
@@ -1389,7 +1391,7 @@ spec:
            env: "development"
 ```
   - Deploy the above yaml and list the daemon set to check the status.
-
+---
 
 ### `StatefulSet`
  - statefulset manage deployment and scaling of the pods.
@@ -1400,9 +1402,8 @@ To list the statefulset.
 ```
 $ kubectl get statefulsets
 ```
-
+---
 #### `Ingress`:
-
 Representation of Nginx Ingress controller
 
 Representation:
@@ -1482,7 +1483,7 @@ spec:
     - protocol: TCP
       port: 8080
 ```
-
+---
 ### `volumes and persistence`
 
 Sample manifest to use volumemount store to use the host directory. 
@@ -1531,7 +1532,7 @@ spec:
 # ...      
  ```
 
-# persistence volume defintion
+### persistence volume defintion
 
 ```yaml
 apiVersion: v1
@@ -1547,7 +1548,7 @@ spec:
      path: /data
 # don't use hostPath type in production.
 ````
-##### persistence volume claims to make storage availabe to node
+### persistence volume claims to make storage availabe to node
 
 PersistentVolume and PersistentVolumeclaim are two different object in the namespace.
 
@@ -1576,11 +1577,15 @@ spec:
      requests:
         storage: 500Mi
 ```
-##### refer the previously create volume defition, the storage is 1 Gi there.
+  Note: 
+    Refer the previously create volume defition, the storage is 1 Gi there.
 
 ```
 $ kubectl get persistentvolumeclaims
+or
+$ kubectl get pvc
 ```
+
 ##### What happens when deleting pvc?
 When deleting the persistentvolumeclaim, the persistent volume does not get deleted since the default policy is retain.
 
@@ -1602,9 +1607,49 @@ spec:
       image: nginx
       volumeMounts:
       - mountPath: "/var/www/html"
-        name: mypd
+        name: mypd  # name of the volumes used within the container.
   volumes:
     - name: mypd
       persistentVolumeClaim:
         claimName: pvc-demo
 ```
+----
+
+### imperative command to generate the defintion yaml:
+
+Version used: Kuberentes 1.18+
+##### Create Pod yaml
+```
+$ kubectl run busyboxpod1 --image=busybox -o yaml --dry-run=client
+
+$ kubectl run pod \
+  --image=busybox
+  --requests "cpu=100m,memory=512Mi" \
+  --limits "cpu=200m,memory=512Mi"
+  --command \
+  -- sh -c "sleep 2000"
+  -o yaml \
+  --dry-run=client
+```
+
+##### Create Deployment yaml
+```
+$ kubectl create deploy deployment1 --image==busybox -o yaml --dry-run=client
+
+## note the template for pod will not be avilable with above command.
+```
+
+##### Create job yaml
+```
+$ kubectl run job1 --image=busybox -o yaml --dry-run=client
+
+## note the template of pod will not be added just manipulate it with pod content
+```
+ job should contain restartPolicy: Never or restartPolicy: OnFailure
+ 
+##### Create cronjob yaml
+```
+$ kubectl create cj cronjob1 --image=busybox --scheduler="* * * * *" -o yaml --dry-run=client
+```
+ job should contain restartPolicy: Never or restartPolicy: OnFailure
+ 
