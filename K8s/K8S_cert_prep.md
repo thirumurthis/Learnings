@@ -254,7 +254,7 @@ Demo:
  ```
   - To view the deployment revision details for specific revision use below,
     
-     ```
+      ```
       $ kubectl rollout history deployment/nginx --revision=1
       ```
       
@@ -570,7 +570,7 @@ ENTRYPOINT ["python", "app.py"]
 ```
 
 Manifest pod file for the above docker refer the containerPort: (save as webapp-pod.yaml)
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -648,7 +648,6 @@ With the `livenessProbe`, the Pods and Deployment will be in running state, but 
 ### `namespaces` 
  - To run a pod in a name space, use --namespace or -n option.
  ```
- 
  # using command
  $ kubectl run --generator=run-pod/v1 busybox --image=busybox -n dev --dry-run
  
@@ -892,6 +891,7 @@ Note:
   `$ kubectl get secret/<secret-name> -o yaml`
   
   - Step 3: Manifest file to pass the secret as environment values
+  
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -911,7 +911,8 @@ spec:
        name: <secret-name>
 ```
 
-### `SecruityContext` 
+### `SecruityContext`
+
   - Refer the Docker securtiy context.
   - Docker by default runs the process as root, this case be changed.
     - when executing the image use `user` arguments.
