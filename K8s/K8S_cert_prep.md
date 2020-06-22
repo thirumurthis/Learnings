@@ -1198,8 +1198,9 @@ So when the labels are not avialbe during the pod execution, we use type to info
   - in order to run the job in multiple pods, we can use `completion` similar to replicaset.
   
 Why we need Jobs?
- - The pod can do the same operation but the scheduler tries to restart the pods till the threshold is reached default `restartPloicy` is always. this can be set to Always.
- - For large process that can run parllelly, we can execute the process in n number of pods, and for some reason any of the pod has error, the job can manage to run the desired number of pod to process the jobs.
+ - The pod can do the same operation but the scheduler tries to restart the pods till the threshold is reached. This is because the  default `restartPloicy` is `Always`. This can be set to `Never`.
+ - If we have a large process that can run parllelly and wanted to execute the process in n number of pods. The single pod cannot mange that when we have pod defintion.
+     - When processing large process for some reason if there are any erros in any of the pod, the job can manage to run the desired number of pod to process the jobs for success state.
  - A job makes sure the set of pods running to achive the success status.
 
  - Deleting the job will delete the pods.
@@ -1216,6 +1217,8 @@ spec:
      metadata:
         name: countdownjob
      spec:
+        completions: 3
+        parallelism: 3
         containers:
         - name: counter
           image: busybox
@@ -1225,6 +1228,14 @@ spec:
             - "for i in 5 4 3 2 1 ; do echo $i; done"
          restartPolicy: Never    # other options, Always or onFailure
 ```
+##### How to run the jobs in multiple pods?
+ - Use the completions option to the spec (`spec.completions : <number>` in the defintion file).
+ - By default the jobs run the pods sequentially, one after the other. 
+ - When including `completions`, in case of failures in pod, the job will makes sure to run additonal pods until completions value is met.
+ 
+#### How to run the job in multple pods, and start it simultaneously?
+  - Use `paralleism` option to the spec (`spec.parallelism : <number>` in the defintion file).
+
  - Like other manifest file we can use create command to deploy the jobs
  ```
  $ kubectl create -f job-demo.yaml
@@ -1236,6 +1247,12 @@ spec:
  
  ## find the pods and check the logs
  ```
+ 
+ #### how to check the output of the jobs
+ ```
+ $ kubectl logs jobs <job-name>
+ ```
+ Note: In general scenario the job can be processing images, processing files, etc. and the output can be stored at the Persistent volume, etc.
  
  ### `Cronjobs` in Kubernetes:
   - These are jobs which can run periodically like linux crontab.
