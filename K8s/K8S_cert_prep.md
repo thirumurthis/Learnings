@@ -836,6 +836,21 @@ spec:
 Note: 
  - Logs cannot be viewed on the deployments. 
  
+##### To create configMap from file.
+```
+$ echo "DB_USER=username\nDB_PASS=pass" > config.txt 
+
+$ kubectl create configMap db-config --from-file=config.txt
+## This option when adding using the envFrom: configRefMap, includes the file name into the env command
+## below is the way to overcome it.
+```
+
+##### To create configMap from file and treat as environment variable
+```
+$ echo "DB_USER=username\nDB_PASS=pass" > config.txt 
+
+$ kubectl create configmap db-config --from-env-file=config.txt
+```
 --- 
 
 ### `secrets` in kubernetes:
