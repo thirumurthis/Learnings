@@ -1668,3 +1668,33 @@ $ kubectl create cj cronjob1 --image=busybox --scheduler="* * * * *" -o yaml --d
 ```
  job should contain restartPolicy: Never or restartPolicy: OnFailure
  
+##### Create a `emptyDir` volume within the container if the pod:
+ - use security context and perform operation as groupid 3000, requres a `runAsUser`
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: secured
+  name: secured
+spec:
+  containers:
+  - image: nginx
+    name: secured
+    command: ["/bin/sh"]
+    args: ["-c","mkdir -p /data/app/; touch /data/app/log.txt; sleep 1000"]
+    volumeMounts:
+    - mountPath: /data/app
+      name: myvolume
+    resources: {}
+  volumes:
+  - name: myvolume
+    emptyDir: {}
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 3000
+  restartPolicy: Never
+status: {}
+
+```
