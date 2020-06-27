@@ -51,8 +51,12 @@ spec:
 
 Persistent volume and Persistent Volume Claim:
 
-the presisent vloume claim can be used in the pod with the claim name in volumes.
-note: deleting the pvc will delete the pv also, but only the any directory within the /tmp/<> will be auto deleted else it wont get deleted.
+The presisent vloume claim can be used in the pod with the claim name in volumes.
+
+Note: 
+  - deleting the pvc will delete the pv also, but only the any directory within the /tmp/<> will be auto deleted else it wont get deleted.
+  - has `type` value Directory, File. The monut directory will either be created by automatically or need to be created by Admin/developer on the host/worker machines.
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
@@ -69,9 +73,7 @@ spec:
 #  storageClassName: local-storage
   hostPath:
     path: /tmp/data
-
 ---
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -86,7 +88,8 @@ spec:
       storage: 500Mi
 
 ```
-using ConfigMap as persistent volume:
+Using ConfigMap to mount as volume:
+ - More than one mounted volume
 ```
 $ kubectl create configmap configmap-log --from-literal=log_level=info
 ```
@@ -121,6 +124,4 @@ spec:
   dnsPolicy: ClusterFirst
   restartPolicy: Always
 status: {}
-
-
 ```
