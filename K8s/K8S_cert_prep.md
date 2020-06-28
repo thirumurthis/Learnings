@@ -1103,7 +1103,7 @@ Note:
 
 Specify the taint to the node using node name. It is a key value pair
 ```
-$ kubectl taint nodes node-name key=value=taint-effect
+$ kubectl taint nodes node-name key=value:taint-effect
 
 ## taint-effect values := NoScheduled | PrefereNoSchedule| NoExecute.
 ## taint-effect means what to do if taint is not tolerated.
