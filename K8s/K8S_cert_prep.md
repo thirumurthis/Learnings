@@ -1664,7 +1664,7 @@ $ kubectl run job1 --image=busybox -o yaml --dry-run=client
  
 ##### Create cronjob yaml
 ```
-$ kubectl create cj cronjob1 --image=busybox --scheduler="* * * * *" -o yaml --dry-run=client
+$ kubectl create cj cronjob1 --image=busybox --schedule="* * * * *" -o yaml --dry-run=client
 ```
  job should contain restartPolicy: Never or restartPolicy: OnFailure
  
