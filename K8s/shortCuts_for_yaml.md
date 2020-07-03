@@ -1,4 +1,4 @@
-##K8s 1.18+ short cuts to create yaml file:
+## K8s 1.18+ short cuts to create yaml file:
 
 ### Create pods:
 ```
