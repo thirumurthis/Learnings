@@ -1710,6 +1710,6 @@ status: {}
   - Move the pod yaml defintion to the location usually `/etc/kubernetes/manifests/` directory which is default under the kubelet config.yaml.
     (Another option create a separate directory and move the pod yaml, refer the newely created directory to the kubelet config.yaml, `staticPodPath`)
   - restart the kubelet process using `systemctl restart kubelet` in the worker node.
-  - Under master node, when using the kubelet get pods, now should see the pod running.
+  - Under master node, when using the `kubelet get pods`, now should see the pod running and note the name of the pod it will contain the worker node name appended at end.
      - deleting the pod, it will be recreated again.
-     
+      
