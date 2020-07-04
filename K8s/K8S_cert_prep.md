@@ -1698,3 +1698,18 @@ spec:
 status: {}
 
 ```
+### Static pod:
+  - Pods that are not manged by scheduler are static pods
+  - Under the `kube-system` namespace there are set of pods running which are loaded from the location `/etc/kubernetes/manifests`, all these are static pods
+  - These pods are not controlled by the API servers, but they can view the it. i.e, when running `kubelet get pods --all-namespaces` should list the pods there.
+  
+##### How to run a static pod in a worker node?
+  - Create a pod yaml definiton with nginx image in the worker node (note: Not on master) 
+      - Tip: To create the yaml file use kubelet imperative command and move to worker nodes in the cluster using ssh)
+  - In the worker node, ssh and check for `staticPodPath:<path of manifest>` in the kubelet config file under `/var/lib/kubelet/config.yaml` 
+  - Move the pod yaml defintion to the location usually `/etc/kubernetes/manifests/` directory which is default under the kubelet config.yaml.
+    (Another option create a separate directory and move the pod yaml, refer the newely created directory to the kubelet config.yaml, `staticPodPath`)
+  - restart the kubelet process using `systemctl restart kubelet` in the worker node.
+  - Under master node, when using the kubelet get pods, now should see the pod running.
+     - deleting the pod, it will be recreated again.
+     
