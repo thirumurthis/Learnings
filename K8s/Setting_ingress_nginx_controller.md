@@ -28,18 +28,20 @@ Note: k set with the alias for kubectl `(alias k=kubectl)`
 [vagrant@kmaster learn]$ k apply -f ingressresource.yaml
 Error from server (InternalError): error when creating "ingressresource.yaml": Internal error occurred: failed calling webhook "validate.nginx.ingress.kubernetes.io": Post https://ingress-nginx-controller-admission.ingress-nginx.svc:443/extensions/v1beta1/ingresses?timeout=30s: net/http: request canceled while waiting for connection (Client.Timeout exceeded while awaiting headers)
 ```
-As per the Git issue, if the VadlidatingWebhookconfiguration is deleted, it is exepcted to work.
+##### As per the Git issue, if the VadlidatingWebhookconfiguration is deleted, it is exepcted to work.
 ```
 [vagrant@kmaster learn]$ kubectl get -A ValidatingWebhookConfiguration
 NAME                      WEBHOOKS   AGE
 ingress-nginx-admission   1          3m15s
 ```
+
+#### Solution to fix the webhook issue
 ```
 [vagrant@kmaster learn]$ kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
 validatingwebhookconfiguration.admissionregistration.k8s.io "ingress-nginx-admission" deleted
 ```
 
-After deleting the below yaml file worked.
+##### After deleting the below yaml file worked.
 ```yaml
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -106,7 +108,7 @@ Events:       <none>
 ```
 $ kubectl get events -n=ingress-nginx
 ```
-#### Running services
+#### Get the  services port nodeport info
 ```
 [vagrant@kmaster learn]$ k get svc
 NAME            TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
@@ -121,8 +123,8 @@ ingress-nginx-controller-admission   ClusterIP   10.104.192.217   <none>        
 
 ```
 
-since the nodePort is available for the nginx ingress controller, 
-using the url http://172.42.42.101:31780/watch the correponding service got executed and appropriate page got loaded.
-(in this case the ip address 172.42.42.101 was the worker node where the ingress-nginx controller pod got installed, port was the service port.)
+since the nodePort is available for the nginx ingress controller,
+  - using the url http://172.42.42.101:31780/watch the correponding service got executed and appropriate page got loaded.
+  - (in this case the ip address 172.42.42.101 was the worker node where the ingress-nginx controller pod got installed, port was the service port.)
 
 
