@@ -10,6 +10,7 @@ echo "alias k=kubectl" >> ~/.bashrc
 ````
 
 #### To use alias to work with the autocomplete
+```
 echo "complete -F __start_kubectl k" >> ~/.bashrc
 ```
 
