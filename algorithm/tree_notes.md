@@ -129,7 +129,7 @@ The invariant structure is retained.
    
    4 2 1 3 6 5 7 
    ```
-`
+
    - In-order  (Left node -> Root node -> right node) (SORT order)
        - visit left, its left until no more left, then visit its root then right.
    ```
@@ -155,7 +155,7 @@ The invariant structure is retained.
 
 Usage of Tree traversal:
   - Traversal (pre-order and post-order) is used in mathematical evaluation
-  - used in runtime behavioud of in compiler. like step 1 should operate before step 2, where the operation is stored as tree.  
+  - used in runtime behaviour of in compiler. like step 1 should operate before step 2, where the operation is stored as tree.  
   
  Program:
    Try to get list of words from the user and sort using binary tree.
@@ -174,13 +174,16 @@ Adding a value,
   - store the information at the index in an array
 
 Hashing process derives a fixed size result for any arbitary input.
-  - Any string with any lenght will returns the fixed size result.
+  - Any string with any length will returns the fixed size result.
   - Hash function returns the same size.
 
 Hash function should be `stable` (should be invariant)
-`Uniformity` the hash value should be uniformly distributed through available space.
-`Efficient` The cost of generating hash must be balanced with application needs
-`Security` the cost of finding data that produced a given hash is prohibitive.
+
+- `Uniformity` the hash value should be uniformly distributed through available space.
+
+- `Efficient` The cost of generating hash must be balanced with application needs.
+
+- `Security` the cost of finding data that produced a given hash is prohibitive.
 
 Sample hash function implementation
 `Additive`
