@@ -25,11 +25,11 @@ Unbalanced tree example:
   1
     \
       2
-        \ 
+       \ 
          3 
           \
            4
-  - Root node has no childres on left (so left height of root node is 0 )
+  - Root node has no childrens on left (so left height of root node is 0 )
      - On the right there is a children 2 (Height of this node relative to root is 1)
      - Value of node 2 has right child 3. (Height of this node relative to root is 2)
      - Value of node 3 has right child 4. (Height of this node relative to root is 3)
