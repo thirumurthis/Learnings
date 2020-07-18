@@ -67,7 +67,7 @@ Balanced Tree example: (by adding 1,2,3,4 values)
         2
        / \
       1    3
-             \
+            \
               4
  This would be the final balanced tree
 ```
