@@ -162,9 +162,62 @@ end
 end
 
 ## TEMPLATE FILE under ~/chef-repo/cookbooks/starter/template/test.properties.erb
+
+## Below is the content of template file and note the usage of @con['variablename'], for accessing fata.
+## Since the ruby hash is used, below is the way to access it. In a way if we pass the databags info we need to use the same approach.
+
 key1 =TRUE/ <%= @con['variable1'] %>
 key2 =TREE/ <%= @con['variable2'] %>
 from= <%= @from %>
+```
+##### Template another example of passing variable using direct hash
+```ruby
+hostnamevalue=node['hostname']
+portvalue=8080
+template '/etc/testproperties.xml' do
+  variables(
+    'hostname_info' => hostnamevalue ,
+    'web_port' => portvalue
+  )
+  source 'testproperties.xml.erb'
+  owner 'myapp-user'
+  group 'myapp'
+  mode '0755'
+end
+
+## The template file is located under ~/chef-repo/cookbooks/<cookbook-name>/template/testproperties.xml.erb
+
+# below content is part of the template file, use <%= @variablename %> for accessing passed variables in template
+# resource the values are passed as => not using : refer the previous example
+
+ <web bind="http://<%= @hostname_info %>:<%= @web_port %>" path="web">
+```
+
+## Template file and passing databags configuration
+```ruby
+dbag_data = data_bag_item("myapp-databag-dev", 'dev')  # the directory of the databags and id value of the databags is passed as parameter
+
+template '/opt/apache-activemq/bin/profile.cmd' do
+  source 'profile.cmd.erb'
+  owner 'myapp-user'
+  group 'myapp'
+  mode '0755'
+  variables ({
+    conf: dbag_data
+})
+end
+
+## Template file content:
+Environment=<%= @conf['property1'] %>
+
+## databag content under data_bags/myapp-databag-dev/devconfig.json
+## not the databag can contain json object within a variable.
+{
+  "id": "dev",
+  "property1": "valuefromdatabag",
+ ....
+  "proeprtyn": { "key1":"value1", "key2":"value2"}
+ }
 
 ```
 
