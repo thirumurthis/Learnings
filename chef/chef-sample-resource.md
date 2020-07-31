@@ -235,3 +235,23 @@ end
 
 ## usd grep -q for quite print
 ```
+
+##### create a link using recipe chef resources and File utility of ruby
+ ```ruby
+ # link for a file
+ link '/opt/activemq' do
+  owner 'activemq'
+  to '/opt/apache-activemq-5.10.0/bin/activemq'
+  only_if { ::File.exist?('/opt/apache-activemq-5.10.0/bin/activemq') }  # execute this resource only if the file exists
+end
+
+# link for a folder
+link "/opt/apache-activemq" do
+  to "/opt/activemq-5.11.0"
+  owner 'activemq'
+  group 'activemq'
+  mode '0755'
+  not_if 'test -L /opt/apache-activemq'  # don't execute this resource if the link already exists
+  action :create
+end
+ ```
