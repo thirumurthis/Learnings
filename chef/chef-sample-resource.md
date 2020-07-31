@@ -167,3 +167,18 @@ key2 =TREE/ <%= @con['variable2'] %>
 from= <%= @from %>
 
 ```
+
+#### chef recipe for appending a string to a file if it not exists
+   - The JAVA_ARGS are already inclded, we need to add to the end of the file
+   - just using the >> redirection here.
+   - resource executes only when the files exists and if there is no matching string starting with JAVA_ARGS..
+```ruby
+filepathloc='/opt/apache-activemq'
+execute 'args_to_file' do
+   command "echo 'JAVA_ARGS=\"$JAVA_ARGS -Djava.rmi.server.hostname=localhost\"' >> " + filepathloc +"/etc/profile.cmd"
+   only_if 'test -f ' + artemis_broker_instance + '/etc/artemis.profile'
+   not_if "grep -q '^JAVA_ARGS=\"$JAVA_ARGS -Djava.rmi.server.hostname=localhost\"' " + filepathloc +"/etc/profile.cmd"
+end
+
+## usd grep -q for quite print
+```
