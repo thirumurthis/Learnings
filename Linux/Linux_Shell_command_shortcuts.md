@@ -749,3 +749,10 @@ echo $(($Diff/30)) months
 echo $((($(date '+%s')- $(date -d $INPUT +'%s'))/(60*60*24*30))) months
 
 ```
+
+# grep command to filter based on matching pattern in centos 7
+```
+$ grep -Eo "[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]\.[0-9][0-9]:[0-9]+" filename.txt
+## the above will print any string mathcing 10.10.10.01:1234, 
+## -E is for pattern, -o is to output the matching pattern.
+```
