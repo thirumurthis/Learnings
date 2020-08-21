@@ -1713,3 +1713,7 @@ status: {}
   - Under master node, when using the `kubelet get pods`, now should see the pod running and note the name of the pod it will contain the worker node name appended at end.
      - deleting the pod, it will be recreated again.
       
+ ##### Command to find the pods present in which database.
+```
+$ kubectl get pods --all-namespaces -o jsonpath='{range .items[*]}{.metadata.namepsace}{"\t"}{.metadata.name}{"\n"}{end}'
+```
