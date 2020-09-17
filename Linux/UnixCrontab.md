@@ -3,4 +3,3 @@
 ```
 00 01 * * 2 [ `date +\%d` -le 7 ] && <path/to/the/script>
 ```
-
