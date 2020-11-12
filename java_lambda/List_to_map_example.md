@@ -2,6 +2,9 @@
   - the map should contain key as string and value as length of string.
   - the key string's first char should be upper case
   
+-  Logic filter to allow only string length greater then 1, mapping the string to enable 1st char as upper case and appending to rest of the string.
+- Edge case, the string with length 1, might not work.
+  
 ```java
 package com.program;
 
