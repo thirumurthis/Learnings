@@ -12,7 +12,7 @@
   - Database sends reponse back to server.
   - Server formats and sends response to client
 
-Reference for below [git](https://tools.ietf.org/id/draft-ietf-hybi-thewebsocketprotocol-09.html)
+Reference for below [IETF](https://tools.ietf.org/id/draft-ietf-hybi-thewebsocketprotocol-09.html)
 
 #### WebSocket Handshake
   - Sample Websocket Client request:
