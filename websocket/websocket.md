@@ -27,6 +27,6 @@
    - in the client side, 
       - the stomp js is used to create an websocket to connect to the endpoint.
       - then subscribe to the topics/queues in the endpoint.
-      - `subscribe`'ing method provides an call back option which can be used to handle the respose.
+      - `subscribe` method provides a call back function which can be used to handle the response.
       - `send` message to actual controller developed, which will perform the logic and pushes the message to the message broker internally.
    
