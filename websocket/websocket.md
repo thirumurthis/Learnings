@@ -25,8 +25,8 @@
    - `MessageBroker` is one of the main component which is used to register the queue/topic.
    - Spring provide a websocket server which can be configured with an endpoint.
    - in the client side, 
-         - the stomp js is used to create an websocket to connect to the endpoint.
-         - then subscribe to the topics/queues in the endpoint.
-         - `subscribe`'ing method provides an call back option which can be used to handle the respose.
-         - `send` message to actual controller developed, which will perform the logic and pushes the message to the message broker internally.
+      - the stomp js is used to create an websocket to connect to the endpoint.
+      - then subscribe to the topics/queues in the endpoint.
+      - `subscribe`'ing method provides an call back option which can be used to handle the respose.
+      - `send` message to actual controller developed, which will perform the logic and pushes the message to the message broker internally.
    
