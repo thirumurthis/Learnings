@@ -62,7 +62,15 @@ Listening on 5000
 ---------
 ##### Now spin up the loadbalancer using  HA proxy, then listen to different port say, 8080
 ##### Then forward the load between those two using load balancer using TCP.
-- install HA proxy.
+- install HA proxy. (windows setup is tricky)
+- set the HA proxy configuraton
+   - where put in the proxy'ing to different servers
+   - listening port in the case be 8080
+--------
+##### once the HA proxy is setup, from browser use http://localhost:8080
+ - should see the application content being loadbalanced between different ports.
+ - just kill one application and check in case if the blancing is not visually achieved. But internally it `ha proxy` will handle it based on the algorithms.
+------ 
 
 
   - Layer 7 LB
