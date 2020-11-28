@@ -14,8 +14,25 @@
       - this is a reverse proxy, where the client doesn't know the request is forwarded to
         - the server doesn't know the request is comming from, this is reverse proxy.
 
+  ##### pros:
+    - simple load balancing
+    - faster and efficient (no data lookup), since doesn't look into the data to make decision.
+    - The data is still encrypted in this layer, so in a way secure.
+    - only one TCP connection established. (router take the repsonsiblity for forwarding the TCP connection, but for client it is one connection only)
+    - uses NAT (statefulness)
+  
+  ##### Cons:
+    - Not a smart load balancing
+      - the data is not read cookies,etc. so no need to add headers or redirect based on it.
+    - Not suitable for Microservice. (not applicable)
+       - Since, the ingress protocol can use the content to forward different service based on the path. like using REST endpoint like /image which will we navigate service dedicated to media and knows to cache. the path /message this will navigate to different services.
+    - when we forward using LB, which makes a TCP connection there is a maximum limit 1500 bytes. If the GET request size is 1MB, then this needs to be broken to multiple TCP segments, that is one packet multiple segment. The LB better forward all those segments to the same destination. We cannot forward part of the segment in the packet to one destination and some to another destination.
+    - no cache, since at this layer the data is not looked up or read.
+      
   - Layer 7 LB
-
+   - if there is a https connection, the LB should have certificate and need to looks the data to make decision. so if this is compromised the data is exposed.
+   -
+   
 OSI model 
 ```
   Layer 7 - Application - GET / ip port (Http headers, cookies, content-type)
