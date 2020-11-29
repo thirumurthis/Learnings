@@ -93,7 +93,7 @@ PUT /my-index-0000001
 ```
   - Note: Elastic serach doesn't have any array type, it will be automatically detected from the json.
   
-#### How to view the mapping of an idex
+#### How to view the mapping of an index
 ```
 GET /my-index-000001/_mapping
 
@@ -118,6 +118,25 @@ POST /<index_name>/<document-name>/<id>/_update
 ```
 DELETE /<index-name>/<document-name>/<id>
 ```
+
+##### Performing operation in bulk using `_bulk` api
+  - if we need to update N number of documents, bulk update can perform it in a single network round trip.
+  - \_bulk api expects single line with the action for create, update or delete as well as metadata for the action.
+  - followed by the source document which is optional. since it is not needed for delete.
+  - \_bulk uses "\n" (new line) as a delemiter 
+  - No json beautify option in this case since new line is a delimiter.
+  
+```
+POST /<index-name>/<document-name>/_bulk
+{ "index" : {"_id":"1000"}}  //first line is indicate the action, default action is create, so the index will be created and below source will be attached
+{"name" : {"sample name", "categories" :[{"name" : "sample category"}]}} //second line is the source document represent
+{ "index" : {"_id":"1001"}}
+{"name" : {"sample name1", "categories" :[{"name" : "sample category1"}]}}
+{"delete" : {"_id":"1000"}} // delete action used by _bulk
+{"update" : {"_id":"1001"}} // update action used by _bulk
+{"doc" : {"name":"sample name new"}} // source for the update.
+```
+
 #####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
