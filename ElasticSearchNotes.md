@@ -69,6 +69,28 @@ PUT /my-index-000001
   }
 }
 ```
+#### How to add nested properties
+```
+PUT /my-index-0000001
+{
+ "mappings" : {
+    "product" : {
+       "properties" : {
+           "name" : {
+	      "type": "string"
+	      },
+	    "categories" : {
+	       "type" : "nested" ,
+	        "properties" : {
+		   "name": {
+		      "type": "string"
+		   }
+		}
+	    }
+	}
+    }	
+}
+```
 
 #### How to view the mapping of an idex
 ```
