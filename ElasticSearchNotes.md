@@ -105,6 +105,14 @@ GET /my-index-000001/_mapping/field/employee-id
 ##### If we know the document id we can update the field values by using PUT verb and passing the details of the document.
 
 ##### To update the specfic field use the POST command
+```
+POST /<index_name>/<document-name>/<id>/_update
+{
+   "doc": {
+      "price" : 100.00
+   }
+}
+```
  
 #####  URL to view the details
 ```
