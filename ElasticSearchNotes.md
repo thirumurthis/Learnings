@@ -237,8 +237,56 @@ POST /_bulk
     - geo_shape (points, lines, circles, polygons,etc)
   - used to perform geographical searches
     - Example, finding points of interest near GPS coordiantes
-    
-    
+
+#### Hands-on, on query string
+ - using kibana dev tools
+```
+GET /<index-name>/<document-name>/_search?q=*
+# above will return all the resuts.
+```
+ - Note: quick understanding results of the output properties:
+```
+  within hits:
+     total - number of matched results
+     max_score - contains the highest score of matched document
+     hits array - this property contains the array of matched documents and each contains major field like _index,type,score, etc.
+     hits._score - at the hit array level is relevancy
+```
+ - specific query value `GET /<index-name>/<document-name>/_search?q=some`
+ - specify the field name in the query `GET /<index-name>/<document-name>/_search?q=name:some`
+ - Using the boolean logic to the query string
+ ```
+ GET /<index-name>/<document-name>/_search?q=name:(some AND new)
+ # above searches the string some and new in the name field. 
+ 
+ # using OR boolean
+  GET /<index-name>/<document-name>/_search?q=name:(some OR new)
+  
+ # complex 
+  GET /<index-name>/<document-name>/_search?q=(name:(some AND new) AND status: active)
+ ```
+  - using + and - in the query string
+  ```
+   GET /<index-name>/<document-name>/_search?q=name:+some -new
+   # only the content some in the name field will be displayed
+  ```
+  - using query string - phrase queries
+  ```
+   GET /<index-name>/<document-name>/_search?q=name:"some new"
+   # the quotation or double quotes is used for phrase search.
+   # if the "some new" is reversed it will not be matched unless there is not present.
+   # in some cased in the name field has "some - new", it depends on the analyzer.
+  ```
+  
+  **analyzer**
+  ```
+  GET /_analyze?analyzer=standard&text=some - new
+  # the above will list the tokens. and - is dropped.
+  ```
+  
+ 
+#### Hands-on, on query DSL
+
 #####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
