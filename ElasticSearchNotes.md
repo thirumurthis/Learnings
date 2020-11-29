@@ -102,6 +102,10 @@ GET /my-index-000001/_mapping/field/employee-id
 ```
  - Note: There is a limit in the number of field created for document <1000
  
+##### If we know the document id we can update the field values by using PUT verb and passing the details of the document.
+
+##### To update the specfic field use the POST command
+ 
 #####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
