@@ -5,6 +5,8 @@
 ##### Type of Load Balancer :
  - Layer 4 LB
  - Layer 7 LB
+ 
+---------------------
 
   - Layer 4 LB
       - we only know only the `IP` and the `port`
@@ -72,11 +74,28 @@ Listening on 5000
  - just kill one application and check in case if the blancing is not visually achieved. But internally it `ha proxy` will handle it based on the algorithms.
 ------ 
 
-
   - Layer 7 LB
-   - if there is a https connection, the LB should have certificate and need to looks the data to make decision. so if this is compromised the data is exposed.
-   -
+   - if it is a https connection, the layer 7 LB should have certificate and need to looks the data to make decision. 
+   - so if this is compromised the data is exposed.
+   - in this type of LB, we can set `rules` to redirect to different server based on the path, for example /image to high performance server which runs a service to render image. /message to a low performance server which renders messages.
+   - in this case the client can extablish more than 1 TCP connection.
+      - client to LB has an https or TLS connection (encrytped)
+      - from LB to server (where the service/application) with non-encrypted connection
    
+#### Pros:
+  - smart load balancing
+  - support microservice
+  - lookup data and make descisions
+  - support caching, if the index.html or static content can be cached
+  
+#### Cons:
+  - expensive (looks up the data), machine to be powerful like encrypting/decrypting.
+    - using a rashberry pi for layer 7 LB/layer 4 LB, the performance is noticable
+  - decryption terminates the TLS connection 
+     - sends the client back with the certificate of LB, uses server name indication to serve connection, when having multiple domain. (eg: example.com, www.example.com, etc)
+  - 2 TCP connection.
+  - sort of less secure, since looks up the data
+  
 OSI model 
 ```
   Layer 7 - Application - GET / ip port (Http headers, cookies, content-type)
