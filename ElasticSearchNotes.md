@@ -137,6 +137,19 @@ POST /<index-name>/<document-name>/_bulk
 {"doc" : {"name":"sample name new"}} // source for the update.
 ```
 
+##### using `_bulk` api without index in the url
+  - the `_bulk` api doesn't know if the index name is not specified.
+  - NOTE: 
+     - the all actions in the bulk request are executed sequentially.
+     - so even when there is a failure on any single action, the next action will be executed and will NOT be stopped.
+     - bulk api includes status for each action that was executed, so this will be helpful to track in the same order as requested.
+      
+```
+POST /_bulk 
+{ "update" : { "id":"1000", "_index" : "<index-name>",  "type" : "<document-name>"}}
+{ "doc" : { "name":"new name bulk update"}}
+```
+
 #####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
