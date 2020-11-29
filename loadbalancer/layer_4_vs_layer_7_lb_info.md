@@ -8,7 +8,7 @@
  
 ---------------------
 
-  - Layer 4 LB
+  ### Layer 4 LB
       - we only know only the `IP` and the `port`
       - we don't read the data in this TCP layer, the data is encrypted.
       - decision is based on the `Ip` address and `port` not based on the data.
@@ -74,7 +74,7 @@ Listening on 5000
  - just kill one application and check in case if the blancing is not visually achieved. But internally it `ha proxy` will handle it based on the algorithms.
 ------ 
 
- - Layer 7 LB
+### Layer 7 LB
    - if it is a https connection, the layer 7 LB should have certificate and need to looks the data to make decision. 
    - so if this is compromised the data is exposed.
    - in this type of LB, we can set `rules` to redirect to different server based on the path, for example /image to high performance server which runs a service to render image. /message to a low performance server which renders messages.
