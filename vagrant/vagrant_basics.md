@@ -88,17 +88,17 @@ Init vagrant with a box
   
    -  in the laptop (host machine) edit the hostname file
      -  in windows, as admin user update the file `C:\Windows\System32\drivers\etc` add
-     ```
+     
+```
       # multiple domain name can be set in the hostname file
       192.168.33.60 www.thiru.local thiru.local
-     ```
-   once the changes is done, from browser try `http://thiru.local`
-   
-  ```
+```
+  -  once the above changes is done, from browser try `http://thiru.local` to see the index.html
+
   
 ##### how to use the sync_dir, within the Vagrantfile config
   
- ```
+```
  Vagrant.configure("2") do |config|
       config.vm.box = "ubuntu/trusty64
       
@@ -118,11 +118,11 @@ Init vagrant with a box
  ```
    - After updating the above configuration for folder, issing `> vagrant reload` will update the vagrant vm box.
    - now if we issue the `http://thiru.local` command, there won't be index.html listed instead the file .vagrantfile will be displayed
-        - this signifies that the host directory is now being used by the apache2 server.
+      - this signifies that the host directory is now being used by the apache2 server.
   
  ##### how to handle the directory permission with the Vagrantfile config
  
- ```
+```
  Vagrant.configure("2") do |config|
       config.vm.box = "ubuntu/trusty64
       
@@ -138,20 +138,21 @@ Init vagrant with a box
       # "." represent the current directory where the vagrantfile is present
       # "/etc/www/html" directory now points to this location in the host machine
       config.vm.sync_folder ".", "/etc/www/html", :mount_options => ["dmode=777", "fmode=666"]
- end
- ```
+  end
+```
  
  Note: `mac and linux` supports `nfs` (network file system) which increase the performance of the vagrantbox. [Windows not support it]
-    - inorder to create a nfs, update the config as below
-    ```
+  - inorder to create a nfs, update the config as below
+ 
+```
       config.vm.sync_folder ".", "/etc/www/html", nfs => { :mount_options => ["dmode=777", "fmode=666"] }
-    ```
-    - use `> vagrant reload`, will display the usage of nfs. It might prompt for system password.
+```
+  - use `> vagrant reload`, will display the usage of nfs. It might prompt for system password.
     
 ##### using provisioner option to install the apache2 server
   - in the Vagrantfile update the below configuration
  
-  ```
+ ```
  Vagrant.configure("2") do |config|
       config.vm.box = "ubuntu/trusty64
       
@@ -174,18 +175,18 @@ Init vagrant with a box
         apt-get install -y apache2
       SHELL
  end
- ```
+```
  - Now destroy the box using `> vagrant destroy` and use the above config file to create the box `> vagrant up`.
  - Note: when running above config file, the index.html will be created under the mounted directory.
  
  ##### If we need to use a shell script file for provisioning then update the Vagrantfile config as below, comment the inline shell lines
- ```
+```
    # bootstrap.sh file contains the apt-get update, etc commands.
    # if a LAMP stack needs to updated, provide the details in this sh file
    config.vm.provision "shell", path: "bootstrap.sh"
- ```
+```
    `bootstrap.sh` file content
-  ```sh
+```sh
    apt-get upgrade
    apt-get install -y apache2
    a2enmod rewrite
@@ -197,5 +198,5 @@ Init vagrant with a box
    service apache2 start
    ....
    ....
-  ```
+```
   
