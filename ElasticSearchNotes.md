@@ -26,7 +26,7 @@
  - The **`PUT`** method is used here as an `upsert` (that is, an insert or update).
  - For demonstration reasons, the same code was executed multiple times and PUT will perform upsert.
 
-##### How to create an index in Elastic serach
+##### How to create an index in Elastic search
 ```
 PUT /<index_name>
 {
@@ -43,7 +43,43 @@ GET /_cat/indices?v
 # above will list the health status of the index, if there is only one node, the status will be yellow since replicas will not be able to create in the same node.
 # any new node joining the cluster will change the health status to green
 ```
-#####  URL 
+#### How to create a document using REST API, define the fields for the index
+```
+PUT /my-index-000001
+{
+  "mappings": {
+    "properties": {
+      "age":    { "type": "integer" },  
+      "email":  { "type": "keyword"  }, 
+      "name":   { "type": "text"  }     
+    }
+  }
+}
+```
+
+#### How to add an field to an existing document
+```
+ PUT /my-index-000001/_mapping
+{
+  "properties": {
+    "employee-id": {
+      "type": "keyword",
+      "index": false
+    }
+  }
+}
+```
+
+#### How to view the mapping of an idex
+```
+GET /my-index-000001/_mapping
+
+# for specific field use below
+GET /my-index-000001/_mapping/field/employee-id
+```
+ - Note: There is a limit in the number of field created for document <1000
+ 
+#####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
 
