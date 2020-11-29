@@ -286,6 +286,75 @@ GET /<index-name>/<document-name>/_search?q=*
   
  
 #### Hands-on, on query DSL
+```
+GET /<index-name>/<document-name>/_search
+{
+  "query" : {
+     "bool" : {
+       "must" : [
+         { "match" : {"name" : "new" }},
+	 { "match" : {"name" : "some" }}
+        ]
+	}
+     }
+  }
+}
+```
+  Note: there is must NOT clause is also avilable.
+
+```
+GET /<index-name>/<document-name>/_search
+{
+  "query" : {
+     "bool" : {
+       "must" : [
+         { "match" : {"name" : "new" }}
+        ],
+	"must_not" : [
+	  { "match" : { "name" : "some" }}
+	]
+	}
+     }
+  }
+}
+```
+-  **__bool__** clause also has `should` parameter, which increases the relevance that satisfy the search criteria. only when the crietria is matched the relvancy score is increased else nothing happens.
+- in one excpetion case where when the search queries has no `must clause` and at least one `should class` must match. In this case `should clause` behaves like logical OR that is at least one must be true.
+- if at least one `must clause` is present, there is no should clause is required to match. if the should clause is added on matching data it will increase the relevance.
+ 
+```
+GET /<index-name>/<document-name>/_search
+{
+  "query" : {
+     "bool" : {
+       "must" : [
+         { "match" : {"name" : "new" }}
+        ],
+	"should" : [      // if there is a match data the relevance score increses
+	  { "match" : { "name" : "some" }} // the new - some will be have high score
+	]
+	}
+     }
+  }
+}
+```
+
+```
+GET /<index-name>/<document-name>/_search
+{
+  "query" : {
+     "bool" : {
+	"should" : [      // only matching results is returened
+	  { "match" : { "name" : "some" }} // the new - some will be have high score
+	  ]
+	}
+     }
+  }
+}
+```
+ - It is possible to use `bool` queries witin any of the `must`, `must-not` and `should` clauses
+ - function_score query that can modify the score, used for boosting the score based on popularity
+ - boosting query that can be used to reduce the score. positive query can be defined and negative query which can be lower.
 
 #####  URL to view the details
 ```
