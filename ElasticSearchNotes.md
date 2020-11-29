@@ -17,14 +17,32 @@
 
 **Replica/replica shard** - Addiational copy of shard stored on different node for high availablity.
 
+
 ##### ES Rest API to create index, and search documents
    - Low-Level Synchronous CRUD API
    - High-Level REST Client
 
-**`POST`** is the preferred method for creating a record while **`PUT`** is the preferred method for updating a record.
-The **`PUT`** method is used here as an `upsert` (that is, an insert or update).
-For demonstration reasons, the same code was executed multiple times and PUT will perform upsert.
+- **`POST`** is the preferred method for creating a record while **`PUT`** is the preferred method for updating a record.
+ - The **`PUT`** method is used here as an `upsert` (that is, an insert or update).
+ - For demonstration reasons, the same code was executed multiple times and PUT will perform upsert.
 
+##### How to create an index in Elastic serach
+```
+PUT /<index_name>
+{
+}
+```
+##### How to delete the index
+```
+DELET /<index_name>
+```
+
+##### How to view the status of an index using REST
+```
+GET /_cat/indices?v 
+# above will list the health status of the index, if there is only one node, the status will be yellow since replicas will not be able to create in the same node.
+# any new node joining the cluster will change the health status to green
+```
 #####  URL 
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
