@@ -121,8 +121,8 @@ DELETE /<index-name>/<document-name>/<id>
 
 ##### Performing operation in bulk using `_bulk` api
   - if we need to update N number of documents, bulk update can perform it in a single network round trip.
-  - \_bulk api expects single line with the action for create, update or delete as well as metadata for the action.
-  - followed by the source document which is optional. since it is not needed for delete.
+  - \_bulk api expects single line with the `action` for create, update or delete as well as metadata for the action.
+  - followed by the `source` document which is optional. since it is not needed for delete.
   - \_bulk uses "\n" (new line) as a delemiter 
   - No json beautify option in this case since new line is a delimiter.
   
@@ -149,6 +149,79 @@ POST /_bulk
 { "update" : { "id":"1000", "_index" : "<index-name>",  "type" : "<document-name>"}}
 { "doc" : { "name":"new name bulk update"}}
 ```
+
+#### Searching in Elastic search
+ - `Relevancy & Scoring`
+ - Different ways of seraching
+    - Query `String`
+    - Query `DSL`
+ - Types of queries
+   - Leaf & compound
+   - Full text
+   - Term level
+   - Compound
+ 
+###### Relevancy & Scoring
+  - Elastic search, ranks document for a query, a score is calculated for each document that matches the query
+  - Higher the score, more relevant the document is to the search query
+  - While quering there are two query context available
+     - query context : affect the scores of matching document, sort of asking how well does the document match
+     - filter context " do NOT affect the score of matching document, sort of asking does the document match. 
+         - If the document doesn't mtach the filter then it is disregarded and not be part of the result.
+
+###### Two ways of seraching using query `string` and `DSL`
+- **query String**
+     - search by sending serach parameter through the REST request URI (as query parameter)
+     - Used for simple queries and ad-hoc queries on command line
+     - also supports advanced queries 
+     - Example: `GET http://localhost:9200/<index-name>/<document-name>/_search?q=some`
+     - by default seraches all fields
+     
+- **query DSL**
+     - Search by defining queries within the request body of JSON
+     - This provides more flexibility and feature then the query string apporach
+     - Can be used for more advanced queries
+     - easier to read
+     - Example: 
+     ```
+     GET http://localhost:9200/<index-name>/<document-name>/_search
+     {
+       "query" : {
+           "match" : {
+	       "name" : "some"
+	       }
+	    }
+      }
+     ```
+      - specified the field name to be searched in here. to search all field use _all field too.
+
+##### Types of queries
+   - Leaf 
+   - compound
+
+- **leaf**
+   - Looks for particular values in particular fields, in the above example searching "some" from the document-name.
+   - This can be used by themselves within a query, without being part of a compound query
+   - can be used within compound queries to consrtuct advanced queries
+   
+- **compund** 
+   - Warp leaf clasues or even other compound queries clause
+   - used to combine multiple queries in a logical way (using boolean logic)
+   - can also be used to alter the behavior of queries
+
+ - **Full text**
+   - used for running full text queries on full text fields
+   - values are analyzed when adding document and modifying values (sample analyzed can perform removing stop words, tokenizing and lowercasing)
+   - for full text searcg will apply each field's analyzer to the query string is applied before executing
+
+- **Term Level**
+  - used for __`exact matching`__ of values
+  - usually used for structured data like number and dates, rather than full text fields.
+     - example, finding person born between year 1990 and 2010
+  - since this used for exact mathcing term level search queries are not analyzed before executing 
+
+- **Joining queries**
+  - Joining is expensive in distributed system
 
 #####  URL to view the details
 ```
