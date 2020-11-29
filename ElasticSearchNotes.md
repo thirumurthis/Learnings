@@ -211,7 +211,7 @@ POST /_bulk
 
  - **Full text**
    - used for running full text queries on full text fields
-   - values are analyzed when adding document and modifying values (sample analyzed can perform removing stop words, tokenizing and lowercasing)
+   - values are analyzed when adding document and modifying values (sample analyzer can perform removing stop words, tokenizing and lowercasing)
    - for full text searcg will apply each field's analyzer to the query string is applied before executing
 
 - **Term Level**
@@ -222,7 +222,23 @@ POST /_bulk
 
 - **Joining queries**
   - Joining is expensive in distributed system
+  - ES offers 2 forms of joins, that are horizontally scalable
+    - Nested query
+      - if the document may contain field of type nested with array of types (as defined earlier, refer above notes). each of these objects can be queries with the nested query as an independent document.
+      
+    - `has_child` and `has_parent` queries (used for parent child relationship between two document type).
+       - a parent child relationship can exists between two documents within single index.
+       - `has_child` query returns parent documents whose child document match the query.
+       - `has_parent` query returns child document whose parent document match the query
 
+- **GEO queries**
+  - two types of geo fields
+    - geo_point (latitude/lognitude)
+    - geo_shape (points, lines, circles, polygons,etc)
+  - used to perform geographical searches
+    - Example, finding points of interest near GPS coordiantes
+    
+    
 #####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
