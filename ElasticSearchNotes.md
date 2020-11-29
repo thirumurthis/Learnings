@@ -91,7 +91,8 @@ PUT /my-index-0000001
     }	
 }
 ```
-
+  - Note: Elastic serach doesn't have any array type, it will be automatically detected from the json.
+  
 #### How to view the mapping of an idex
 ```
 GET /my-index-000001/_mapping
