@@ -1,7 +1,7 @@
 
 ### Vagrant basics
 
-- Vagrant to setup Mean stack 
+- Vagrant to setup MEAN/LAMP stack 
 
 - Pre-requsites, install Vagrant, and Virtual box (default provider). Windows comes with hyper-v
 
@@ -96,7 +96,7 @@ Init vagrant with a box
    
   ```
   
-  ##### how to use the sync_dir, within the Vagrantfile config
+##### how to use the sync_dir, within the Vagrantfile config
   
  ```
  Vagrant.configure("2") do |config|
@@ -148,3 +148,54 @@ Init vagrant with a box
     ```
     - use `> vagrant reload`, will display the usage of nfs. It might prompt for system password.
     
+##### using provisioner option to install the apache2 server
+  - in the Vagrantfile update the below configuration
+ 
+  ```
+ Vagrant.configure("2") do |config|
+      config.vm.box = "ubuntu/trusty64
+      
+      config.vm.provider "virtualbox" do |vb|
+         vb.memory = 1024
+         vb.cpu = 2
+      end
+      
+      # with below configuration, if we use http://192.168.33.68 from the laptop browser it will access index.html from 
+      # the VM box server can be accessed.
+      config.vm.network "private_netowkr", ip: 192.168.33.68
+      
+      # "." represent the current directory where the vagrantfile is present
+      # "/etc/www/html" directory now points to this location in the host machine
+      config.vm.sync_folder ".", "/etc/www/html", :mount_options => ["dmode=777", "fmode=666"]
+      
+      # the manual steps are now put in as inline shell commands
+      config.vm.provision "shell" , inline <<-SHELL 
+        apt-get update
+        apt-get install -y apache2
+      SHELL
+ end
+ ```
+ - Now destroy the box using `> vagrant destroy` and use the above config file to create the box `> vagrant up`.
+ - Note: when running above config file, the index.html will be created under the mounted directory.
+ 
+ ##### If we need to use a shell script file for provisioning then update the Vagrantfile config as below, comment the inline shell lines
+ ```
+   # bootstrap.sh file contains the apt-get update, etc commands.
+   # if a LAMP stack needs to updated, provide the details in this sh file
+   config.vm.provision "shell", path: "bootstrap.sh"
+ ```
+   `bootstrap.sh` file content
+  ```sh
+   apt-get upgrade
+   apt-get install -y apache2
+   a2enmod rewrite
+   apt-add-repository <custom location>
+   apt-get update
+   # php 7 not available in the repo.
+   apt-get install -y php7.2
+   # other dependencies
+   service apache2 start
+   ....
+   ....
+  ```
+  
