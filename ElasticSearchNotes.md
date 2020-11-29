@@ -114,6 +114,10 @@ POST /<index_name>/<document-name>/<id>/_update
 }
 ```
  
+##### To Delete the document
+```
+DELETE /<index-name>/<document-name>/<id>
+```
 #####  URL to view the details
 ```
 http://localhost:9200/<name-of-index>/_doc/<id-of-document>
