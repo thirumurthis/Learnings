@@ -171,7 +171,7 @@ POST /<index_name>/<id>/_update
  
 ##### To Delete the document
 ```
-DELETE /<index-name>//<id>
+DELETE /<index-name>
 ```
 
 ##### Performing operation in bulk using `_bulk` api
