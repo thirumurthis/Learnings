@@ -110,7 +110,20 @@ POST sales/_update/1
   }
 }
 ```
-
+#### how to search the index and boost the score, use sample elasticsearch application.json bulk load for running below
+```
+GET bank/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {"match":{"state":"CA"}},
+        {"match": {"firstname" : {"query": "Hall","boost":3}}}
+      ]
+    }
+  }
+}
+```
 #### How to add nested properties
 ```
 PUT /my-index-0000001
