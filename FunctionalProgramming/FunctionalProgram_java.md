@@ -7,19 +7,21 @@
   
   
 ##### Declaritive and imperative:
-     `Functional programming` is Declaritive style of programming.
+     __`Functional programming`__ is Declaritive style of programming.
      
-     Declaritive programming - focus on What things are? (more like using the existing function)
-     ```
-       x = averate(inputArray); // the sum() is already defined part of the program
-     ```
-     Imperitive programming - focus How to do things. (mostly like steps reqiured.)
-     ```java
+   **Declaritive programming** - focus on What things are? (more like using the existing function)
+```
+       x = averate(inputArray); // the average() is already defined part of the program
+```
+
+   **Imperitive programming** - focus How to do things. (mostly like steps reqiured.)
+
+```java
       x = 0;
       for (int i =0; i < inputarray.length(); i++)
          x = x+inputarray[i];
       x = x/inputarray.length(); // get averate of an serias of number
-     ```
+```
      
  #### Concepts of Functional programming
     - Immutability
@@ -39,8 +41,25 @@
   
 ##### Purity
    - a function should return the same output.
-   -
+   
    ```
-   //
+   public class Employee{
+     private int age;
+     public int getAge(){..
+     
+     public void setAge(){..
+     
+     public String toString(){
+        return "age: "+this.age;
+     
+    # In the above scenario, the setter method for age changes the value and so invoking the toString() won't yeild the same output.
+   ```
+   
+   ```
+   # below is a pure function
+   
+   public int add( int x, int y){ // for same set of input the output will return same expected value
+      return x+y; 
+   }
    ```
     
