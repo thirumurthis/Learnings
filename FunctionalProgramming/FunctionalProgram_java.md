@@ -7,7 +7,7 @@
   
   
 ##### Declaritive and imperative:
-     __`Functional programming`__ is Declaritive style of programming.
+  __`Functional programming`__ is Declaritive style of programming.
      
    **Declaritive programming** - focus on What things are? (more like using the existing function)
 ```
@@ -62,4 +62,77 @@
       return x+y; 
    }
    ```
-    
+
+##### First class functions
+ - in general OOPs, Data and function are different type of entity.
+    - in OOPs like not possiblity of function returning function, or passing function as argument
+ - with functional programming, it is possible to to do return function and pass function as arguments.
+    - this provides capability
+ 
+ #### Functional Interface:
+   - Treat function like other type like String, Integer, etc. in java.
+
+ - Define function as variable.
+```java
+
+public class Demo{
+  protected status class MathOp{
+     public static Integer triple(Integer x){
+        return x*3;
+        }
+  }
+pulic static void main(String ...arges){
+   // Function <T,R> -> T is the generic usage, where T - is argument data type, R - Retun value data type
+   Function<Integer,Integer> triple = MapthOp::triple;
+   Integer output = triple.apply(5)
+  }
+} 
+```
+
+#### Lambda expression:
+  - In previous section we created a inner class and invoked that method, instead of performing it we can use lambda.
+  - Lambda expression is a way to define the functional interface. And short-hand definition where we don't need to use class to define a method.
+     - declared like `(Integer someArgs) -> someArg * 3;` // the values after the arrow operator is returned automatically.
+  - The above example can be converted like below
+```
+  Function<Integer, Integer> triple = (Integer x) -> x * 3;
+  // the function is taking Integer arugment and return type is also Integer.
+  
+  // another example
+  Function<String, Integer> stringLength = (str) -> str.length(); //  we can drop the parathensis if there is only one argument.
+  Function<String, Integer> stringLength = str -> str.lenght();
+  
+  // if there are multiple lines
+  Function<Integer, Integer> triple = x -> {
+     Integer output = x * 3;
+     return output;
+  }
+```
+ - Above triple program with lambda
+```java
+  public class Demo1{
+  
+   public static void main(String... args){
+      Function<Integer, Integer> absValue = x -> x < 0 ? -x : x; // return absolute value
+      
+      System.out.println("abs value: "+ absValue(-100)); 
+   }
+  }
+```
+
+#### Note the above approach of using Function<T, R> supports only with one arguments passed.
+#### How to use the Functonal interface with no arguments or more than one arguments.
+#### `BiFunctions` is one interface provided in java for passing  two arguments, below is example usage.
+
+```java 
+public class Demo{
+
+  public static void main(String ... args){
+     BiFunction<Integer, Integer, Integer> add = (x,y) -> x+y;
+     
+     System.out.println("add : "+ add.apply(10,20));
+   }
+  }
+```
+
+#### For more than two argument, java didn't provide any interface in this case, we can define our own case.
