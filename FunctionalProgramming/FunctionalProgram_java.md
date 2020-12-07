@@ -11,7 +11,7 @@
      
    **Declaritive programming** - focus on What things are? (more like using the existing function)
 ```
-       x = averate(inputArray); // the average() is already defined part of the program
+       x = average(inputArray); // the average() is already defined part of the program
 ```
 
    **Imperitive programming** - focus How to do things. (mostly like steps reqiured.)
@@ -42,7 +42,7 @@
 ##### Purity
    - a function should return the same output.
    
-   ```
+```java
    public class Employee{
      private int age;
      public int getAge(){..
@@ -53,15 +53,15 @@
         return "age: "+this.age;
      
     # In the above scenario, the setter method for age changes the value and so invoking the toString() won't yeild the same output.
-   ```
+```
    
-   ```
+```
    # below is a pure function
    
    public int add( int x, int y){ // for same set of input the output will return same expected value
       return x+y; 
    }
-   ```
+```
 
 ##### First class functions
  - in general OOPs, Data and function are different type of entity.
@@ -184,7 +184,6 @@ public class SampleFunctionalInterfaceUsage {
 			this.age = age;
 		}
 	}
-	
 	public static class DataLoader{
 		NoArgsFunction<Employee> loadData;
 		
@@ -383,6 +382,72 @@ public class HigherOrderDemo {
  	 System.out.println(saferToDivide.apply(10f, 0f));
  	 System.out.println(saferToDivide.apply(10f, 2f));
 	}
-
 }
 ```
+
+### java Functional interface support on collection
+
+ - `.map` function
+ - Most case we have list of data, and we need to convert to some other value
+   - example inch to centimeter, meter to feet, ojbect and create a list etc.
+   - convention way is to for loop and assign it.
+ - In order to work with functions for array, list it needs to be converted to `streams`. which can be done using `listvar.stream()`
+ - To dobule the number, `listvar.stream().map(doubleit)..`, doubleit is a function iterface.
+ 
+ - The map, reduce, filter doesn't mutate the actual data, only a copy of the data is modified.
+ 
+```java
+package com.test.functions;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class CollectionStreamDemo {
+	
+	public static void main(String[] args) {
+		Integer inputArray[] = {1,2,3,4,5,6,7,8,9,10,11,12,13};
+		
+		List<Integer> input = new ArrayList<>(Arrays.asList(inputArray));
+		Function<Integer,Integer> doubleit = x->x*2;
+		List<Integer> doubleValues = input.stream().map(doubleit).collect(Collectors.toList());
+		doubleValues.forEach(System.out::println);
+	}
+}
+```
+
+### `.filter` function
+ - To filter the data based on condition, syntax similar to map.
+ - example, to filter the even number from the list, salary more than 1000, etc.
+ 
+ - the difference between the map and filter is, type of function we passed to it.
+ - for map we pass a function that returns a value for each element. 
+ - for filter the a function that returns a boolean is used.
+     - NOTE: when the pass a function object to filter, it is not completely true, it is `Predicate<T>`, 
+ 
+ __`Predicate<T>`__: is a function that returns a boolean. This works like anyother functional interface, this takes one generic data type fpr an argument. Return type is booelan. Simply for filter we use the Predicate object, rather than a simple function.
+ 
+ - To find the list of even numbers from the above sample program list
+ ```java
+  
+  //better readability
+  Predicate<Integer> evenCheck = e->e%2==0;
+  List<Integer> evenValues = input.stream().filter(evenCheck).collect(Collectors.toList());
+  
+  //using lambda function directly within fitler
+   List<Integer> evenValues = input.stream().filter(x -> x%2 == 0).collect(Collectors.toList());
+
+ ```
+ - Example string lenght greater than 4
+ ```java
+ 	    String[] inputStr = {"hello","how","are","you","This","checks","length"};
+	    List<String> inputStrList = new ArrayList<>(Arrays.asList(inputStr));
+	    
+	    List<String> outputStrList = inputStrList.stream().filter(e-> e!=null && e.length()>3).collect(Collectors.toList());
+	    System.out.println(outputStrList);
+
+ ```
+ 
+ 
