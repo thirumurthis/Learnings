@@ -211,3 +211,60 @@ public class SampleFunctionalInterfaceUsage {
 	}
 }
 ```
+
+### Passing Functions as arguments
+  - Function itself as function arguments.
+  
+```java 
+package com.test.functions;
+
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+
+public class PassFunctionAsArgsMain {
+	
+   public static Integer add(Integer a, Integer b) {
+	   return a+b;
+   }
+	
+   public static Integer diff(Integer a, Integer b) {
+	   return a-b;
+   }
+
+   //Function which takes another function as argument, defined as parameter here.
+   static Integer operate10And20 (BiFunction<Integer,Integer,Integer> operate) {
+		return operate.apply(10, 20);
+	}
+   	
+    public static void main(String args[]) {
+       // invoke the function which requires an function as argument.
+	System.out.println(PassFunctionAsArgsMain.operate10And20(PassFunctionAsArgsMain::add));
+	System.out.println(PassFunctionAsArgsMain.operate10And20(PassFunctionAsArgsMain::diff));
+	
+	// since the function can take anothe function as argument, we can define own function iterface using LAMBDA
+	//passing the lambda as function arguments
+	System.out.println(PassFunctionAsArgsMain.operate10And20((x,y)->x*10+y*10)); // the passed values 20 and 30 now will be used to compute - 300
+    }
+}
+```
+
+### Returning a function from another function
+  - A basic functon returned from another function
+```java
+package com.test.functions;
+
+public class ReturnFunctionDemo {
+
+	public static void main(String ...strings) {
+		//NoArgs function returns another function and declaration is below
+		// the NoArgs functional interface is already defined.
+		
+		// The representation ()->() might be confusing but first () returns a function itself.
+		NoArgsFunction<NoArgsFunction<String>> returnHelloFunc = ()->()->"Hello from function";
+		NoArgsFunction<String> getHelloMessage = returnHelloFunc.apply(); // The function ()->"Hello... is returned to this variable
+		
+		System.out.println("Message from function returned from function: \n"+getHelloMessage.apply()); // the functions message is printed.
+	}
+}
+
+```
