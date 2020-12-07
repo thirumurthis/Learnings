@@ -165,4 +165,49 @@ public class ApplyFunction {
 	}
 }
 ```
+
+#### The usage of Function interface, is when in need of mockup data for development or testing, refer below example.
+  - use the above NoArgsFunction Functional interface
+  - based on the loadData function correspondimg method is loaded.
   
+```java
+package com.test.functions;
+
+public class SampleFunctionalInterfaceUsage {
+	
+	public static class Employee{
+		private String name;
+		private int age;
+		
+		public Employee(String name, int age) {
+			this.name = name;
+			this.age = age;
+		}
+	}
+	
+	public static class DataLoader{
+		NoArgsFunction<Employee> loadData;
+		
+		public DataLoader(Boolean isDev) {
+			this.loadData = isDev ? this::loadFakeData:this::loadRealData;
+		}
+		
+		private Employee loadFakeData() {
+			System.out.println("Fake data loader");
+			return new Employee("FakeName",100);
+		}
+		
+		private Employee loadRealData() {
+			System.out.println("Real data loader");
+			return new Employee("Real Name",35);
+		}
+	}
+	
+	public static void main(String ...args) {
+		final Boolean IS_DEV = true;
+		
+		DataLoader dataload = new DataLoader(IS_DEV);
+		System.out.println(dataload.loadData.apply());
+	}
+}
+```
