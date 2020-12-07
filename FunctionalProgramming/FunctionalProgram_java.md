@@ -259,7 +259,7 @@ public class ReturnFunctionDemo {
 		//NoArgs function returns another function and declaration is below
 		// the NoArgs functional interface is already defined.
 		
-		// The representation ()->() might be confusing but first () returns a function itself.
+		// The lambda representation ()->() might be confusing but first () returns a function itself.
 		NoArgsFunction<NoArgsFunction<String>> returnHelloFunc = ()->()->"Hello from function";
 		NoArgsFunction<String> getHelloMessage = returnHelloFunc.apply(); // The function ()->"Hello... is returned to this variable
 		
@@ -267,4 +267,122 @@ public class ReturnFunctionDemo {
 	}
 }
 
+```
+#### The function returning a function benefits to refactor code. 
+ -Assume the below scenario, where the same operation sort of repeated multiple times, below can be refactored.
+
+```java 
+  public static Integer double(Integer x){ return x * 2;}
+  public static Integer triple(Integer x){ return x * 3;}
+  public static Integer quadraple(Integer x){ return x * 4;}
+```
+
+- refactored code
+```java
+package com.test.functions;
+
+import java.util.function.Function;
+
+public class ReturnFunctionDemo {
+
+  //function is returned in this case
+   public static Function<Integer,Integer> multiplier(Integer y) {
+     return x -> x * y;
+    }
+ 
+   public static void main(String ...strings) {
+    // the function returned and set in doubleit 
+    // Creating function on the fly is main advantage of function returning function.
+    Function<Integer, Integer> doubleit = ReturnFunctionDemo.multiplier(2);
+    Function<Integer, Integer> tripleit = ReturnFunctionDemo.multiplier(3);
+    Function<Integer, Integer> quadrapleit = ReturnFunctionDemo.multiplier(4);
+		
+    System.out.println(doubleit.apply(10));
+    System.out.println(tripleit.apply(10));
+    System.out.println(quadrapleit.apply(10));
+   }
+}
+```
+
+### Closures
+  - Closure means when we define a function that returns another function, the function that we returned still has the internal scope of the function it returned it.
+  - Example below
+```java
+package com.test.functions;
+public class ClosureExample {
+
+	public static void main(String args[]) {
+		
+		NoArgsFunction<NoArgsFunction<String>> returnHelloFunc = ()->{
+			String name = "User"; // the name variable scope is accessible to returning function as well
+			return () -> "Hello "+name;
+		};
+		NoArgsFunction<String> sayHello = returnHelloFunc.apply();
+		
+		System.out.println(sayHello.apply()); // the name cannot be accessed directly here in this area
+	}
+}
+```
+- The multplier function above which was refactred also applies `Closures`.
+
+### High-order functions - This is the term when the function take another function as argument or return another function.
+  - Example below, validating arguments say if we are developing a divide mathametical program, we need to handle divide-by-zero
+  - It is always better to consider single function performing single operation. 
+     - The function the divides should only divide, not to perform the divide-by-zero 
+ 
+ - consider the below code wher single function performs validation and divide by zero on argument. 
+ - but this can be improvised using `higher-order functions`. check the code following.
+```java
+package com.test.functions;
+
+import java.util.function.BiFunction;
+
+public class HigherOrderDemo {
+	
+	public static void main(String ...strings) {
+		
+	BiFunction<Float,Float,Float>	divideOperation  = (x,y) -> {
+			if (y == 0f) {
+				System.out.println("Error: divde-by-zero");
+				return Float.MAX_VALUE;
+			}
+			return x/y;
+		};
+	 System.out.println(divideOperation.apply(10.0f, 0f));
+	}
+}
+```
+ - Using `higher-order functions` to validate argument validation, so each function has its own responsibility
+```java
+package com.test.functions;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+public class HigherOrderDemo {
+	
+	public static void main(String ...strings) {
+        
+	 //Create a BiFunction to perform the divide operation alone
+	 BiFunction<Float,Float,Float> safeDivide = (x,y)->(x/y);
+	 
+	 //Create a Function that takes and returns bifunction where we perform the arg validation
+	 Function<BiFunction<Float,Float,Float>,BiFunction<Float,Float,Float>> argValidation =
+	 (safeDivideFunc)->
+		 (x, y ) -> {
+			 if(y == 0f) {
+				 System.out.println("Error: divde-by-zero");
+				return Float.MAX_VALUE;
+			 }
+            return safeDivideFunc.apply(x,y);
+		 };
+	
+	 //Call the argvalidation function passing the divide function, 
+ 	 BiFunction<Float, Float, Float> saferToDivide = argValidation.apply(safeDivide);
+ 	 
+ 	 System.out.println(saferToDivide.apply(10f, 0f));
+ 	 System.out.println(saferToDivide.apply(10f, 2f));
+	}
+
+}
 ```
