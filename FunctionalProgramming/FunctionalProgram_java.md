@@ -94,7 +94,7 @@ pulic static void main(String ...arges){
   - Lambda expression is a way to define the functional interface. And short-hand definition where we don't need to use class to define a method.
      - declared like `(Integer someArgs) -> someArg * 3;` // the values after the arrow operator is returned automatically.
   - The above example can be converted like below
-```
+```java
   Function<Integer, Integer> triple = (Integer x) -> x * 3;
   // the function is taking Integer arugment and return type is also Integer.
   
@@ -136,3 +136,33 @@ public class Demo{
 ```
 
 #### For more than two argument, java didn't provide any interface in this case, we can define our own case.
+ - Below is the implementation for No args and three args functional interface.
+ 
+ ```java
+ //------------- INTERFACE for FUNCTION
+package com.test.functions;
+public interface TriFunctions <T,U,V,R>{
+	public R apply(T t,U u, V v);
+}
+
+ //------------- INTERFACE for FUNCTION
+package com.test.functions;
+public interface NoArgsFunction<R> {
+	public R apply();
+}
+
+//------------- MAIN IMPLMENTATION
+
+package com.test.functions;
+public class ApplyFunction {
+	public static void main(String[] args) {
+  
+		TriFunctions<Integer, Integer, Integer, String> trifunction = (x,y,z) -> "Sum of "+x+" + "+y+" + "+z+" = "+ (x+y+z);
+   	  System.out.println(trifunction.apply(10, 20, 30)); //use apply to access the function
+      
+		NoArgsFunction<String> sayHello = ()->"hello";
+			System.out.print(sayHello.apply());
+	}
+}
+```
+  
