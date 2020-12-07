@@ -442,12 +442,24 @@ public class CollectionStreamDemo {
  ```
  - Example string lenght greater than 4
  ```java
- 	    String[] inputStr = {"hello","how","are","you","This","checks","length"};
-	    List<String> inputStrList = new ArrayList<>(Arrays.asList(inputStr));
-	    
-	    List<String> outputStrList = inputStrList.stream().filter(e-> e!=null && e.length()>3).collect(Collectors.toList());
-	    System.out.println(outputStrList);
-
+   String[] inputStr = {"hello","how","are","you","This","checks","length"};
+   List<String> inputStrList = new ArrayList<>(Arrays.asList(inputStr));
+   
+   //Directly using Lambda expressiong
+   List<String> outputStrList = inputStrList.stream().filter(e-> e!=null && e.length()>4).collect(Collectors.toList());
+   System.out.println(outputStrList);
  ```
  
+ #### challenge use an high-order function to create the predicate to determine the lenght of the string more flexibley with lenth int passed
+ ```java
+   // create a function uses the Integer as input and return predicate.
+   // this uses the closure
+    Function<Integer,Predicate<String>> passStringAndLimit = (minLength)->
+          { return (str)->str.length() > minLength;};	
+	    
+    Predicate<String> lengthTest = passStringAndLimit.apply(4);
+	    
+    List<String> outputStrHigherOrder = inputStrList.stream().filter(lengthTest).collect(Collectors.toList());
+    System.out.println(outputStrHigherOrder);
+ ```
  
