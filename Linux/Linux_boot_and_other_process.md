@@ -322,7 +322,7 @@ hello this is test
 |command | description |
 | ----- | ----- |
 | `$ echo one; echo two; echo three` | executed one after other, even if the preciding command fails.|
-|`$ echo one && test 1 == 2 && echo three` | executes the following command only when the preceding command is successful |
+| `$ echo one && test 1 == 2 && echo three` | executes the following command only when the preceding command is successful |
 | `$ echo one && test 1 == 3 && echo three` | same as above, if want to abort subsequent command when an earlier one fails.?|
 | `$ test 2==1 || echo 2 || echo 3` | Procceds until something succeeds and then stop executing any furtehr steps |
 
@@ -346,7 +346,7 @@ hello this is test
 
 To substitute the result of a command as portion of another command.
  - `$( )` 
- - (\`) - this is deprecatd in new scripts.
+ - (\`\`) - this is deprecatd in new scripts.
  
 ```
 $ ls -lrt /lib/modules/$(uname -r)/
@@ -660,7 +660,7 @@ $ awk -F: '{print $1 $3}' /home/user1/sample.txt # prints 1st and 3rd field of e
   | syntax | description |
   |----|----|
   |`sort <filename>` | sort the line according to the char at start of line |
-  |`cat file1 file2 | sort` | combine 2 files and sort the lines |
+  |`cat file1 file2 \| sort` | combine 2 files and sort the lines |
   |`sort -r <filename>` | sort lines in reverse order |
   |`sort -k 3 <filename>` | sort the lines by the 3rd field on each line instead of starting char |
   
@@ -740,7 +740,7 @@ $ awk -F: '{print $1 $3}' /home/user1/sample.txt # prints 1st and 3rd field of e
  | Search pattern | description |
  | ------ | --------- |
  | . | Match any single char|
- | a|z | Match a or z |
+ | a\|z | Match a or z |
  | $ | Match end of string (meta character)|
  | ^ | Match start of the string |
  | * | Match preceding item, 0 or more times (meta character) |
