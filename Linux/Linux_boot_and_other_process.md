@@ -190,9 +190,9 @@ Which one to choose Server or desktop version?
   - The session manager starts and maintains the components of graphical session, wndows manger and utilities.
   
   Even if the display manager is not started by default runlevel, it can be started in different way after logging on to the text mode in console.
-     - By running `startx` from the command line. (or display managers `gdm`, `lightdm`, `kdm`, `xdm`)
-     - The default display mangeer for `GNOME` is called `gdm`. (lightdm is used in ubuntu before 18.04)
-     - __`gnome-tweak-tool`__ or __`gnome-tweak`__ use Alt - F2 and type the name to customize the options.
+   - By running `startx` from the command line. (or display managers `gdm`, `lightdm`, `kdm`, `xdm`)
+   - The default display manger for `GNOME` is called `gdm`. (lightdm is used in ubuntu before 18.04)
+   - __`gnome-tweak-tool`__ or __`gnome-tweak`__ use __`Alt - F2`__ and type the name to customize the options.
      
 ------------
 #### Networking
