@@ -65,7 +65,7 @@
 
 ##### First class functions
  - in general OOPs, Data and function are different type of entity.
-    - in OOPs like not possiblity of function returning function, or passing function as argument
+    - in OOPs it is not possible for function to return another function, or passing function as argument.
  - with functional programming, it is possible to to do return function and pass function as arguments.
     - this provides capability
  
@@ -129,7 +129,6 @@ public class Demo{
 
   public static void main(String ... args){
      BiFunction<Integer, Integer, Integer> add = (x,y) -> x+y;
-     
      System.out.println("add : "+ add.apply(10,20));
    }
   }
@@ -152,16 +151,15 @@ public interface NoArgsFunction<R> {
 }
 
 //------------- MAIN IMPLMENTATION
-
 package com.test.functions;
 public class ApplyFunction {
 	public static void main(String[] args) {
   
-		TriFunctions<Integer, Integer, Integer, String> trifunction = (x,y,z) -> "Sum of "+x+" + "+y+" + "+z+" = "+ (x+y+z);
+	  TriFunctions<Integer, Integer, Integer, String> trifunction = (x,y,z) -> "Sum of "+x+" + "+y+" + "+z+" = "+ (x+y+z);
    	  System.out.println(trifunction.apply(10, 20, 30)); //use apply to access the function
       
-		NoArgsFunction<String> sayHello = ()->"hello";
-			System.out.print(sayHello.apply());
+	  NoArgsFunction<String> sayHello = ()->"hello";
+	  System.out.print(sayHello.apply());
 	}
 }
 ```
@@ -175,32 +173,33 @@ package com.test.functions;
 
 public class SampleFunctionalInterfaceUsage {
 	
-	public static class Employee{
-		private String name;
-		private int age;
-		
-		public Employee(String name, int age) {
-			this.name = name;
-			this.age = age;
-		}
+public static class Employee{
+	private String name;
+	private int age;
+	
+	public Employee(String name, int age) {
+		this.name = name;
+		this.age = age;
 	}
-	public static class DataLoader{
-		NoArgsFunction<Employee> loadData;
+}
+
+public static class DataLoader{
+	NoArgsFunction<Employee> loadData;
 		
-		public DataLoader(Boolean isDev) {
-			this.loadData = isDev ? this::loadFakeData:this::loadRealData;
-		}
-		
-		private Employee loadFakeData() {
-			System.out.println("Fake data loader");
-			return new Employee("FakeName",100);
-		}
-		
-		private Employee loadRealData() {
-			System.out.println("Real data loader");
-			return new Employee("Real Name",35);
-		}
+	public DataLoader(Boolean isDev) {
+		this.loadData = isDev ? this::loadFakeData:this::loadRealData;
 	}
+		
+	private Employee loadFakeData() {
+		System.out.println("Fake data loader");
+		return new Employee("FakeName",100);
+	}
+		
+	private Employee loadRealData() {
+		System.out.println("Real data loader");
+		return new Employee("Real Name",35);
+	}
+}
 	
 	public static void main(String ...args) {
 		final Boolean IS_DEV = true;
@@ -463,3 +462,4 @@ public class CollectionStreamDemo {
     System.out.println(outputStrHigherOrder);
  ```
  
+ ##### `BinaryOperator` is a BiFunction where the Type are same, for example `BiFunction<Integer,Integer,Integer>`.
