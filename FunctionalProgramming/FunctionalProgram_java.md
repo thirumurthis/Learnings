@@ -672,3 +672,35 @@ More of example to use function over function:
     
  #### Recursion
     - function calling function, possible to lead to infinity loop
+    - This is similar to the way the OOP's recursion
+ 
+ #### Composition
+  - take a series of smaller modular function to create one complex.
+  - Example:  function to perform doubing, and function to perform substraction nd combining them to single complex function
+    -  > f(x) = 2x and f(x) = x-1  ==> f(x) = 2x-1;
+  - compose in java somehow works in reverse order
+    - that is, the function passed to compose will be executed first and the outer function latter.
+
+```java
+package com.test.functions;
+
+import java.util.function.Function;
+
+public class ComposeDemo {
+	public static void main(String[] args) {
+		
+		Function<Integer,Integer> doubleIt = x->x*2;
+		Function<Integer,Integer> subtractOne = x->x-1;
+		
+		//composing two function 
+		// the doubleIt function performed first and then subtractOne is executed.
+		// so for 2x-1 will be below. if we use doubleit and subract one will yeild different result.
+	//composing two function 
+		// the doubleIt function performed first and then subtractOne is executed.
+		Function<Integer,Integer> doubleSubtract = subtractOne.compose(doubleIt);
+		Function<Integer,Integer> doubleSubtract1 = doubleIt.compose(subtractOne);
+		System.out.println(doubleSubtract.apply(10)); //output: 19  (2*10)-1
+		System.out.println(doubleSubtract1.apply(10)); // outputs : 18  (2*(10-1))
+	}
+}
+```
