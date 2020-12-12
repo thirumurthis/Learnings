@@ -534,27 +534,121 @@ public class CollectExample {
 }
 ```
 
- - using `toSet()`, `counting()` , `groupingBy()` and `partitionBy()`
+ - using `toSet()`, `counting()`, `joining()` , `groupingBy()` and `partitionBy()`
  ```java
   # the input is same as the above example code
   		Set<String> outputSet =inputList.stream()
 	             .filter(a -> a.length()>2)
 	             .collect(Collectors.toSet()); // order not maintained, unique items
-		System.out.println(outputSet); //[nine, six, four, one, seven, two, three, five, eight]
+		System.out.println(outputSet); //output: [nine, six, four, one, seven, two, three, five, eight]
 
                 // returns a Long value
 		long count =inputList.stream()
 	             .filter(a -> a.length()>2)
 	             .collect(Collectors.counting());
-		System.out.println(count); //9
+		System.out.println(count); //output: 9
 		
 		// returns a Map
 		Map<Integer,List<String>> groupStr = inputList.stream()
                                        .collect(Collectors.groupingBy(element-> element.length()));
-		System.out.println(groupStr);  //{3=[one, two, six], 4=[four, five, nine], 5=[three, seven, eight]}
+		System.out.println(groupStr);  //output: {3=[one, two, six], 4=[four, five, nine], 5=[three, seven, eight]}
 		
 		//partition by groups based on condition, either true or false as key
 		Map<Boolean,List<String>> partitionBy = inputList.stream()
 				                                .collect(Collectors.partitioningBy(element->element.length()>4));					
-		System.out.println(partitionBy); //{false=[one, two, four, five, six, nine], true=[three, seven, eight]}
+		System.out.println(partitionBy); //output: {false=[one, two, four, five, six, nine], true=[three, seven, eight]}
+		
+				String joinStr = inputList.stream().filter(element->element.length()>3)
+				         .collect(Collectors.joining(","));
+		System.out.println(joinStr); //output: three,four,five,seven,eight,nine
  ```
+
+#### Parallel streams
+  - This are similar to stream but all the task are performed in parallel by the streams
+    - process data in parallel, java takes care of creating the threads.
+    - increase performance.
+  - we can use all the function like map(), filter(), reduce() in parallel stream as well
+  - `stream()` is serial processing, using syso it can be observed.
+  - if we are processing using parallel streams even though the thread performs parallely the original order of input is preserved.
+  ```
+   inputList.parallelStream().collect(Collectors.toList());
+  ```
+  
+  Example:
+  ```java
+  package com.test.functions;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class ParallelStreamDemo {
+
+	public static void main(String[] args) {
+		String[] input = {"one","two","three","four","five","six","seven","eight","nine"};
+		List<String> inputList = Arrays.asList(input);
+		
+		List<String> upperStrList = inputList.parallelStream()
+				                    .map(element -> element.toUpperCase())
+				                    .collect(Collectors.toList());
+		System.out.println(upperStrList);
+				
+	}
+}
+```
+
+##### Advanced concepts:
+  - Partial application
+  - Recursion
+  - Composition
+
+ - Partial Application:
+    - we take a function with some number of arguments 
+ ```
+   Integer add(Integer a, Integer b, Integer c){
+    return a+b+c
+   }
+   
+   //in this case it takes two arguments
+   Integer add2(Integer b,Integer c){
+     return 2+b+c;
+   }
+ ```
+ - Function with fixed arguments as above, when called should pass the value to argument at same time and place or order.
+ - In `Partial application`, we can pass the arugments to function in different places in the code and get the result once the function gets all of the arugumets.
+ - The `Partial application` helps in configure more generic function to specific function.
+    - In case if one of the arugments is same in a function, this is potential candidate to use as partial application.
+    
+```java
+package com.test.functions;
+
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+public class PartialFunctionsDemo {
+
+	public static void main(String[] args) {
+		
+		TriFunctions<Integer,Integer,Integer,Integer> sum = (a,b,c)->a+b+c;
+		
+		//partial application
+		Function<Integer,BiFunction<Integer,Integer,Integer>> sum2argPartial = 
+				(a)->(b,c)->sum.apply(a,b,c);
+		
+		//2 arg partial
+		BiFunction<Integer, Integer, Integer> sum10 = sum2argPartial.apply(10);
+		
+		System.out.println(sum10.apply(100,120));
+		
+		// converting the same to pass only one argument within
+		
+		BiFunction<Integer,Integer, Function<Integer,Integer>> sumPartial =
+				(a,b)->(c)->sum.apply(a, b, c);
+		
+		Function<Integer,Integer> add15And10 = sumPartial.apply(15,10);
+		
+		System.out.println(add15And10.apply(20));
+	}
+}
+
+```
