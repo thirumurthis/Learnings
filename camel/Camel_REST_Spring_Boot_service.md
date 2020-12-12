@@ -111,19 +111,19 @@ public class SimpleRouter extends RouteBuilder{
 	public void configure() throws Exception {
     
     //restconfiguration component used here is servlet, we can use restlet too
-    // for using restlet component, not need for a spring web dependency, add restlet dependency
-    // below code should work as such.
+    // for using restlet component, no need for a spring web dependency, add restlet dependency
+    // below code should work as such, replace servlet with restlet.
 		restConfiguration().component("servlet")
 		.port(9090).host("localhost").bindingMode(RestBindingMode.auto);
 
-    //if we didn't use the produces as json, the brower has difficulties in displayig content
+    //if we didn't use the produces as json, the browser has difficulties in displayig content
     // as we used the RestBindingMode.auto above
 		rest().get("/hello").produces("application/json")
 		.route().setBody(constant("Welcome to camel java dsl "));
 	}
 }
 ```
- - application.properties, only for the servlet component (not required for restlet component)
+ - application.properties, only for the servlet component (below is __not__ required for restlet component)
  - we need to setup the context path 
  ```properties
  # context-path is required only for servlet component.
