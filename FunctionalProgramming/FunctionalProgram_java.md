@@ -439,7 +439,7 @@ public class CollectionStreamDemo {
    List<Integer> evenValues = input.stream().filter(x -> x%2 == 0).collect(Collectors.toList());
 
  ```
- - Example string lenght greater than 4
+ - Example string length greater than 4
  ```java
    String[] inputStr = {"hello","how","are","you","This","checks","length"};
    List<String> inputStrList = new ArrayList<>(Arrays.asList(inputStr));
@@ -449,7 +449,9 @@ public class CollectionStreamDemo {
    System.out.println(outputStrList);
  ```
  
- #### challenge use an high-order function to create the predicate to determine the lenght of the string more flexibley with lenth int passed
+ ** Challenge use an `high-order function` to create the predicate. **
+  - Determine the string length in more flexible way using the integer passed as an argument.
+  
  ```java
    // create a function uses the Integer as input and return predicate.
    // this uses the closure
@@ -461,5 +463,98 @@ public class CollectionStreamDemo {
     List<String> outputStrHigherOrder = inputStrList.stream().filter(lengthTest).collect(Collectors.toList());
     System.out.println(outputStrHigherOrder);
  ```
+-------------
+ #### Reduce:
+   - `reduce` functional interface takes an BinaryOperator as input
+   ```
+     reduce(startValue, function); //start value can be a first item to add
+     
+     reduce(binaryOperator); // reduce ((x,y)->x+y); -> this method will return an Optional ojbect as output
+                             // this case the first element value will be used as start value.
+   ```
+   - reduce is the last function, no need to use the collect() operation.
+   
+   - The first argument is the accumulator, it is usually set to 0 or 0.0 or 0f etc according to datatype 
+   - If first argument is not specified, the first element in the stream will be used
+```
+package com.test.functions;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class ReduceFunction {
+	public static void main(String[] args) {
+       
+		Integer a[] = {10,20,30,40,50,60,70,80};
+		List<Integer> input = Arrays.asList(a);
+		
+		Integer sum = input.stream().reduce(0,(acc,item)->acc+item);
+		System.out.println(sum);
+		
+		BinaryOperator<Integer> add= (x,y) -> x+y;
+		//passing the function as input
+		Optional<Integer> result = input.stream().reduce(add);
+		System.out.println(result.get());
+	}
+}
+```
  
- ##### `BinaryOperator` is a BiFunction where the Type are same, for example `BiFunction<Integer,Integer,Integer>`.
+ ** Note: `BinaryOperator` is a BiFunction where the argument and return Type all are same, like `BiFunction<Integer,Integer,Integer>`. **
+
+##### `Collect` function usage
+  - with `reduce` the return type should be the same as the input type. for example, Integer should return Integer, etc.
+  - with `collect` the return type can be anything like string, list, map, etc.
+```
+  inputList.stream().collect(Collector<T,A,R>);
+  // Note: Collector<T,A,R> - IS NOT A FUNCTIONAL INTERFACE
+  
+  Usage:
+   intputList.stream().collect(Collector.toList()); // used mostly
+```
+ - Custom collectors can  also be created, check documentation for this.
+ 
+Example usage:
+```java
+package com.test.functions;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class CollectExample {
+	public static void main(String[] args) {
+		String[] input = {"one","two","three","four","five","six","seven","eight","nine"};
+		List<String> inputList = Arrays.asList(input);
+		
+		List<String> output =inputList.stream()
+			             .filter(a -> a.length()>2)
+			             .collect(Collectors.toList());
+		System.out.println(output);
+	}
+}
+```
+
+ - using `toSet()`, `counting()` , `groupingBy()` and `partitionBy()`
+ ```java
+  # the input is same as the above example code
+  		Set<String> outputSet =inputList.stream()
+	             .filter(a -> a.length()>2)
+	             .collect(Collectors.toSet()); // order not maintained, unique items
+		System.out.println(outputSet); //[nine, six, four, one, seven, two, three, five, eight]
+
+                // returns a Long value
+		long count =inputList.stream()
+	             .filter(a -> a.length()>2)
+	             .collect(Collectors.counting());
+		System.out.println(count); //9
+		
+		// returns a Map
+		Map<Integer,List<String>> groupStr = inputList.stream()
+                                       .collect(Collectors.groupingBy(element-> element.length()));
+		System.out.println(groupStr);  //{3=[one, two, six], 4=[four, five, nine], 5=[three, seven, eight]}
+		
+		//partition by groups based on condition, either true or false as key
+		Map<Boolean,List<String>> partitionBy = inputList.stream()
+				                                .collect(Collectors.partitioningBy(element->element.length()>4));					
+		System.out.println(partitionBy); //{false=[one, two, four, five, six, nine], true=[three, seven, eight]}
+ ```
