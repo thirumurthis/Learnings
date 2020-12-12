@@ -664,3 +664,11 @@ More of example to use function over function:
 		
 		System.out.println(add10.apply(15));
 ```
+ ##### `Currying` 
+    - passing argument like below is called `currying`, notice mulitple arguments passed in the function
+    ```
+    	Function<Integer, Function<Integer, Function<Integer,Integer>>> add = (a)->(b)->(c)-> sum.apply(a, b, c);
+    ```
+    
+ #### Recursion
+    - function calling function, possible to lead to infinity loop
