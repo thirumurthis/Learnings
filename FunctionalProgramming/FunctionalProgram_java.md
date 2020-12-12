@@ -652,3 +652,15 @@ public class PartialFunctionsDemo {
 }
 
 ```
+More of example to use function over function:
+
+```java
+		// Function can return function intern function
+		
+		Function<Integer, Function<Integer, Function<Integer,Integer>>> add =
+				(a)->(b)->(c)-> sum.apply(a, b, c);
+		Function<Integer,Function<Integer,Integer>> add20 = add.apply(20);
+		Function<Integer,Integer> add10 = add20.apply(10);
+		
+		System.out.println(add10.apply(15));
+```
