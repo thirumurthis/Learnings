@@ -680,7 +680,11 @@ More of example to use function over function:
     -  > f(x) = 2x and f(x) = x-1  ==> f(x) = 2x-1;
   - compose in java somehow works in reverse order
     - that is, the function passed to compose will be executed first and the outer function latter.
-
+  
+  - Composition can be applied to any type of function other than mathematical function.
+  - In theory, any set of function can be composed as `long as each function returns the SAME type of DATA.`
+     - in below case we see the Integer is returned from one function to another.
+  
 ```java
 package com.test.functions;
 
@@ -704,3 +708,54 @@ public class ComposeDemo {
 	}
 }
 ```
+   - Example: Get list of employees reversed and in Upper case.
+   - using mulitple compose function __`andThen()`__.
+
+```java
+package com.test.functions;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class ComposeDemo2 {
+	public static void main(String[] args) {
+		
+		Employee employe1 = new Employee("Tony","20");
+		Employee employe2 = new Employee("Cody","20");
+		Employee employe3 = new Employee("Tim","20");
+		Employee employe4 = new Employee("Rosy","20");
+		Employee employe5 = new Employee("Clint","20");
+		Employee employe6 = new Employee("Ava","20");
+		List<Employee> employees = new ArrayList<>();
+		employees.add(employe1);
+		employees.add(employe2);
+		employees.add(employe3);
+		employees.add(employe4);
+		employees.add(employe5);
+		employees.add(employe6);
+		
+		Function<Employee,String> getName = str -> str.getName();
+		Function<String,String> upperCase = str -> str.toUpperCase();
+		Function<String,String> strReverse = str -> new StringBuilder(str).reverse().toString();
+		// andThen -> used for compose
+		Function<Employee,String> getNameProcessed = getName.andThen(strReverse).andThen(upperCase);
+		String output = employees.stream().map(getNameProcessed).collect(Collectors.joining(", "));
+		System.out.println(output);// output: YNOT, YDOC, MIT, YSOR, TNILC, AVA
+	}
+}
+//employee object
+class Employee{
+	private String name;
+        private String age;
+	public Employee(String name ,String age) { this.name=name; this.age=age;}
+	public String getName() {return name;}
+	public void setName(String name) {this.name = name;}
+	public String getAge() {return age;}
+	public void setAge(String age) {this.age = age;}
+}
+
+```
+    
+
