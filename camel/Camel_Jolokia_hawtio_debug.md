@@ -3,8 +3,9 @@
 Step 1:
  - Start the camel process with java `jolokia` agent. (in Eclipse use it in vm arguments)
  - This jar will set up an url locally that can be connected using hawtio 
+ 
  ```
-   -javaagent:"C:\thiru\learn\hawtio_usage_demo\jolokia-jvm-1.6.2-agent.jar"
+   -javaagent:"C:\thiru\learn\hawtio_usage_demo\jolokia-jvm-1.6.2-agent.jar" -Dhawtio.proxyAllowlist=localhost,127.0.0.1
  ```
  
  ![image](https://user-images.githubusercontent.com/6425536/102028243-109ee100-3d5e-11eb-90cb-203b75d2ee59.png)
