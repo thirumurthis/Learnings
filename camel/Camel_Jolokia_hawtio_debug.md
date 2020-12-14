@@ -37,58 +37,53 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultProducerTemplate;
 
 public class SendMsgToEndPoint {
-	public static void main(String[] args) throws Exception {
-		
-		CamelContext context = new DefaultCamelContext();
-		
-		try {
+
+public static void main(String[] args) throws Exception {
+	
+	CamelContext context = new DefaultCamelContext();
+
+	try {
 		context.addRoutes(new RouteBuilder() {
-			@Override
-			public void configure() throws Exception {
-				//from("timer:SendOut?repeatCount=5000&delay=2000")//
-				from("direct:input")
-				.setHeader("count",method(CountIt.class)) // sets a counter and adds to the header of the message
-				.setBody(simple("${headers.count}"))
-				.process(new RandomNumberGenerator())
-				.choice().when().simple("${body} >= 5").setBody(simple("greater than 5 - ${body}")).to("stream:out")
-				.otherwise().setBody(simple("less than 5 - ${body}")).to("stream:out");
-			}
-		});
-		context.start();
-		ProducerTemplate template = new DefaultProducerTemplate(context);
-		template.start();
-		for(int i=0;i<=100000; i++) {
+		@Override
+		public void configure() throws Exception {
+			//from("timer:SendOut?repeatCount=5000&delay=2000")//
+			from("direct:input")
+			.setHeader("count",method(CountIt.class)) // sets a counter and adds to the header of the message
+			.setBody(simple("${headers.count}"))
+			.process(new RandomNumberGenerator())
+			.choice().when().simple("${body} >= 5").setBody(simple("greater than 5 - ${body}")).to("stream:out")
+			.otherwise().setBody(simple("less than 5 - ${body}")).to("stream:out");
+		}
+	});
+	context.start();
+	ProducerTemplate template = new DefaultProducerTemplate(context);
+	template.start();
+	for(int i=0;i<=100000; i++) {
 		template.sendBody("direct:input", i);
 		  Thread.sleep(5000);
-		}
-		Thread.sleep(600*1000);
-		}finally {
-			context.stop();
-		}
 	}
+	Thread.sleep(600*1000);
+	}finally {
+		context.stop();
+	}
+}
 }
 
 
 package com.learning.camel.sendMsg;
-
 public class CountIt {
-
     private int counter = 0;
-
     public int count() {
         return counter++;
     }
 }
 
 package com.learning.camel.sendMsg;
-
 import java.util.Random;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 public class RandomNumberGenerator implements Processor{
-
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		
@@ -98,3 +93,14 @@ public class RandomNumberGenerator implements Processor{
 	}
 }
 ```
+
+Note: `Jolokia` can also started with additional module, like jdk-attach and java.xml.bind part of java 9+. Since the java.xml.bind is different module now.
+```
+# download the necessary jar file
+wget https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.3/jakarta.xml.bind-api-2.3.3.jar
+wget https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api/1.2.2/jakarta.activation-api-1.2.2.jar
+java --module-path /path/of/jar --add-modules jdk.attach,java.xml.bind hawtio-app-.x.y.z.jar
+```
+
+Reference Link: 
+[hawtio](https://hawt.io/docs/get-started/)
