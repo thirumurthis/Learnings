@@ -104,3 +104,262 @@ java --module-path /path/of/jar --add-modules jdk.attach,java.xml.bind hawtio-ap
 
 Reference Link: 
 [hawtio](https://hawt.io/docs/get-started/)
+
+pom.xml used
+```xml
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.camel.demo</groupId>
+	<artifactId>CamelProj1</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>CamelProj1</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<activemq-version>5.15.3</activemq-version>
+		<camel-version>2.15.6</camel-version>
+		<cxf-version>3.0.6</cxf-version>
+		<hawtio-version>1.4.63</hawtio-version>
+		<hsqldb-version>1.8.0.10</hsqldb-version>
+		<junit-version>4.11</junit-version>
+		<log4j-version>1.2.17</log4j-version>
+		<spring-version>4.1.7.RELEASE</spring-version>
+		<slf4j-version>1.7.25</slf4j-version>
+		<xbean-version>3.18</xbean-version>
+		<bundle-plugin-version>2.3.7</bundle-plugin-version>
+		<jetty-plugin-version>8.1.16.v20140903</jetty-plugin-version>
+		<scala-version>2.11.5</scala-version>
+		<scala-plugin-version>3.1.6</scala-plugin-version>
+		<!-- use utf-8 encoding -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.2.11</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-stream</artifactId>
+			<version>${camel-version}</version>
+			</dependency>
+		<dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-agent-jvm</artifactId>
+			<version>2.0.0-M3</version>
+		</dependency>
+			
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jms</artifactId>
+			<version>${camel-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-camel</artifactId>
+			<version>${activemq-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-test</artifactId>
+			<version>${camel-version}</version>
+			<!-- <scope>test</scope> -->
+		</dependency>
+     <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-stream</artifactId>
+            <version>2.15.1</version>
+        </dependency>
+   		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-core -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-core</artifactId>
+			<version>5.6.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-camel -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-camel</artifactId>
+			<version>${activemq-version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-kahadb-store</artifactId>
+			<version>${activemq-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+			<version>${activemq-version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-broker</artifactId>
+			<version>${activemq-version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-version}</version>
+		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j-version}</version>
+        </dependency>
+		<dependency>
+			<groupId>io.javalin</groupId>
+			<artifactId>javalin</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<defaultGoal>install</defaultGoal>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+						<maxmem>256M</maxmem>
+						<showDeprecation>true</showDeprecation>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-eclipse-plugin</artifactId>
+					<version>2.8</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.camel</groupId>
+							<artifactId>camel-buildtools</artifactId>
+							<version>${camel-version}</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>false</downloadJavadocs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-idea-plugin</artifactId>
+					<version>2.2</version>
+					<configuration>
+						<downloadSources>true</downloadSources>
+						<downloadJavadocs>true</downloadJavadocs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-clean-plugin</artifactId>
+					<version>2.4.1</version>
+					<configuration>
+						<filesets>
+							<fileset>
+								<directory>activemq-data</directory>
+							</fileset>
+						</filesets>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-install-plugin</artifactId>
+					<version>2.3.1</version>
+				</plugin>
+				<plugin>
+					<artifactId>maven-remote-resources-plugin</artifactId>
+					<version>1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.2</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-dependency-plugin</artifactId>
+					<version>2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.5</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-checkstyle-plugin</artifactId>
+					<version>2.6</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>exec-maven-plugin</artifactId>
+					<version>1.1.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.camel</groupId>
+					<artifactId>camel-maven-plugin</artifactId>
+					<version>${camel-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>io.hawt</groupId>
+					<artifactId>hawtio-maven-plugin</artifactId>
+					<version>${hawtio-version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<childDelegation>false</childDelegation>
+					<useFile>true</useFile>
+					<failIfNoTests>false</failIfNoTests>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+
+```
