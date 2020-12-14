@@ -1,4 +1,4 @@
-#### How to debug Camel routes
+#### How to debug Camel routes, works only when the routes are defiend in spring xml dsl
 
 Step 1:
  - Start the camel process with java `jolokia` agent. (in Eclipse use it in vm arguments)
@@ -24,8 +24,109 @@ Step 3:
 
 ![image](https://user-images.githubusercontent.com/6425536/102028381-c2d6a880-3d5e-11eb-909a-0ec9dce17ef7.png)
 
+Route representation.
 
- - Camel sample Code which actually sets a counter and routes based on random number using choice
+![image](https://user-images.githubusercontent.com/6425536/102035498-5f0baa00-3d75-11eb-9484-1e5103388023.png)
+
+ - Below Spring code works
+ ```java
+ package com.learning.camel.examples.prog1;
+
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
+import org.apache.camel.impl.DefaultProducerTemplate;
+import org.apache.camel.spring.SpringCamelContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+ 
+public class SimpleTransformation {
+    public static void main(String[] args) throws Exception {
+        ApplicationContext appContext = new ClassPathXmlApplicationContext(
+                "application-Context.xml");
+        CamelContext camelContext = SpringCamelContext.springCamelContext(
+                appContext, false);
+        try {
+            camelContext.start();          
+            ProducerTemplate template = new DefaultProducerTemplate(camelContext);
+            template.start();
+            for(int i=0;i<=10000;i++) {
+            template.sendBody("direct:start", "Hello");
+            Thread.sleep(2000);
+            }
+        } finally {
+            camelContext.stop();
+        }
+    }
+}
+```
+ - application-context.xml placed in the resource classpath
+ ```xml
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       ">
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from uri="direct:start" />
+            <transform><simple>${body}</simple></transform>
+            <to uri="stream:out"/>
+        </route>
+    </camelContext>
+</beans>
+```
+ - pom.xml
+   - along with the camel core dependency add below xml.bind since java 11 doesn't include the modules
+   - camel-stream and jolokia dependencies are used.
+```xml
+<properties>
+   <javax.activation.version>1.2.0</javax.activation.version>
+   <jaxb.api.version>2.3.0</jaxb.api.version>
+</properties>
+ ...
+     <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>javax.activation</artifactId>
+            <version>${javax.activation.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+ 
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${jaxb.api.version}</version>
+        </dependency>
+
+	<dependency>
+		<groupId>org.apache.camel</groupId>
+		<artifactId>camel-stream</artifactId>
+		<version>${camel-version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.jolokia</groupId>
+		<artifactId>jolokia-agent-jvm</artifactId>
+		<version>2.0.0-M3</version>
+	</dependency>
+
+```
+--------------- 
+##### Below is code reference for understanding, doesn't work in hawtio since uses java routes, but the metadata are displayed.
+--------------
+ - (Below Java DSL based route doesn't work with the representation in hawtio) Camel sample Code which actually sets a counter and routes based on random number using choice
 
 ```java
 package com.learning.camel.sendMsg;
