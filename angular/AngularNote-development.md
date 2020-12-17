@@ -329,7 +329,7 @@ this.result = this.value1 * this.value2;
  Note: At this point if we didn't include the "ngModel" value in the Component there will be an error message in the 
  console of browser "Template parse error: Can't bind 'ngModel' since it isn't a known property of input...." 
  
- Solution: we need to import the "FormsModule" module in app.module.ts and update NgModule -> imports array
+ Solution: we need to **_import the "FormsModule" module_** in app.module.ts and update NgModule -> imports array
  ```js
  import {FormsModule} from '@angular/forms';
  
