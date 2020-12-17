@@ -32,6 +32,29 @@ Module : `app.module.ts` in @NgModule decorator
   - bootstrap declaration contains the `root component` to load.
   BrowserModule imported, is needed to run application within the browser.
  For more about modules refer below.
+ ```
+ import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+
+import {FormsModule} from '@angular/forms';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    FormsModule
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+ ```
  
 ##### File Structure :
  - package.json - dependencies
