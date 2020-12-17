@@ -34,13 +34,13 @@ Module : `app.module.ts` in @NgModule decorator
  For more about modules refer below.
  
 ##### File Structure :
- package.json - dependencies
- tsconfig.ts - typescript compiler defintions
- angular.json - build related information
- main.ts - to bootstrap root module, 
+ - package.json - dependencies
+ - tsconfig.ts - typescript compiler defintions
+ - angular.json - build related information
+ - main.ts - to bootstrap root module, 
       - main.ts file contains enablesprodmode() which will run application faster in prod env.
-                     platformBrowserDynamic class used to compile the app based on browser platform.
- index.html - root component displayed using <app-root></app-root> which is app-root selector in this file.
+                    - platformBrowserDynamic class used to compile the app based on browser platform.
+- index.html - root component displayed using <app-root></app-root> which is app-root selector in this file.
 
 ##### Component : 
  - This is a custom HTML tag, with functionality attached.
