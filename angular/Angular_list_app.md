@@ -6,7 +6,9 @@
      - two way binding usign @NgModel
      - Routing
         - passing and reading parameter during routing
-  
+
+Angular 8
+
 Note:
  - When using routing, the component doesn't fall under the parent child component category.
  - In this case the data can be passed to components either using query param or service.
@@ -174,8 +176,8 @@ export class AboutComponent implements OnInit {
 ```
 
 #### app-routing.module.ts 
-  - This file gets generated when crating a angular project and when prompted for Routing to yes.
-  - To define the path
+  - This file gets generated when creating a angular project and when prompted for Routing to yes.
+  - To define the path using query parameter
 ```js
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
