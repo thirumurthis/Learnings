@@ -46,7 +46,7 @@ Note:
 
 #### app.component.ts
   - Note: `@ngModel` cannot be used within `form tag`.
-```
+```js
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms'; // --------> This module was added deliberately for using of two way binding using (@ngModel)
@@ -147,7 +147,7 @@ export class HomeComponent implements OnInit {
 
 #### about.component.ts
   - Adding router details to fetch the __`queryParameter`__ and __`navigate back`__
-```
+```js
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute,Router} from '@angular/router';  //---> ************ IMPORT ACTIVATEDROUTE to read the query parameter
                                                         //---> ************ Use app-routing.module.ts to define path values.
