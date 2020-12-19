@@ -131,9 +131,12 @@ Angular 8.0
 ##### COMPONENT:
   - building blocks of angular
   - angular comprises of multiple component, which build the application.
-  - type of `directives` - components has a template of their own, this is known as self-contained directives. it has its own UI.
-  - in general `directives` - when we need to add some specified behaviour to DOM element, we use directive
-  - `ng new project <project-name>` will create a component itself.
+  - `component` is also a type of `directives` 
+      - the `component` has a template of their own, this is known as `self-contained` directives. since it has its own UI.
+  - `ng new project <project-name>` will create a single component itself called app.
+
+##### DIRECTIVE:
+  - in general `directives` is used to add specific behaviour to DOM element
   
 ##### Files created within component (using CLI):
    - \*.html 
