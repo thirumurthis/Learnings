@@ -190,7 +190,7 @@ Angular 8.0
   - Step 3:
   ```
   -- Update the Module (app.module.ts)
-   update the @NgModul array with the component class name
+   update the @NgModule declerations array with the component class name
    import the somecomponent path
   ```
   
