@@ -167,9 +167,11 @@ Angular 8.0
     - create a class
   ```js
   //--> Create the content of component:
+  // Adding the @Component will add the import statement. 
   import { Component } from '@anguar/core';
-  //second step - add the decorator @Component and import the component from angular package
-  //third step: - add the selector property within the @component decorator
+  
+  //**** second step *****:  - add the decorator @Component and import the component from angular package
+  //**** third step ******: - add the selector property within the @component decorator
                // add the templateUrl - provide link to html5
                //    - for inline template - use template : '<h2>some-template-content</h2>'
                // add the styleCSS - two option inline CSS or external CSS
@@ -177,11 +179,11 @@ Angular 8.0
                //    - for inline Css, we use styles
   @Component ({
     selector: 'app-sc-component',
-    templateUrl : './somecomponent.component.html',
-    styleUrls : [ './somecomponent.component.css']
+    templateUrl : './somecomponent.component.html',  // ----> we can create inline template using `` instead of templateUrl to refer a file
+    styleUrls : [ './somecomponent.component.css']  // -----> we can create inline styles instead of styleUrls to refere a file
   })
   
-  // first step - create class name
+  // *****first step**** - create class name
   export class SomeComponent{
   }
   ```
