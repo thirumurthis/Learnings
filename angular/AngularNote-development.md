@@ -166,7 +166,7 @@ Angular 8.0
     In "SomeComponent.component.ts" file, update the below code.
     - create a class
   ```js
-  -- Create the content of component:
+  //--> Create the content of component:
   import { Component } from '@anguar/core';
   //second step - add the decorator @Component and import the component from angular package
   //third step: - add the selector property within the @component decorator
