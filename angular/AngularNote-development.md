@@ -68,7 +68,7 @@ export class AppModule { }
 ##### Component : 
  - This is a custom HTML tag, with functionality attached.
  - Seperation of concerns
- - Angular manges the life-cycle of the components, like create, update and delete when user moves through application, developer can take action at each moment in the component life-cycle using the life-cycle hooks.
+ - Angular manges the life-cycle of the components like create, update and delete when user moves through application, developer can take action at each moment in the component life-cycle using the life-cycle hooks.
 
 
 ###### Angular 8 feature
@@ -155,13 +155,16 @@ Angular 8.0
  ```
  
  ##### Creating a component manually (without cli)
-    - in the app directory, create another component files directly (files extension) or within a folder.
+ - Step 1:
+ ```
+    ## in the app directory, create another files directly (with below extension) or within a folder.
     - SomeComponent.component.ts 
     - SomeComponent.component.html
     - SomeComponent.component.css
- 
- In "SomeComponent.component.ts" file, update the below code.
-   - create a class
+ ```
+ - Step 2:
+    In "SomeComponent.component.ts" file, update the below code.
+    - create a class
   ```js
   -- Create the content of component:
   import { Component } from '@anguar/core';
@@ -180,18 +183,17 @@ Angular 8.0
   
   // first step - create class name
   export class SomeComponent{
-  
   }
   ```
-  
+  - Step 3:
   ```
   -- Update the Module (app.module.ts)
    update the @NgModul array with the component class name
    import the somecomponent path
   ```
   
- If the component is to return the data then component class needs to ` implements OnInit` *_life-cycle hook_*.
- And we need to implement the method `ngOnInit ()` from interface, like below
+ If the component is to return the data then component class needs to `implement OnInit` **_life-cycle hook_**.
+ For this we need to implement the method `ngOnInit ()` from interface, like below
  
  ```js
  // implements the onInit 
