@@ -193,17 +193,18 @@ Angular 8.0
    update the @NgModule declerations array with the component class name
    import the somecomponent path
   ```
-  
+ ###### How to pass data to template 
  If the component is to return the data then component class needs to `implement OnInit` **_life-cycle hook_**.
+ 
  For this we need to implement the method `ngOnInit ()` from interface, like below
  
  ```js
- // implements the onInit 
+ // implements the onInit life cylce hook
  export class SomeComponent implements OnInit{
  
- data : any;
+ data : any; //data type can be any or object
  
- //implement the interface info,
+ //implement the interface info of OnInit class 
  ngOnInit() : void {
    this.data = this.getData ();
  }
