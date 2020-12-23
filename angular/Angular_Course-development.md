@@ -483,6 +483,8 @@ result : number = 100;
 <!-- //In the case of Event Emitter & @Output () decorator
 //we need to use Event binding - which gets some event type using "$event" -->
 <app-sc-component (emitterObj)="displayEmittedValue($event)"></app-sc-component>
+
+<!-- emitterObj => is the value from the child component EventEmitter() variable -->
 ```
 
 ```js
