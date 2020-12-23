@@ -504,10 +504,10 @@ displayEmittedValue(result){
 ```
 
 ##### ngOnChanges *life-cycle hook*
- Any change on input bound property or output bound event then angular use ngOnChange life-cycle hook in which the value gets updated on DOM. 
+ Any change on input bound property event then angular use `ngOnChange` life-cycle hook in which the value gets updated on DOM. 
  
-Scenario usage, when there is a change in value then the color of the button. 
-
+- Scenario usage, when there is a change in value then the color of the button. 
+- Check the Angular document [Link](https://angular.io/guide/lifecycle-hooks#onchanges)
 ```js
 //SomeComponent.component.ts include import for `onChanges` from @angular/core
 import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angular/core'
@@ -515,16 +515,41 @@ import { Component, OnInit,Input, EventEmitter, Output, OnChanges} from '@angula
  
  export class SomeComponent implements OnInit, OnChanges {
  
+  @Input() childIndicator : any;
+  
  //implement the method from onChanges interface
- ngOnChanges(){
-   //if wanted to perform some color changes
-   if (this.result > 100){
-      this.color ='red';
-   }
-   ...
- }
+  ngOnChanges(changes: SimpleChanges) {
+   for (const propName in changes) {
+    const chng = changes[propName];
+    const cur  = JSON.stringify(chng.currentValue);
+    const prev = JSON.stringify(chng.previousValue);
+    this.changeLog.push(`${propName}: currentValue = ${cur}, previousValue = ${prev}`);
+  }
+} 
 ```
+```js
+//# Some.component.html
+Change events:
+<ul>
+<li *ngFor="let change of changeLog">{{change}}</li>
+</ul>
+```
+```
+//# app.component.html
 
+<app-somecomp [childIndicator]="indicatorFrmParent"></app-somecomp>
+<button (click)="addConst()">Add 1 to constant</button> <!-- adds 1 to the variable or data passed to child from parent -->
+
+```
+```js
+//# app.component.ts
+...
+  indicatorFrmParent : number = 0; 
+  addConst(){
+    this.indicatorFrmParent = this.indicatorFrmParent +1;
+  }
+...
+```
 ##### Template Reference Variable
 
 Scenario: Assume there is a component view/html with below content
