@@ -8,4 +8,7 @@
 500 - internal server error
 503 - service unavailable.
 
+200 - OK
+201 - Created
+202 - Accepted, etc.
 ```
