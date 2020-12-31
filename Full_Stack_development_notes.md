@@ -271,4 +271,45 @@ export class AppController {
  }
 ```
 
-  
+##### How to connect to the database from Nestjs
+ - in `app.module.ts` file add 
+```
+  @Module({
+   imports: [
+     TypeOrmModule.forRoot({
+       type: 'postgres',
+       host: 'localhost',
+       port: 5432,
+       username: 'db-username',
+       password: 'db-password',
+       database: 'transportation',
+       entites: [Cars],
+       synchronize: true,
+       }),
+       CarModule,
+       ],
+       })
+       export class AppModule {}
+```
+- we need to tell TypeOrm we are connecting to Cars table.
+- in [`app.module.ts`](https://github.com/SoloLearn-Courses/nest_typeorm-postgres/blob/master/src/app.module.ts) file import the entity class
+
+```js
+import {Cars} from './car/carInfo.entity';
+//refer the above documentation on typeOrm entity creation
+```
+ - `Service` like import car service into the service file.
+```js
+@Injectable()
+export class CarService {
+
+constructor(
+  @InjectRepository(Cars) private readonly carsRepository: Repository<Cars>,
+     ){}
+     
+async findAll(): Promise<Cars[]> {
+  return this.carRepository.find();
+}
+```
+
+ - __`Promises`__ is returned by the method.
