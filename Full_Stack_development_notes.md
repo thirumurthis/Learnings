@@ -1,4 +1,4 @@
-### Using __`TypeORM`__ for Relational and Non-Relational db
+#### Using __`TypeORM`__ for Relational and Non-Relational db
 
  - Relational DB like PostgreSQL.
  - Non-relational DB like MangoDB.
@@ -313,3 +313,27 @@ async findAll(): Promise<Cars[]> {
 ```
 
  - __`Promises`__ is returned by the method.
+
+##### angular http client connection to server
+```js
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs' ;
+//...
+  getCars(): Observable {
+    return this.http.get('/cars/');
+  }
+//...
+```
+ 
+ Observable: 
+  - is a stream of data, is similar to `promise`.
+  - it's essentially asynchronous data. This means the request travels over the network and data doesn't arrives immediately. This just waits for the response to reach.
+  
+##### upgrade Angluar 8 to 9, is simple
+```
+$ ng upgrade
+```
+ - To check the angular version, use the package.json 
+ - in the dependencies category, it looks like '"@angular/common":"~9.0.2"'
+ 
+`scss` is a way of writing CSS that allows to write nested CSS styles, use variables called mixins, other features.
