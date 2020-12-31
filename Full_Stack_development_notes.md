@@ -129,5 +129,67 @@ await repository.delete(userDetail.id); // we pass a single id to delete the rec
 
 await repostory.delete({name: "Thiru"}); // to delete all the records with name as Thiru
 ```
+------------------------
+------------------------
 
+### NESTJS 
+  - NestJs is a type of web application server built with Nodejs
+  - this uses `TypeScript` as its primary language.
+  
+##### Routes = destination urls on web sites are called Routes.
+  - Root Route = mostly "/" the homepage is root route in an website (www.mysite.com/).
+  - other routes can be (www.mysite.com/help), help - is different route.
+  - (www.mysite.com/store/products) store/productes - is different route.
 
+  - GET routes - Get data from server
+  - POST routes - Send data to the server
+
+##### installing NestJs check `https://docs.nestjs.com`
+- after the NESTJS is installed, run the scaffolding command
+```
+$ nest new cars
+// the command created a brand new web application server named cars.
+
+//below command will start the webservice and run on port mostly localhost:3000
+$ yarn start 
+$ npm run start 
+```
+  - `Scaffolding` in software development is the process of running a command that builds a whole bunch of stuff for you very quickly that is ready to use right away.
+  
+  [Link for example project](https://github.com/SoloLearn-Courses/nest_init)
+  
+##### The `NESTJS` directory structure:
+  - controller
+  - module
+  - service
+  
+- This is similar to angular strucutre, where below files gets created
+```
+app.controller.spec.ts
+app.controller.ts   // handles web traffic
+app.module.ts  // works behind to bind the controller and service.
+app.service.ts  // handles the data 
+main.ts
+```
+- code in controller
+```js
+import { Controller, Get}  from '@nestjs/common';
+import {AppService} from './app.service';
+
+@Controller()
+export class AppController {
+
+constructor (private readonly appService: AppService){}
+
+@Get()
+getHello(): string{
+  return this.appService.getHello();  // To send response we can simple change as return "hello";
+ }
+ }
+```
+
+##### Creating routes in NESTjs
+```
+$ nest generate route cars
+// this will create a directory cars
+```
