@@ -193,3 +193,82 @@ getHello(): string{
 $ nest generate route cars
 // this will create a directory cars
 ```
+
+##### Understanding Routes
+  - Root route is the app.controller where the @Get() represents "/"
+  - if we create a `car` route and the file name is included part of controller.
+      - the http://localost:3000/car => will invoke the car controller
+      - the http://localhost:3000/car/details => will invoke any method in the controller tagged as `@Get('/details')....`
+      
+   - passing `wildcard` routes. For example, http://localhost:3000/cars/4 (where 4 is an id) then use `@Get(':id')....`
+```js
+
+@Get(':id')
+findOne(@Req() request: Request): {} { // {} is the return value of the method
+   return { id:25, make: 'toyota' };
+}
+```
+ 
+    - `wildcard` with several levels
+```
+@Get('cars/:make/:model/:year')
+```
+ - sample controller code to return carsl
+```js
+import { Controller, Get } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller() /// usually if a route car is created the string 'car' displayed as arg
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get('/cars')
+  getCars(): {} {
+     return [{make: 'honda', model: 'accord'},
+    {make: 'subaru', model: 'outback'},
+    {make: 'fiat', model: '123 spider'}];
+  }
+
+  @Get('/car/:id')
+  getCar(): {} {
+    return {id:25, make: 'honda', model: 'accord'};
+  }
+}
+```
+
+##### Making Post requests
+  - For post request it will be a different route, we need to accept `Body` of data.
+  - The body will come in the form of javascript object that has been sent by the front-end
+  - route to make recieve data 
+```js
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { AppService } from './app.service';
+
+@Controller()
+export class AppController {
+  constructor(private readonly appService: AppService) {}
+
+  @Get('/cars')
+  //... same as the above code
+
+  @Post()
+  async createCar (@Body() carInfo){
+    return "request recieved to insert car ${carInfo.make}";
+  }
+}
+```
+
+  - `async` in the method means asynchronous. `Async/await` is a javascript construct that allows you to create "async" methods, __`these methods waits for a process to finish before returning results`__. If this is a database query, this method needs to wait for the query to fetch the results from the DB.
+  
+  
+##### Post to delete records
+  - delete route only needs an id so we don't need a @Body(), only @Param() decorator
+```js
+ @Pist(':id/delete')
+ async delete(@Param() carId){
+   returning 'fire query to delete the db, use the repository typeOrm';
+   }
+ }
+```
+
+  
