@@ -337,3 +337,6 @@ $ ng upgrade
  - in the dependencies category, it looks like '"@angular/common":"~9.0.2"'
  
 `scss` is a way of writing CSS that allows to write nested CSS styles, use variables called mixins, other features.
+
+
+[sample code link](https://stackblitz.com/github/SoloLearn-Courses/TSFlights1/tree/step9c?file)
