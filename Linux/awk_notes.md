@@ -140,3 +140,89 @@ $ uptime: awk '{print NF, $0}'
 ```sh
 $ awk -F':' '{print $1}' input2.txt | sort -n 
 ```
+
+
+### Fundamental concept of awk is, each input is consists of `RECORDS` and each `Records` is divided into `FIELDS`
+### By default, awk considers each line to be `RECORDS` and any white space is considered as end of one `FIELD` and begning of another `FIELD`.
+### with the combination of SPACE and TAB, by default is treated as field seperator.
+
+```sh
+$ awk -F ABC '{print $2}'
+oneABCtwoABCthree   <-- user input
+two
+```
+
+#### How to specify two field seprators, (specified using '' quotes)
+```sh
+$ awk -F '[,!]' '{print $2}' 
+one!two,three  <--- user input
+two
+```
+
+#### How to assign a `Field sperator` within the awk programming. this where `FS` comes to play.
+##### NOTE: awk splits the records and fields before calling the action, in here the '{FS...}'. This is the reason the first input is using default space as field serpator.
+### `;` in action is used as command delimitor link in java, javascript.
+```sh
+$ awk '{FS=","; print $2}' 
+one,two,three    <--- user input, NOTE: the default space separator is applied.
+
+four,five,six    <--- sine the action is read the , space sperator is applied.
+five
+```
+
+###### To fix the above issue, we can use the `BEGIN` pattern.
+```sh
+$ awk 'BEGIN{FS=","} {print $2}'
+one,two,three
+two
+four,five,six
+five
+```
+
+### What happens in case there file has single line without `new line` indicator, but some other indicator like #.
+- content of input5.txt
+```
+laptop,computer,desktop#rom,ram,memory#television,radio,telphone#
+```
+##### How to seperate use the awk to sperate the above sample, where Record seprator is "#" and field sperator is ",".
+```sh
+$ awk 'BEGIN{RS="#";FS=","} {print $2}' input5.txt
+computer
+ram
+radio
+$ echo "one,two#three,four,five#six,seven" | awk 'BEGIN{RS="#";FS=","} {print $2}'
+two
+four
+seven
+```
+ - NOTE: when the `RS=""`, blank or empty string, any sequence of blank line is used as seprator.
+ - For example input6.txt
+ ```
+ renton
+ washigton
+ 
+ 
+ seattle
+ washington
+ 
+ SFO
+ california
+ ```
+ 
+ ```sh
+ $ awk 'BEGIN{RS="";FS="\n"} {print city=$1;state=$2; print city,",",state}' input6.txt
+ renton,washington
+ seattle,washignton
+ SFO,california
+ ```
+ 
+-  NOTE: 
+  - the `print` statement uses default FIELD seperator single space (wherever we use ',' or comma) 
+  - and RECORD Seperator, which is new line.
+  - This can be overrided by using __`OFS`__ and __`ORS`__
+  ```sh
+  $ awk 'BEGIN{OFS=",";ORS="#"} {print $1,$2} input6.txt
+  renton,washington#seattle,washington#SFO,california#
+  ```
+  
+  
