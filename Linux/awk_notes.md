@@ -710,3 +710,30 @@ IT was working IT completed
 name12,name11
 name22,name21
 ```
+---------------------------
+ ##### Associative arrays:
+   - `awk '{a["first"]=$1;a["second"]=$2; print a["second"], a["first"];}'` this is called an associative array where the values are associated.
+   - there are no set limits of how many values you can associate, but due to large value association the performance gets impacted.
+   - since it associates the value of array to arbitary value.
+   - there is no way to iterate from 1 to N on the associative array
+   - awk provides special form of `for (index  in array) { //body statement }` to iterate associative array. The order is not guarenteed.
+  
+ ```sh 
+  $ awk '{a["first"]=$1;a["second"]=$2; for (i in a) { print i, a[i] };}'
+ ```
+- write a program to count the word occurred in file
+  - idea convert all the words to lower case in action block
+  - then count the word in the END 
+  - latter when executing the awk, use sort to find the max occurance word.
+  
+  ##### Math functon
+    - `int(x)` - return the integer part of argument; in
+    - `rand()` - return random floating point 0 to 1, use below for randon number from 1 to 6. ` int(rand()*6) +1`
+    - `srand([x])` - seeds the random generator with the value of x, if x is omitted it used the current date and time. (sudo random values). use this in BEGIN block for totally random values.
+    - `sqrt(x)`
+    - `sin(x)`
+    - `cos (x)`
+    - `atan2(y,x)` = for PI value use atan2(0,-1) in radians
+    - `log(x)`
+    - `exp(x)`
+    
