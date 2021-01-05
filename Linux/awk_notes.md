@@ -737,3 +737,22 @@ name22,name21
     - `log(x)`
     - `exp(x)`
     
+-------------------------------------
+
+###### Use awk to count the number of .html file from ls command under a director
+
+```sh
+$ ls -l
+-rw-r--r-- 1 thirumurthi 197121 66 Dec 16  2018 htmlinput.html
+-rw-r--r-- 1 thirumurthi 197121  0 Jan  5 12:06 one.html
+
+$ ls -l | awk '/\.html$/{total +=1;}END{print total;}'   //NOTE the END segment
+2
+//number of bytes in file
+$ ls -l | awk '/\.html$/{total +=$5;print}END{print total;}'   //NOTE: 5th field is bytes of the file 
+-rw-r--r-- 1 thirumurthi 197121 66 Dec 16  2018 htmlinput.html
+-rw-r--r-- 1 thirumurthi 197121  0 Jan  5 12:06 one.html
+66
+```
+
+
