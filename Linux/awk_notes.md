@@ -386,35 +386,43 @@ one
 $ awk '{a=1;b=4; print a+b}'
              <---- hit enter or any input, the result will be addition
 5
-
+```
+```sh
 $ awk '{a=1;b=4; print a b}'
 
 14   <---- this string is concatenated since no operator is used.
-
+```
+```sh
 $ awk '{a=1;b="temp"; print a+b}'
 
 1   <---- the b="temp" is 0
-
+```
+```sh
 $ awk '{a=1;b=2; print a/b}'
 
 0.5
-
+```
+```sh
 $ awk '{print "one" + 0}'    /// This is to convert a string to integer where one is treated as 0 since one is considered as number
 
 0
-
+```
+```sh
 $ awk '{print "1" ""}'
 
 1    <--- this is a string from the context not integer or number since we are concatenating an empty string.
-
+```
+```sh
 $ awk '{a=1;b=2;c=3; print a b * c}'
 
 16
-
+```
+```sh
 $ awk '{a=1;b=2;c=3; print (a b) *c}'   <--- here we are using paranthesis to say perform concatenation first, then multiply
 
 36 
-
+```
+```sh
 /// below demostrates how awk converts number to string
 $ awk '{print "\"" $1 "\"+ 0 = " $1 +0 }' 
 
@@ -428,3 +436,75 @@ some15
 15test
 "15test"+0 = 15  <-------------------- any input starting with number is treated as number any string after the number is not used, so 15 is displayed.
 ```
+
+##### Array declaration in awk
+```sh 
+$ awk '{a[1]=1;a[2]=2;a[3]=3;print a[1],a[2],a[3]}'
+t w 0
+1 2 3    <--- the actual value of the array is printed, note a is declared as array, it can't be reassigned to scalar value again within the awk programming
+```
+------------------------------------------
+
+#### Regular expression comparision of string. ~, !~  (~ representes matching; !~ represents not matching)
+  - in awk the regular expression is written between `/abc/` slashes in some case between quotes like "abc"
+  - regular expression are case senstive
+  
+```sh
+$ awk '/abc/{print $0}'
+one      <--- user input value, there won't be any output
+oneabc   <--- user input value, since abc is present should see an output
+oneabc
+```
+   - multple pattern matching reference
+```sh
+$ awk '/ab/{print $0} /cd/{print $0}'
+ab00cd   <-------- user input value, there will be TWO lines printed in the output, this is since we have ab and cd mathcing patterns
+ab00cd
+ab00cd 
+```
+###### To print only the second field matching a string.
+```sh
+$ awk '$2 ~ /two/{print}'
+one two three    <------------ user input value, output will be displayed as such
+one two three
+one four          <----------- user input value, output will NOT be displayed in this case since second element is not matched.
+```
+
+##### How to use `META-CHARACTERS` for matching patterns
+  - `.` or period matches any character, example, /x.y/ matches xay,xby, etc. It doesn't match ac (. - means one char should exists between a and c)
+  - backslash `\.` means literal . or period matching. For example /x\.y/ means matches only x.y It doesn't match xay in here.
+  - `\\` matches directly the \ itself. example /a\\b/ matches a\b
+  - `\/` escapes / itself. example, /a\/b/ matches a/b
+  - `^` and `$` represents start and end
+    - /^abc/ matches abcd, abce, etc. String starting with abc
+    - /abc$/ matches xyabc, apabc etc. String ending with abc
+    - NOTE: The awk command of the ^ and % checks the string of the FIELD not the RECORD or on the line itself.
+  - `[]` - square brackets called as character class
+    - /a\[xyz]c/ matches axc or ayc or azc.
+    - /a\[a-zA-Z]c/ matche abc or aBc etc.
+    - /a\[^a-z]c/ matches aBc or aDc but NOT abc, adc (second char should be upper case A-Z). ^ is not start in this case when used with \[]
+  - `*` used to match 0 or more occurance
+  - `+` used to match 1 or more occurance
+  - `?` used to be optional for that character. Example, /ab?c/ matches abc and ac. NOT abbbc. 
+  - `{n}` represents number of repeats
+     - /ab{3}c/ matches abbbc, but NOT matches abbbbc
+  - `{n,}` represent that n or more number of repeats
+     - /ab{3,}c/ matches abbbc, and ALSO abbbbbbbc
+  - `{n,m}` represents that repeats between n,m.
+     - /ab{3,5}c/ matches abbbc but NOT abbbbbbbbc (not more than 5 b's are matched)
+  - `()` muliple items (referred as quantifiers)
+     - /ab+c/ matches abbbbc
+     - /(ab)+c/ matches abababababc
+  - Quantifiers are greedy, so it will try to match as many characters possible
+    - For example, pattern `/<.+>/` expected it will match the html tag <i> from "<i> some text </i>" but it doesn't. It tries to move as much as possible
+ ```sh
+ $ echo "<i> sometext</i>  | awk '/<.+>/{print}'
+ <i> sometext</i>
+ ```
+    - if we need match only the html tag then we need to use the `^`, like `/<[^>]+>/` which will match only the <i>
+```sh
+ $ echo "<i> sometext</i>  | awk '/<[^>]+>/{print}'      <--------- the [^>] any string that is not > and + more than one and ends with > as soon as sees it.
+ <i>
+ ```
+  
+  
