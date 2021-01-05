@@ -501,10 +501,45 @@ one four          <----------- user input value, output will NOT be displayed in
  $ echo "<i> sometext</i>  | awk '/<.+>/{print}'
  <i> sometext</i>
  ```
-    - if we need match only the html tag then we need to use the `^`, like `/<[^>]+>/` which will match only the <i>
+ 
+ - if we need match only the html tag then we need to use the `^`, like `/<[^>]+>/` which will match only the <i>
+ 
 ```sh
  $ echo "<i> sometext</i>  | awk '/<[^>]+>/{print}'      <--------- the [^>] any string that is not > and + more than one and ends with > as soon as sees it.
  <i>
  ```
-  
-  
+
+-------------------------------------------------------------
+
+### Control structures in awk
+  - awk is complete programming language
+  - the control structure is similar to C programming language
+  - use ";" as end of statement.
+```
+  if (condition){
+    // statement
+    } else{
+    // statement
+    }
+  if a number variable, contains value of 0 then it is false, true otherwise
+  if a string variable, contains empty string the it is false, true otherwise
+```
+```sh
+$ awk '{ if (Nf < 3) {print "LESS"} else { print "GREATER"} }'
+one two three
+GREATER
+one
+LESS
+```
+  - Putting the control structure in a file would be easy to maintain.
+```sh
+$ cat logic1
+{
+  if (NF < 3){
+     print "LESS";
+  } else {
+     print "GREATER";
+  }
+}
+```
+
