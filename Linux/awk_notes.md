@@ -531,6 +531,7 @@ GREATER
 one
 LESS
 ```
+##### Different ways of executing the awk actions
   - Putting the control structure in a file would be easy to maintain.
 ```sh
 $ cat logic1
@@ -542,4 +543,48 @@ $ cat logic1
   }
 }
 ```
+```sh
+$ awk -f logic1 input11.txt
+```
+ - using the shell file with the complete awk with line breaks. (Note the single quotes where the command is provided)
 
+```sh
+$ cat awkcommand.sh
+awk '{
+ if (NF < 3){
+     print "LESS";
+  } else {
+     print "GREATER";
+  }
+}' input11.txt  
+```
+
+```sh
+$ sh awkcommand.sh
+```
+ 
+ ##### `for` statment
+ ```
+   for (initialization; condition; increment) {
+    //statment
+    }
+ ```
+ ```sh
+ $ cat firstfewchar.awk
+  {
+    for (i=1;i<=3; i++) {
+      print "# " NR ", field: " i " : " $i ;
+      }
+    }
+ 
+ $ awk -f firstfewchar.awk 
+ one hello world program  <---- user input on console
+ # 1, field: 1 : one
+ # 1, field: 2 : hello
+ # 1, field: 3 : world
+ two simple              <------ user input on console
+ # 2, field 1 : two
+ # 2, field 2 : simple
+ # 2, field 3 :
+  
+ ```
