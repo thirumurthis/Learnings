@@ -588,3 +588,125 @@ $ sh awkcommand.sh
  # 2, field 3 :
   
  ```
+ --------------------------------
+ - Sample template with Begin and action
+```sh
+cat program
+BEGIN{
+  // variable decleartion
+  FS="\t"
+  ..
+ }
+ // not pattern used, just the action
+ {
+     for (i=2;...){
+     ...
+     }
+ }
+ 
+ END {
+   // some statement..
+ }
+```
+```sh
+ $ awk -f program inputFile.txt
+```
+--------------------------------------------------
+
+#### Formatting in awk, using `printf()`, this syntax is similar to c programming language.
+```
+printf(format, value...)
+
+example: printf("integer input %d",10)
+```
+
+```sh
+ cat input12.txt
+ name1,email1@domain.com,88.1090
+ name2,email2@domain.com,89.1341
+ name5,email100@domain.com,100.2009
+ 
+ //print the above using printf, with tab separation.
+ 
+ $ awk -F, '{printf("%s\t%s\t%d\n", $1, $2, $3}' input12.txt
+ 
+ %s -> format specifier - String
+ %d -> format specifier - Demial
+ \t and \n -> should be used since like print, printf doesn't add anything default.
+```
+
+```sh
+// to produce more nice output we can use width values in printf
+
+$ awk -F, '{printf("%20s %30s %3d\n", $1,$2,$3}' input12.txt // using +ve width RIGHT justifies the output
+
+$ awk -F, '{printf("%-20s %-30s %3d\n", $1,$2,$3}' input12.txt // using -ve width LEFT justifies the output
+
+$ awk -F, '{printf("%-20s %-30s %3f\n", $1,$2,$3}' input12.txt // %f - to use float values, which has 6 decimal precision, 
+                                                               // use %6.2f for 100.20 (6 chars -3 for decimal) and %06.2 for 0 padding 088.10
+```
+--------------------------------------------
+
+#### String manipulation in awk - functions
+
+  - awk represent the string start value as 1. for example: simpleText -> s is at index/ character 1
+  - `length([string])` - returns the length of the string passed. If no string is passed, $0 is used and length of the whole line or Record is returned
+  - `index(string, target)` - looks for the string "target" within the string "string" passed, and returns the first occurance index, if no match 0 is returned.
+                            - example: index ("hello","lo") -> 4
+  - `match(string, regexp)` - similar to the index, instead of target this will check for regular expression.
+                            - example: match("helloworldpro", /w\[a-z]\*d/);  This returns 6, also sets __RSTART__ to 6, __RLENGTH__ to 5 (length of the match word world)
+  - `substr( string, start[,length] )` - returns sub string when provided with start and length value. 
+                                       - example: substr("helloworldpro",6,5) -> return world
+                                       - example: substr("helloworldpro",6) -> returns worldpro (without length)
+   - `sub( regexp, newval[, string])` - searches the string variable string and matches for the regex and updates the new value. (works for first occurance)
+   - `gsub( regexp, newval[, string])` - same as sub, but this applies GLOBALLY.
+   - `split( string, array[, regexp])` - splits string "string" to array using regex. If the regex is ommited, FS is used. array is where the split value stored
+   
+// remove the world from the input string.  
+```sh
+$ echo -e "helloworldpro \nrestofworld \ntestworldgame" | awk 'BEGIN{target="world";}{ s=index($0,target); if( s==0) { print; } else { print substr($0, 1, s-1)," && ", substr( $0, s+length(target)); }}'
+hello  &&  pro
+rest &&
+test && game
+
+// formatted version
+
+BEGIN{
+    target="world";
+}
+{
+   s= index($0, target);
+   if( s == 0) { // no match
+         print;
+    } else {
+      print substr( $0, 1, s-1), " && " , substr( $0, s+length(target));
+    }
+}   
+```
+ - using `sub` to replace the stirng world the first occurance only
+```sh
+ $ echo -e "helloworldpro \n testworldthing \n restofworld" | awk '{sub(/world/,"");print}'
+ hellopro
+ testthing
+ restof
+```
+```sh
+$ echo -e "he is great he won \nshe was working she completed" | awk '{sub(/[s]?he/,"IT"); print;}'
+IT is great he won
+IT was working she completed
+
+// NOTE: only the first occurance is updated
+ ```
+ 
+ ```sh
+$ echo -e "he is great he won \nshe was working she completed" | awk '{gsub(/[s]?he/,"IT"); print;}'
+IT is great IT won
+IT was working IT completed
+ ```
+
+- how to use split and swap records of the first field
+```sh
+ $ echo -e "name11 name12,mail1\nname21 name22,mail2" | awk -F, '{split($1,a,/ / ); print a[2] "," a[1];}'
+name12,name11
+name22,name21
+```
