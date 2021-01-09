@@ -19,3 +19,21 @@
   ```
   "Access-Control-Allow-Orgin","*"
   ```
+
+  #### How to set headers in the developer tools when requesting from different domain.
+  ```js
+  fetch("http://localhost:8080/stock/INTC",{headers: {"Content-Type": "application/json"}}).then(a=>a.text()).then(console.log);
+  ```
+  - for the above request, the browser perform pre-flight check.
+  - Browser directly doesn't allow a complex request with the headers.
+  - Browser has to validate with the server, is the headers are permissible.
+  - The Browser sends an `Request Method : OPTIONS`. This is special header sent by the Browser.
+  - In order to allow the request with the headers in the localhost, configure options.
+  - check corrsponding server configuration on how to set it.
+  - Even in this case the make sure the cors is allowed.
+  
+  - Also since we are hitting with the content-type headers, then set 
+  ```
+  "Allow-Control-Allow-Headers","Content-Type"
+  ```
+  
