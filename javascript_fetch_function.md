@@ -9,6 +9,7 @@ Per the reference,
  ```html
   <html>
       <head>
+          <meta charset="UTF-8" />
           <title> Simple app </title>
       </head>
       <body>
@@ -37,6 +38,7 @@ Below is the similar to above code using async and await:
 ```html
   <html>
       <head>
+          <meta charset="UTF-8" />
           <title> Simple app </title>
       </head>
       <body>
