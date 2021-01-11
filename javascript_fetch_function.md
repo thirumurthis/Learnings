@@ -1,4 +1,68 @@
-Sample example to use function:
+ - `fetch ()` takes and url as an argument
+ - `fetch ()` returns a promise. Promise in javascript is the way to handle asyncronus event.
+
+Reference: [Link](https://github.com/CodingTrain/Intro-to-Data-APIs-JS); [1](https://www.youtube.com/watch?v=tc8DU14qX6I)
+
+Per the reference, 
+ - An image is fetched and converted to blob and displayed in the image tag.
+ - The blob itself is a raw type, so use of createObjectURL() is used passing the blob.
+ ```html
+  <html>
+      <head>
+          <title> Simple app </title>
+      </head>
+      <body>
+          <img src="" id="image1"/>
+          <script>
+              fetch("image1.jpg").then(response => {
+                console.log(response);
+                return response.blob();
+              }).then(obj => {
+               console.log(obj);
+               document.getElementById('image1').src = URL.createObjectURL(blob);
+              })
+              .catch( error => {
+                 console.log("error!!");
+                 console.error(error);
+              });
+          </script>
+       </body>
+   </html>
+ ```
+ 
+  - The `.then` on the fetch method can be rewritten using `async/ await`. `async` and `await` are new features in javascript.
+  - The `await` can be only used within the context of `async` keyword.
+  
+Below is the similar to above code using async and await:
+```html
+  <html>
+      <head>
+          <title> Simple app </title>
+      </head>
+      <body>
+          <img src="" id="image1"/>
+          <script>
+              console.log('render image');
+              // invoke the function getImage() method, so the image will be rendered. 
+              // in case of any error, then that also needs to be caught.
+              getImage().catch( error => {
+                 console.log("error!!");
+                 console.error(error);
+              }); 
+              
+               async function getImage(){
+                 const response = await fetch('image1.jpg');   // since we have used the async function, the fetch has to await for the promise which is the response
+                 const blob = await response.blob();
+                 document.getElementById('image1').src = URL.createObjectURL(blob);
+              
+              }
+          </script>
+      </body>
+</html>
+```
+ 
+  
+Sample example to using `fetch` function:
 
 ```html
 <!DOCTYPE html>
