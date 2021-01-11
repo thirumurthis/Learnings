@@ -69,7 +69,23 @@ Below is the similar to above code using async and await:
  ```js
    const data = await response.text();
  ```
+ 
+#### Javascript destructuring
+ - Say there is an json object, we need only few properties, we can perform below.
+ 
+```
+const temp = { idx: 1, movie: "hero1", actor: "actor1"}; 
+const {movie,actor} = temp;
+console.log(movie); //hero1
+## Note: in console once the variable is declared with const, then it cannot be re-declared with const again.
+
+let tmp = { idx: 1, game: "cricket", players: "11"}; 
+let   {game,players} = tmp; console.log(game+" && "+players);
+```
   
+#### Javascript `var` is not used in newer version of javascript, `const` or `let` newer javascript version.
+```
+```
 Sample example to using `fetch` function:
 
 ```html
