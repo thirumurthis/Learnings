@@ -62,7 +62,13 @@ Below is the similar to above code using async and await:
       </body>
 </html>
 ```
+- In order to read the csv file with comma seperated data in java script using fetch command.
+ - use same approach ` response from the fetch, can be converted to text using response.text()` in the above the response was converted to bolb
+ - once the text is converted then manipulate using split, slice, command to extract data.
  
+ ```js
+   const data = await response.text();
+ ```
   
 Sample example to using `fetch` function:
 
