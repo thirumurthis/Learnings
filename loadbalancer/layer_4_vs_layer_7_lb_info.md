@@ -9,30 +9,30 @@
 ---------------------
 
   ### Layer 4 LB
-      - we only know only the `IP` and the `port`
-      - we don't read the data in this TCP layer, the data is encrypted.
-      - decision is based on the `Ip` address and `port` not based on the data.
-      - based on the Load balancer algorithm, round-robin or random it will pass the request to server.
-      - the layer 4 LB software will manage a table where the incoming ip address to lb ip address and pass the request to the server.
-         - the LB will use NAT to change the Ip address under the hood, the source is change to LB ip. 
-      - this totaly is only one TCP connection
-      - this is a reverse proxy, where the client doesn't know the request is forwarded to
-        - the server doesn't know the request is comming from, this is reverse proxy.
+   - we only know the `IP` and the `port`
+   - we don't read the data in this TCP layer, the data is encrypted.
+   - decision is based on the `Ip` address and `port` not based on the data.
+   - based on the Load balancer algorithm, round-robin or random it will pass the request to server.
+   - the layer 4 LB software will manage a table where the incoming ip address to lb ip address and pass the request to the server.
+       - the LB will use NAT to change the Ip address under the hood, the source is change to LB ip. 
+   - this totaly is only one TCP connection
+   - this is a reverse proxy, where the client doesn't know the request is forwarded to
+   - the server doesn't know the request is comming from, this is reverse proxy.
 
   ##### pros:
-    - simple load balancing
-    - faster and efficient (no data lookup), since doesn't look into the data to make decision.
-    - The data is still encrypted in this layer, so in a way secure.
-    - only one TCP connection established. (router take the repsonsiblity for forwarding the TCP connection, but for client it is one connection only)
-    - uses NAT (statefulness)
+  - simple load balancing
+  - faster and efficient (no data lookup), since doesn't look into the data to make decision.
+  - The data is still encrypted in this layer, so in a way secure.
+  - only one TCP connection established. (router take the repsonsiblity for forwarding the TCP connection, but for client it is one connection only)
+  - uses NAT (statefulness)
   
   ##### Cons:
-    - Not a smart load balancing
-      - the data is not read cookies,etc. so no need to add headers or redirect based on it.
-    - Not suitable for Microservice. (not applicable)
-       - Since, the ingress protocol can use the content to forward different service based on the path. like using REST endpoint like /image which will we navigate service dedicated to media and knows to cache. the path /message this will navigate to different services.
-    - when we forward using LB, which makes a TCP connection there is a maximum limit 1500 bytes. If the GET request size is 1MB, then this needs to be broken to multiple TCP segments, that is one packet multiple segment. The LB better forward all those segments to the same destination. We cannot forward part of the segment in the packet to one destination and some to another destination.
-    - no cache, since at this layer the data is not looked up or read.
+  - Not a smart load balancing
+     - the data is not read cookies,etc. so no need to add headers or redirect based on it.
+  - Not suitable for Microservice. (not applicable)
+      - Since, the ingress protocol can use the content to forward different service based on the path. like using REST endpoint like /image which will we navigate service dedicated to media and knows to cache. the path /message this will navigate to different services.
+  - when we forward using LB, which makes a TCP connection there is a maximum limit 1500 bytes. If the GET request size is 1MB, then this needs to be broken to multiple TCP segments, that is one packet multiple segment. The LB better forward all those segments to the same destination. We cannot forward part of the segment in the packet to one destination and some to another destination.
+     - no cache, since at this layer the data is not looked up or read.
 
 #### Simple HA proxy implementation to support Layer 4 LB
 
