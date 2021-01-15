@@ -91,3 +91,11 @@ document.write(obj1.property1); // sample will be displayed
 - The memory is being allocated by the Javascript, but how to deallocate the memory (garbage collector will take care)
 - by allocating the object variable to `null`, the javascript runtime engine garabage will clean up the memory reference.
 
+###### Other in-built object type other than `Object`
+ - Array  ` var intArray = new Array ();`
+ - Date  ` var dateEx = new Date();`
+ - Error ` var errorEx = new Error ("issue passed as string");
+ - Function ` var sampleFunction = new Function("document.write('function example')");
+ - RegExp  ` var sampleRegex = new RegExp ("\\d+");`  d - represents digits; + one or more digits
+ 
+ 
