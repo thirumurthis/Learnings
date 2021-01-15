@@ -161,10 +161,33 @@ var student = { "name":"Thiru" };
 function printName(name){return "Hello " + name;};
 var namesArray = ["Thiru1","Thiru2"};
 
-document.write(student instanceof Object); // Object
-document.write(typeof printName); // function 
-document.write(namesArray instanceOf Array); // Object
-// if adding a string use () 
-document.write((namesArray instanceOf Array) + "<br/>"); // Object
+document.write(student instanceof Object); // true
+document.write(printName instanceof Function); // true
+document.write(namesArray instanceof Array); // true
+document.write(namesArray instanceof Object); // true  - Array is a type of Object
 
+// if adding a string to use br string then use () 
+document.write((namesArray instanceOf Array) + "<br/>"); // Object
+```
+
+##### Wrapper types for javascript primitive types (similar to java where we have Integer, Float, etc)
+ - Number
+ - String
+ - Boolean
+
+```js
+var str1 ="Test Contect";
+
+var temp = new String("Test content");
+var s= temp.substring(3,5);   // wrapper types are internally by javascript engine and then it will remove or not accessible.
+```
+ - NOTE: Don't use the wrapper type in development as it will cause confusion and error.
+ 
+```js 
+ var str = "string test";
+ str.name = "test";  //str is of wrapper type internally, on setting will display.
+ 
+ document.write(str.name); // undefined
+ 
+ document.write( str instanceof String); // true
 ```
