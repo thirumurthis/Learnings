@@ -17,6 +17,7 @@
   - Objects
      - `in` operator to check if specific property exits or inherited in an object
      - `hasOwnProperty` function to check if specifi property owned by an object
+     - `delete` operator is used to delete the property in an object. delete returns true or false
 
  - Primitive type
    - `string`,`number`, `boolean`
@@ -542,11 +543,22 @@ console.log("toString" in car1Info); // true - the toString is inherited from pa
 
 #### use `hasOwnProperty` is used to check if specific property is owned by the object
 ```js
-
-var car1info = { 
+var car1Info = { 
  name: "Toyota,
  year : 2000
  };
 
-console.log(car1Info.hasOwnProperty("toString"); // false - the toString is inherited from parent object
+console.log(car1Info.hasOwnProperty("toString")); // false - the toString is inherited from parent object
+```
+
+#### `delete` operator on object
+
+```js
+var car1Info = { 
+ name: "Toyota,
+ year : 2000
+ };
+
+delete car1Info.year;  // [[Delete]] method is invoked internally by Javascript engine
+console.log(year in car1Info); // false
 ```
