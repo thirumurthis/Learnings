@@ -238,4 +238,74 @@ var s= temp.substring(3,5);   // wrapper types are internally by javascript engi
         else return "odd";
     };
    ```
-   
+##### passing function as parameter
+```js
+   var scores = [15,24,102,85,09];
+  scores.sort();   // in javascript the sort uses the array values as strings and uses it for sort
+  document.write(scores); // NOT sorted in expected order
+  
+  // how to fix the above issue, we can pass a functon to sort function
+  
+  scores.sort(function(n1,n2){
+    return n1-n2;  //like  comparator, using anonymous function
+  });
+  document.write(scores); // now the output is sorted
+```
+
+###### Any number of parameter can be passed to a function
+  - the additional parameters are ommitted.
+```js
+ var printName = function(name){ return "Hello "+name;};
+ document.write(printName("one","two"); // Hello one
+```
+  - How to access the additional parameter passed in to a function.
+    - each function has additional variable called `arguments`, an array to hold extra parameter passed in.
+    
+```js 
+function add(num1,num2){
+  document.write(arguments); // [ object Arguments] is displayed
+  document.write(arguments[3]); //4 is printed 
+  document.write(arguments.length); //4
+  
+  // TO CHECK THE LENGHT OF THE ACTUAL ARGUMENTS PASSED IN A FUNCTION
+  document.write(add.length); //2  add is the function itself
+  
+  return num1+num2;
+};
+document.write(add(1,2,3,4));  //3 (1+2)
+```
+- usecase of arguments
+
+```js
+
+function productNumber(){
+var output =1;
+ for (var i=0; i<arguments.length;i++){
+    output *= arguments[i];
+  }
+return output;
+};
+document.write(productNumber(1,2,3)); //6
+document.write(productNumber()); //1
+document.write(productNumber(1,20,3)); //60
+```
+
+##### Function overloading
+  - function name same with different number of arguments or return type.
+
+```js
+
+function add (num1,num2,num3){ return num1+num2+num3;};
+function add (num1,num2){ return num1+num2;};
+
+document.write(add(10,20,30); // expected result 60 but result is 30
+
+// The reason is the overloading is not supported since by default function can take any number of parameter
+
+// why 30, the javascript engine considers only the last function when there are multiple function with the same name. so engine override and uses the last one.
+```
+
+##### HOW TO OVERCOME the overload, using the length of the `arugments` array datastructer with if else condition based on the length.
+  - Even in this case we use only one function rather than two function to achive it.
+  - the other way is to pass in named parameters and check if those are undefined.
+
