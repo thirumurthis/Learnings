@@ -24,7 +24,7 @@
  - `typeof` operator to display the type of variable
  
  ```js 
-   var name = "username"; //string
+  var name = "username"; //string
   var intTest = 10; //number
   var floatTest = 10.0; //number
   var boolTest = true; // boolean
@@ -47,3 +47,43 @@
  document.write(x == y);  //returns true
  document.write (x === y); // returns false since the data type is not correct (strict match)
  ```
+
+ - methods applied over the primitive type, there are many methods below is few basic
+```js
+  var str="This is example string";
+  
+  document.write(str.toUpperCase()); // THIS IS EXAMPLE STRING
+  document.write(str.toLowerCase()); // this is example string
+  document.write(str.substring(3,8)); // s is
+  document.write(str.charAt(5)); // i
+
+  var numberTest = 123;
+  document.write(typeof numberTest.toString()); //string
+
+  var booleanTest= false;
+  document.write(typeof booleanTest.toString()); //string
+```
+
+#### Reference type
+- `Reference type` this is close to the class or objects of the type.
+- instance of reference type is called object.
+- This is a list or collection of properties, each property has a name and value or function.
+
+- Types of creating Objects / reference type and add properties:
+- javascript allows dyanmically add properties file.
+
+```js 
+
+var obj = new Object();  // in build reference type in javascript is Object.
+// The obj will just point to the memory locaion where the object told.
+
+// Adding properties
+obj.property1 = "sample";
+
+document.write(obj.property1); // sample will be displayed
+document.write(JSON.stringfy(obj)); // {"property1":"sample"} will be displayed
+
+// ANY VARIABLE REFERRING THE OBJECT REFERS TO THE MEMROY SO ANY UPDATE TO PROPERTY IMPACTS OTHER VARIABLE AS WELL
+var obj1 = obj;
+document.write(obj1.property1); // sample will be displayed 
+```
