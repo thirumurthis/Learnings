@@ -99,3 +99,72 @@ document.write(obj1.property1); // sample will be displayed
  - RegExp  ` var sampleRegex = new RegExp ("\\d+");`  d - represents digits; + one or more digits
  
  
+##### How to create object without using `new` operator in javascript using `literal form`
+- Object literals
+  - use the literal form starts with `{` and ends with `}`.
+  - each property has a key and value. the key and value can ALSO be wrapped in double quotes like { "name": "Thiru" , "science": 90}
+```js
+var student = { 
+   name: "Thiru",
+   science: 90
+}
+
+document.write(student.name); //Thiru is displayed
+```
+- Array literals
+   - use the literal form starts with `[` and ends with `]`
+```js
+ var names = ["Thiru1","Thiru2","Thiru3"];
+ 
+ document.write(names[0]); //Thiru1
+ 
+ var namesArray = new Array("thiru1","thiru2", "thiru3");
+ document.write(namesArray[0]); //thiru1
+```
+
+- Function literals
+  - Don't use the new operator to create a function.
+  - Literal way is use `function functionName (){ ... }`
+```js
+
+function printName(name){
+  return "Hello "+ name;
+}
+document.write(printName('Thiru')+ "<br/>"); // Hello Thriu
+```
+
+- Regular Expression literals
+  - The regex literal starts with `/` and ends with `/`
+
+```js
+var regExDemo = /\d/; // note there is no need to escape the backspace.
+
+document.write(regExDemo.exec(10)); // prints 1 since we are not using +
+```
+
+#### `typeof` oeprator on different objects
+```js
+var student = { "name":"Thiru" };
+function printName(name){return "Hello " + name;};
+var namesArray = ["Thiru1","Thiru2"};
+
+document.write(typeof student); // Object
+document.write(typeof printName); // function 
+document.write(typeof namesArray); // Object
+
+```
+ - Note: the type of coudn't differentiate the Ojbect type in this case use `instanceof 
+
+##### `instanceof` usage
+```js
+var student = { "name":"Thiru" };
+function printName(name){return "Hello " + name;};
+var namesArray = ["Thiru1","Thiru2"};
+
+document.write(student instanceof Object); // Object
+document.write(typeof printName); // function 
+document.write(namesArray instanceOf Array); // Object
+// if adding a string use () 
+document.write((namesArray instanceOf Array) + "<br/>"); // Object
+
+```
