@@ -30,73 +30,65 @@ Scenario:
 			</properties>
 
 			<build>
-
-				<plugins>
-
-					 <plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>3.0.0</version>
-						<executions>
-							<execution>
-								<id>copy-dependencies</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<echo>copy properties file in pre-integration-test phase ${basedir}</echo>
-										<copy todir="target/test-classes/">
-						                  <fileset dir="${basedir}/src/main/java/resources/">
+          		    <plugins>
+				 <plugin>
+				      <groupId>org.apache.maven.plugins</groupId>
+				      <artifactId>maven-antrun-plugin</artifactId>
+				      <version>3.0.0</version>
+				      <executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+							   <echo>copy properties file in pre-integration-test phase ${basedir}</echo>
+							   <copy todir="target/test-classes/">
+						                <fileset dir="${basedir}/src/main/java/resources/">
 						                     <include name="applicationconfig.properties"/>
-						                  </fileset>
-						                </copy>
-									</target>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin> 
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-failsafe-plugin</artifactId>
-						<version>2.22.1</version>
-						<dependencies>
-							<dependency>
-								<groupId>org.apache.maven.surefire</groupId>
-								<artifactId>surefire-junit47</artifactId>
-								<version>2.22.1</version>
-							</dependency>
-						</dependencies>
-
-						<executions>
-							<execution>
-								<id>integration-tests</id>
-								<goals>
-									<goal>integration-test</goal>
-								</goals>
-
-								<configuration>
-									<!-- Skips integration tests if the value of skip.integration.tests 
-										property is true -->
-									<skipTests>${skip.integration.tests}</skipTests>
-
-									<includes>
-										<include>**/*.class</include>
-									</includes>
-									<!-- below is totally to use main/resources as classpath - but in our case this is not required -->
-                  <!--
-                    <additionalClasspathElements>
-										<additionalClasspathElement>${basedir}/src/main/java/resources/
-										</additionalClasspathElement>
-									</additionalClasspathElements> -->
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
-   ```
+						                </fileset>
+						           </copy>
+							</target>
+						</configuration>
+					  </execution>
+					</executions>
+				  </plugin> 
+				  <plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>2.22.1</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.surefire</groupId>
+							<artifactId>surefire-junit47</artifactId>
+							<version>2.22.1</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<id>integration-tests</id>
+							<goals>
+								<goal>integration-test</goal>
+							</goals>
+							<configuration>
+							    <!-- Skips integration tests if the value of skip.integration.tests property is true -->
+							    <skipTests>${skip.integration.tests}</skipTests>
+							    <includes>
+								<include>**/*.class</include>
+						  	    </includes>
+							     <!-- below is totally to use main/resources as classpath - but in our case this is not required -->
+                                                             <!--
+                                                             <additionalClasspathElements>
+								<additionalClasspathElement>${basedir}/src/main/java/resources/</additionalClasspathElement>
+							     </additionalClasspathElements> -->
+							</configuration>
+						  </execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</profile>
+</profiles>
+ ```
