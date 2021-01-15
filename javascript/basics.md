@@ -309,3 +309,171 @@ document.write(add(10,20,30); // expected result 60 but result is 30
   - Even in this case we use only one function rather than two function to achive it.
   - the other way is to pass in named parameters and check if those are undefined.
 
+#### How to add `functions` to object
+```js
+var student = {
+  id: 1,
+  name: "thiru",
+  display: function(){
+    document.write(student.id);
+    document.write("<br>");
+    document.write(student.name);
+  }
+};
+  student.display();
+```
+ - with reference to the above example, how to reuse the above display function. Use `this`
+ - `this` is the object
+```js
+var student = {
+  id: 1,
+  name: "thiru",
+  display: function(){
+    document.write(this.id);
+    document.write("<br>");
+    document.write(this.name);
+  }
+};
+  student.display();
+```
+ - Now we since we have used this, the display function can be extracted outside like below.
+ ```js
+function displayDetails(){
+    document.write(this.id);  //usage this
+    document.write(" ");
+    document.write(this.name);  //usage this
+  } 
+var student1 = {
+  id: 1,
+  name: "thiru-11",
+  display: displayDetails
+};
+
+var student2 = {
+  id: 2,
+  name: "thiru-12",
+  display: displayDetails
+};
+
+  this.id = 4;
+  this.name ="global"  //This here available in gloal scope. If this is not decleard
+  
+  student1.display(); //1 thiru-11 
+  student2.display(); //2 thiru-12 
+  displayDetails(); // 4 global   (undefined in case if the this.id and this.name is not used)  
+```
+
+##### `call`, `apply` and `bind` methods in javascript.
+  - `this` variable is replaced with in the method scope if used within function.
+
+ - **`call`** method usage
+
+```js
+function displayDetails(){
+    document.write(this.id);  //usage this
+    document.write(" ");
+    document.write(this.name);  //usage this
+  } 
+var student1 = {
+  id: 1,
+  name: "thiru-11"
+};
+
+var student2 = {
+  id: 2,
+  name: "thiru-12"
+};
+
+  this.id = 4;
+  this.name ="global"  //This here available in gloal scope. If this is not decleard
+  
+  displayDetails.call(student1); // 1 thiru-11   
+  displayDetails.call(student2); // 2 thiru-12
+  displayDetails.call(); // 4 global   (the global scope no arguments passed with call)
+``` 
+ -Note: The advantage of call, is not need to define the function within the object itself.
+ 
+ - `call` with arguments
+ ```js
+function displayDetails(score){
+    document.write(this.id+" ");  //usage this
+    document.write(this.name+" ");  //usage this
+    document.write(score +" ");
+  } 
+var student1 = {
+  id: 1,
+  name: "thiru-11"
+};
+
+var student2 = {
+  id: 2,
+  name: "thiru-12"
+};
+
+  this.id = 4;
+  this.name ="global"  //This here available in gloal scope. If this is not decleard
+  
+  displayDetails.call(student1,10);  //with arguments
+  displayDetails.call(student2,20); 
+  displayDetails.call(this,30); 
+``` 
+
+ - **`apply`** method usage. This is similar to call method, except it takes `arrays of arguments`
+
+ ```js
+function displayDetails(score1,score2){
+    document.write(this.id);  //usage this
+    document.write(this.name);  //usage this
+    document.write(this.score1+ " " +this.score2);  
+  } 
+var student1 = {
+  id: 1,
+  name: "thiru-11"
+};
+
+var student2 = {
+  id: 2,
+  name: "thiru-12"
+};
+
+  this.id = 4;
+  this.name ="global"  //This here available in gloal scope. If this is not decleard
+  
+  displayDetails.apply(student1, [10,20]); 
+  displayDetails.apply(student2,[20,30]); 
+  displayDetails.apply(this,[10,40]); 
+``` 
+ - **`bind`** method usage, this is different from call and apply, using bind an object can be dynamically bounded.
+ 
+ ```js
+function displayDetails(score1){
+    document.write(this.id);  //usage this
+    document.write(this.name);  //usage this
+    document.write(this.score1+ " ");  
+  } 
+var student1 = {
+  id: 1,
+  name: "thiru-11"
+};
+
+var student2 = {
+  id: 2,
+  name: "thiru-12"
+};
+
+this.id = 4;
+this.name ="global"  //This here available in gloal scope. If this is not decleard
+  
+//bind will return a value which needs to be stored
+var displayStud1 =  displayDetails.bind(student1); 
+displayStud1(100);
+
+//bind with passing param within
+var displayStud2 = displayDetails.apply(student2,20 ); 
+displayStud2();
+
+//what happens if we are assigning the displayStud2 displaydetails with displayStud1
+
+displayStud2.displayDetails = displayStud1;
+displayStud2.displayDetails(90); // prints 90 invoking the displayStud1 since that is resassigned and displayStud1 is bound to  object initally bounded here is student1.
+``` 
