@@ -191,3 +191,51 @@ var s= temp.substring(3,5);   // wrapper types are internally by javascript engi
  
  document.write( str instanceof String); // true
 ```
+
+##### `Functions` in javascript are Objects
+  - the difference between function and other objects is that `function has internal property called **call**`.
+  
+ Creating function:
+   - Decleartion approach
+   ```js
+     function evenOrOdd(num){
+        if (num%2 == 0) return "even";
+        else return "odd";
+     };
+     document.write(evenOrOdd(12)); //even
+   ```
+   - Expression approach 
+      - There is no name in expression approach, instead assign to a variable.
+   ```js 
+    var evenOrOdd = functon (num) {
+      if (num%2 == 0) return "even";
+        else return "odd";
+    };
+    document.write(evenOrOdd(7)); //odd
+   ```
+   
+  Note: Each function are reference type in javascript. This can be assigned to a variable.
+  
+ ###### Difference between the declearing and expression representation of function.
+   - code hoisting happens.
+   - for example, lets invoke the function before declaring it.
+   - function `hoisting` happens and executes it. (kind of setting global scope)
+   
+ - in declaration syntax `hoisting` happens and workes   
+ ```js
+ document.write(evenOrOdd(12));  //even - executed even the function is declard after using
+ function evenOrOdd(num){
+   if(num%2 == 0) return "even";
+   else return "odd";
+  };
+ ```
+  
+  - in expression type `hositing` doesn't occur since variable being used
+   ```js 
+    document.write(evenOrOdd(7)); // issues evenOrOdd is not decleared or used
+    var evenOrOdd = functon (num) {
+      if (num%2 == 0) return "even";
+        else return "odd";
+    };
+   ```
+   
