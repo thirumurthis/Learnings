@@ -87,3 +87,7 @@ document.write(JSON.stringfy(obj)); // {"property1":"sample"} will be displayed
 var obj1 = obj;
 document.write(obj1.property1); // sample will be displayed 
 ```
+
+- The memory is being allocated by the Javascript, but how to deallocate the memory (garbage collector will take care)
+- by allocating the object variable to `null`, the javascript runtime engine garabage will clean up the memory reference.
+
