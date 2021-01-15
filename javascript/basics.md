@@ -1,4 +1,23 @@
 ##### javascript fundamentals
+  - Primitive Types and Reference Types
+  - use of **`typeof`** operator
+  - use of **`===`** operator
+  - use of **`instanceof`** operator
+  - in-built functions `toUpperCase`, `toLowerCase`, `charAt()`, etc.
+  - Reference types: 
+    - Objects - How to create object? using new and literal form using `{}`.
+    - Arrays - How to create arrays? using new and literal form using `[]`.
+    - Functions - How to create function? using new and/or Declaration and Expression approach.
+    - Regular Expression - How to create RegEx object? using new and literal form using `//`.
+  - What is the difference between Declaration and Expression approach in functon? `Hiositing` occurs in declaration approach.
+  - Function overload
+     - Like other language that supports OOPS, javascript can't support overloading. This is because by default any number of parameter/arguments can be passed.
+     - when multiple function with the same name and different arguments are used, javascript engine uses the very last one.
+  - `call`, `apply` and `bind` functions on object.
+  - Objects
+     - `in` operator to check if specific property exits or inherited in an object
+     - `hasOwnProperty` function to check if specifi property owned by an object
+
  - Primitive type
    - `string`,`number`, `boolean`
 ```js
@@ -40,7 +59,7 @@
   document.write(typeof x); // number
   document.write(typeof y); // number
  ```
- - usage of `===` operator, this compares both the data type and the data.
+ - usage of **`===`** operator, this compares both the data type and the data.
  ```js
  var x = 123;
  var y = "123";
@@ -252,13 +271,13 @@ var s= temp.substring(3,5);   // wrapper types are internally by javascript engi
   document.write(scores); // now the output is sorted
 ```
 
-###### Any number of parameter can be passed to a function
+##### Any number of parameter can be passed to a function
   - the additional parameters are ommitted.
 ```js
  var printName = function(name){ return "Hello "+name;};
  document.write(printName("one","two"); // Hello one
 ```
-  - How to access the additional parameter passed in to a function.
+  -NOTE: **How to access the additional parameter passed in to a function.**
     - each function has additional variable called `arguments`, an array to hold extra parameter passed in.
     
 ```js 
@@ -305,11 +324,13 @@ document.write(add(10,20,30); // expected result 60 but result is 30
 // why 30, the javascript engine considers only the last function when there are multiple function with the same name. so engine override and uses the last one.
 ```
 
-##### HOW TO OVERCOME the overload, using the length of the `arugments` array datastructer with if else condition based on the length.
-  - Even in this case we use only one function rather than two function to achive it.
+##### How to achive overloading in javascript?
+  - using the length of the `arugments` array data structer with if else condition based on the length. 
+      - Even in this case we use only one function rather than two function to achive it. 
+  Or
   - the other way is to pass in named parameters and check if those are undefined.
 
-#### How to add `functions` to object
+#### How to add `functions` to an object
 ```js
 var student = {
   id: 1,
@@ -336,7 +357,7 @@ var student = {
 };
   student.display();
 ```
- - Now we since we have used this, the display function can be extracted outside like below.
+ - Now like above example, since we have used `this` operator, the display function can be extracted outside like below.
  ```js
 function displayDetails(){
     document.write(this.id);  //usage this
@@ -476,4 +497,56 @@ displayStud2();
 
 displayStud2.displayDetails = displayStud1;
 displayStud2.displayDetails(90); // prints 90 invoking the displayStud1 since that is resassigned and displayStud1 is bound to  object initally bounded here is student1.
-``` 
+```
+
+### javascript `Object` in detail
+   - How to updated properties in object
+   - How to stop modifying the object by restricting it.
+
+- `put` function
+```js
+  var subject1Info = {
+    name: "Javascript"  //Internally the javascript engine created [[put]] function
+  };
+  
+  subject1Info.name="Javascript details"; // javascript internally uses [[set]] function to allocate the value to the property
+  
+  var subject2Info = new Object();
+  subject2Info.name = "Java"; // initally the [[put]] method is called
+  
+  subject1Info.description = "End to End Javascript info"; // [[put]] is internally invoked, when the property is new one for the object.
+```
+
+#### How to check if the property exits in an object? use `in` operator
+ - in is applicable to object and function properties.
+```js
+
+var car1info = { 
+ name: "Toyota,
+ year : 2000
+ };
+ 
+ console.log("year" in car1Info);  // true - checks the properties
+ console.log("description" in car1Info); //false - checked
+```
+- Note: `in` operator can also check the properties inhertied by the object
+
+```js
+var car1info = { 
+ name: "Toyota,
+ year : 2000
+ };
+
+console.log("toString" in car1Info); // true - the toString is inherited from parent object
+```
+
+#### use `hasOwnProperty` is used to check if specific property is owned by the object
+```js
+
+var car1info = { 
+ name: "Toyota,
+ year : 2000
+ };
+
+console.log(car1Info.hasOwnProperty("toString"); // false - the toString is inherited from parent object
+```
