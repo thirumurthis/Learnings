@@ -1010,3 +1010,65 @@ if the value doesn't exists, the engine checkes the properties available in prot
  car1.display(); //prints honda 2002 invoking the prototype
 ```
 
+##### How to add multiple properties in object prototypes, use the object literal approach `{}`.
+
+```js
+function Vehicle(name, year){
+ this.name = name;
+ this.year = year;
+ }
+ 
+ //literal approach, where the object contains multiple function
+ Vehicle.prototye = {
+   display: function(){
+      console.log(this.name);
+      console.log(this.year);
+      },
+  toString: function() {
+      return "name: "+this.name+ " ; year: "+ this.year;
+   }
+   };
+   
+   var car1 = new Vehicle("honda",2001);
+   car1.display();
+   console.log(car1.toString());
+```
+
+##### constructor proprerty is within the prototype so use prototype define 
+```js
+function Vehicle(name, year){
+ this.name = name;
+ this.year = year;
+ }
+
+var car1 = new Vehicle("test",2001);
+
+console.log(car1 instanceof Vehicle); //true
+console.log(car1.constructor === Vehicle); //false (only when below prototype code is not added and executed.
+console.log (car1.constructor === Object) //true - this becaue we didn't set the constructor in the prototype
+
+//the contsructor is property of prototype
+Vehicle.prototye = {
+   constructor: Vehicle, // this is how to define constructor in the prototype
+   display: function(){
+      console.log(this.name);
+      console.log(this.year);
+      },
+  toString: function() {
+      return "name: "+this.name+ " ; year: "+ this.year;
+   }
+   };
+console.log(car1.constructor === Vehicle); //true
+
+```
+
+##### Adding prototypes to inbuilt object, this should be used with caution since it might confuse other user assuming the custom property is actual property of the inbuilt object.
+```js
+
+String.prototype.display= function(){
+  console.log(this);
+  };
+  
+  "Test".display();
+
+```
