@@ -67,7 +67,6 @@
  document.write(x == y);  //returns true
  document.write (x === y); // returns false since the data type is not correct (strict match)
  ```
-
  - methods applied over the primitive type, there are many methods below is few basic
 ```js
   var str="This is example string";
@@ -863,3 +862,151 @@ console.log(car.name); // Honda - the value cannot be done.
 var objDescriptor = Object.getOwnPropertyDescriptor(car,"name");
 console.log(objDesciptor.writable); // false since it is freezed already
 ```
+#### `Constructors` and `Prototypes` in javascript
+  - `constructors` - using constructors we can create any number of similar object with same properties. And initialize those properties during object creation using constructor.
+  - `prototypes` - is a way to share properties accross multiple objects.
+      - Every object in javasctipt has the `prototype` property.
+ 
+ - When using `new` object the construcor is invoked and returns an object.
+ - constructor is function.
+ - by convention the name of the constructor will start with upper case.
+ 
+```js 
+
+// constructor - convention first char is 
+function Vehicle(){
+}
+
+var car1 = new Vehicle;
+var car2 = new Vehicle;
+
+console.log(car1 instanceof Vehicle); //true
+console.log("is car2 instanceof vehicle? :  "+ (car2 instanceof Vehicle)); // is car2 instanceof vehicle? :  true
+
+// checking the constructor instance
+
+console(car1.constructor === Vehicle); // true note the === approach is not used often, better to use instanceof operator
+```
+  
+  - Define a properties to the constructor  
+ ```js
+  function Vehicle(model,year){
+   this.model = model;
+   this.year = year;
+   
+   this.display = function(){
+    console.log(this.model);
+    console.log(this.year);
+    };
+ }
+ // the constructor now take arguments
+ var car1 = new Vehicle("toyota",2002);
+ var car2 = new Vehicle("honda",2003);
+ 
+ car1.display();  //calling function in the contructor
+ car2.display();
+ ```
+ 
+ - Explictly return object from the constructor. the new object is explicitly returned.
+ - if we return primitive type like 123, it will be ignored by constructor.
+ - we can use the accessor type like using `defineProperty()` inside the constructor.
+ 
+#### `prototypes` info
+ - when we create a function, every function contains a property called `prototype`.
+ - all the function created with that object, will share the prototype
+ 
+ - prototype is a property on a function, a prototype in turn can have functions and variable/properties defined on it. all these properties and functions of the prototype can be used by the object.
+ 
+ ```js
+ 
+  function Vehicle(model,year){
+   this.model = model;
+   this.year = year;
+   
+   this.display = function(){
+    console.log(this.model);
+    console.log(this.year);
+    };
+ }
+ // the constructor now take arguments
+ var car1 = new Vehicle("toyota",2002);  // the car1 gets seperate memory
+ var car2 = new Vehicle("honda",2003);   // the car2 gets seperate memory
+ ```
+   - in the above example, say the function display will be referenced in each variable created and occupies memory.
+   - if we creat this display function as a prototype function, it can save memory.
+   - when object creating the prototype properties are reused.
+   
+- in built prototypes:
+
+```js
+var user= {
+  name: "Thiru"
+  };
+ console.log("name" in user); //true
+ console.log(passenger.hasOwnProperty("name")); //true
+ console.log("hasOwnProperty" in user); // true
+ console.log(user.hasOwnProperty("hasOwnProperty")); // false check if the property is own property
+ 
+// Object.prototype.hasOwnProperty  <== is the actual representation that is the reason previous console returns false
+
+console.log(Object.prototype.hasOwnProperty("hasOwnProperty")); // true
+//toString is aslo on the prototype.
+```
+- **How to access the  objects prototype and check details of prototype**
+
+```js
+ var car = {};
+ 
+ // to get the prototype details
+var prototypeDetails = Object.getPrototypeOf(car);
+
+console.log(prototypeDetails === Object.prototype); //true
+
+//testing if the object is prototype passing the object itself
+console.log(Object.prototype.isPrototypeOf(car)); //true
+```
+
+`NOTE: -` When accessing a property on an object, the javascript engine first checks the object if property exists the value is returned.
+if the value doesn't exists, the engine checkes the properties available in prototye. if exits value is returned  else returns `undefined`.
+
+```js
+ var car = {};
+ console.log(car.toString()); // [object Object ] // prototype value
+ 
+ // to create our own toString function on object
+ 
+ car.toString = function(){
+   return "Custom tostring";
+ };
+ 
+ console.log(car.toString()); // custom tostring is displayed
+ 
+ delete car.toString;
+ console.log(car.toString()); // [object Object] // prototye value is returned
+ 
+ // the prototype toString cannot be deleted. if we try to delete again
+```
+
+- **How to create or access the prototype in the object**
+
+```js
+ function Vehicle(model,year){
+   this.model = model;
+   this.year = year;  
+ /* below consumes memory if we create 100 similar object.
+ this.display = function(){
+    console.log(this.model);
+    console.log(this.year);
+    };
+    */
+ };
+ // below is how we create prototye on an object
+ Vehicle.prototpye.display=function(){
+    console.log(this.model);
+    console.log(this.year);
+ };
+ 
+ var car1 = new Vehicle("honda",2002);
+ car1.display(); //prints honda 2002 invoking the prototype
+```
+
