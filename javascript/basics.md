@@ -562,3 +562,150 @@ var car1Info = {
 delete car1Info.year;  // [[Delete]] method is invoked internally by Javascript engine
 console.log(year in car1Info); // false
 ```
+
+#### Retriving properties from object in javascript.
+  - when an property is added to an object, an `Enumerable` property is set to true.
+```js
+var car1Info = { 
+ name: "Toyota,
+ year : 2000
+ };
+ 
+ // in runtime to display the propties in object
+ for( var property in car1Info){
+   console.log(property);   // displays name, year the key of the property.
+   console.log(car1Info[property]); // this will display the value of the property
+}
+``` 
+
+##### Instead of using the for loop in the above example, there is an `keys` properties
+```js
+var car1Info = { 
+ name: "Toyota,
+ year : 2000
+ };
+
+var allProperties = Object.keys(car1Info); // all properties is returned as array
+
+for (var i= 0; i< allProperties.length; i++){
+  console.log(allProperties[i]); // this displays the properties name
+  console.log(car1Info[allProperties[i]]);
+}
+```
+
+#### Note: Not all the properties in built are NOT Enumerable.
+  - How to check enumerablity?
+```js
+var car1Info = { 
+ name: "Toyota,
+ year : 2000
+ };
+
+console.log(car1Info.propertyIsEnumerable("name"); // this displays true; but ceratin in-built object it will be false.
+
+// array length properties are not enumerable
+var allProperties = Object.keys(car1Info);
+console.log(allProperties.propertyIsEnumerable("length"));
+```
+
+#### `accessor` and `mutator` method like `getter` and `setter`. This is a property in javascript.
+
+```js 
+var car = new Object();
+car.name= "honda" ; // name is called data property since it hold data
+
+//accessor property example
+// note _ variable/properties in javascript is private by convention.
+var userDetails = {
+  _name: "Thiru", 
+  get name(){   // this is accessor propertoes
+    return this._name;
+    },
+  set name(value){
+  this._name = value;
+  }
+};
+
+// the userDetails _name property is accessed only using get and set
+
+console.log(userDetails.name); //note name here is the get name() property
+
+userDetails.name = "God"; 
+console.log(userDetails.name); // God will be displayed
+
+```
+ - `Note`: there is no need to specify `get` and `set` be used always, only when there is special requirements.
+ - If we use the `get name()..`, then this value will be read only
+ - similary if we use `set name()..`, then this value will be write only
+ 
+##### `Enumerable` properties in object
+  - How to set the enumberable property to true for specific property.
+  - Below properties is only availabe starting ECMA6
+```js
+var userDetails = {
+  name: "Thiru"
+ }
+ console.log (userDetails.propertyIsEnumerable("name")); // true
+ 
+ // use definedProperty function passing object itself, attribute/property which needs to be set with enumerable and the object with internal properties.
+ Object.defineProperty(userDetails,"name", 
+ {
+   enumerable: false
+ });
+ console.log("name" in userDetails); // true since name is a property
+ 
+ console.log (userDetails.propertyIsEnumerable("name")); // false since we have updated it to false using defineProperty
+```
+
+#### `configurable` property which is common to both data and accessor properties
+  - The `configurable` property determines whether the property can be modified or Not.
+  - if set to false the property can't be changed or deleted.
+  
+```js
+var userDetails = {
+  name: "Thiru"
+ }
+ 
+ // use definedProperty function passing object itself, attribute/property which needs to be set with enumerable and the object with internal properties.
+ Object.defineProperty(userDetails,"name", 
+ {
+   configurable: false
+ });
+ 
+ delete. userDetails.name;  // this don't display an error since it is NOT executed in strict mode.
+ 
+ console.log( "name" in userDetails); // true  since the property is cannot be deleted.
+ console.log(userDetails.name); 
+  
+ Object.defineProperty(userDetails,"name", 
+ {
+   configurable: true
+ });
+ // above will be creating error, once configurable is marked to false it can't be updated to true  
+```
+ - Note: running the javascript in strict mode, the above code will display error.
+ - Also trying to redefine the configurable to true again will display error.
+ 
+#### Data specific property 
+
+```js
+var carInfo = {};
+// we are adding a new property name here, passed as second parameter/argument.
+// defineProperty () adds the property if not available
+// else if the property is avilable, it will set the attributes passed.
+
+Object.defineProperty(carInfo,"name",{
+ value: "Thiru",
+ enumerable: true,
+ configurable: true,
+ writable: true  //this will tell the property is writable, if false this will be read only 
+});
+
+// by default the boolean value for the enumerable,configurable,writable are false
+console.log(carInfo.propertyIsEnumerable("name"); // true since we set it; if we didn't in the above it will be false since it is default.
+
+delete carInfo.name; // if configurable is false this will be deleted else not deleted
+
+carInfo.name="Audi"; // this value will be replaced since writable is set to true; if writeable is false this will not be updated;
+console.log(carInfo.name);
+```
