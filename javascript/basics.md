@@ -1072,3 +1072,14 @@ String.prototype.display= function(){
   "Test".display();
 
 ```
+
+#### Inheritance in javascript using prototype chaining.
+```js
+
+var car = { name: "toyota"};
+
+console.log(car.hasOwnPropety("name")); // the car object doesn't have hasOwnProperty this is inherited from parent object
+
+var prototypevar = Object.getPrototypeOf(car);
+console.log)prototypevar === Object.prototype);
+```
