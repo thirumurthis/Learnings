@@ -709,3 +709,157 @@ delete carInfo.name; // if configurable is false this will be deleted else not d
 carInfo.name="Audi"; // this value will be replaced since writable is set to true; if writeable is false this will not be updated;
 console.log(carInfo.name);
 ```
+
+##### accessor attribute `get` and `set` properties
+  - The accessor properties can be applied to the existing object without changing any other property. when only ue the get and set.
+  
+```js
+var carInfo = {
+ _name: "Thiru"
+ };
+ 
+// basically using the accessor
+Object.defineProperty(carInfo,"name",{
+  get : function() {  // this is poperty set on the name property itself
+    return this._name;
+    },
+  set: function (value){
+    this._name = value;
+  }
+});
+```
+  - Note: If the `enumerable` and `configrable` on the properies it can be made read only or write only.
+  
+```js 
+
+var carInfo = {
+ _name: "Thiru"
+ };
+ 
+Object.defineProperty(carInfo,"name",{
+  get : function() {  
+    return this._name;
+    }
+});
+
+console.log("name" in carInfo); //true
+console.log(carInfo.propertyIsEnumerable("name")); //false - note name property added using defineProperty()
+
+delete carInfo.name;   // since configurable is false by default it will not delete
+console.log("name" in carInfo); // true
+carInfo.name = "Honda"; 
+console.log(carInfo.name); // Thiru since set is not configured using defineProperty
+```
+
+##### How to create mulitple property using `defineProperties`, since we used defineProperty to create single property. 
+
+```js
+
+var carInfo {};
+
+//pass the object itself, with multiple properties it can be update or create new one with the properties as needed
+Object.defineProperties(carInfo,{
+  _name: {
+    value= "Honda";
+    enumerable=true;
+    configurable=true;
+    writeable=true;
+    },
+    name:{
+      get: function(){
+         return this._name;
+         },
+      set: function(value){
+         this._name = value;
+         },
+         enumerable: true,
+         configurable: true
+         }
+      });
+```
+ - With the above declearion, how to retrive the data of the property
+```js 
+  var carInfo = {
+   name : "honda"
+   };
+   
+ var details=   Object.getOwnePropertyDescriptor(carInfo,"name");
+ console.log(details.enumerable); //true
+ console.log(details.configurable); //true
+ console.log(details.writable); //true
+ console.log(details.value); // honda
+ // by default when creating object the enumerable, configurable, writable is true
+ // when object updated with defineProperty(), then the default is false.
+```
+
+##### Object Extensible - This attribute takes true or false, true means the object can be extended. That is any property can added if object is extensible.
+ - Non Extensible
+ - Sealing object
+ - Freezing object
+
+```js
+var car = {
+  name : "Honda"
+  };
+console.log(Object.isExtensible(car)); //true  by default
+
+// to prevent the extensibility use 
+Object.preventExtensions(car);
+console.log(Object.isExtensible(car)); //false  
+
+car.price = 30000;  // this fails silently since we are running in NON-STRICT mode
+consle.log("price" in car);
+```
+
+##### seal it means the object will be non extensible and non configurable
+```js
+var car = {
+  name : "Honda"
+  };
+console.log("isExtensible? : "+Object.isExtensible(car)); //true
+console.log("isSealed? : "+Object.isSealed(car)); //false
+
+// how to seal the object 
+
+Object.seal(car); // pass the object to seal
+
+console.log("after seal isExtensible? : "+Object.isExtensible(car)); //false
+console.log("after seal isSealed? : "+Object.isSealed(car)); //true 
+
+//adding property will not work
+car.price = 10000;
+console.log("price" in car); //false
+// deleting will also not work - fails silently since NON-STRICT mode
+delete car.name;
+console.log("name" in car); //true
+
+// get the properties of the object car
+var objDescriptor = Object.getOwnPropertyDescriptor(car,"name");
+console.log(objDesciptor.configurable); // false since it is sealed already
+```
+#### Freezing object means the object will be sealed and non writable. `isFrozen`
+  - not extend, configure and non writable
+```js 
+var car = {
+  name : "Honda"
+  };
+console.log("isExtensible? : "+ Object.isExtensible(car)); //true
+console.log("isSealed? : "+ Object.isSealed(car)); //false
+console.log("isFreeze? : "+ Object.isFrozen(car)); //false
+
+// To freeze an object use 
+
+Object.freeze(car); //pass the object 
+
+console.log("after freeze isExtensible? : "+ Object.isExtensible(car)); //false
+console.log("after freeze isSealed? : "+ Object.isSealed(car)); //true
+console.log("after freeze isFreeze? : "+ Object.isFrozen(car)); //true
+
+// cannot assign new value
+car.name="toyota" 
+console.log(car.name); // Honda - the value cannot be done.
+// cannot add new property
+
+var objDescriptor = Object.getOwnPropertyDescriptor(car,"name");
+console.log(objDesciptor.writable); // false since it is freezed already
+```
