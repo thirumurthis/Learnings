@@ -1083,3 +1083,93 @@ console.log(car.hasOwnPropety("name")); // the car object doesn't have hasOwnPro
 var prototypevar = Object.getPrototypeOf(car);
 console.log)prototypevar === Object.prototype);
 ```
+
+##### Object.create usage for inheritance
+```js
+
+ var car = {
+    name: "Toyota"
+    };
+    // first parameter passed is the prototype pointer or property    
+    // similar to define property syntax, the name property of the car is defined here
+    Object.create(Object.prototype,{
+       name: {
+          configurable: true,
+          enumerable: true,
+          value: "honda",
+          writable: true
+    });
+    
+    //Here we are creating an object explicitly and assign a prototype using create property.
+    // the Object.prototye passed will be used on any new object created 
+```
+
+#### How to inherit an property in object from user defined object
+```js 
+var car1 = {
+ name: "Toytoa",
+ display: function (){
+    console.log(this.name);
+    }
+  };
+  
+  var car2= Object.create(car1, {
+    name: {
+       configurable: true,
+       enumerable: true,
+       value: "NEW CAR",
+       writable: true
+     }
+  });
+  
+  car2.display();  // NEW CAR
+// though the car2 is not set with display explicitly the method is inherited from car1 obj
+  car1.display(); // Toyota
+```
+   - if we define the same properties in the child will shadow the same proeprties in the parent.
+   
+ - `prototype chaining` - in order to find the proeprty in an object, the javascript engine checks for the property in that object, then prototype, its parent object and its prototype.
+ 
+ ##### constructor inheritance
+ 
+ ```js
+ function Vehicle(){
+ 
+ }
+ //javascript engine does the following implicitly.
+ 
+ Vehicle.prototype = Object.create(Object.prototye,{
+   constructor: {
+     configurable: true,
+     enumerable: true,
+     value: Vehicle,
+     writable: true
+   }
+   });
+ ```
+
+```js
+function Teacher(name){
+  this.name = name;
+  }
+  
+  Teacher.prototype.subject = function(){
+    return "Science";
+  }
+  
+  //shadowing the toString method
+  Teacher.prototype.toString = function(){
+    return "[Teacher "+this.name+" ]";
+  };
+   
+   // any object that uses the Teacher will get the subject and toString.
+   
+   function English(name, experience){
+    this.name = name;
+    this.experience = experience;
+   }
+   
+   English.prototype = new Teacher();
+   English.prototype.constructor = English;
+```
+
