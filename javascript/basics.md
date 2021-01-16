@@ -1153,8 +1153,8 @@ function Teacher(name){
   this.name = name;
   }
   
-  Teacher.prototype.subject = function(){
-    return "Science";
+  Teacher.prototype.coursestatus = function(){
+    return "completed";
   }
   
   //shadowing the toString method
@@ -1171,5 +1171,44 @@ function Teacher(name){
    
    English.prototype = new Teacher();
    English.prototype.constructor = English;
+   
+   var teacher = new Teacher("Thiru");
+   var english = new English("Thiru", "10 year");
+   
+   console.log(teacher.coursestatus()); // completed
+   console.log(english.coursestatus()); // completed
+   console.log(teacher.toString()); // [ Teacher Thiru ]
+   console.log(english.toString()); // [ Teacher Thiru ]
+   // check 
+ //  english instanceof Teacher
+  // english instanceof Teacher
+   
 ```
+##### `supertype` in java we use super keyword. in javascript if we need to access the property of the parent class use `ParentObject.call()`. 
+   - use objectName.functonName();
 
+```js
+function Teacher(name){
+  this.name = name;
+  }
+  
+  Teacher.prototype.coursestatus = function(){
+    return "completed";
+  }
+  
+  //shadowing the toString method
+  Teacher.prototype.toString = function(){
+    return "[Teacher "+this.name+" ]";
+  };
+   
+   // any object that uses the Teacher will get the subject and toString.
+   
+   function English(name, experience){
+   Teacher.call(this,name); // this is done rarely equivalent to super using .call
+    this.name = name;
+    this.experience = experience;
+   }
+   
+   English.prototype = new Teacher();
+   English.prototype.constructor = English;
+```
