@@ -1212,3 +1212,40 @@ function Teacher(name){
    English.prototype = new Teacher();
    English.prototype.constructor = English;
 ```
+##### How to override the prototype proerperties of parent.
+```js
+
+function Doctor(name){
+  this.name = name;
+  }
+  
+  Doctor.prototype.speciality = function(){
+    return "general";
+  };
+  
+ function Surgeon(name,type){
+   Doctor.call(this,name); // calling the parent calls constructor
+   this.name = name;
+   this.type= type;
+   }
+ 
+ Surgeon.prototype= Object.create(Doctor.prototype,{
+   constructor:{
+     configurable: true,
+     enumerable: true,
+     value: Surgeon,
+     wirtable: true
+     }
+     });
+     //to override the prototype property from parent after declaring the prototype add same method to Surgeon
+     
+     Surgeon.prototype.speciality = function(){
+      // calling the parent doctor function
+      return  Doctor.prototype.speciality.call(this) + "Surgery";
+     };
+     
+  var surgeon1 = new Surgeon("David","Ortho");
+  surgeon1.display(); // general Surgery 
+ }
+```
+
