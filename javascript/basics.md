@@ -1329,3 +1329,59 @@ function Doctor(name){
    - until ES5, we had Global scope and function scope.
    - we can use let for block scope.
 
+```js
+  function letDemo(){
+  
+   var i=10;
+    for (var i=0; i<=5;i++){ //when using var the i is restarts from 0 
+       console.log(i);
+       }
+   console.log(i); //when the for loop used var i, then this will impact variable with function scope in this case since it is declared within a function.
+   
+   
+   var j=10;
+    for (let j=0; j<=5;j++){ //using let in this case make scope of j to block only
+       let x = 10; // let will be only block scope
+       var y = 10;  // var will be accessible to global scope since it will be hoisted
+       console.log(j);
+       }
+   console.log(j); //10
+   console.log(y);// 10
+   console.log(x); // reference error in console
+```
+
+##### If the variable not to be changed then use const, the variable will become immutable.
+   - `const` like `let` defines a variable at a block level.
+ 
+```js
+"use strict" // this enables the strict mode
+
+const product = {}; // once we defined an object we can reassign but we can add value
+
+product['name']="laptop"; // Make a note, declaring constant on object, the value can be updated. use the Object.freeze like 
+
+const product2 = Object.freeze({}); //cann't be modified 
+product2['name'] = "laptop" // this will display the erorr now since we enabled STRICT mode.
+```
+
+##### Template strings
+
+```js
+  let temp = `this
+  is
+  me`; // the output will retain the line breaks in this case
+  let name="Thiru";
+  let templateString = `this is ${name}, hello`; // this is Thiru, hello - will be printed
+  
+  console.log(temp);
+  console.log(templateString);
+```
+#### Arrow functions
+  - is a syntax Arrow function is used to create `anonymous function`. like lambda in java.
+  - Example ` var add = (num1, num2)=>num1+num2; console.log(add(1,2));` //3
+  - the arrow function can stored to an variable and if needed can be passed as parameters.
+  - Examples:
+   - ` var add = (n1,n2)=> { console.log(n1+","+n2); return n1+n2;};`
+   - ` let x = ()=>console.log("demo arrow"); x();`
+   
+    
