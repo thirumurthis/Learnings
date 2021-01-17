@@ -1384,4 +1384,355 @@ product2['name'] = "laptop" // this will display the erorr now since we enabled 
    - ` var add = (n1,n2)=> { console.log(n1+","+n2); return n1+n2;};`
    - ` let x = ()=>console.log("demo arrow"); x();`
    
-    
+### De-Structuring
+
+#### Object de-structuring, assigning values to variable
+   - new syntax to store the object values
+```js
+  let car={
+   model: "corola",
+   make: "toyota",
+   year:2010
+   };
+   
+   // Before ES6, below is one way to store values
+   const carmodel = car.model;
+   const carmake = car.make;
+   const caryear = car.year;
+   
+   // In ES6, due to de-structuring option we can use below 
+   
+   const {model: carmodel, make: carmake, year:caryear} = car;
+   console.log(carmodel);
+   console.log(carmake);
+   
+   const {model:model, make:make,year:year} = car; // we can use the same name of object proeprty
+   console.log(model);
+   console.log(make);
+```
+
+#### Array de-structuring
+```js
+
+const courses = ['Angular','Vue','React'];
+
+//use [ ] 
+const[course1,course2,course3] = courses;
+
+console.log(course1);
+console.log(course2);
+console.log(course3);
+```
+
+#### function de-structuring
+ - passing dynamic parameter to function
+```js
+
+function addOlderway(options){ // older way
+   console.log(options.n1+options.n2+options.n3);
+   };
+add({n1:10,n2:20,n3:30}); // 60 
+
+function add({n1,n2,n3}){ // de-structured approach
+   console.log(options.n1+options.n2+options.n3);
+   };
+add({n1:10,n2:20,n3:30}); // 60 
+
+function add({n1=1,n2=1,n3}){ // passing default values for parameter needed
+   console.log(options.n1+options.n2+options.n3);
+   };
+add({n1:10,n2:20,n3:30}); // 60 
+```
+
+#### for-of loop (this overcomes the limits of forEach and for-in loop)
+
+```js
+//using for of to iterate through arrays
+
+let courses = ['network','java','ML'];
+
+for( let value of courses){
+   console.log(value);
+}
+```
+
+### ES6 provides `map` datastructure. This was not avialable in ES5.
+
+```js
+let scores = new Map();
+// set and get
+scores.set("english",80);
+scores.set("science",90);
+
+console.log(scores.get("english"); //80
+console.log(scores.get("science"); //90
+
+// other functions
+console.log(scores.size);
+console.log(scores.has("science");// true science present in the array
+console.log(scores.has("social"); // falise social not present in the array
+
+scores.delete("science");
+console.log(scores.has("science"); // false
+
+scores.clear(); // clear will delete all the elements in the map;
+console.log(scores.size); //0 will be displayed
+
+// another options to declare map values is 
+
+let scoresAlternateWay = new Map([["english",80],["science",90]]); // note starts with dobule square bracket.
+
+console.log(scoresAlternageWay.get("english"));
+```
+
+##### iterate the Map to get the keys using for-of
+```js
+let scores = new Map([["english",80],["science",90]]); 
+
+//get the keys of the map
+for(let key of scores.keys()){
+  console.log(`key: ${key} & value: ${scores.get(key)}`);
+}
+
+//get the values of the map
+for (let value of scores.values()){
+  console.log(value);
+}
+
+//get the entries of the map
+for(let entry of scores.entries()){  //entries() method give key value as array data
+   console.log(entry[0],entry[1]); // 0 has the key and 1 has the value
+ }
+ 
+for( let [k,v] of score.entries()){ //using array de-structuring way to save key,value
+console.log(k,v);
+```
+
+##### `set` like map stored key value. The set can only store unique values.
+```js
+
+let courses = new Set();
+
+courses.add("Network");
+courses.add("Java");
+courses.add("ML");
+
+for( entry of courses){
+  console.log(entry);
+ }
+ 
+console.log(courses.size); //3
+console.log(courses.has("Network")); // true
+courses.clear();
+console.log(coureses.size); // 0
+
+//initialize the set with chaining - another syntax to initialize set
+let courses1 = new Set().add("Network").add("Java").add("ML");
+
+// another way to initialize set 
+let courses2 = new Set(["Network","Java","ML"]); // pass array of elements to set
+
+```
+
+### Classes are ES6 feature, which used to create classes like java. 
+- it is like a blue print of an object
+- prior to ES6, the prototype was used to create class which was complecated
+```js
+class Student{
+    constructor (name) {
+      this.name = name;
+     }
+    display(){
+      console.log(this.name);
+     }
+  }
+```
+
+#### Create a class
+```js
+class Passenger{
+
+ //use this to assign property and initialize properties
+ // constructor is key word
+   constructor(firstName,lastName,modeOfTransport) { 
+   this.firstName = firstName;
+   this.lastName = lastName;
+   this.modeOfTransport = modeOfTransport;
+   } 
+}
+
+//use let as much as possible that var when coding
+let passenger1 = new Passenger("Berry","Allen","fly");
+console.log(passenger1);
+
+let passenger2 = new Passenger("Java","Scala","road");
+console.log(passenger2);
+```
+
+### Inheritance, using `extends`
+  - accessing the existing functionality
+  - update the eixsting functionality or override
+  - parent object car, child: BMW, AUDI are type of car but has common properties.
+  
+```js 
+class BMWCar{
+   constructor (make,model,year){
+     this.make= make;
+     this.model= model;
+     this.year = year;
+     }
+     
+     start(){
+       console.log("start");
+     }
+     stop(){
+       console.log("stop");
+     }
+}
+ class ThreeSeries extends BMWCar{
+    constructor(make, mode, year, cruiseControl){
+      super(make,mode,year); // invoke parent class constructor
+      this.cruiseControl = cruiseControl;
+  }
+ }
+ 
+ class FiveSeries extends BMWCar{
+    constructor(make, mode, year, parkingAssit){
+      super(make,mode,year); // invoke parent class constructor
+      this.parkingAssit = parkingAssit;
+ }
+  
+  // this is way to override the parent class in child class
+  start(){
+     console.log("remote start");
+  }
+}
+
+ let series3 = new ThreeSeries("BMW","300",2020,true);
+ let series5 = new FiveSeries("BMW","500",2020,true);
+ 
+ console.log(series3.make, series4.model);
+ 
+ //accessing the function properties of parent
+ 
+ series3.start();
+ series3.stop();
+ series5.start(); // remote start  
+```
+
+### `Promise` - is a placeholder for something in future/
+  - this is used in asyncronous call
+  - before ES6, we used have callback function to perform the async
+  - example call sequence,
+     - 1. connect(); 
+     - 2. dbCall(); //takes time, where async can be used to wait for promise
+     - 3. restCall();
+  - has better error handling 
+
+- Create a new promise (below sample):
+```js
+// the function returns the promise as we declared the template in variable 
+
+function myAsyncFunction{
+
+//promise object constructor takes a inner function as parameter.
+// within this function the async code is written
+// here we are passing as arrow function
+let promise = new Promise( (resolve,reject)=> {   
+// resolve, reject - to tell that we have completed he function the process is done
+// the resolve, reject - is used by convention it can be response,error also
+// by usage, to arguments need to be passed
+
+  // below async code like db call, rest call, we are using setTime out for demo
+  setTimeOut(()=>{console.log("setTimeout")}, 1000);  // takes a function as first arguments
+});
+
+return promise;
+};
+```
+
+#### How to invoke the function that returns promise, handling with `then` method
+```js 
+function myAsyncFunction(){
+
+  let promise = new Promise( (resolve,reject)=> {   
+     let error = true;
+     setTimeOut(()=>{console.log("setTimeout");
+       if(error){ // if any error happens
+         reject(); // some function 
+       }else{
+         resolve();
+       }
+        }, 1000);
+   });
+  return promise;
+};
+
+myAsyncFunction().then( ()=> console.log("Task complete")); //waiting for 1 sec display msg
+
+myAsyncFunction().then( (resp,error)=> console.log("Task complete")); //using resolve, reject when calling
+
+myAsyncFunction().then(
+  ()=>console.log("successfully Completed"), 
+  ()=>console.log("Error occurred")
+); // by defining the second function automatically the error is handled. 
+
+// output : Error occurred  - since the promise error flag is set to true;
+```
+
+- Note: we can pass parameters to the promise reject() and resolve () function. which will be uses as parameters when handling with then.
+
+```js 
+function myAsyncFunction(){
+
+  let promise = new Promise( (resolve,reject)=> {   
+     let error = true;
+     setTimeOut(()=>{console.log("setTimeout");
+       if(error){ 
+         reject("Error"); 
+       }else{
+         resolve("Done");
+       }
+        }, 1000);
+   });
+  return promise;
+};
+
+myAsyncFunction().then(
+  (success)=>console.log("successfully Completed -" + success), 
+  (error)=>console.log("Error occurred -"+error)
+); // by defining the second function automatically the error is handled. 
+
+// output : Error occurred -Error - since the promise error flag is set to true;
+```
+
+#### Cleaner way to handle catching error using `catch`
+```js 
+function myAsyncFunction(){
+
+  let promise = new Promise( (resolve,reject)=> {   
+     let error = true;
+     setTimeOut(()=>{console.log("setTimeout");
+       if(error){ 
+         reject("Error");
+       }else{
+         resolve("Done");
+       }
+        }, 1000);
+   });
+  return promise;
+};
+
+myAsyncFunction()
+  .then((success)=>console.log(success))
+  .catch((error) => console.log(error)); 
+
+// output : Error occurred  - since the promise error flag is set to true;
+```
+
+### Modules
+  - priort to ES6, there are no direct way to create modules, developers where using SystemJS to perform it.
+  - ES6 supports modules. (Not all browser supported yet)
+  - There might be CORS error.
+  - we can use export function to make the access it when declaring model
+  - import to use the exported function
