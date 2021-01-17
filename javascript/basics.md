@@ -1249,3 +1249,65 @@ function Doctor(name){
  }
 ```
 
+### Patterns in java `Module pattern`, using `IIFE` (Immediately invoked function expression)
+  - Module pattern gives a way to package the properties and functions.
+
+  - IIFE looks like below:
+  ```js
+    var myObj = (function() {
+        // data declaration - this will become private data variables
+        return {
+            // object is returned. public methods and properties
+            // this function is returned, this is called privilged functions
+            // since these function can access the private variable above
+            // the privat variable is not available at object level only in this function scope.
+         };
+      }());// () represents invoked immediately - similar to encapsulation in java
+  ```
+  
+  ##### How to implement the module pattern using IIFE
+  ```js
+  // below is the anonymous function which is created and invoked immediately
+  var account = (function(){
+       var balance = 10;  // balance is private variable not accessible to public.
+       return {
+           username : "Thiru",
+           getBalance : function (){
+              return balance;  //the private variable is accessible here only
+              },
+              addInterest: function(interest){
+                balance+=interest;
+              }
+            }
+         }());
+    
+    console.log(account.username); //Thiru
+    console.log(account.getBlance()); //10
+    
+    account.balance = 100; 
+    console.log(account.getBalance()); //10 is printed since the balance can only be accessed via addInterest
+    account.addInterest(10);
+    console.log(account.getBalance()); //20 - since it addes the 10 to the balance.
+  ```
+   - NOTE: only way to access the balance is using the function. this is the key point in module pattern.
+ 
+ ##### `Revealing module pattern` is a variation of module pattern where we can put the data and the function together
+ 
+ ```js
+  var account = (function (){
+     var balance =10;
+     function getBalance(){
+       return balance;
+       }
+    function addIntrest(intrest){
+       balance+= intrest;
+      }
+    
+    retunr {
+       username: "Thiru",
+       retrieveBalance: getBalance,  //we can also use getBalance which is used to access
+       addIntrest: addIntrest
+       };
+     }());
+ ```
+ 
