@@ -1311,3 +1311,21 @@ function Doctor(name){
      }());
  ```
  
+ ### `ES6 features`
+   - block scope using `let`
+   - `const` for constant variable
+   - template string using \`\`
+     - variable substitution done using `${name}`
+   - De-structuring 
+     - forEach
+     - for-in
+     - for-of
+   - `Map` and `Set` datastructure
+   - `Classes` is supported.
+   - `Modules` support - export out function in one module and others.
+   - Note: not all the browser supports ES6
+  
+#### Details of scope:
+   - until ES5, we had Global scope and function scope.
+   - we can use let for block scope.
+
