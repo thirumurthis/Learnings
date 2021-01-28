@@ -76,12 +76,12 @@
 ```java
 
 public class Demo{
-  protected status class MathOp{
+  protected static class MathOp{
      public static Integer triple(Integer x){
         return x*3;
         }
   }
-pulic static void main(String ...arges){
+public static void main(String ...arges){
    // Function <T,R> -> T is the generic usage, where T - is argument data type, R - Retun value data type
    Function<Integer,Integer> triple = MapthOp::triple;
    Integer output = triple.apply(5)
