@@ -80,8 +80,9 @@ $ docker rmi <image-id or (registry-name/image-name:version)>
 $ docker pull <image-registry/image-name:version>
 
 ## Run the image locally to validate (name is set with --name)
-$ docker run --rm --name firstapp -p 8080:80 -d <image-registry:image-name:version>
+$ docker run --rm --name firstapp -p 8080:80 -d <image-registry-name:image-name:version>
 // in this case <image-registry:image-name:version> = ${ACR_NAME}:firstall:v1
+// --rm will remove the container volumes upon removing the container (clean up operation)
 
 ## verify the output
 $ curl localhost:8080
@@ -143,21 +144,22 @@ $ az aks create \
 
 Note:
   - the az extension we added include `--enable-vmss`, `--enable-cluster-autoscaler` and `--min-count` and `--max-count` associates with autoscaler.
-  - right now don't use it in prod since it is preview.
+  - right now don't use it in prod since it is preview (not stable at the time of writting).
   
-##### We need to verify whether we can talk to the AKS cluster.
+##### We need to verify whether we can connect to the AKS cluster.
   - Prerequisites: `kubectl` command needs to be available 
 ```
 # to install the kubectl command
 $ az aks install-cli
 ```
 
- - Next we need the credentials to talk to the AKS cluster
+ - Next we need the credentials to connect to the AKS cluster
     - There are two types of credentials
        - admin level (creating storage, network resources)
        - user level (normal operation) 
 
 ##### below command retrives the credentials and stores it in the location where the `kubectl` command expects to see it. (configuring the credentials)
+  - The `~/.kube/config` file is updated or created with the cluster configuration so the `kubectl` command can connect to cluster.
 ```
 $ az aks get-credentials --resource-group demo-rg --name demoAKSCluster --admin
 ## we are storing the credentials and assigning a admin
@@ -167,6 +169,8 @@ $ az aks get-credentials --resource-group demo-rg --name demoAKSCluster --admin
 #### use `kubectl version` command to verify the version of the client and the server info.
 ```
 $ kubectl version
+$ kubectl version --short
+$ kubectl cluster-info
 ## sometimes the client version might be greater than the Server version 
 ## which is acceptable
 ```
