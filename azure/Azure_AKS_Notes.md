@@ -201,13 +201,15 @@ $ az vm list-size -l westus -o table
 - To get the ACR name use the below command
 ```
 az acr list --resource-group demo-rg --query "[].{acrLoginServer.loginServer}" -o tsv
-## lists the image info
+## lists the image repository name info (created earlier like aksazuredemo.azurecr.io)
 ```
 
 - To deploy the yml file (firstapp.yml)
 - Navigate to the yml file location
+   - the yaml file has a deployment and a service definition. (service to expose the port to access externally)
+   - make sure the images in the yaml file is updated with the correct ACR image repostiroy name, obtained with `az acr --list` command
 
-- Command to launch the application
+- Command to deploy application in kubernetes.
 ```
 $ kubectl apply -f firstapp.yml
  ## the yml file has a deployment and service resource object.
