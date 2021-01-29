@@ -76,7 +76,7 @@ $ az acr repository list --name aksdemo1 -o tsv
 $ docker images
 $ docker rmi <image-id or (registry-name/image-name:version)>
 
-## once removed, they pull the image
+## once removed, then pull the image
 $ docker pull <image-registry/image-name:version>
 
 ## Run the image locally to validate (name is set with --name)
@@ -91,10 +91,11 @@ $ curl localhost:8080
     - This account is required, it allows AKS cluster to interact with other Azure resources.
     - In this case the AKS cluster needs to communicate to the ACR to pull the images, etc.
    
- - Create service principal using az command  
+ - Create service principal using az command {on Azure Active Directory (ad)} 
 ```
 $ az ad sp create-rbac --skip-assignment
-## ouputs a list of values with service cridentials, just copy this values it is required in future.
+## outputs a list of values with service cridentials, just copy this values it is required in future.
+## make note of application-id, client-password, etc object info
 ```
 
 - Obtain the ACR resource ID, we need this to setup the role assignment in the Service principal.
@@ -107,7 +108,7 @@ $ az acr show --resource-group demo-rg --name aksdemo1 --query "id" -o tsv
 ```
 $ az role assignment create --assignee <application-id> --scope <acr-resource-id> --role Reader
 
-### output the json on success full creation 
+### outputs data in json format on success full creation 
 // we are creating role assignment so that the ACR can be accessed.
 ```
 Note: 
