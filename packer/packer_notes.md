@@ -219,6 +219,7 @@ custom-niginx.json
         "sudo apt install nginx -y"
       ]
     }
+  ]
 }
 ```
 Note: To get the azure client_secret, other details
