@@ -69,13 +69,13 @@ Example: to build custom image using Amazon EC2 instance ami. (creating a image 
    "builders" : [
     {
       "type" : "amazon-ebs", // type info get from doc
-       "access_key" : "<access-id, from AWS>" // to access the image from AWS
-       "secret_key" : "<secret key fetched from AWS settings>" //not in the AWS the access info is displayed only once.
+       "access_key" : "<access-id, from AWS>", // to access the image from AWS
+       "secret_key" : "<secret key fetched from AWS settings>", //not in the AWS the access info is displayed only once.
        "region" : "<region where the AWS which is closest to you >",
        "ami_name": "name_of_new_ami", // name of the new ami that will be created and to be identified refer docs under ami 
        "source_ami":"<hex value of the image in AWS>",  //under run configuration on the docs. this is base image over which the configuration will be applied.
        "instane_type":"t2.micro", //the packer creates an ami, just deploying the EC2 instance, then adds configuration and finally creates the ami. In order to create the ami, packer will create and delete an EC2 instance.
-       "ssh_username" :  "ec2_user", // this is the default user provided by the AWS (in some ubuntu box the user will be ubuntu check AWS docs)
+       "ssh_username" :  "ec2_user" // this is the default user provided by the AWS (in some ubuntu box the user will be ubuntu check AWS docs)
       }
    ]
  }
@@ -103,7 +103,7 @@ custom.json
    "builders" : [
     {
       "type" : "amazon-ebs",
-       "access_key" : "<access-id from AWS>" 
+       "access_key" : "<access-id from AWS>",
        "secret_key" : "<secret key from AWS>",
        "region" : "<region closest to you >",
        "ami_name": "name_of_new_ami", 
@@ -141,7 +141,7 @@ custom-niginx.json
    "builders" : [
     {
       "type" : "amazon-ebs",
-       "access_key" : "<access-id from AWS>" 
+       "access_key" : "<access-id from AWS>", 
        "secret_key" : "<secret key from AWS>",
        "region" : "<region closest to you >",
        "ami_name": "name_of_new_ami", 
@@ -165,7 +165,7 @@ custom-niginx.json
       "destination" : "/tmp/" // since html is root level access folder to over come move the file to tmp and then move it
     },
     {
-      "type", "shell",
+      "type": "shell",
       "inline" : ["sudo cp /tmp/index.html /var/www/html/"]
     }
    ]
@@ -187,7 +187,7 @@ custom-niginx.json
    "builders" : [
     {
       "type" : "amazon-ebs",
-       "access_key" : "<access-id from AWS>" 
+       "access_key" : "<access-id from AWS>", 
        "secret_key" : "<secret key from AWS>",
        "region" : "<region closest to you >",
        "ami_name": "name_of_new_ami", 
@@ -259,7 +259,7 @@ custom.json
    "builders" : [
     {
       "type" : "amazon-ebs",
-       "access_key" : "<access-id from AWS>" 
+       "access_key" : "<access-id from AWS>",
        "secret_key" : "<secret key from AWS>",
        "region" : "<region closest to you >",
        "ami_name": "name_of_new_ami", 
@@ -299,7 +299,7 @@ custom.json
    "builders" : [
     {
       "type" : "amazon-ebs",
-       "access_key" : "<access-id from AWS>" 
+       "access_key" : "<access-id from AWS>",
        "secret_key" : "<secret key from AWS>",
        "region" : "<region closest to you >",
        "ami_name": "{{ user `customname`}}", // the user variable will be used 
@@ -374,8 +374,7 @@ Now in order to use the env in the example.json.
     ...
     ... 
     access_key : "{{user `access_key`}}
-    ...
-    
+    ...    
   }
   ]
   ...
