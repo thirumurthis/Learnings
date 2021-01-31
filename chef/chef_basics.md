@@ -17,3 +17,14 @@
  - `Test Kitchen`, used to test cookbooks across any combination of platforms and test suites before deploying the cookbooks to actual infrastructure nodes.
  - `Cookstyle`, which is a code `linting` tool that helps you write better Chef Infra cookbooks by detecting and automatically correcting style, syntax, and logic mistakes in cookbook code.
  
+ - Below command will list the installed package details.
+```
+$ chef --version
+Chef Workstation version: xxx
+Chef Infra Client version: xxxx
+Chef InSpec version: xxxx
+Chef CLI version: xxxx
+Chef Habitat version: xxxx
+Test Kitchen version: xxxx
+Cookstyle version: xxxx
+```
