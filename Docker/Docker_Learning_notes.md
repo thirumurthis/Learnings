@@ -153,7 +153,7 @@
 
  ```
  FROM nginx:latest
- ADD . /usr/share/nginx/html  // copy all the content from the current folder to the container path
+ ADD . /usr/share/nginx/html  // copy all the content from the current folder to the container path: in our case the index.html
  ```
 ### to build the image
 ```
@@ -162,5 +162,55 @@
 > docker build --tag demoweb1:latest .
 ```
 
+##### With `node.js`  and `Expressjs` we can easily build website here.
+ - Install the node.js and then follow the Expressjs to install using npm install
 
+ - Create a new folder 
+ - Navigate to it
+ - issue `npm init` (input values when prompted)
+ - issue `npm install express --save`
+ - create a index.js file, as below.
+ ```
+ const express= require('express');
+ const app = express();
+ const port= 8000
  
+// app.get('/',(req,res) => res.send("Node application"));
+ app.get('/',(req,res) => res.json([{"name":"tim"}]);
+ app.listen(port, () => console.log(`Server up in port ${port}`);
+ ```
+  - in command prompt, issue `node index.js` to start the server code.
+  
+#### how to create image with the above express code and run it.
+ - Create a `Dockerfile` within the folder where index.js exists, content as below
+```
+FROM node:latest
+
+WORKDIR /app    ## To create a working directory in the CONTAINER
+                ## if the app dir exists in container use it else create a new one
+                ##  Also any command folloing this command will be executed in this dir
+                
+ADD . .         ## The content in current host dir will be copied to the container /app
+                ## since workdir is app
+RUN npm install
+CMD node index.js
+```
+ - **To build the image, issue **
+ ```
+ > docker build --tag user-service-api:latest .
+ or
+ > docker build -t user-service-api:latest .
+ ```
+- **Run a container with the image created **
+```
+> docker run --name user-api -d -p 8000:8000 user-service-api:image
+## user-serivice-api is the image check using docker image ls
+```
+
+##### How to ingnore the folder that is not required? use `.dockerignore`
+```
+### in .dockerignore file content
+node_modules
+Dockerfile
+```
+
