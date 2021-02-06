@@ -286,3 +286,107 @@ Different docker registry prividers
 
 > docker push tim/mywebsite:latest
 ```
+
+##### Search in the docker hub for username and repo to pull it and use it
+
+```
+> docker pull tim/mywebsite:latest
+
+### to validate remove the image and pull, then run it
+
+### to run the image
+> docker run --name demoweb -p 8000:80 -d tim/mywebsite
+```
+
+#### To debug the container or inspect it
+```
+> docker inspect <container-id/name>
+
+### provides more info in json format abt container
+```
+
+##### How to view the logs in the container
+```
+> docker logs <container-id/name>
+
+### to follow the logs, as running stream
+
+> docker logs -f <container-id/name>
+```
+
+#### Check the content within the container using `docker exec`
+```
+> docker exec -it <container-name/id> /bin/bash
+  - i => interactive
+  - t => tty or terminal
+  - /bin/bash => the command exected
+
+## note if the /bin/bash is not working, use docker inspect to see what is the command in some case it would be /bin/sh.
+```
+
+------------------------
+
+### Docker postgres image and connecting to it using spring-boot application
+ - find the postgres image from dockerhub (use alpine for lesser size)
+ - also check the docker hub documentation on how to start the instance.
+ 
+```
+> docker pull postgres:13.1-alpine
+```
+#### to spin up the postgres instance
+```
+> docker run --name staginddb -e POSTGRES_PASSWORD=admin -d -p 5432:5432 postgres:13.1-alpine
+```
+#### Exec to the postgres container, to check info
+```
+> docker exec -it stagingdb bash
+
+## within the container terminal use
+$ psql --help
+
+$ psql -U postgres    ## postgres is the username which has root access, check docs
+
+## To list the database users, type below command in the container
+$  \du
+Role name |.....
+----------+-----
+postgres  | Superuser, create role.....
+```
+
+#### Create a new database in postgres, from the container 
+```
+##3 after exec to container and issue psql -U postgres
+
+$ create database dev;
+CREATE DATABASE
+
+$ \l    ## This will list the database
+
+### To connect to database from psql
+
+$ \c dev     ## \c database-name
+```
+ 
+ #### In order to connect to the psql of the docker container, install the psql/postgres in the laptop/host machine.
+ 
+ ```
+ > plsql -h localhost -p 5432 -U postgres
+  Password for user postgres: admin/password
+ # \c dev
+ ```
+
+#### Now we can create a spring boot application and access the table.
+  - in spring configure the datasource, in below case application.yaml
+```yaml
+app:
+  dataSource:
+    postgres:
+       port: 5432
+       username: postgres
+       password: admin/password
+       host: localhost
+       databaseName: dev
+       jdbc-url: jdbc:postgresql://${app.dataSource.postgres.host}:${app.dataSource.postgres.port}/${app.dataSource.postgres.databaseName}
+```
+  - use database sql, within the classpath to create sql command to create table.
+  
