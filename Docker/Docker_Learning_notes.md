@@ -44,5 +44,86 @@
 ```
  ## host 8080 to container 80
  
-> docker run nginx -d -p 8080:80
+> docker run -d -p 8080:80 nginx
+## NOTE: the image name should be at the end.
 ```
+
+#### To map more than one port, say 3000 and 8000 to 80 
+
+```
+> docker run -d -p 3000:80 -p 8080:80 nginx
+
+5ee8c3706af   nginx     "/docker-entrypoint.…"   45 seconds ago   Up 42 seconds   0.0.0.0:3000->80/tcp, 0.0.0.0:8080->80/tcp   pedantic_cerf
+```
+
+#### how to remove the container 
+```
+> docker rm <container-name-or-id>
+
+## docker ps to list all the hash ids quitely
+
+> docker ps -aq 
+
+### To remove all the containers use
+
+> docker rm $(docker ps -aq)
+```
+
+#### To start the SAME container (that is not running)
+
+```
+> docker start <name_of_the_container_that_is_not_running>
+```
+
+#### How to provide a `name` to a container. using --name
+```
+> docker run --name website -d -p8080:80 nginx
+
+### as best practice try to name the container
+```
+
+#### How to format the output of the docker command
+```
+> docker ps -a --format="ID\t{{.ID}}\nName{{.Names}}"
+
+### One way to use the format always is to export to an environment variable and use it
+### in Linux
+> export FORMAT="Info:\t{{.ID}}\t{{.Names}}"
+> docker ps -a --format=$FORMAT
+```
+
+### docker Volumes 
+  - allows share data, Files & Folder 
+     - between host and container
+     - between containers
+
+```
+                         ________________________
+                        |     1. Create vloume   |
+                        |                        |
+                     |  80 |                     |
+                        |                        |
+                        |       container        |
+     Host               |________________________|
+                        
+```
+
+- Create a volume in side the container.
+  - so any file created in the host will also be available in container.
+  - also when a file is creatd in the container volume it will also be available in host
+
+- check the docker hub for nginx documentation to setup the static content in display
+
+- Step 1: Inside the host machine (laptop) create a folder, and place index.html with html content.
+- Step 2: Navigate to the folder where the index.html is preser
+- Step 3: issue command
+
+```
+> docker run --name demoweb -v <path_of_the_folder>:<path_within_the_container>:ro -d -p 8080:80 nginx 
+
+> docker run --name demoweb -v C:/thiru/docker/volume:/usr/share/nginx/html:ro -d -p 8080:80 nginx
+
+### localhost:8080, will yeild the index.html content from host machine.
+```
+ - Note: now if we edit the index.html content in the laptop, it will be reflected on the localhost:8080 path.
+
