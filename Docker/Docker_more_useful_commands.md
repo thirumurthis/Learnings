@@ -121,11 +121,11 @@ $ docker container logs <container-id/name>
 
 ### To login to the docker container using `exec`
 ```
-$ docker exec -id <container-id>
+$ docker exec -it <container-id>
 
 or 
 
-$d docker exec -id <cotnainer-id> /bin/bash
+$d docker exec -it <cotnainer-id> /bin/bash
 ```
 
 -----------
