@@ -389,4 +389,14 @@ app:
        jdbc-url: jdbc:postgresql://${app.dataSource.postgres.host}:${app.dataSource.postgres.port}/${app.dataSource.postgres.databaseName}
 ```
   - use database sql, within the classpath to create sql command to create table.
-  
+
+#### other postgres commands to view table, etc
+```
+$ psql -U postgres
+$ \c dev
+$ \d+;   ## This lists the table name.
+$ \d+ <table-name>;  ## This list the specific table content
+$ insert into <table-name>(field1, field2, field3) values (uuid_generate(), 'test','test');
+ ## make sure to install the uuid extension, using below command
+$ create extension if not exits "uuid-ossp";
+```
