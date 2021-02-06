@@ -214,3 +214,75 @@ node_modules
 Dockerfile
 ```
 
+##### The docker build with the Dockerfile can be improvised.
+  - with the above Dockerfile, the performance is slow, since everytime there is change in the code, the npm install is executed.
+  - we can take the advantage of caching
+  
+  ```
+  FROM node:latest
+  WORKDIR /app
+  ADD package*.json ./  ### When there is a source code change we don't change the
+                        ### package.json, only the index.js. the package.json gets 
+                        ### updated only when new js library is added
+  RUN npm install       ### now npm install will use package.json, as no change it will
+                        ### fetch from cache
+  ADD . .               ### copy the content from local to container workdir
+  CMD node index.js
+  ```
+   - Above Dockerfile will run fast on consecutive executions.
+   
+ #### How to improve the docker image size
+  - use linux apline distribution, refer the dockerhub documentation.
+ 
+#### Tags and versioning:
+   - allow to control image version.
+   - any new changes can be pushed to new version of image.
+   - in the Dockerfile, mostly don't use latest since the repo will update without the user knowledge. use the tag version within the Dockerfile.
+   
+##### Issuing the `docker build -t <image-name>:latest` again and again, will keep only one latest version of image. check using `docker image ls`
+  - using, `docker build -t demoweb:v1` -> this will create a two images tag `v1` and `latest`. latest will point to v1 content here.
+  - using, `docker build -t demoweb:v2` -> after execution, `docker image ls` will list three images tagged, v1, v2 and latest. Where latest points v2 content in this case.
+  
+  - To run specific version `docker run --name web-v1 -d -p 8080:80 demoweb:v1`
+  - To run specific version `docker run --name web-v2 -d -p 8080:80 demoweb:v2`
+  - To run specific version `docker run --name web -d -p 8080:80 demoweb` => this will be latest.
+  
+##### Docker registry (docker hub)
+   - public 
+   - private
+Different docker registry prividers
+    - docker hub
+    - quay.io
+    - Amazon ECR
+    
+- To ship the images built in local to docker registry, use below command.
+  - In dockerhub, create a repository and we can push images to that repo within dockerhub
+  
+```
+ > docker push <account-in-dockerhub>/<repository-name>:tagname
+  ## if we create a repo mywebsite
+  > docker push tim/mywebsite:tagname
+```
+#### If we need to push our local image
+ - first tag the image in local to that of the repository
+
+```
+## first login in the terminal
+> docker login
+
+## add a tag for our image tag with repo tag
+> docker tag demoweb:v1 tim/mywebsite:v1  => this will add a new tag
+
+> docker tag demoweb:v2 tim/mywebsite:v2 
+
+> docker tag demoweb:latest tim/mywebsite:latest 
+
+## use docker image ls 
+## now push this image to docker
+
+> docker push tim/mywebsite:v1
+
+> docker push tim/mywebsite:v2
+
+> docker push tim/mywebsite:latest
+```
