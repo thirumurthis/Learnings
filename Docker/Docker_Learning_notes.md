@@ -151,6 +151,16 @@
 ### Dockerfile
   - used to create our image with the steps
 
+ ```
+ FROM nginx:latest
+ ADD . /usr/share/nginx/html  // copy all the content from the current folder to the container path
+ ```
+### to build the image
+```
+### navigate to where the dockerfile is present
 
- 
+> docker build --tag demoweb1:latest .
+```
+
+
  
