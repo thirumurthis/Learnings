@@ -127,3 +127,30 @@
 ```
  - Note: now if we edit the index.html content in the laptop, it will be reflected on the localhost:8080 path.
 
+#### To execute command within the running nginx container use below command
+```
+> docker exec -it demoweb bash
+```
+- with reference to the volume the index file in the container is a readonly since the volume is readonly.
+
+##### to host a sample website in the nginx.
+  - search for bootstrap template, and pick one from the git. 
+  - once cloned to the local, move the files to the volume path in the host.
+
+### To share volumes between containers:
+ - to share the volumes between container, we can use `volumefrom` command.
+ - check `docker run --help`
+
+ - already we have a vloume mounted, we will create another container
+ ```
+  > docker run --name demoweb2 --volumes-from demoweb -d -p 8081:80 nginx
+ ```
+  - Now hitting the `http:localhost:8081` will fetch the index.html from the host and display part of second container running
+  
+
+### Dockerfile
+  - used to create our image with the steps
+
+
+ 
+ 
