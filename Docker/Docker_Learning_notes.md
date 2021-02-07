@@ -400,3 +400,23 @@ $ insert into <table-name>(field1, field2, field3) values (uuid_generate(), 'tes
  ## make sure to install the uuid extension, using below command
 $ create extension if not exits "uuid-ossp";
 ```
+
+#### Few more node.js code
+```js
+const express= require('express');
+const path = require('path');
+const fs = require('fs');
+const app = express();
+
+app.get('/',  (req, res) => {
+  res.sendFile(path.join(__dirname,"index.html");
+});
+
+app.get('home', (req, res) => {
+  var img = fs.readFileSync('image-1.jpg');
+  res.writeHead(200, {'Content-Type' : 'image/jpg');
+  res.end(img,'binary');
+ });
+ 
+ app.listen(3000, () => { console.log("app started listening"); });
+```
