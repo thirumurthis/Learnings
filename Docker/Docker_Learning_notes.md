@@ -439,17 +439,17 @@ app.get('home', (req, res) => {
 ```
 > docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=admin --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express
 
-#### Note ME_CONFIG_MOGOBB_SERVER is the mongodb container running mongoserver
+#### Note ME_CONFIG_MONGOdB_SERVER is the mongodb container running mongoserver
 ```
-
- 
+  - NOTE: When using docker-compose.yaml file no need to create the special network, a common network will be created by docker itself.
+  
+ - code reference to connect to database
 ```
-
 // use when starting application locally
-let mongoUrlLocal = "mongodb://admin:password@localhost:27017";
+let mongoUrlLocal = "mongodb://admin:admin@localhost:27017";
 
 // use when starting application as docker container
-let mongoUrlDocker = "mongodb://admin:password@mongodb";
+let mongoUrlDocker = "mongodb://admin:admin@mongodb";
 
 // pass these options to mongo client connect request to avoid DeprecationWarning for current Server Discovery and Monitoring engine
 let mongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true };
