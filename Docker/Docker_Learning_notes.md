@@ -401,7 +401,7 @@ $ insert into <table-name>(field1, field2, field3) values (uuid_generate(), 'tes
 $ create extension if not exits "uuid-ossp";
 ```
 
-#### Few more node.js code
+#### Few more node.js sample code with index.html with simple user form.
 ```js
 const express= require('express');
 const path = require('path');
@@ -419,4 +419,42 @@ app.get('home', (req, res) => {
  });
  
  app.listen(3000, () => { console.log("app started listening"); });
+```
+##### To set the mongodb backend 
+  - pull image for Mongodb 
+  - pull image for mongo-express, ui for mongo db.
+
+##### With the nodejs, express application to connect to mongo db, the instance needs to be started within the same network. create a docker network using below command
+
+```
+> docker network create mongo-network
+### attach this when running the mongo image 
+```
+```
+> docker run -d -p 27017:27017 --name mongodb --net mongo-network -e MONGO_INITDB_ROOT_USERNAME=admin MONGO_INITDB_ROOT_PASSWORD=admin mongo
+```
+##### using docker mongo express
+##### the mongo express will work only when working with the same network, since the environment we use. refer the docker hub documentation
+
+```
+> docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=admin --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express
+
+#### Note ME_CONFIG_MOGOBB_SERVER is the mongodb container running mongoserver
+```
+
+ 
+```
+
+// use when starting application locally
+let mongoUrlLocal = "mongodb://admin:password@localhost:27017";
+
+// use when starting application as docker container
+let mongoUrlDocker = "mongodb://admin:password@mongodb";
+
+// pass these options to mongo client connect request to avoid DeprecationWarning for current Server Discovery and Monitoring engine
+let mongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+
+// "user-account" in demo with docker. "my-db" in demo with docker-compose
+let databaseName = "my-db";
+
 ```
