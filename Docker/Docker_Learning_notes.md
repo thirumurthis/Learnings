@@ -458,3 +458,33 @@ let mongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 let databaseName = "my-db";
 
 ```
+
+### Additional docker commands:
+
+ - To remove all dangling containers at one go using `prune` 
+ 
+```
+> docker container prune
+## docker will ask for confirmation, use --force or -f will delete without prompt
+
+> docker container rm <container-id_or_name>
+```
+
+- list contaiers
+```
+> docker container ls --all
+```
+
+- To remove contianer as soon as they are stopped using `-rm`
+```
+> docker container run --rm -d -p 8080 --name docker-name  dockerhub/image:tag
+
+> docker container run --rm -it ubuntu
+```
+
+- To execute command within container
+```
+> docker container run <image-name> <command>
+
+> docker run alpine uname -a
+```
