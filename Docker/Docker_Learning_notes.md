@@ -488,3 +488,35 @@ let databaseName = "my-db";
 
 > docker run alpine uname -a
 ```
+
+- If we have two application one frontend and database backend, running in a container.
+   - if the frontend applicaion needs to connect to the database, using 127.0.0.1 or localhost will not connect, since this will be within the frontend container.
+   - One possible way to address is using the database container ip addres, buut in it is NOT recommended to use ip address, as container destroys and when new one spawns will allocate a new ip.
+   
+ - The better approach is to create a network bridge.
+    ```
+    > docker network ls
+     // lists all the ntework
+    ```
+ - types of network => `bridge`, `host`, `none`, `overlay`, `macvlan`
+   - the default network used by containers is the bridge network.
+   
+ - To create a network,
+ ```
+ > docker network create <name-for-network>
+ ```
+ 
+ - Two ways to attach container to netwrok
+   - 1. connect the conatiner and network using
+   ```
+   > docker network connect <network-name> <conainer-id>
+   
+   ### use below to verify
+   > docker network inspect --format='{{range .Containers}} {{.Name}} {{end}}' <network-name>
+   ```
+   -2. is to use `--network <network-name>` when running the container
+   ```
+   ## we are creating an container and execting shell command in interactive mode will remove container once stopped
+   
+   > docker container run --network <network-name> --rm --name alpine-box01 -it alpine sh
+   ```
