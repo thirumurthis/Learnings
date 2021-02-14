@@ -3,8 +3,8 @@
   - It provides a good way to get started with Chef Infra, without requiring any infrastructure beyond SSH.
   
 
-#### in an docker instance setup, provided by the chef community for learning, below commands can be used.
-
+#### if an docker instance is setup (as provided by the chef community for learning), we can use below commands.
+ - This will directly execute the resources in the container
 ```
 $ chef-run web1 file hello.txt
 ### web1 - is the target node
