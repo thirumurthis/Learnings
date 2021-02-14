@@ -59,8 +59,8 @@ suites:
 **provisioner** - The tool responsible for executing the suites against the test instance(s). Chef's Test Kitchen provisioner, [chef_zero](https://docs.chef.io/chef_solo/).
    
 </details>
-#### To use `docker` driver for test kitchen
 
+#### To use `docker` driver for test kitchen
 ```
 > chef gem list
 ### above command will displays the list of gem installed 
