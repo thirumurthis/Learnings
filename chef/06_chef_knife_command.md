@@ -39,3 +39,13 @@
 > knife client list
 ### outputs the list of chef infra server organization as response
 ```
+
+#### how to list the profile using knife command?
+```
+> knife config list-profiles
+```
+
+#### Override the default profile on the fly use below command
+```
+> knife client list --profile <knife-profile-name-from-list>
+```
