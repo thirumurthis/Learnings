@@ -146,3 +146,34 @@ It is not generally advised to do this in production or where you have many serv
  
  - In local, we can use `kicthen list`, `kitchen create`, `kitchen converge`, `kitchen destroy` to validate the cookbooks.
  
+ -------------------------
+ 
+ ##### The policyfile can be created within the cookbook directory or outside the cookbook directory
+  ###### how to create a simple policy file
+  ```
+  > chef generate ploicyfile
+  ### will create a ploicyfile skeleton in the present working directory
+  ```
+   - Note the command will generate a file Policyfile.rb, this can be renamed to any name with .rb extension.
+  - The `name` in the policyfile.rb, is used by chef-client to identify the policy. This should be descriptive
+  - The `default_source` is where the chef should look for cookbooks, more than one location can be provided. we can use private supermarket, chef-server, artifactory, etc.
+       - we can also provide individual cookbook reference with the location in the file.
+  - The `run_list` is collection of cookbook to be runned by client. we cannot sepcify empty run list, specify a cookbook recpie.
+      - this is similar to providing run_list via command in chef solo/zero.
+      
+  ###### how to install the Policyfile?
+  ```
+  > chef install
+  
+  ## this will take the runlist and create  a policyfile.lock.json
+  ## the cookbooks are downloaded to local cache and then the lock file is created and checksum is created.
+  ```
+  
+  ##### To test the policy file, use below command
+  ```
+  > kitchen converge
+  ```
+ 
+ Chef Automate - is enterprise version of chef server with more functionality.
+ 
+  
