@@ -184,3 +184,8 @@ $ chef-run lb loadbalancer
 $ curl lb 
 ### issuing the above command couple of times will hit web1 or web2 check the content of index.html where hostname is printed
 ```
+
+- To remove all the setup from docker use  (exist from workstation container)
+```
+$ docker-compose down --rmi all
+```
