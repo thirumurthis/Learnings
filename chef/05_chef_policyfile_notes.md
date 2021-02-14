@@ -176,4 +176,68 @@ It is not generally advised to do this in production or where you have many serv
  
  Chef Automate - is enterprise version of chef server with more functionality.
  
+  ##### How to push the policy file to Chef infra server? using `chef push`
+  - The command requires two part:
+    - 1. created Policyfile.lock.json 
+    - 2. Policy group to push it to. (this is the environment)
+    
+  ```
+  ## assume already the lock file is created in the directory
+  
+  > chef push staging Policyfile.lock.json
+  
+  ## staging - is the environment 
+  ```
+   - The `chef push` command will read the policy lock file and upload the files from the cache which was made during `chef install`/`chef update` command, to chef server checking the cheksum match.
+   - These files are stored in the chef server as artifact with the checksum validation.
+  
+  ##### Since we have pushed the files to server, we need to bootstrap the nodes
+    - to do this we use knife command
+  ```
+  > kinfe bootstrap <host-name> --sudo -x <user> -N <node-name>
+  ```
+   - The `bootstrap` command 
+       - installs the chef-client 
+       - runs the chef-client
+       
+  ##### Now actually the node is not set with any run list.
+    - we can run the policy file after using the knife command
+    - 
+  ```
+  > knife node policy set <node-name> <policy-group-or-environment> <policy-name> 
+  
+  ### ploicy-file is the name set within the policy file NOT the name of the file.
+  ```
+  ##### The above `knife node policy` doesn't run chef-client, we can run if from our local workstation
+  
+   **Below is the command to run the chef-client remotely on a node**
+  ```
+  > knife ssh name:<node-name> sudo chef-client
+  ```
+  
+  ##### The node can be bootsrapped and the policy file can be applied in single command as well, by providing policy name and group in the bootstrap command itself.
+  
+  ##### Promoting the policy lockfile to different environment.
+   - over time to manage the policy lockfile will be difficult, there are ways to mitigate
+     - push the policy lock file (Policyfile.lock.json) to git and use it from there part of the work flow to promot to different environment.
+     
+  ##### If the git approach is not possible, then we can use below approach.
+   - download the policy file from one environment to a Policyfile.lock.json
+   ```
+   > chef show-policy <policy-name> <policy-group-or-environment> > Policyfile.lock.json
+   ```
+   - install the downloaded policy 
+   ```
+   > chef install Policyfile.lock.json
+   ## this will download to local cache
+   ```
+   - use below command to push to the chef server
+   ```
+   > chef push <new-policy-group-or-environment> Policyfile.lock.json
+   ```
+   - finally use bootstrap command to setup the new environemnt. using bootstrap command
+   ```
+   > knife bootstrap <env1> --sudo -x USER -N <node-name> --policy-group <group-name> --policy-name <ploicy-name>
+   ```
+   
   
