@@ -3,7 +3,7 @@
   - It provides a good way to get started with Chef Infra, without requiring any infrastructure beyond SSH.
   
 
-#### If docker instance is setup (refer [link](https://github.com/thirumurthis/Learnings/edit/master/chef/working_with_chef_notes.md)), we can use below commands.
+#### If docker instance is setup (refer [link](https://github.com/thirumurthis/Learnings/edit/master/chef/01_working_with_chef_notes.md)), we can use below commands.
  - After installing the docker
  - Download the docker-compose and start the container. exec into workstation container and follow below steps.
  
