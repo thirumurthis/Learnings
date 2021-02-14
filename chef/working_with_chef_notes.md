@@ -88,3 +88,9 @@ default-centos-8     Docker  ChefZero     Inspec    Ssh        <Not Created>  <N
 ```
  - Note: check this [Link](https://medium.com/software-configuration-manuals/a-step-by-step-guide-to-test-chef-using-test-kitchen-with-docker-9c4f4f4186e2)
 
+#### To converge and apply the cookbook changes, use below command
+```
+> kitchen converge
+```
+
+#### Login using `kitchen ssh ubuntu` to verify the changes
