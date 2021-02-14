@@ -131,6 +131,11 @@ protocol not avialable
  ```
  > docker exec -it workstation bash
  ```
- #### FOLLOW the `chef-run` sample, as per this [link](https://github.com/thirumurthis/Learnings/blob/master/chef/chef_tools_chef-run.md)
+ #### FOLLOW the `chef-run` sample, as per this [link](https://github.com/thirumurthis/Learnings/blob/master/chef/03_chef_tools_chef-run.md) once above docker instance is running.
+ 
+ - To remove the container and images
+ ```
+ > docker-compose down --rmi all
+ ```
   
   
