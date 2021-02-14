@@ -112,7 +112,8 @@ protocol not avialable
     socket: <%= @socket %>
   ....  
   ```
-    Note: even with the above changes, the windows had issue in running the instance.
+
+`Note:` Even with the above changes, the windows had issue in running the instance.
     
   -------------------------------
   
