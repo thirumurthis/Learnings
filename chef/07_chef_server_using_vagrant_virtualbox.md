@@ -1,3 +1,26 @@
+#### Install `Vagrant` and `VirtualBox`.
+  - Using windows 10 home, with WSL2 (Windows subsystem linux), with hyper-v. 
+  - If you run docker on the same machine, the hyper-v will be enabled as Auto
+  - If the hyper-v is enabled, VirtualBox will NOT work.
+  
+To make virtualbox work, issue below command. For more info check [link]( https://stackoverflow.com/questions/50053255/virtualbox-raw-mode-is-unavailable-courtesy-of-hyper-v-windows-10/50119065#50119065)
+  ```
+  > bcdedit
+  #### check for hypervisorlaunchtype : Auto => if this is Auto, then Virtualbox won't startup 
+  ```
+  - disable the hypervisor and restart the system. Below command will disable hyper-v
+  ```
+  > bcdedit /set hypervisorlaunchtype off
+  
+  ### restart the system/laptop
+  ```
+ - to enable it use below command 
+ ```
+  > bcdedit /set hypervisorlaunchtype Auto
+  
+  ### restart the system/laptop
+ ``` 
+
 #### STEP 1: Install `Chef Workstation`
   - use `chef --version` to list the installed package.
 
