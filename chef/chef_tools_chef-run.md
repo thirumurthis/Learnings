@@ -187,5 +187,17 @@ $ curl lb
 
 - To remove all the setup from docker use  (exist from workstation container)
 ```
-$ docker-compose down --rmi all
+$ docker-compose down
+Stopping workstation                  ... done
+Stopping try-docker-chef-infra_web1_1 ... done
+Stopping try-docker-chef-infra_web2_1 ... done
+Stopping try-docker-chef-infra_lb_1   ... done
+Removing workstation                  ... done
+Removing try-docker-chef-infra_web1_1 ... done
+Removing try-docker-chef-infra_web2_1 ... done
+Removing try-docker-chef-infra_lb_1   ... done
+Removing network try-docker-chef-infra_default
+
+## to remove the images use below command
+$ docker-compose down --rmi all 
 ```
