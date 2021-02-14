@@ -94,3 +94,21 @@ default-centos-8     Docker  ChefZero     Inspec    Ssh        <Not Created>  <N
 ```
 
 #### Login using `kitchen ssh ubuntu` to verify the changes
+
+##### Issues executing the docker driver in windows
+```
+protocol not avialable
+```
+  - To fix the above issue add below to the kitchen.yml file, refer [link](https://github.com/test-kitchen/kitchen-docker/issues/318)
+    - this is a work around to fix.
+  ```
+  <% @socket = ENV['DOCKER_HOST'] ||
+     RUBY_PLATFORM =~ /mingw32/ ?
+       'npipe:////./pipe/docker_engine' :
+       'unix:///var/run/docker.sock'
+  %>
+  driver:
+    name: docker
+    socket: <%= @socket %>
+  ....  
+  ```
