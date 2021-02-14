@@ -46,13 +46,17 @@ suites:
 <details>
   <summary>kitchen.yml - click</summary>
   
-   **instance** - A virtualized server with the bare essentials, eg. operating system, ssh- or WinRM-enabled networking, etc. 
+**instance** - A virtualized server with the bare essentials, eg. operating system, ssh- or WinRM-enabled networking, etc. 
                  (This key is not found in the kitchen.yml but is used by Test Kitchen to help keep track of your instances.)
-   **platforms** - The operating system(s) or target environment(s) on which your policies are to be tested. eg: Windows, Ubuntu, CentOS, RHEL
-   **suites** - The policies and code which will be enforced on the test instance(s).
-   **driver** - The lifecycle manager responsible for implementing the instance-specific actions (in this case, Vagrant); 
+                 
+**platforms** - The operating system(s) or target environment(s) on which your policies are to be tested. eg: Windows, Ubuntu, CentOS, RHEL
+
+**suites** - The policies and code which will be enforced on the test instance(s).
+
+**driver** - The lifecycle manager responsible for implementing the instance-specific actions (in this case, Vagrant); 
                 these actions can include creating, destroying, and installing the tools necessary to test your code on the test instance(s).
-   **provisioner** - The tool responsible for executing the suites against the test instance(s). Chef's Test Kitchen provisioner, (chef_zero)[https://docs.chef.io/chef_solo/].
+
+**provisioner** - The tool responsible for executing the suites against the test instance(s). Chef's Test Kitchen provisioner, [chef_zero](https://docs.chef.io/chef_solo/).
    
 </details>
 #### To use `docker` driver for test kitchen
