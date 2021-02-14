@@ -112,3 +112,24 @@ protocol not avialable
     socket: <%= @socket %>
   ....  
   ```
+    Note: even with the above changes, the windows had issue in running the instance.
+    
+  -------------------------------
+  
+ ##### per the chef learning, to stand up a workstation and corresponding web nodes follow below instruction
+   - download the docker compose file from [Git](https://raw.githubusercontent.com/learn-chef/chef/master/docker-compose.yml). Make sure the docker is already installed.
+ - Pull the images
+ ```
+ > docker-compose pull
+ ```
+ - Run the containers
+ ```
+ > docker-compose up -d
+ ```
+ - exec to work station docker container
+ ```
+ > docker exec -it workstation bash
+ ```
+ #### FOLLOW the `chef-run` sample, as per this [link](https://github.com/thirumurthis/Learnings/blob/master/chef/chef_tools_chef-run.md)
+  
+  
