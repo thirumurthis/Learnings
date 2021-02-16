@@ -88,14 +88,14 @@ Example: to build custom image using Amazon EC2 instance ami. (creating a image 
   ### finally deletes the instance.
 ```
 ##### Provisioners
-    - This is where we can patch kernel.
-    - Copy code repo, set up firewall, other customization can be done here.
-     - Support for, `Ansible`, `Chef`,`shell`, `puppet`, etc.
+  - This is where we can patch kernel.
+ - Copy code repo, set up firewall, other customization can be done here.
+ - Support for, `Ansible`, `Chef`,`shell`, `puppet`, etc.
 
-   - Create a new folder
-   - create a new json file.
+ - Create a new folder
+ - create a new json file.
    - Example: 
-      - to add an nginx over the ubuntu aws ami using shell provisioner. (note pick the ami id (ami-<unique-id-value))
+   - How to add nginx over the ubuntu aws ami using shell provisioner. (note pick the ami id (ami-<unique-id-value))
 
 custom.json
 ```json
