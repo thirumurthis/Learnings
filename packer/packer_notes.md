@@ -40,7 +40,7 @@
      - Create a new custom image with the configuration.
      - just kill the server, and redeploy the new image.
      - architect the applicatio, for availablity during new image deployment.
-         - use of load balancer, rolling up strategy like kubernetes.
+       - use of load balancer, rolling up strategy like kubernetes.
 
 ##### Installation of `packer` is available for different OS, it is an executable.
 
@@ -55,9 +55,9 @@
 ##### Builder:
   
 Example code:
-    - create a folder
-    - within the folder create a json file.
-    - `packer` supports lots of platforms like AWS, Azure, Google cloud, Virtual box, Vagrant, etc.
+ - create a folder
+ - within the folder create a json file.
+ - `packer` supports lots of platforms like AWS, Azure, Google cloud, Virtual box, Vagrant, etc.
 
 Example: to build custom image using Amazon EC2 instance ami. (creating a image over ebs backed ec2 image)
 
