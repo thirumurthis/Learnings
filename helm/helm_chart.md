@@ -118,7 +118,7 @@
     - this might be third-party chart or library chart.
   - `template/service.yml` 
      - this is a default service object (kubernetes manifest file)
-     - here in this file there are some dynamic value reference. like `name: {{ include "first-demo-chart.fullname" . }}
+     - here in this file there are some dynamic value reference. like `name: {{ include "first-demo-chart.fullname" . }}`
        - this value is fetched from `_helpers.tpl` file.
       - the usage of `{{ Values.service.port }}` - this is from the Values file.
    - `template/deployment.yml`, `template/ingress.yml`,etc.
@@ -180,6 +180,7 @@
     Note: the data for scerets to be base64 coded, using ` echo -n 'admin' | base64` from bash.
  
    - To view the content of the charts use below command
+   
    ```
    > helm template first-demo-chart .
    ## now the output will contain the configmap and secrets information
@@ -194,26 +195,29 @@
    ```
   
   ### How to rollback using helm history.
-    - How to list the list of histroy to rollback? command to do this is:
-    ```
+   - How to list the list of histroy to rollback? command to do this is:
+ ```
     > helm history first-demo-chart
-    ```
+```
     
-    - Now since we know which version that i deployed, we can pick the version from list and rollback using below command
-    ```
+   - Now since we know which version that i deployed, we can pick the version from list and rollback using below command
+  
+```
     > helm rollback first-demo-chart
     ### This command will rollback to the immediate latest version.
-    ```
-      - Note: if we need to rollback to a older version, get the version from `helm history` command
-      ```
+```
+    
+   - Note: if we need to rollback to a older version, get the version from `helm history` command
+   
+ ```
       > helm rollback first-demo-chart 2
       ## here 2 is the version # obained from the history command of helm
       ## if 2 is listed in the history
-      ```
+ ```
      
-    - At any point of time use below command to see the history or rollback version currently used.
-    ```
+  - At any point of time use below command to see the history or rollback version currently used.
+ ```
     > helm history first-demo-chart
-    ```
+ ```
    
    
