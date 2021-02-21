@@ -339,7 +339,7 @@ $ sudo chroot fnsroot /bin/sh
   - Each network namespace, has its own set of interfaces, ip addresses, tcp, upd port address etc.
   ```
   # to create a new network namespace
-  $ ip add netns <name>
+  $ ip netns add <name>
   
   # to access and execute the created namespace
   $ ip netns exec <name> <command>
