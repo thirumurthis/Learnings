@@ -281,12 +281,15 @@ services:
   
   ### command to change the existing new root file system
   $ sudo chroot fsnroot /bin/bash   #### {chroot <directory> <command-to-execute-after-creation>}
+  $ sudo chroot . bash  ### . current directory
   
   ### once within the new files system (within the new root file system execute 
+  ### if we install anything in this file system, it will be isolated in this file system
+  ### this filesystem can be tar.gz and moved to another system, and used chroot to this system.
   $ whoami
   $ pwd
   $ ps 
-  $ls 
+  $ ls 
   
   #### To exit from the new root file system, type exit
   $ exit
