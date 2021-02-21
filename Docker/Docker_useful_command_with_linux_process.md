@@ -264,18 +264,36 @@ services:
   - Then use the `chroot` command where the tarball file is located.
   
  Simple Demo of filesystem namespace: 
--  Download the filesystem from [link](https://alpinelinux.org/downloads/) mini file system. 
+-  Download the filesystem from [link](https://alpinelinux.org/downloads/) mini root file system. 
  - Generally this filesystem namespace doesn't contain any kernel info.
  
- - In the linux host, create a firectory "fsnroot"
- -  `mkdir fsnroot`;`cd fsnroot`, 
- - `wget <location-to-download-the-tarball>`
- - untar the file `sudo tar xvf <tar.gz>`
- - changing the root filesystem and the new one.
-   - `sudo chroot fsnroot /bin/bash` {chroot <directory> <command-to-execute-after-creation>}
-  - After executing the last command, it would be a new root filesystem, try `whoami`, `pwd`, `ls`, etc.
- - typing `exit` to go back to host filesystem.
- - to login again using `sudo chroot...` command.
+ - In the linux host, 
+   - create a Directory "fsnroot" and navigate to it
+   - download the `mini root filesystem` and untar it
+   - chroot `change root` to newely created directory. (this will change the root file system to a new root file system). 
+   - execute process within the new file syste.
+   - 
+ ```
+  $ mkdir fsnroot   ### Create a directory
+  $ cd fsnroot
+  $ wget <location-to-download-the-tarball>  ## for example using x86 online linux terminal.
+  $ sudo tar xvf <tar.gz> 
+  
+  ### command to change the existing new root file system
+  $ sudo chroot fsnroot /bin/bash   #### {chroot <directory> <command-to-execute-after-creation>}
+  
+  ### once within the new files system (within the new root file system execute 
+  $ whoami
+  $ pwd
+  $ ps 
+  $ls 
+  
+  #### To exit from the new root file system, type exit
+  $ exit
+  
+  #### To change to the new root directory again, use the chroot command.
+  $ chroot fsnroot /bin/bash
+  ```
  
 ##### Process Namespace
   - isolated environment, for a group of process to run without intereption by other processess.
