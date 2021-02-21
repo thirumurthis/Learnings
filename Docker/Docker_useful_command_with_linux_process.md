@@ -258,7 +258,7 @@ services:
  - When there are multple container, the each container has its own namespace.
  - Also Processes running on one namespce cannot access the process running on another namespace.
  
-##### Filesystem Namespace:
+#### Filesystem Namespace:
   - Filesystem is a hierarichal and starts with root.
   - To create a new filesystem namespace, download the root of tar ball in host machine. Paste the tar ball to any first tree of directory.
   - Then use the `chroot` command where the tarball file is located.
@@ -294,8 +294,19 @@ services:
   #### To change to the new root directory again, use the chroot command.
   $ chroot fsnroot /bin/bash
   ```
- 
-##### Process Namespace
+  - Try on online linux terminal, use [`jslinux`](https://bellard.org/jslinux/vm.html)
+ ```
+  $ mkdir fsnroot
+  $ cd fsnroot
+  $ wget https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/x86/alpine-minirootfs-3.13.2-x86.tar.gz
+  $ zcat alpine-minirootfs-3.13.2-x86.tar.gz | tar -xvf -   ## since this box, the tar didn't had the gzip utility, so using this command
+  $ chroot fsnroot /bin/bash
+  $ ps 
+ ```
+   -  Executing `tar -xvf` displayed `tar : invalid magic tar` message. This is because the tar file is gzipped and box didn't had added gzip with tar utility.
+
+
+#### Process Namespace
   - isolated environment, for a group of process to run without intereption by other processess.
   - process running under one namespace is not even aware of process running on the other namespace.
   - process are numbered 1 to n, running on one namespace. When a process moved from one container to another the process id doesn't change since each container has its own namespace and numbered 1 to n.
