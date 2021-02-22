@@ -192,11 +192,40 @@ $ ip -n blue addr add 192.168.15.2/24 dev veth-blue
 ```
 $ ip -n red link set veth-red up
 $ ip -n blue link set veth-blue up
+
+$ ip link set veth-red-br up
+$ ip link set veth-blue-br up
 ```
+
+#### Trobuleshoot using `ip netns exec red arp`, `ip netns exec red ifconfig`,etc.
 #### Now we connect to each other namespace. Also if we create multiple namespace, we can add those the virtual switch, and it will be able to connect with each other.
 
 - Now the namespaces are all in isolated private network.
 - if we use `ping 192.168.15.1` from the host will not connect to the namespace.
+
+```
+root@thirumurthi-HP:~# ip netns exec red ping 192.168.15.2
+PING 192.168.15.2 (192.168.15.2) 56(84) bytes of data.
+64 bytes from 192.168.15.2: icmp_seq=1 ttl=64 time=0.871 ms
+64 bytes from 192.168.15.2: icmp_seq=2 ttl=64 time=0.131 ms
+64 bytes from 192.168.15.2: icmp_seq=3 ttl=64 time=0.107 ms
+^C
+--- 192.168.15.2 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2079ms
+rtt min/avg/max/mdev = 0.107/0.369/0.871/0.354 ms
+
+--------------
+root@thirumurthi-HP:~# ip netns exec blue ping 192.168.15.1
+PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
+64 bytes from 192.168.15.1: icmp_seq=1 ttl=64 time=0.122 ms
+64 bytes from 192.168.15.1: icmp_seq=2 ttl=64 time=0.115 ms
+64 bytes from 192.168.15.1: icmp_seq=3 ttl=64 time=0.096 ms
+64 bytes from 192.168.15.1: icmp_seq=4 ttl=64 time=0.117 ms
+^C
+--- 192.168.15.1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3100ms
+rtt min/avg/max/mdev = 0.096/0.112/0.122/0.009 ms
+```
 
 #### Since the `v-net-0` interface is another dev in the host, in order to connect to this network from the host, we need to add an ip address to this host.
 
@@ -205,5 +234,20 @@ $ ip addr add 192.168.15.5/24 dev v-net-0
 ```
 - Still the network namespace are private, cannot be connected from internet.
 
+##### Since we have added a new ip address to the v-net-0, we will be able to access the red, blue namespace as well
+```
+### below is from the host machine
+
+root@thirumurthi-HP:~# ping 192.168.15.1
+PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
+64 bytes from 192.168.15.1: icmp_seq=1 ttl=64 time=0.262 ms
+64 bytes from 192.168.15.1: icmp_seq=2 ttl=64 time=0.094 ms
+64 bytes from 192.168.15.1: icmp_seq=3 ttl=64 time=0.093 ms
+64 bytes from 192.168.15.1: icmp_seq=4 ttl=64 time=0.081 ms
+^C
+--- 192.168.15.1 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 3109ms
+rtt min/avg/max/mdev = 0.081/0.132/0.262/0.074 ms
+```
 
 
