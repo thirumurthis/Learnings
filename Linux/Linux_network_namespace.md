@@ -250,4 +250,5 @@ PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.081/0.132/0.262/0.074 ms
 ```
 
+#### Now we have a network setup, this 
 
