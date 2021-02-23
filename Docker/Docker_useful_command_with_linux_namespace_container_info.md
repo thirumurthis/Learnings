@@ -308,7 +308,7 @@ services:
   
   
   - Try on online linux terminal, use [`jslinux`](https://bellard.org/jslinux/vm.html)
-  - 
+
  ```
   $ mkdir fsnroot
   $ cd fsnroot
