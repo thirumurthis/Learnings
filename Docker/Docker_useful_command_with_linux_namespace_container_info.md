@@ -305,7 +305,10 @@ services:
    ![image](https://user-images.githubusercontent.com/6425536/108805949-395d0700-7555-11eb-88bc-b691e0aa81bc.png)
 
   </details>
+  
+  
   - Try on online linux terminal, use [`jslinux`](https://bellard.org/jslinux/vm.html)
+  - 
  ```
   $ mkdir fsnroot
   $ cd fsnroot
