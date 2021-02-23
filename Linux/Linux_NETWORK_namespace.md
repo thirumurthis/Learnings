@@ -250,5 +250,120 @@ PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.081/0.132/0.262/0.074 ms
 ```
 
-#### Now we have a network setup, this 
+#### Now we have a network setup, this network is not reached from outside or this network cannot reach the external network.
+
+- say, if there is an external network with ipaddress (192.168.1.3), if we use 
+```
+$ ip netns exec blue ping 192.168.1.3
+## The ping cannot connect to the network since it is not access external network
+
+$ ip netns exec blue ping www.google.com
+```
+
+#### In order to access the external network, we need add a `Gateway`.
+- add an entry in the route table.
+- How to find the gateway.
+   - **Gateway is the system on the local network that connects to other network**
+   - The `localhost` is the system which has all the namespace, in here the `v-net-0` interface.
+   - So the `localhost` (v-net-0) is the gateway that connects the networks together.
+   
+```
+## route table of the blue namespace
+$ ip netns exec blue route
+
+root@thirumurthi-HP:~# ip netns exec blue route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.15.0    0.0.0.0         255.255.255.0   U     0      0        0 veth-blue
+```
+- Add a route entry in the blue namespace, to route all the traffic through gateway.
+```
+$ ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5
+
+## 192.168.15.5 - is v-net-0
+```
+- The host has two ip address, 
+   -  1. on bridge network (192.168.15.5)
+   -  2. another on the external network (blue) 192.168.15.2
+ - We cannot use the above two ip address (in the route) from the blue namespace.
+ - The blue namespace can reach the gateway in its local network 192.168.15.5
+ - The default gateway should be reachable from the blue namespace, when add it to route.
+ - Though the gateway is added, from the blue namespace we can use ping but NO response will be received. (refer the last command output below)
+ 
+ ```
+root@thirumurthi-HP:~# ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5
+root@thirumurthi-HP:~# ip netns exec blue route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+192.168.1.0     192.168.15.5    255.255.255.0   UG    0      0        0 veth-blue
+192.168.15.0    0.0.0.0         255.255.255.0   U     0      0        0 veth-blue
+root@thirumurthi-HP:~#
+root@thirumurthi-HP:~# ip netns exec blue ping 192.168.1.3
+PING 192.168.1.3 (192.168.1.3) 56(84) bytes of data.
+^C
+--- 192.168.1.3 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3158ms
+ ```
+
+ - The blue namespace is not able to recive response back, this is because similar to a situation where from home network when we reach the internet using router, the home network has a private ip address which is not resolved by the internet this is where the NAT comes into play.
+ 
+ - How to make the blue namespace access the external network, we need a NAT enabled on the host acting as a gateway. So it can send message using own name and own address.
+ - How to enable NAT, add a new rule in the `iptables`
+ - 
+```
+$ iptables -t nat -A POSTROUTNG -s 192.168.15.0/24 -j MASQUERADE
+
+### Add a new rule in NAT iptable to the POSTROUTING chain to masquerade or replace  the from address of all packets coming from the source network 192.168.15.0 with its own ip address. Thus when any one recieving the packets from this network will think this is coming from the host not from the namespace.
+```
+- After performing the above step , we should be able to access the external network.
+
+#### If the namespace need to access the internet. This will not be accessed since the routing table there is no routes to the network 192.168.1.0 not to any thing else.
+
+#### To reach external network, talk to host by adding the default gateway
+```
+$ ip netns exec blue ip route add default via 192.168.15.5
+
+root@thirumurthi-HP:~# ip netns exec blue ip route add default via 192.168.15.5
+root@thirumurthi-HP:~#
+root@thirumurthi-HP:~# ip netns exec blue route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         192.168.15.5    0.0.0.0         UG    0      0        0 veth-blue
+192.168.1.0     192.168.15.5    255.255.255.0   UG    0      0        0 veth-blue
+192.168.15.0    0.0.0.0         255.255.255.0   U     0      0        0 veth-blue
+```
+- Now after adding the default gateway we can access the external network
+```
+root@thirumurthi-HP:~# ip netns exec blue ping www.google.com
+PING www.google.com (172.217.14.228) 56(84) bytes of data.
+64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=1 ttl=114 time=23.4 ms
+64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=2 ttl=114 time=14.6 ms
+64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=3 ttl=114 time=17.5 ms
+^C
+--- www.google.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2004ms
+rtt min/avg/max/mdev = 14.605/18.517/23.415/3.663 ms
+```
+
+### How to connect the blue namespace from the external network.
+  - Say if there is an web application in the blue namespace.
+  - Two ways to make this possible,
+    - 1. give away the private identity of private network to second host. (not preferred)
+        - Add ip route entry to second host, telling the n/w 192.168.1.2
+    - 2. add port forwarding rule in iptables using below command
+     ```
+     $ iptables -t nat -A PREROUTING --dport 80 --to-destination 192.168.15.2:80 -j DNAT
+     
+     ### above iptables command tells any traffic comming to port 80 on localhost, is to be forwarded to port 80 on the ip assinged to the blue namespace
+     ```
+     
+<details>
+    <summary> reference </summary>
+    
+Reference [1](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
+</details>
+
+
+
+
 
