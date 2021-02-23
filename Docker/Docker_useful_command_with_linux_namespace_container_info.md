@@ -226,12 +226,13 @@ services:
 ```
 - above docker compose will set the web and redis backend instance. 
 
-
+-------------
+-------------
 ### What are container? 
   - Containers are set of processes running in virutal  isolated sandbox environment.
   - The isolated environment contains (below virtual of its own)
     - filesystem
-    - process if
+    - process
     - network interfaces
     - devices 
     - CPU
@@ -276,12 +277,13 @@ services:
  ```
   $ mkdir fsnroot   ### Create a directory
   $ cd fsnroot
-  $ wget <location-to-download-the-tarball>  ## for example using x86 online linux terminal.
-  $ sudo tar xvf <tar.gz> 
+  $ wget https://dl-cdn.alpinelinux.org/alpine/v3.13/releases/x86_64/alpine-minirootfs-3.13.2-x86_64.tar.gz  ## for example using x86 online linux terminal.
+  $ sudo tar xvf alpine-minirootfs-3.13.2-x86_64.tar.gz
   
   ### command to change the existing new root file system
-  $ sudo chroot fsnroot /bin/bash   #### {chroot <directory> <command-to-execute-after-creation>}
-  $ sudo chroot . bash  ### . current directory
+  $ sudo chroot <directory> <command   #### {chroot <directory> <command-to-execute-after-creation>}
+  ## if navigated in to the fsnroot
+  $ sudo chroot . /bin/sh  ### . current directory; and /bin/sh is the command
   
   ### once within the new files system (within the new root file system execute 
   ### if we install anything in this file system, it will be isolated in this file system
@@ -297,6 +299,12 @@ services:
   #### To change to the new root directory again, use the chroot command.
   $ chroot fsnroot /bin/bash
   ```
+  <details>
+   <summary>Click here - to view image!!</summary>
+   
+   ![image](https://user-images.githubusercontent.com/6425536/108805949-395d0700-7555-11eb-88bc-b691e0aa81bc.png)
+
+  </details>
   - Try on online linux terminal, use [`jslinux`](https://bellard.org/jslinux/vm.html)
  ```
   $ mkdir fsnroot
