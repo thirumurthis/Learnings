@@ -111,7 +111,8 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
   - To create a `<some-name>.conf` file and place it at `conf.d` directory
   - To place the conf file in `sites-available` directory, and create a symbolic link in `sites-enabled` directory
  
- Note: By default the default config will be set with a symbolic link, which can be unlinked using `unlink` command.
+  **Note**: By default the `/var/nginx/sites-enabled/default` config will be set with a symbolic link.
+ 
  --------------------------
  
  ### How does nginx configuration works, basics.
