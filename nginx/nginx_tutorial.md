@@ -406,5 +406,11 @@ server {
   }
 }
 ```
-  
- 
+
+### Troubleshooting the nginx server
+  - using `nginx -t` will verify the configuartion.
+  - use `nginx -s reload` or `systemctl reload nginx` if the nginx is not running
+  - Check if the port is not being used, with below commands,
+    -  `sudo lsop -P -n -i :80 -i :443 | grep LISTEN`
+    -  `sudo netstat -plan | grep nginx` => gives the id of the process listening on port
+  - check the logs at `/var/log/nginx/*`
