@@ -304,7 +304,8 @@ server {
  - location block within the above demosite.local config, using more additional directives
  - **`try_files`** directive gives nginx a set of files or directries to look for relative to location. the first file or directory that matches gets processed , if no items in the list is matched then the last item in the list is used as uri or error code.
  - **`auto_index`** directive, this disabled by default, when enabled using keyword on, the url will list the files in the browser within that directory.
- 
+ - **`error_page`** directive, this is used to display custom error pages.
+ - **`internal`** - tells the nginx to process any redirects to custom 404 pages as internal redirects. This helps to serve the 404 pages quickly.
 ```
 server {
   listen 80 default_server;
@@ -313,13 +314,44 @@ server {
   index index.html index.html index.php;
   
   location / {
-     try_files $url $url/ =404;  ## =404 tells nginx to server 404 error if no file is matched.
+     try_files $uri $uri/ =404;  ## =404 tell server to display 404 when no file matched.
   }
   
   location /images {
     autoindex on;
   }
-
+  
+  ## when nginx cannot find any content to display for a request
+  ## it displays a 404 error page
+  ## if there are any server side issues, nginx displays 500+ codes
+  
+  ## below is to tell the nginx to display the custom pages instead of default
+  ## when 404 or 500 exception occurs 
+  ## for the custom pages, a location directive is added with the = modifier
+  ## to sepcify exact match
+    
+  error_page 404 /404.html;
+  location = /404.html {  ## = is the modifier know as exact match modifier
+    internal;
+    }
+  
+  error_page 500 502 503 504 /50x.html;
+  location = /50x.html {
+    internal;
+  }
+  
+  ## Since there are no logic in the server side, to throw the 500 error code
+  ## we have to manipulate it using fast CGI pass
+  
+  location = /500 {
+     fastcgi_pass unix:/this/will/fail;
+  } 
+}
 ```
+ - since we have the `/images` location defined in configuration with auto_index directive. the permission in the linux box should be appropriate for files use `chmod 644` and for directory use `chmod 755`.
+
+ - in order to display 404 and 500 errors with custom file, use `http://localhost:8080/somepage` and `http://localhost:8080/500` (from local host/ laptop).
+ - Make sure the file 404.html and 50x.html, exists in the file path.
+
  
  
