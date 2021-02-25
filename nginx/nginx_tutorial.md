@@ -279,7 +279,47 @@ server {
    
    root /var/www/demosite.local
 ```
-   - perform `nginx -t` and `nginx -s reload`.
+   - perform `nginx -t` and `nginx -s reload`, to validate and apply the configuration.
+   - make sure to copy the website content, with the index.html to the `/var/www/demosite.local` folder in the container.
  
- Note: To copy file, when starting the container, use volume mount option `-v <path_in_host>:<path_in_container>` 
+ Note: 
+   - To copy file, when starting the container, use volume mount option `-v <path_in_host>:<path_in_container>` 
+   - If using docker and port forwarded 8080, then use http://localhost:8080 on the browser.
+ 
+ #### Adding `location` directives, for making configuration more roboust.
+  - syntax usage of location directives
+ ```
+ server { 
+  location [modifier] location_defintion { ## modifier is optional indicated using []
+     location [modifier] location_defintion {  ## nested location block
+     }
+   }
+ }
+ ```
+  - location directives are defined in server block.
+  - inside location block, we can define any directives used within server directives.
+  - location directives are useful, were can process requests without the needs of multiple server blocks. Thus we can proecss different request, in way to similar to server block in a way using location block.
+  - when nginx process a location, tries to perform exact match, location with prefixes and location with regex.
+
+ - location block within the above demosite.local config, using more additional directives
+ - **`try_files`** directive gives nginx a set of files or directries to look for relative to location. the first file or directory that matches gets processed , if no items in the list is matched then the last item in the list is used as uri or error code.
+ - **`auto_index`** directive, this disabled by default, when enabled using keyword on, the url will list the files in the browser within that directory.
+ 
+```
+server {
+  listen 80 default_server;
+  root /var/www/demosite.local;
+  server_name demosite.local www.demosite.local;
+  index index.html index.html index.php;
+  
+  location / {
+     try_files $url $url/ =404;  ## =404 tells nginx to server 404 error if no file is matched.
+  }
+  
+  location /images {
+    autoindex on;
+  }
+
+```
+ 
  
