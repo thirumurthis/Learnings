@@ -241,3 +241,45 @@ server {
 ```
  - With the above configuration, the hello.png can be rendered when using `wget http://localhost:80` from docker container. 
  - From host/laptop use `http://localhost:8080` in the browser to display the image (since we have started the docker container wiht port forwarding 8080:80)
+
+-----------------
+
+#### More directives, used in configuration file and understanding.
+
+- Simple config, alternte approach, `unlink` the default config under `/etc/nginx/sites-available/`.
+- Create a config file under `/etc/nginx/conf.d`, name it demosite.local.conf. Note: in this directory, the conf file should end with `.conf`.
+
+```
+server {
+  listen 80;
+  root /var/www/demosite.local; ## this will be path where the html,js files present.
+}
+```
+ - Test the configuration using `nginx -t`.
+ - reload the configuration using `nginx -s reload`.
+ - Create the diractory `/var/www/demosite.local/` add index.html with simple content.
+ - use curl command, to check the output using `curl http://localhost`
+
+#### `default_server`, `server_name`, `index` directive.
+  - nginx can server multiple files from the same IP address, we use **`default_server`** directive to tell nginx to use this server configuration when no other configurations match the name of the site being requested.
+  - when using the `default_server` we need to add, the name of the server. This is also the name of the site.
+  - Also including **`server_name`** will let nginx know which sites the server configuration applies to.
+  - Else, when we are serving multiple sites from same ip address, nginx might serve the wrong content.
+  - **`index`** - directive tells the nginx server which file to serve first for a request, the default one is index.html.
+```
+server {
+
+   listen 80 default_server;
+   
+   server_name demosite.local www.demosite.local
+   
+   ## we are telling nginx to use index.html index.htm
+   ## index will use the very first file it encounters from root directory
+   index index.html index.htm index.php; 
+   
+   root /var/www/demosite.local
+```
+   - perform `nginx -t` and `nginx -s reload`.
+ 
+ Note: To copy file, when starting the container, use volume mount option `-v <path_in_host>:<path_in_container>` 
+ 
