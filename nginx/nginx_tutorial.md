@@ -112,5 +112,131 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
   - To place the conf file in `sites-available` directory, and create a symbolic link in `sites-enabled` directory
  
  Note: By default the default config will be set with a symbolic link, which can be unlinked using `unlink` command.
+ --------------------------
  
+ ### How does nginx configuration works, basics.
  
+ - configuration terminology
+   - Directives - simple directives and block directives (represented using {}).
+   - simple directives, consits of name and parameter seperated by spaces and ends with ";".
+   - block directives, has the same structure as simple directives but parameter is enclosed with {}. Also, doesn't ends with ";".
+   - if a block directives can have other directives inside braces, it is called **`context`**. (context example: events, http, server and location)
+ - Directives placed in the configuration file outside of any contexts are considered as main cotnext.
+    - The `events` and `http` directives reside in the main context.
+    - `server` in `http` context.
+    - `location` in `server` context. 
+  - `#` indicates comment.
+ 
+ #### Serving static content.
+  - Lets understand how the configuration works in nginx server.
+  - With the default setup, from docker sandbox environment, Edit the `/etc/nginx/sites-available/default` file.
+
+- Lets serve up the html file from different directory `/data/www`
+   - create a directory /data/www using `mkdir -p /data/www`.
+   - create a index.html, with some comment say, `<html><h3> from /data/www/index.html </h3></html>`
+   - create a directory /data/images using `mkdir /data/images`, download some image from git repo (with raw url).
+
+#### Now lets update the default configuration (`/etc/nginx/sites-available/default)` with below content
+```
+server {
+   location / {
+     root /data/www;
+     }
+  }
+```
+- Since configuration is updated we need to reload the server
+```
+$ nginx -s reload
+## sending a reload signal
+```
+NOTE: {} - is referred as block directive.
+- in the above configuration we are saying nginx to use /data/www.
+- when the request `curl http://localhost:80/` (within the docker container is used) the html page from the `data/www/index.html` will be served.
+- since we have started the container with 8080:80 port forwarding, from the host machine use `http://localhost:8080/`
+- `by default nginx listens to 80 port`, so we haven't sepcified listen directive here.
+
+- Note: install `vim`, `curl`, `wget` utility using `apt install <utility>` which will be helpful.
+ 
+##### Lets serve up the image from the `/data/images` directory, say the image file name is `**hello.png**`. update the configuration as below
+
+```
+server {
+   location / {
+      root /data/www;
+   } 
+   location /images/ {
+      root /data;
+   }
+```
+  - Now the request `http://localhost:80/images/hello.png` will serve up the image from /data/images/hello.png
+
+  - Any issues, the logs can be found at `/var/log/nginx/error.log` in some case `/usr/local/nginx/logs`
+---------------------------------------
+
+### Setting up simple Proxy server, using nginx configuration
+
+ - Simple proxy server, mean a server that receives requests, passes them to the proxied servers, retrieves responses from them, and sends them to the clients.
+ 
+ - we define a proxy server, by using `server` block (derivaties).
+ - The configuration can contain more than one `server` block.
+ - Add the below configuration along with the static html configuration from previous section.
+ 
+ ```
+ server {
+    listen 8080;
+    root /data/up1;
+    
+    location / {
+    }
+ ```
+ - Execute `nginx -s reload`
+ - From docker, use `curl http://localhost:8080/` to view the index.html content from the /data/up1.
+ - above configuration is a simple server listening on 8080.
+
+
+#### Lets setup proxy server configuration, update the configuration file to add below content
+```
+## below is the configuration for listening to 8080 port
+server {
+  listen 8080;
+  root /data/up1;
+  location / {
+  }
+}
+
+## Proxy configuration - any request coming to the 80 port will be proxied.
+server {
+  location / {
+     proxy_pass http://localhost:8080;
+   }
+   
+   location /images/ {
+       root /data;
+    }
+  }
+```
+- As explained in the configuration now from the docker user `curl http://localhost:80/` the request will redirect and print the index from the /data/up1/index.html.
+
+- The `location /images/` can be modifed to use regex, in below case we can check the extension and server up the data. The configuration now looks like below.
+
+```
+server {
+  listen 8080;
+  root /data/up1;
+  location / {
+  }
+}
+
+server {
+   location / {
+      proxy_pass http://localhost:8080;
+    }
+    ## configuration to use extension
+    
+    location ~ \.(gif|jpg|png)$ {
+      root /data/images;  ## note the directory now changes to /data/images
+    }
+ }
+```
+ - With the above configuration, the hello.png can be rendered when using `wget http://localhost:80` from docker container. 
+ - From host/laptop use `http://localhost:8080` in the browser to display the image (since we have started the docker container wiht port forwarding 8080:80)
