@@ -353,5 +353,58 @@ server {
  - in order to display 404 and 500 errors with custom file, use `http://localhost:8080/somepage` and `http://localhost:8080/500` (from local host/ laptop).
  - Make sure the file 404.html and 50x.html, exists in the file path.
 
+- For loading hte images url, make sure to append '/'. `http://localhost:8080/images/`
+
+ ------------------------
  
+ ### How to identify logs in nginx server.
+  - In the existing `/etc/nginx/nginx.conf` the error logs are configured to `/var/log/nginx/` location with access.log (access info, like ip address, path of the file served, etc) and error.log file (contains operation details).
+  
+
+#### How to customize the logging in nginx for sample application.
+  - Lets set the logs for the demosite.local.
+  - Edit the configuration file, `/etc/nginx/conf.d/demosite.local.conf`
+  - if we use the default log file and we have multiple application hosted in nginx, all the site/application logs will be added to the default log which will become cumbersum to handle.
+  - we can specify logs 
+ 
+```
+...
+access_log /var/log/nginx/demosite.local.access.log;
+error_log /var/log/nginx/demosite.local.error.log;
+...
+```
+#### The complete config file with the error and access log configured, with reference to demosite.local application
+  
+```
+server {
+  listen 80 default_server;
+  root /var/www/demosite.local;
+  server_name demosite.local www.demosite.local;
+  index index.html index.html index.php;
+
+  access_log /var/log/nginx/demosite.local.access.log;
+  error_log /var/log/nginx/demosite.local.error.log;
+  
+  location / {
+     try_files $uri $uri/ =404;
+  }
+  location /images {
+    autoindex on;
+    access_log /var/log/nginx/demosite.local.images.access.log;
+    error_log /var/log/nginx/demosite.local.images.error.log;
+  }
+  error_page 404 /404.html;
+  location = /404.html {
+    internal;
+    }
+  error_page 500 502 503 504 /50x.html;
+  location = /50x.html {
+    internal;
+  }
+  location = /500 {
+     fastcgi_pass unix:/this/will/fail;
+  }
+}
+```
+  
  
