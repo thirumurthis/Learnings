@@ -414,3 +414,47 @@ server {
     -  `sudo lsop -P -n -i :80 -i :443 | grep LISTEN`
     -  `sudo netstat -plan | grep nginx` => gives the id of the process listening on port
   - check the logs at `/var/log/nginx/*`
+----------------------
+
+### Using nginx configuration for fastCGI proxy.
+- Installing php
+```
+$ apt install php-fpm php-mysql
+
+## php-fpm => fastCGI process manager and required dependencies manager
+           => this will be istalled as service, this fastCGI service will process any php file recieved by the web server.
+           
+## php-mysql => is package allows to connect to my sql database 
+```
+
+- verify using below commands
+```
+$ php --version
+$ systemctl status php*  [type tab to auto fill the service name]
+```
+
+- since the php installed in order to serve the php files, we need to update the configruation file. (demosite.local.conf)
+- with exising content in the previous demosite.local.conf add below location directive. place it anywhere within the server block directives. (i am placing above the error_page directive)
+- **`include`** directive is used to bring in the code that are outside the config folder. 
+- **`fastcgi_pass`** => this directive tells the nginx to use unix socket, communicating with the unix socket is much faster.
+- **`fastcgi_intercept_error`** => this tells nginx, any error returned by the fastCGI server (here it is php-fpm), the nginx should process this error within the `error_page` directive  
+```
+...
+location ~ \.php$ {
+    # check within /etc/nginx/ folder, the fastcgi-php.conf file will contain 
+    # helpful directives for performance and security.    
+   include snippets/fastcgi-php.conf; 
+   fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+   fastcgi_intercept_errors on;
+}
+...
+```
+- Lets write some php code to verify
+   - below will list the php info (not recommended to be used in production)
+   - store the content in a file under the `/var/www/demosite.local/info.php`
+```
+ <?php phpinfo(); phpinfo(INFO_MODULES); ?>
+```
+- reload the nginx server using `nginx -s reload`;
+- 
+
