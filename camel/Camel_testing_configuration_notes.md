@@ -104,4 +104,78 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </camelContext>
 </beans>
 ```
+-------
+
+#### Externalizing properties
+ - Lets create a properties file
+ ```properties
+ ## file-name: filehandler-test.properties
+ file.input=test/files/inbox
+ file.output=test/files/outbox
+ ```
+  ##### 1. using Camel-core properties placeholder
+   - Camel-core jar, already includes a properties placeholder.
+   - In camel-context xml, we defined a bean with `org.apache.camel.component.properties.PropertiesComponent`.
+   ```xml
+     <!-- ... -->
+     <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+        <property name="location" value="classpath:filehandler-test.properties"/>
+     </bean>
+     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+       <route>
+         <from uri="{{file.input}}"/>  <!-- The way we reference properties key is {{}} NOTE the spring way ${} -->
+         <to uri="{{file.output}}"/>
+       </route>
+    </camelContext>
+    <!-- ... -->
+   ```
+   - Instead of creating the properties as spring bean, we can use propertyPlaceholder within the camel context like below
+   ```xml
+    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+       <propertyPlaceholder id="properties" location="classpath:filehandler-test.properties"/>
+       <route>
+         <from uri="{{file.input}}"/>
+         <to uri="{{file.output}}"/>
+        </route>
+    </camelContext>
+   ```
+   - How the Test class, gets update when externalizing the properties.
+   ```java
+     public class CamelRiderTest extends CamelSpringTestSupport {
+       private String inputDir;
+       private String outputDir;
+      
+      // NOW we are injecting the input endpoint 
+      @EndpointInject(uri = "file:{{file.input}}")
+      private ProducerTemplate inbox;
+      
+      public void setUp() throws Exception {
+         super.setUp();
+         // since the context.xml is not externalized, we need to pass in the value to context in test class
+         inputDir = context.resolvePropertyPlaceholders("{{file.input}}");
+         outputDir = context.resolvePropertyPlaceholders("{{file.output}}");
+         cleanupDir(inputDir,outputDir); //Note this class implementation is not included in this class.
+      }
+      
+      @Override
+      protected AbstractXmlApplicationContext createApplicationContext() {
+            //NOTE: We are passing PROD properties as first argument, TEST properties as second argument.
+            // Since the TEST properties is passed as second argument, any properties value will be overriden even if the PROD properties is read in here
+            return new ClassPathXmlApplicationContext(new String[]{"camelinaction/filehandler-prod.xml","camelinaction/filehandler-test.xml"});
+      }
+      
+      // the testFileHandle () method will be the same as above example, with only one change instead of using template we need to use inbox (ProducerTemplate)
+   ```
+   
+   - Notes:
+   ```
+     Spring allows to load multiple files as args and have the next file override the previous args — so we define the CamelContext once, along with filehandler-prod.xml. 
+     Because filehandler-test.xml is defined as the second argument, this will override identical beans from the former files. 
+     We leverage this to override the properties bean and instruct it to load a different properties file, the filehandler-test.properties file.
+     
+     @EndpointInject in RouteBuilder class is used to dynamically inject endpoints for the environment. This can still be used in Java DSL also.
+   ```
+   
+  ##### 2. Using Spring properties placeholder
+
 
