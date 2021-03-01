@@ -353,6 +353,7 @@ public class SimpleMockTest extends CamelTestSupport {
   mock.allMessages().body().regex("^.*Camel.*\\.$");
  ```
  ##### Using custom expectation example
+   - Below test cases expects messages arriving in the order 1, 2, 3 are accepted, whereas the order 1, 3, 2 is invalid and the test should fail.
  ```java 
  @Test
 public void testWithCustomExpression() throws Exception {
