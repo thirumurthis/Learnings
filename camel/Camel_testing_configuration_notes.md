@@ -33,16 +33,29 @@ import org.apache.camel.
 public class FirstTest extends CamelTestSupport {
    @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
-         return new FileHandlerRouter();  // we can driectly create a new Routebuilder() and override the configure method.
-  };
-}
+       return new FileHandlerRouter();  // we can driectly create a new Routebuilder() and override the configure method.
+     };
+   }
 
+   public void setUp() throws Exception {
+     clearupDir("target/input","target/output"); //Before startring the test case, cleanup the directory, the method is not Implemented here.
+     super.setUp();
+  }
+  
   @Test
-   public void testMoveFile() throws Exception {
+   public void testFileHandler() throws Exception {
      template.sendBodyAndHeader("file://target/input/", "test", Exchange.FILE_NAME, "message.txt"); // creates a file in.txt with test as content
      Thread.sleep(1000);
      File target = new File("target/output/message.txt");
      assertTrue("File not moved", target.exists());
+     
+     // VALIDATE THE CONTENT OF THE FILE, CAMEL PROVIDES CONVINENT convert system
+     File target = new File("target/output/message.txt");
+     assertTrue("File not moved", target.exists());  // assert if file moved to output folder
+     
+     // Below we are using camel file-based converter, which is automatically identified by Camel.
+     String content = context.getTypeConverter().convertTo(String.class, target);
+     assertEquals("test", content);  //match the content of the file received.
    }
 }
  ```
@@ -50,7 +63,7 @@ public class FirstTest extends CamelTestSupport {
  ```java 
  import org.apache.camel.builder.RouteBuilder;
 
- public class FileMoveRoute extends RouteBuilder {
+ public class FileHandlerRoute extends RouteBuilder {
      @Override
      public void configure() throws Exception {
      from("file://target/input").to("file://target/output");
