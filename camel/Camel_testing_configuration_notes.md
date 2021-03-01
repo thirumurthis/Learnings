@@ -8,7 +8,7 @@
   | org.apache.camel.test.junit4.CamelSpringTestSupport | base test class prepared for testing Camel routes defined using Spring DSL. This class extends CamelTest Support and has additional Spring-related methods. |
   
   #### Using `CamelTestSupport` class
-   - add below dependencies for camel test kit
+  - add below dependencies for camel test kit
  ```xml
 <dependency>
    <groupId>org.apache.camel</groupId>
@@ -23,14 +23,15 @@
   <scope>test</scope>
 </dependency>
  ```
-    - Sample java Test class to test
+  - Sample java Test class to test, below is sample to validate `java DSL` route
+   
  ```java
 import java.io.File;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.
 
-public class FirstTest extends CamelTestSupport {
+public class JavaDSLTest extends CamelTestSupport {
    @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
        return new FileHandlerRouter();  // we can driectly create a new Routebuilder() and override the configure method.
@@ -59,7 +60,7 @@ public class FirstTest extends CamelTestSupport {
    }
 }
  ```
-    - Router class, that needs to be tested
+  - Router class, that needs to be tested
  ```java 
  import org.apache.camel.builder.RouteBuilder;
 
@@ -69,5 +70,38 @@ public class FirstTest extends CamelTestSupport {
      from("file://target/input").to("file://target/output");
     }
 }
+```
+
+#### Using the `SpringCamelTestSupport` class can be used for `Spring DSL` xml based route testing.
+ - in this case the `testFileHandler()` and `setUp()` method remains the SAME as in the above example.
+```java
+import org.apache.camel.Exchange;
+import org.apache.camel.test.junit4.CamelSpringTestSupport;
+import org.junit.Test;
+import org.springframework.context.support.AbstractXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+public class SpringDSLTest extends CamelSpringTestSupport {
+
+     protected AbstractXmlApplicationContext createApplicationContext() {
+        return new ClassPathXmlApplicationContext("context/camel-context.xml");  // we can also use FileSystemXmlApplicationContext as well.
+      }
+   //.... the setUp() and testFileHandle() method are same as the above example
+ }
+```
+
+ - The `context/camel-context.xml`, spring based routes
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+  
+  <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+    <route>
+       <from uri="file://target/input"/>
+       <to uri="file://target/output"/>
+    </route>
+  </camelContext>
+</beans>
 ```
 
