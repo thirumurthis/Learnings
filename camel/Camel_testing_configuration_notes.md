@@ -352,4 +352,32 @@ public class SimpleMockTest extends CamelTestSupport {
  ```
   mock.allMessages().body().regex("^.*Camel.*\\.$");
  ```
-   
+ ##### Using custom expectation example
+ ```java 
+ @Test
+public void testWithCustomExpression() throws Exception {
+   final MockEndpoint mock = getMockEndpoint("mock:quote");
+   mock.expectedMessageCount(3);
+   mock.expects(new Runnable() {
+     public void run() {
+        int last = 0;
+        for (Exchange exchange : mock.getExchanges()) {
+	   int current = exchange.getIn().getHeader("Counter", Integer.class);
+	   if (current <= last) {
+   	      fail("Counter is not greater than last counter");
+	    } else if (current - last != 1) {
+	      fail("Difference found: last: " + last + " current: " + current);
+	   }
+	last = current;
+       }
+     } 
+   });
+    //Negative test case, since the expected counter is 1,2,3.   
+    template.sendBodyAndHeader("jms:topic:quote", "A", "Counter", 1);
+    template.sendBodyAndHeader("jms:topic:quote", "B", "Counter", 2);
+    // template.sendBodyAndHeader("jms:topic:quote", "C", "Counter", 3);   //enable this for positive test cases
+    template.sendBodyAndHeader("jms:topic:quote", "C", "Counter", 4);   //Disable for positive test cases
+    mock.assertIsNotSatisfied();
+ }
+ ```
+ 
