@@ -175,7 +175,45 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
      
      @EndpointInject in RouteBuilder class is used to dynamically inject endpoints for the environment. This can still be used in Java DSL also.
    ```
+   - To load the properties file from the Java DSL test case
+   ```java
+   //...
+   protected CamelContext createCamelContext() throws Exception {
+      CamelContext context = super.createCamelContext();
+      PropertiesComponent prop = context.getComponent("properties", PropertiesComponent.class);  // Override the camelcontext, and add the proeprties in Java DSL
+      prop.setLocation("classpath:filehandler-test.properties");
+      return context;
+    }
+    
+   protected RouteBuilder createRouteBuilder() throws Exception {
+      return return new RouteBuilder() {
+           public void configure() throws Exception {
+              from("file:{{file.input}}").to("file:{{file.output}}");  //This can also be a spearate java class extending routebuilder.
+           }
+       };
+    }
+   //... The same test class as above, where the testFileHandle() and setUp() method will be the same. 
+   ```
    
   ##### 2. Using Spring properties placeholder
+  ```xml
 
+  <context:property-placeholder properties-ref="properties"/>
+  <util:properties id="properties" location="classpath:filehandler-test.properties"/>
+  <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+     <endpoint id="inbox" uri="file:${file.input}"/>   <!-- In spring we cannot use ${} directly within the route, from -->
+     <endpoint id="outbox" uri="file:${file.output}"/> <!-- but, ${} can be used wit the endpoint, so we add spring properties like this -->
+     <route>
+        <from ref="inbox"/>
+        <to ref="outbox"/>
+     </route>
+  </camelContext>
+  ```
+-----------
+##### TIPS
+```
+Camel has a component - Jasypt component which can be used to encrypt sensitive information in the properties file. 
+Provides a jar to encrypt and decrypt values.
+```
+Refer [Camel component - Jasypt](https://camel.apache.org/components/3.8.x/others/jasypt.html)
 
