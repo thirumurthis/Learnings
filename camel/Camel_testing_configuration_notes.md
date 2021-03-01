@@ -275,4 +275,81 @@ public class SimpleMockTest extends CamelTestSupport {
   assertIsSatisfied() method runs for 10 seconds before timing out. 
   This can be changed to wait time with the setResultWaitTime(long timeInMillis) method for unit tests that run for a long time.
 ```
+ - The need for expression in mock expectations
+ - Below is an example, to check if the recieved message contains camel text in it.
+ - Below method can be added to the above SimpleMockTest class, so it can be executed.
+```
+@Test
+   public void testCamelMessage() throws Exception {
+	MockEndpoint mock = getMockEndpoint("mock:quote");
+	mock.expectedMessageCount(2);
+	template.sendBody("jms:topic:quote", "Hello Camel");
+	template.sendBody("jms:topic:quote", "Camel rocks");
+	
+	assertMockEndpointsSatisfied(); //this is much better method than assertIsSatisfied() refer notes below
+	
+	List<Exchange> list = mock.getReceivedExchanges();  // After asserting, the message from the exchange is recived
+	String body1 = list.get(0).getIn().getBody(String.class);
+	String body2 = list.get(1).getIn().getBody(String.class);
+	assertTrue(body1.contains("Camel"));
+	assertTrue(body2.contains("Camel"));
+    }
+```
+  - In the aobve method, the expectation to assert is performed in two places, one with assertMockEndpointsSatisfied and assertTrue area.
+ ##### This is where the `camel expectation expression` helps to assert with one expectation.
 
+  - Note:
+  ```
+  assertMockEndpointsSatisfied() - is a one-stop method for asserting all mocks.
+  assertMockEndpointsSatisfied() - method is more convenient to use than having to invoke the assertIsSatisfied() method on every mock endpoint.
+  -- 
+  getReceivedExchanges () - methods allows to work with the messages directly.
+  ```
+  - There are different methods provided in **`MockEndpoint`** listed below
+ 
+ | Method | Notes |
+ |-----| ---------|
+ | message(int index) | defines the expectation of n-th message recieved. |
+ | allMessages() | defines exepectation of all received messaage. |
+ | expectsAscending(Expression exp) | expects messages to arrive in ascending order. |
+ | expectsDescending(Expression exp) | message to arrive in descending order. |
+ | expectsDuplicates(Expression exp) | expects duplicate message. |
+ | expectsNoDuplicates(Expression exp) | no duplicate message. |
+ | expects (Runnable runthread) | for Custom expectation. |
+ 
+  - Below is similar to the testCamelMessage() methos but with expression
+ ```java
+ @Test
+ public void testCamelMessage() throws Exception {
+    MockEndpoint mock = getMockEndpoint("mock:quote");
+    mock.expectedMessageCount(2);
+    mock.message(0).body().contains("Camel");
+    mock.message(1).body().contains("Camel");
+    template.sendBody("jms:topic:quote", "Hello Camel");
+    template.sendBody("jms:topic:quote", "Camel rocks");
+    assertMockEndpointsSatisfied();
+  }
+ ```
+ - Other expectation validation
+ ```
+   mock.allMessages().body().contains("Camel");
+   
+   ## validation based on the header
+   mock.message(0).header("JMSPriority").isEqualTo(4);
+   
+ ```
+ - Note: There are use of `contains()` and `isEqualTo()` method which are predicates. Check the documentation for whole list
+ 
+ | Method |
+ |----- |
+ | contains (Object value) |
+ | endsWith (Object value) |
+ | startsWith (Object value) |
+ | isInstanceOf (Class type) |
+ | in(Object... values) |
+ | regex(String pattern) |
+ 
+ ```
+  mock.allMessages().body().regex("^.*Camel.*\\.$");
+ ```
+   
