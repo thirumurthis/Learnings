@@ -177,7 +177,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
    ```
    - To load the properties file from the Java DSL test case
    ```java
-   //...
+   //... Tis class is same test class as above, where the testFileHandle() and setUp() method retains. 
+   @Override
    protected CamelContext createCamelContext() throws Exception {
       CamelContext context = super.createCamelContext();
       PropertiesComponent prop = context.getComponent("properties", PropertiesComponent.class);  // Override the camelcontext, and add the proeprties in Java DSL
@@ -192,7 +193,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
            }
        };
     }
-   //... The same test class as above, where the testFileHandle() and setUp() method will be the same. 
+   //... 
    ```
    
   ##### 2. Using Spring properties placeholder
@@ -210,10 +211,68 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   </camelContext>
   ```
 -----------
-##### TIPS
+##### Camel provide encryption component for properties file.
 ```
 Camel has a component - Jasypt component which can be used to encrypt sensitive information in the properties file. 
 Provides a jar to encrypt and decrypt values.
 ```
 Refer [Camel component - Jasypt](https://camel.apache.org/components/3.8.x/others/jasypt.html)
+
+-----------
+### Creating `Mock Endpoint` for testing.
+
+```java
+import org.apache.camel.CamelContext;
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Test;
+public class SimpleMockTest extends CamelTestSupport {
+	
+	@Override
+	protected CamelContext createCamelContext() throws Exception {
+	CamelContext context = super.createCamelContext();  // we are similating SEDA component as JMS component
+	context.addComponent("jms", context.getComponent("seda"));   // OVERRIDE jms with SEDA component, since jms require connection factory of ActiveMq broker.
+	return context;                                              // For now, just for understanding overriding jms component with SEDA component. 
+	}
+
+	@Override
+	protected RouteBuilder createRouteBuilder() throws Exception {
+		return new RouteBuilder() {
+			@Override
+			public void configure() throws Exception {
+				from("jms:topic:quote").to("mock:quote");
+			}
+		};
+	}
+	
+	@Test
+	public void testQuote() throws Exception {
+		MockEndpoint quote = getMockEndpoint("mock:quote");  // To get the mock object, use getMockEndpoint() of CamelTestSupport class.
+		quote.expectedMessageCount(1);  // the expectation is set before the message is sent to the endpoint
+    
+		template.sendBody("jms:topic:quote", "Camel rocks");  //ProducerTemplate is used from the CamelTestSupport class.
+		quote.assertIsSatisfied();  // the assertion is verified using this statement. if single assertion fails Camel thorws exception.
+	}
+  
+  @Test
+  public void testQuotesContent() throws Exception {
+    MockEndpoint mock = getMockEndpoint("mock:quote");
+    mock.expectedBodiesReceived("Camel rocks",
+                   "Hello Camel");                // Set the expected Body message content to be received. Here values are passed using ProducerTemplate.
+                                                  // The order doesn't matter in this case.
+                                                  // In case if we have large number of test message, we can use List and pass the list to exepectedBodiesReceived(list)
+                                                  
+    template.sendBody("jms:topic:quote", "Camel rocks");
+    template.sendBody("jms:topic:quote", "Hello Camel");
+    
+    mock.assertIsSatisfied(); //assert the message
+  }
+}
+```
+- Notes: 
+```
+  assertIsSatisfied() method runs for 10 seconds before timing out. 
+  This can be changed to wait time with the setResultWaitTime(long timeInMillis) method for unit tests that run for a long time.
+```
 
