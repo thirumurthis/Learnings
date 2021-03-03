@@ -1,5 +1,5 @@
-### Camel Components
-#### camel stream
+# Camel Components
+## camel stream
   - Stream the data to console. Example route
 ```java
     // RouteBuilder info
@@ -27,7 +27,7 @@ from("stream:in?promptMessage=Enter something:").to("file:data/outbox?fileName=$
                                                                                // date format can be any format supported by the java.txtSimpleDateFormat.
 }
 ```
-#### camel ftp
+## camel ftp
    - `ftp` component inherits all the feature of the `file` component with few more options
    - The ftp component is not part of the camel-core package, add below dependency
 ```xml
@@ -87,6 +87,12 @@ public class InvokeMainCamelFTPSpring {
 ```
  - To spin up an embedded FTP server, [check the link](https://cwiki.apache.org/confluence/display/FTPSERVER/Embedding+FtpServer+in+5+minutes)
 
+Output:
+
+![image](https://user-images.githubusercontent.com/6425536/109747762-975ca080-7b8c-11eb-9a75-1acfc95b2959.png)
+
+![image](https://user-images.githubusercontent.com/6425536/109747989-f15d6600-7b8c-11eb-91e1-bc6297fc86e4.png)
+
 #### To spin up an embedded server use below code
  - also check this link for [more info](https://www.programmersought.com/article/8525219396/).
 ```java
@@ -145,6 +151,35 @@ public class FtpServerEmbedded {
    }
 }
 ```
+ - Dependency for FTP server
+```
+<dependency>
+    <groupId>org.apache.mina</groupId>
+    <artifactId>mina-core</artifactId>
+    <version>2.0.13</version>
+</dependency>
 
-#### camel file
+ <dependency>
+    <groupId>org.apache.ftpserver</groupId>
+    <artifactId>ftplet-api</artifactId>
+    <version>1.1.1</version>
+</dependency>
+ <dependency>
+    <groupId>org.apache.ftpserver</groupId>
+    <artifactId>ftpserver-core</artifactId>
+    <version>1.1.1</version>
+    <!-- <scope>test</scope> -->
+</dependency>
+ <!-- version of slf4j, check the cwiki apache documentation // version used 1.7.25 -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>${slf4j-version}</version>
+</dependency>
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-log4j12</artifactId>
+    <version>${slf4j-version}</version>
+</dependency>
+```
 
