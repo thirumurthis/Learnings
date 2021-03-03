@@ -121,7 +121,7 @@ public class FtpServerEmbedded {
 	  
 	  PropertiesUserManagerFactory userManagerFactory = new PropertiesUserManagerFactory();
     //Create this file in resources with blank content.
-	  userManagerFactory.setFile(new File("C:\\thiru\\Java9_learning\\learn2\\workspace\\CamelProj1\\resources\\myuser.properties"));
+	  userManagerFactory.setFile(new File("C:\\thiru\\CamelProject\\resources\\myuser.properties"));
 	  
 	  UserManager um = userManagerFactory.createUserManager();
       
