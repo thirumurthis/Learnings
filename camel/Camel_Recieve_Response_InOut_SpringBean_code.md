@@ -1,7 +1,7 @@
 ### Example to recieve response.
 
 ```java
-package com.camel.demo.CamelProj1;
+package com.camel.demo.CamelProj;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -58,4 +58,33 @@ public class PrintBeanCamelUsageInOUT {
 		}
 	}
 }
+```
+- Bean class
+```java
+package com.camel.demo.CamelProj1;
+
+public class PrintBean {
+	public String sayHello() {
+		return "hello From Spring Bean";
+	}
+}
+```
+
+### Example of using bean using beanRef
+```java
+ 	SimpleRegistry registry = new SimpleRegistry();
+	registry.put("helloBean", new HelloBean());
+	context = new DefaultCamelContext(registry);
+	template = context.createProducerTemplate();
+	context.addRoutes(new RouteBuilder() {
+	       public void configure() throws Exception {
+	           from("direct:hello").beanRef("helloBean");
+                }
+	    });
+	context.start();
+        Object reply = template.requestBody("direct:hello", "World");
+	assertEquals("Hello World", reply);
+	template.stop();
+	context.stop();
+     }
 ```
