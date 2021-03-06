@@ -182,3 +182,30 @@ If we explicitly tell Camel to use the print method, we are still left with two 
    - If method name not specified, if there is only one method annotated with `@Handler` use that method.
    - If method name not specified, check the if there is only one method with only one parameter.
    - If method nmae not specified, find best matching method and use it.
+
+#### `@Handler` annotation
+   - With the above method-selection algorithm, lets check how the below bean method will be resolved
+```
+  from("direct:start").bean(PrintBean.class).to("log:reply");
+```
+  - Lets say the PrintBean class has below two methods with same type of arguments. 
+ ```java
+  public class PrintBean {
+     public String print(String message){
+        return "print: " + name;
+       }
+       
+     public String hello(String name){
+        return "hello "+ name +" !!";
+       }
+  }
+ ```
+  - In this case the Camel will throw, `AmbigiousMethodCallException` exception.
+ 
+ - **`How to resolve the above issue and make Camel to invoke correct method`**.
+   - By explicitly specifiying the method name in the bean() method. `from("direct:start").bean(PrintBean.class,"hello").to("log:reply");`
+   - Another way is to use `@Handler` annotation on one method, so will invoke this method by default.
+     - The @Handle is Camel specific annoation.
+ 
+ #### Bean parameter binding
+ - How Camel adapts to the parameter on the method signature. Any bean can have multiple parameters and camel has to pass meaningful values. This process is know as `bean parameter binding`.
