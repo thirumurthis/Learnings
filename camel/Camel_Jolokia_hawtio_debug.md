@@ -33,6 +33,15 @@ Route representation.
 
 ![image](https://user-images.githubusercontent.com/6425536/102035498-5f0baa00-3d75-11eb-9484-1e5103388023.png)
 
+Note: By default the JMX is disabled in camel 3.0, so add below depedency
+```xml
+<dependency>
+  <groupId>org.apache.camel</groupId>
+  <artifactId>camel-management</artifactId>
+  <version>${camel.version}</version>
+</dependency>
+```
+
  - Below Spring code works
  ```java
  package com.learning.camel.examples.prog1;
