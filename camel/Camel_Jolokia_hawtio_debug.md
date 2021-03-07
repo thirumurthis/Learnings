@@ -20,7 +20,7 @@ Step 2:
  ![image](https://user-images.githubusercontent.com/6425536/102028302-5491e600-3d5e-11eb-8a9d-c73f71247221.png)
 
 Step 3:
-  - once the hawtio is up, issue `http://localhost.1:8080/hawtio` to open up the web module.
+  - once the hawtio is up, issue `http://localhost:8080/hawtio` to open up the web module.
   - add connect and since the java application is already started with jolokia, use the instance `http://127.0.0.1:8778/jolokia`
 
 ![image](https://user-images.githubusercontent.com/6425536/102028381-c2d6a880-3d5e-11eb-909a-0ec9dce17ef7.png)
