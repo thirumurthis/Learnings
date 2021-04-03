@@ -1,5 +1,13 @@
-
-History of distributed API's:
+### REST - REpresentation State Transfer
+  - Concept includes:
+    - Seperation of client and server
+    - Server request are stateless
+    - Cacheable request
+    - Uniform Interface
+  
+  Note: Introduced by Roy Fieldings doctoral  dissertion.
+  
+#### History of distributed API's:
 - Browser to Server communitcation 
    - XMLHTTP
    - REST
@@ -76,4 +84,7 @@ To view the request content:
  $ curl someweb.com -i
  ## -i will list the details of the response and the content from server as well
  ```
+ 
+ ##### Postman - can also be used to achive what `curl` command displayed.
+  - check the github.com, where the api is designed to view pulbic info, URL: "https://api.github.com/users/thirumurthis"
  
