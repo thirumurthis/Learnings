@@ -21,3 +21,5 @@ History of distributed API's:
      - Status (did the request succeed, failed)
      - Header (tells the body of the content type : text)
      - Content (response text from server)
+
+### HTTP Reqeuest and response is stateless, short lived.
