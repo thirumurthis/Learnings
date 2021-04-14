@@ -88,3 +88,64 @@ To view the request content:
  ##### Postman - can also be used to achive what `curl` command displayed.
   - check the github.com, where the api is designed to view pulbic info, URL: "https://api.github.com/users/thirumurthis"
  
+ 
+ ### Association
+   - URI Navigation on sub-objects
+```
+## Example
+/api/customers/123/Invoices  -> specifies the invoices of the customer 123
+/api/movies/superman/ratings
+/api/invoices/2020-01-24/payments
+```
+ If the `/api/invoices` and `/api/customers/123/invoices` should return the same format of the result, first might be List for all the customer, latter just invoiced of specific customer.
+  - details for specific customer with mulitple associaton.
+ ```
+ /api/customers/123/invoices
+ /api/customers/123/payments
+ /api/customers/123/shipments
+ ```
+ Don't use `query parameter` for the association. 
+ If we are performing any serach then use `query parameter`, like `/api/customer?id=123`
+ 
+ ### Paging 
+  - use the `query parameter or query string` for paging
+```
+ /api/sites?page=1&page_size=25
+  Note: page=1 should be sufficient but the page_size per page should have default count.
+```
+ The result in this case can wrap the result with next and privious as below
+```json
+{
+  totalResults : 100,
+  nextPage: "/api/sites?page=5"
+  prevPage: "/api/sites?page=3"
+  result : [
+   "key1" : "value1:,
+   ]
+}
+```
+ ### Error Handling
+   - In some case the REST can send Status code 400,404, etc.
+   - return the failure for security resason, for example in login page don't say password incorrect rather say invalid credentials.
+   - based on the requirement provide the error response in detail.
+  ```
+  400 BAD request
+  { "error" : "descrption missing" }
+  ```
+
+### Caching - required to be truly REST. 
+ - Not all the API requires it to be cache.
+ - HTTP Cache, using E-Tags
+ 
+ Client: 
+    - Sends a GET request for some response.
+    - The response will set the version in Etag in header.
+    
+ - When the client sends the **GET** request again with the Etag version, the server will check and send response with status 304 Not Modified. 
+ 
+ - If the Client want to update the data in a way of concurency, it can send a **PUT** request with `If-Match=version` (this is the version present in Client side that was received at some point of time), it is like saying the server, that client has this version and update data if the version is same as in the server. Else send `412 Precondition failed` if the version is not found.
+ 
+ ```
+ Strong caching 
+ Weak Caching
+ ```
