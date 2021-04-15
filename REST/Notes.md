@@ -168,4 +168,42 @@ To view the request content:
   - API's are not restful.
   - In case if we have some request to recalculate the total or some call to the server, etc. the one of operational API support.
   - This is most of performing operational activities. Always document the side effects.
+----------
 
+### Versioning 
+  - Based on the requirement
+
+#### Option 1:
+  - indicating version in the URI path, like https://exampleweb.com/api/v2/Invoices
+     - Pros: very clear to understand
+     - cons: when the version changes, the client needs to change the uri path.
+     - Not recommended.
+
+#### Option 2:
+  - Using query string like https://exampleweb.com/api/Invoices?v=2.0
+    - Pros: version is optionally included (we can always default to specific version)
+    - Cons: Too easy for clients to miss the needed version
+
+#### Option 3:
+   - Versioning with Headers (using X-Version, as below )
+   ```
+    GET /api/Invoices HTTP/1.1
+    Host: localhost:8080
+    Content-Type: application/json
+    X-Version: 2.0
+   ```
+     - Pros: Separates versioning from REST API
+             version is highly decoupled as the version can be added by an interceptor that is handling the API has to put this version in header.
+     - Cons: Requires to additional efforts to add Headers to add request or manipulate the headers.
+    
+ #### Options 4:
+   - Versioning using Accept Headers
+   ```
+    GET /api/Invoices HTTP/1.1
+    Host: localhost:8080
+    Content-Type: application/json
+    Accept: application/json; version=2.0
+   ```
+      - Pros: No need to create own custom headers. 
+              The response can include the version along with the  
+      -           
