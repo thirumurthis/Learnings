@@ -149,3 +149,17 @@ To view the request content:
  Strong caching 
  Weak Caching
  ```
+ -  The Etag is set in header of the response with a unique identifier. 
+ -  To indicate if the caching is weak Caching, we can add Etag with W/<unique identifier> in response.
+
+##### In order to check if the value is already cached 
+ - For GET indicate with 304
+   - The GET request can be sent with header `If-None-Match : "012312301231" ` (If-None-Match - holds the unique identifier already received).
+   - In the server side if that version identifier matches, then send `304 - NOT MODIFED` or `it's cached` status 
+   
+ - For PUT/DELETE indicate with 412 (the data to update/modify not same).
+    - The PUT request is sent with the header `If-Match : "01231111122" ` (if-match holds the unique version identifier already received).
+    - If we need to update the record in the server to udpate the field if match the version,
+      - if the version identifier in the Server is not the same, then we respond with `412 - Precondition Failed`.
+
+##### The browser doesn't send `no-cache` header, but tools like postman sets this value.
