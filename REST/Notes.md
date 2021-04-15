@@ -216,6 +216,7 @@ To view the request content:
     Accept: application/vnd.yourwebapp.camp.v1+json
  ```
  - Note: we have a Custom content-type per the spec, we it allows to start with "vnd" and .application name as content.
+   - example: `Cotent-Type: application/vnd.website.com.v1+json`, `Content-Type : application/vnd.testvalue.cont.v1.0+json`
  - In the above example, we have adding a version.
  - This is used for log lived application. (say there is a list of customer in an API today and two weeks latter there was an update on a customer - This will tell the version of API haven't changed, since the content-Type and the Accept header usually are married with the conten that is stored. Should tell what version of content that recived from the API. 
  - The Content-Type and Accept header Version tell 
