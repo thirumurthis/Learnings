@@ -162,4 +162,10 @@ To view the request content:
     - If we need to update the record in the server to udpate the field if match the version,
       - if the version identifier in the Server is not the same, then we respond with `412 - Precondition Failed`.
 
-##### The browser doesn't send `no-cache` header, but tools like postman sets this value.
+- Note: The browser doesn't send/set `no-cache` header, but tools like postman sets this value.
+
+#### Functional API
+  - API's are not restful.
+  - In case if we have some request to recalculate the total or some call to the server, etc. the one of operational API support.
+  - This is most of performing operational activities. Always document the side effects.
+
