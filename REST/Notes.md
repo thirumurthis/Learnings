@@ -222,4 +222,53 @@ To view the request content:
  - The Content-Type and Accept header Version tell 
     - Pros: Can version the payload and the API itself.
     - Cons: requires lots of development maturity, example: github
-     
+----------------
+
+### Security:
+   - Cross Domain Security 
+     - By default the browser doesn't allow this access data of other domain. (this prevents by running malicious code from running on the browser accessing different API)
+     - For Public API consider allow cross domains.
+     - For Private API, consider partner domains.
+  
+  - The Cross Domain Security is done usign Cross Origin Resource Sharing (CORS)
+     - Allow access fine grained control over which domain can access, what resources has access to domain.
+     - The `CORS is limited to the browser`, in other words if you are using an mobile/desktop app to access the API then CORS doesn't matter in accessing API.
+     - Most API will be support since most of the time it is accessed from browser. Considering this part of design is a best practice.
+
+- How CORS work:
+  - Some other website request API call to say a API you built.
+  - Step:1
+    - The browser sends a request, as below
+    ```
+    OPTIONS /api/movies HTTP/1.1
+    Origin: http://moviesite.com
+    Access-Control-Request-Method: POST
+    Host: localhost:8080
+    ```
+  - Step:2 
+    - The server sends a response, as below (stating the methods allows and the Domains that are allowed)
+    ```
+    Access-Control-Allow-Methods: GET, POST, OPTIONS
+    Acess-Control-Allow-Origin: http://moviesite.com
+    Content-Length: 0
+    ```
+  - Step:3
+    - The Browser then issues a CORS header
+    ```
+    POST /api/movies HTTP/1.1
+    Origin: http://moviesite.com
+    Access-Control-Request-Method: POST
+    Host: localhost:8080
+    ```
+#### Authorization and Authentication:
+  - Authentication => the person, information to determine identity, credentials/claims
+  - Authorization => what can you do, Rules about rights (roles, etc)
+ 
+ - Authentication type:
+  - `App authentication` - Identifying an app for accessing your API.
+    -  Example: in case of a Banking app, once the login is performed with username and password, the API not only validated the credientials also the APP.
+    - This is authenticating the developer itself
+    - This can be implemented using AppId + key, certificates.
+ 
+  - `User Authentication` - typical user authentication
+    - Identifying the users, usually using credentials, claims, oauth (third party authorization)
