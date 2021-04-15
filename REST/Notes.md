@@ -196,7 +196,7 @@ To view the request content:
              version is highly decoupled as the version can be added by an interceptor that is handling the API has to put this version in header.
      - Cons: Requires to additional efforts to add Headers to add request or manipulate the headers.
     
- #### Options 4:
+ #### Option 4:
    - Versioning using Accept Headers
    ```
     GET /api/Invoices HTTP/1.1
@@ -205,5 +205,20 @@ To view the request content:
     Accept: application/json; version=2.0
    ```
       - Pros: No need to create own custom headers. 
-              The response can include the version along with the  
-      -           
+              The response can include the version along with the content-Type header.
+      - Cons: Less discoverable than query strings
+#### Option 5:
+  - versioning using content-type
+ ```
+    GET /api/Invoices HTTP/1.1
+    Host: localhost:8080
+    Content-Type: application/vnd.yourwebapp.camp.v1+json
+    Accept: application/vnd.yourwebapp.camp.v1+json
+ ```
+ - Note: we have a Custom content-type per the spec, we it allows to start with "vnd" and .application name as content.
+ - In the above example, we have adding a version.
+ - This is used for log lived application.
+ - The Content-Type and Accept header Version tell 
+    - Pros: Can version the payload and the API itself.
+    - Cons: requires lots of development maturity, example: github
+     
