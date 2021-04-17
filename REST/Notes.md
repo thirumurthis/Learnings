@@ -272,3 +272,16 @@ To view the request content:
  
   - `User Authentication` - typical user authentication
     - Identifying the users, usually using credentials, claims, oauth (third party authorization)
+
+### Authentication:
+ - There are 4 common ways to do it. (there are other ways to do it)
+   - using `cookies`
+      - `cookies` authentication is commonly used. This easy to implement and subject to request forgery.
+   - using `Basic Auth`
+      - `Basic Auth` mostly passing the credientials in the header, and possible for getting exposed.  
+   - using `Token Auth`
+      - `Token Auth` using JWT kind of authorization.
+   - using `OAuth`
+     - Third party 
+   
+   
