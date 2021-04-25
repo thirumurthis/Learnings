@@ -355,7 +355,7 @@ postgres  | Superuser, create role.....
 
 #### Create a new database in postgres, from the container 
 ```
-##3 after exec to container and issue psql -U postgres
+### after exec to container and issue psql -U postgres
 
 $ create database dev;
 CREATE DATABASE
@@ -370,7 +370,7 @@ $ \c dev     ## \c database-name
  #### In order to connect to the psql of the docker container, install the psql/postgres in the laptop/host machine.
  
  ```
- > plsql -h localhost -p 5432 -U postgres
+ > psql -h localhost -p 5432 -U postgres
   Password for user postgres: admin/password
  # \c dev
  ```
