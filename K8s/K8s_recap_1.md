@@ -16,8 +16,8 @@
 ![image](https://user-images.githubusercontent.com/6425536/120377928-9f82c400-c2d2-11eb-97c9-a68cc9c46b38.png)
 
 
-#### Assuming already a ReplicaSet is defined and manged by the K8s cluster, what are different ways to scale up the replica sets (instance of pods).
-
+#### Assuming already a `ReplicaSet` is defined and manged by the K8s cluster, what are different ways to scale up the replica sets (instance of pods).
+  - Note: For replicaset the yaml file should contain the selector section
 ```
 ### update the existing yaml file, replicas : <desired number of replicas> and issue below command
 $ kubectl replace -f replicaset-definition.yaml
@@ -28,3 +28,8 @@ $ kubectl scale --replicas=6 -f replicaset-definition.yaml
 ### using kubectl scale command and existing replicaset name
 $ kubectl scale --replicas=6 replicaset name-of-replica-set-running
 ```
+
+#### Deployment representation within the nodes,
+
+![image](https://user-images.githubusercontent.com/6425536/120940352-b447c900-c6d1-11eb-982b-b7988fb7b773.png)
+
