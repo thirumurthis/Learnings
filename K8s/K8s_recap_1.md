@@ -64,3 +64,7 @@ spec:
           secretKeyRef:
 ```
 
+#### ConfigMaps
+  - In the Pod definition file, say we have many environment variable declared as if the PODS grow it would be difficult to manage those environment variables.
+  - `ConfigMaps` helps us to declare those environment variables (key value pair) centrally and refer it within the Pod definition file.
+
