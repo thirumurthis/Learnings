@@ -95,6 +95,17 @@ data:  # Not this is different for Pods/deployment - used to be spec, here it is
 envFrom: 
    - configMapRef:
        name: application-configuration 
+
+## more example
+spec:
+  containers:
+    - name: test-container
+      image: k8s.gcr.io/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+      envFrom:
+      - configMapRef:
+          name: special-config
+          
 ```
  - through single Environment value
 ```
