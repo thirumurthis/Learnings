@@ -33,3 +33,34 @@ $ kubectl scale --replicas=6 replicaset name-of-replica-set-running
 
 ![image](https://user-images.githubusercontent.com/6425536/120940352-b447c900-c6d1-11eb-982b-b7988fb7b773.png)
 
+#### How to set `environment` variables. use the env array within the defintion yaml.
+ - The 
+
+Different ways of speicifying environment variables:
+```
+## 1. direct way, within the yaml file using plain key value pair approach
+...
+spec:
+  container:
+   - name: ...
+     ...
+     env: 
+       - name: ENV_KEY1
+         value: valueof1
+  ...
+  
+ ## 2. Environment variables, specified from the configMap
+ 
+ env: 
+    - name: ENV_KEY1
+      valueFrom:
+         configMapRef: 
+         
+ ## 3. Environment variables, specified from the Secret
+ 
+ env:
+    - name: ENV_KEY1
+      valueFrom:
+          secretKeyRef:
+```
+
