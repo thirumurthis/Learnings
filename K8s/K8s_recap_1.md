@@ -220,5 +220,10 @@ USER 1000
         capabilities:    # The capabilities is applicable only at the Container level, AT POD Level the Capabilites cannot be added. (NOTE)
            add: ["MAC_ADMIN"]   
  ```
- Note: when using the kubectl command to get the yaml file and at the POD level, if an securityContext needs to be added check if there is already a empty attribute created.
+ Note/TIP: 
+  - When generating the yaml file of a running pod using the kubectl command, if adding a `securityContext` attribute check if an empty one is already defined. if we provide multiple security context at the POD level, the kubectl apply command works without throwing any issues. (`$ kubectl exec pod-name -- whoami`)
+  - When enabling the capablilities in K8S yaml file, make user the runAsUser to be `root`
+  - enabling or adding "SYS_TIME" capablities on a ubuntu image enables to run the date -s command successfully `$ kubect exec pod-name -- date -s '19 APR 2021 11:14:00'`
+
+
  
