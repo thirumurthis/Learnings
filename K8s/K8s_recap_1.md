@@ -162,4 +162,6 @@ volumes:
   secret:
      secretName: test-secret # Secret name created either using command or definition yaml
 ```
+  - Note: when mounting a secret from volume, each attribute in secret is created as seperate file with value of the secret as content.
+  -   say, KEY1 will be the file and VALUE1 will be the content of the file if the secret was created with --from-literal=KEY1=VALEU1 
 
