@@ -220,4 +220,5 @@ USER 1000
         capabilities:    # The capabilities is applicable only at the Container level, AT POD Level the Capabilites cannot be added. (NOTE)
            add: ["MAC_ADMIN"]   
  ```
+ Note: when using the kubectl command to get the yaml file and at the POD level, if an securityContext needs to be added check if there is already a empty attribute created.
  
