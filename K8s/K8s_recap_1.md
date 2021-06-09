@@ -123,3 +123,43 @@ volumes:
     configMap:
       name: application-configuration 
 ```
+`Key Take` - when using configMapRef in yaml, it is an list use - under envFrom
+
+### Secrets:
+ - Like configMap, if wanted to store passwords in encrypted way we can use secrets.
+ - base64 encoded text.
+
+#### how to create secrets, in different apporach
+```
+## using command
+$ kubectl create secret generic <secret-name> --from-literal=KEY1=VALUE1 --from-literal=KEY2=VALUE2
+$ kubectl create secret generic test-secret --from-literal=User=VALUE1 --from-literal=Password=VALUE2
+## Creating an Yaml definition file and creating it.
+```
+#### Different ways to and associate the secrets as environment variable to a POD
+ - adding secret to pod as environment 
+```
+ ## Associating a secret as environment variable to POD
+ envFrom:
+   - secretRef:
+        name: test-secret  # <secret-name> created using command
+ ```
+ - adding single key from the secret as environment variable to the pod 
+ ```
+ ## Directly as single environment variable
+ 
+ env:
+ - name: DB_PASSWORD
+   valueFrom:
+       secretKeyRef:
+          name: <secret-name>
+          key: DB_Password  ## The key specified in the 
+```
+- adding secret from volume to the pod
+```
+volumes:
+- name: secret-volume
+  secret:
+     secretName: test-secret # Secret name created either using command or definition yaml
+```
+
