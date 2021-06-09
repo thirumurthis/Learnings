@@ -165,3 +165,59 @@ volumes:
   - Note: when mounting a secret from volume, each attribute in secret is created as seperate file with value of the secret as content.
   -   say, KEY1 will be the file and VALUE1 will be the content of the file if the secret was created with --from-literal=KEY1=VALEU1 
 
+### Secrutiy In docker and `Security context` in K8S:
+
+```
+## to run the docker process as different user other than root we can specify the user in either the docker command 
+$ docker run --user=1000 ubuntu sleep 1000
+
+## in case if we need to build the image to run the command using user 100 then specify the user in Docker file
+FROM ubuntu
+
+USER 1000
+```
+ #### Enabling and disabling Linux capablities:
+   - There are different linux capabilities like CHOWN, DAC, KILL, NET_BIND, SETPCAP, MAC_ADMIN, SYS_ADMIN, SYS_CHROOT, SETUID, etc.
+   - To check the list of capablity check the file (/usr/include/linux/capability.sh)
+   - **By default the docker runs the container with limited set of capabilities, so the process running within the container doesn't have disrupt host or other container running on the same host**
+   - To override the behaviour or add additional capabilities we can use `--cap-add` option
+   - To drop the capabilities use, `--cap-drop` option
+   - To run the container with all privileges enabled, use the `--privileged` flag option.
+   - In Docker this capabilities can be enabled/disabled as below 
+ ```
+ ### Below is the option to override the 
+ # enable
+ $ docker run --cap-add MAC_ADMIN ubuntu
+ 
+ # disable or drop privilege
+ $ docker run --cap-drop KILL ubuntu
+ 
+ 
+ # to enable all privileges
+ $ docker run --privileged ubuntu
+ ```
+ - Like Docker, we can add Linux capablilites as well.
+ - In K8S the container is encapsulated within the POD.
+    - The capabilities can be enabled at the POD level or Container level or both.
+      - by enabling the capablitlies at the pod level, it will be carried over to all the containers
+      - by enabling the capabilites at the container level, it will be available only to that container
+      - by enabling the capablitlies at both POD and Container, the container capablities will override the POD level capability
+  - Specifying security context using yaml file
+ ```
+ apiVersion: v1
+ kind: Pod
+ metadata:
+    name: app-pod
+ spec:
+   securityContext:     # this will enable the user privileges to run as 1000 not as root at the POD level
+     runAsUser: 1000
+   containers:
+   - name: ubuntu
+     image: ubuntu
+     command: ["sleep", "300"]
+     securityContext:
+        runAsUser: 1000
+        capabilities:    # The capabilities is applicable only at the Container level, AT POD Level the Capabilites cannot be added. (NOTE)
+           add: ["MAC_ADMIN"]   
+ ```
+ 
