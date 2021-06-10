@@ -230,3 +230,35 @@ USER 1000
      - Service Account - This is used by machines, or process. An account used by the application to interact with the Kubernetes cluster. Example, monitoring application Promethus uses the service account to poll the Kubernetes API for performance metrics.
      - User Account - This is used by human, like for administrator for manging the cluster, developer to develop and deploy applications, etc.
  
+ #### To Create a service account use
+ ```
+ ## create service account
+ $ kubectl create serviceaccount <serviceaccount-name>
+  $ kubectl create serviceaccount appaccess-sa
+ 
+ ## list the service accounts
+ $ kubectl get serviceaccount 
+ 
+ ## describing the service account
+ $ kubectl describe serviceaccount appaccess-sa
+ ```
+  - Note: The service account will create an Token automatically.
+  - The serviceaccount token must be used by the external application while authenticating to Kubernetes API.
+ - When creating the Service Account:
+    - First creates the Service account object
+    - Then generates a token for Service account
+    - Then creates a secret object and stores that token inside that secret object.
+    - The secret object is then linked to the service account. 
+    - This token can be used as authentication Bearer token while making call to access REST API.
+      - In Curl command we can provide this bearer token ` curl <rest-url-of-application> -k --header "Authorization: Bearer <token>`;
+
+In general:
+  - Create a service account
+  - Assign right permission using RBAC mechanism
+  - Export the service account token, to third party to access the application.
+
+What can be done if the third party application is running/hosted with the same K8S cluster where the REST API is running.
+ - In this case then, simply mount the service token secret as a volume inside the pod hosting the third party application itself.
+ - No need to provide this token manually.
+
+Each namespace has its default service account, and its token is automatically mounted to the pod.
