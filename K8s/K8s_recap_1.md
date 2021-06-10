@@ -261,4 +261,4 @@ What can be done if the third party application is running/hosted with the same 
  - In this case then, simply mount the service token secret as a volume inside the pod hosting the third party application itself.
  - No need to provide this token manually.
 
-Each namespace has its default service account, and its token is automatically mounted to the pod.
+Note: Each namespace has its default service account and token created, the tockens are automatically mounted as volumes to the pod when Pods are created under the namespce.
