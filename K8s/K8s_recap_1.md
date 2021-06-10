@@ -33,8 +33,7 @@ $ kubectl scale --replicas=6 replicaset name-of-replica-set-running
 
 ![image](https://user-images.githubusercontent.com/6425536/120940352-b447c900-c6d1-11eb-982b-b7988fb7b773.png)
 
-#### How to set `environment` variables. use the env array within the defintion yaml.
- - The 
+#### How to set `environment` variables and use it in pods, use the `env` array within the defintion yaml and other approach.
 
 Different ways of speicifying environment variables:
 ```
