@@ -64,7 +64,9 @@ spec:
           secretKeyRef:
 ```
 
-#### ConfigMaps
+-----------------------------------------------
+
+### ConfigMaps
   - In the Pod definition file, say we have many environment variable declared as if the PODS grow it would be difficult to manage those environment variables.
   - `ConfigMaps` helps us to declare those environment variables (key value pair) centrally and refer it within the Pod definition file.
 
@@ -125,6 +127,8 @@ volumes:
 ```
 `Key Take` - when using configMapRef in yaml, it is an list use - under envFrom
 
+----------------------------
+
 ### Secrets:
  - Like configMap, if wanted to store passwords in encrypted way we can use secrets.
  - base64 encoded text.
@@ -165,7 +169,9 @@ volumes:
   - Note: when mounting a secret from volume, each attribute in secret is created as seperate file with value of the secret as content.
   -   say, KEY1 will be the file and VALUE1 will be the content of the file if the secret was created with --from-literal=KEY1=VALEU1 
 
-### Secrutiy In docker and `Security context` in K8S:
+---------------------
+
+### `Security context` in K8S (security in docker):
 
 ```
 ## to run the docker process as different user other than root we can specify the user in either the docker command 
@@ -225,6 +231,8 @@ USER 1000
   - When enabling the capablilities in K8S yaml file, make user the runAsUser to be `root`
   - enabling or adding "SYS_TIME" capablities on a ubuntu image enables to run the date -s command successfully `$ kubect exec pod-name -- date -s '19 APR 2021 11:14:00'`
 
+---------
+
 ### Service Accounts:
   - Type of Accounts :
      - Service Account - This is used by machines, or process. An account used by the application to interact with the Kubernetes cluster. Example, monitoring application Promethus uses the service account to poll the Kubernetes API for performance metrics.
@@ -262,3 +270,23 @@ What can be done if the third party application is running/hosted with the same 
  - No need to provide this token manually.
 
 Note: Each namespace has its default service account and token created, the tockens are automatically mounted as volumes to the pod when Pods are created under the namespce.
+
+ - The default service account has restriction, and is automatically attached to the pod when created.
+ - If we need to attach a different service account that was created, we can update the Pod defintion yaml file (or deployment file)
+
+```
+spec:
+   containers: 
+     - name: nginx
+       image: nginx
+       serviceAccount: <service-account-newly-created>
+``` 
+
+- In order to tell the pods not to use/mount the default service token we can use below attribute `automountServiceAccountToken`:
+```
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
+```
