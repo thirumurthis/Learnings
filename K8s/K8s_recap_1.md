@@ -225,5 +225,8 @@ USER 1000
   - When enabling the capablilities in K8S yaml file, make user the runAsUser to be `root`
   - enabling or adding "SYS_TIME" capablities on a ubuntu image enables to run the date -s command successfully `$ kubect exec pod-name -- date -s '19 APR 2021 11:14:00'`
 
-
+### Service Accounts:
+  - Type of Accounts :
+     - Service Account - This is used by machines, or process. An account used by the application to interact with the Kubernetes cluster. Example, monitoring application Promethus uses the service account to poll the Kubernetes API for performance metrics.
+     - User Account - This is used by human, like for administrator for manging the cluster, developer to develop and deploy applications, etc.
  
