@@ -289,3 +289,37 @@ spec:
       image: nginx
       automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
 ```
+---------------------------
+
+### Resource within container (request and limits of resources)
+  - The resource like CPU and Memory can be limited at a namespace level using `LimitRange`
+     - `LimitRange` type can be used to specify the `min` and `max` memory and Cpu usage of pod or container within the namespace. 
+     - The memory and cpu resource can be requested and set to limit for a container in pod defintion file as well
+     ```
+     spec:
+        - name: container-name
+          resources:
+             limits:
+                memory: "200Mi"   # note the double quotes, Mi is mibibytes not megabytes for megabytes specify 200M
+                cpu: "1"
+             requests:
+                memory: "100Mi:   # when creating the pod Kubelet will use this as a minimum level to schedule the pods on the node.
+                cpu: "0.5"
+     ```
+     - Note: At container level, if only the limits - is set in definition file after creating the pod the requested memory/cpu will be same as the limit value
+     -       At container level, if only the requests - is set in defintion file after creating the pod the limit will be the max (utilizes the all available in the Node)
+     -       Requests attribute memory/cpu should always be less than the limit attribute value.
+     ```
+     Note: If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes automatically assigns a memory request that matches the limit.
+     Similarly, if a Container specifies its own CPU limit, but does not specify a CPU request, Kubernetes automatically assigns a CPU request that matches the limit.
+     ```
+  - `ResoruceQuota` can also be used to hard limit for number of resources that can be created like pods, service, deployment, etc. in the namespace
+      - First create the namespace, and then create the resourceQuota using `$ kubectl create resourcequota rq1 -n <name-space>` or using `yaml resource definition file`.
+      - using `$ kubectl describe resourcequota rq1 -n <name-space>` will list the hard limit and usage limit.
+      
+##### Quality of service: 
+  - in the pod defintion file for container if below condition is set, the qosClass will be as listed:
+    - If the limits and requests of memory is `equal` - after creating the pod, using `kubectl get pods -o yaml` should see the status of qosClass: **`Guaranteed`**
+    - If the limits set `high` and requests set `low memory` (different) - after creating the pod, the pod definition yaml file the status of qosClass: **`Burstable`**
+    - if the limits and requests are `not set` - after creating the pod, the pod definition file will has the status of qosClass: **`BestEffort`**
+
