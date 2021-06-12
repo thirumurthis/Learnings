@@ -361,4 +361,10 @@ spec:
 
  - Note:  
     - If the node is set with taint effect of NoExecute, any pod running befor the taint applied will be evicted.
-  
+    - Taint and toleration doesn't always guarantee that the tolerated pod to be created on that specific tained node. The pod can be created in different node which doesn't have taints as well. In order restrict those pods to be created on specific node we can use `NodeAffinity`.
+    - Taint can be applied to Master node.
+        - The Scheduler doesn't schedule the pods on the master node.
+        - A taint is set on the Master node when the kubernetes is setup.
+        - Best practice, not to deploy any pods on the Master node.
+        - `$ kubectl describe node kubemaster | grep -i taints`
+    
