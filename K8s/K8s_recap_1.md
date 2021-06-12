@@ -297,6 +297,7 @@ spec:
      - The memory and cpu resource can be requested and set to limit for a container in pod defintion file as well
      ```
      spec:
+        containers:
         - name: container-name
           resources:
              limits:
@@ -322,4 +323,42 @@ spec:
     - If the limits and requests of memory is `equal` - after creating the pod, using `kubectl get pods -o yaml` should see the status of qosClass: **`Guaranteed`**
     - If the limits set `high` and requests set `low memory` (different) - after creating the pod, the pod definition yaml file the status of qosClass: **`Burstable`**
     - if the limits and requests are `not set` - after creating the pod, the pod definition file will has the status of qosClass: **`BestEffort`**
+-----------------------------
 
+### Taint and Toleration:
+  - Taint is set at the `Node` level
+  - Toleration is set at the `Pod` level
+  
+##### How to create a taint?
+```
+$ kubectl taint nodes <node-name>  key=value:taint-effect
+## taint-effect defines what happens to the pod if they do not tolerate the taint.
+Three taint-effect 
+   - NoSchedule  [The pod will not be sceduled on that node at all.]
+   - PreferNoSchedule  [The system tries to avoid placing the pod on the tainted node, but that is not guaranteed.]
+   - NoExecute [ The new pods will NOT be scheduled on the tainted node, and existing pod if any running will be evicted if they don't tolerate the taint]
+```
+##### Using command 
+```
+$ kubectl taint node node1 app=frontend:NoSchedule
+```
+##### Using definition file of Pods
+```
+apiVersion: 
+kind: Pod
+metadata:
+   name: simple-pod
+spec:
+   containers: 
+   - name: nginx
+     image: nginx
+   tolerations:      # All the tolerations values should be in double quotes
+   - key: "app"
+     operator: "Equal"
+     value: "frontend"
+     effect: "NoSchedule"
+```
+
+ - Note:  
+    - If the node is set with taint effect of NoExecute, any pod running befor the taint applied will be evicted.
+  
