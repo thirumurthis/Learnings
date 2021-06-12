@@ -1,5 +1,5 @@
 ### Kubernetes Architecture
- - Below image depics the relationship between
+ - Below image depicts the relationship between
    - Node
    - Pod
    - Container
