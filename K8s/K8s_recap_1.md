@@ -368,3 +368,56 @@ spec:
         - Best practice, not to deploy any pods on the Master node.
         - `$ kubectl describe node kubemaster | grep -i taints`
     
+### Assing Pods to Nodes using `Node Selector` and `Node Affinity`:
+   - If we want a pod to be executed on a specific node, then we can specify that using `nodeSelector` attribute in the pod defintion file.
+   - In order to use the `nodeSelector`, create a label on the nodes or use the existing node.
+ -STEP1
+   - Creating a label for node
+   ```
+   $ kubectl label node <node-name> <label-key>=<label-value>
+   $ kubectl label node node01 nodelabel1=high-performance
+   
+   # to list the labels of the nodes
+   $ kubectl get nodes --show-labels
+   ```
+ -STEP2
+   - Using the node label in the pods definition file.
+  ```
+  spec:
+    containers:
+    - name: nginx
+      image: nginx
+    nodeSelector:
+        node1label: high-performance
+  ```
+  - Note: The `nodeSelector` option can isoloate the pod to run on a node. What happens if the node is not available or ready. What happens we need to create pod in different node when specific node is not available, or any of group of nodes.
+  
+  ##### Node Affinity is more expressive. since this allows express logics
+   - Node Affinity
+   - Inter-pod affinity/anti-affinity
+   
+  There are currently two types of node affinity, called `requiredDuringSchedulingIgnoredDuringExecution` and `preferredDuringSchedulingIgnoredDuringExecution`.
+  
+  ##### how to use NodeAffintiy:
+   - In the pod definition file
+  ```
+  spec:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - Key: nodelabel1
+              operator : In
+              values:
+                - high-performance
+                - ssd
+         preferredDuringSchedulingIgnoredDuringExeuction:
+         - weight: 1
+           preference:
+             matchExpressions:
+             - key: label1
+               operator: In
+               values:
+                 - labelvalue
+  ```
