@@ -421,3 +421,27 @@ spec:
                values:
                  - labelvalue
   ```
+-----------
+### Job
+  - In order to run a batch process we can use JOBs. The same can be achived to some extent with pods, when the restartPolicy is set to Never or OnFailure.
+     - But pods try to restart often restartPolicy can help on it, but if we want the job to run for 3 successful completion and stop we need to use jobs.
+  - To create the job definition file use below command
+  ```
+  $ kubectl create job job-name --image=<image-name> -o yaml --dry-run=client
+  ```
+  - By default the job will try to execute 6 times to achive competion. This can be increased by specifying the `backoffLimit` properties in the Job.
+  - `completions: <number>` is used to tell the job, it should completed if there are atleast <number> of successful completions.
+  - proeprty `parallelism: <number>` is used to create <number> of jobs parallely till the successful job completion is reached. 
+
+------------
+### CronJob
+  - To create the defintion file for the crontjob use below command
+  ```
+  $ kubect create cronjob <job-name> --image=<image-name> --schedule="10 10 * * *" -o yaml --dry-run=client > cronjob1.yaml
+  ```
+  
+  - After running creating the cronjob if we need to suspend it, we can use patch command to do it.
+  ```
+  $ kubectl patch cronjobs <job-name> -p '{ "spec" : {"suspend" : true }}'
+  ```
+  - If the spec.suspend flag is set to True, the cron job will not be scheduled to run in the future. but the already running job will be in process.
