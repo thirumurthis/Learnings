@@ -445,3 +445,12 @@ spec:
   $ kubectl patch cronjobs <job-name> -p '{ "spec" : {"suspend" : true }}'
   ```
   - If the spec.suspend flag is set to True, the cron job will not be scheduled to run in the future. but the already running job will be in process.
+ -------------
+ 
+ ### Services
+
+   - Understanding the ports involved in the service resource type.
+ 
+ ![image](https://user-images.githubusercontent.com/6425536/121905948-7d7c3f00-ccdf-11eb-95e3-269a86d63ecb.png)
+
+ 
