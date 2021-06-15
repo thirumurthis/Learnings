@@ -453,4 +453,32 @@ spec:
  
  ![image](https://user-images.githubusercontent.com/6425536/121905948-7d7c3f00-ccdf-11eb-95e3-269a86d63ecb.png)
 
+    - Service object can be created without a selector, in that case the Endpoint is not automatically created, developer needs to create the Endpoint object associating the service.
+ 
+ ##### Discovering the Service: Two modes
+   - Environment variables 
+           - If the deployment is created first followed by service then the environment variable in the pod will not be able to use the service.
+           - The recommended approach is to create the Service first and thne Pod or deployment. 
+           - This option is available out of the box in kubernetes.
+           - `{SERVICE-NAME}_SERVICE_HOST` and `{SERVICE-NAME}_SERVICE_PORT`
+   - DNS 
+           - The CoreDNS option should be enabled to use this one.
+           - A cluster-Aware DNS server such as CoreDNS watches the API for new services and creates a set of DNS records for each one.
+           - If DNS has been enabled throughtout the cluster then all Pods should automatically be able to resolve Service by service name.
+           - If we use DNS based discovery approach, we don't need to worry about the order of service object creation.
+           - For example, 
+                - if a service called `my-service` in kubernetes namespace `my-ns`, the control plane and DNS service create a DNS record `my-service.my-ns`
+                - pods in the namespace `my-ns` should be able to find service by the name `my-service` or `my-service.my-ns`.
+                - pods in other namespace must qualify the name as `my-service.my-ns`.
+ 
+  ##### Headless Service:
+     - Sometimes we don't need load-balancing and a single service IP. In this case we can create a service called `headless`, by sepcifying the `spec.clusterIp : None`.
+     - For headless service, a service IP is not allocated.
+     - How DNS is defined automatically depends upon the selector defined 
+             - with selector (Endpoint is automatically created. DNS returns a type A record )
+             - with no selector (Endpoint is not automatically created) 
+        Check documentation for more details 
+ 
+ Note: the hostname of the pod, sub-domain for a pod can be set in the Pod definition file as well, check documentation in that case.
+ 
  
