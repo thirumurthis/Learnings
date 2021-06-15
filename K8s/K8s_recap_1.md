@@ -479,6 +479,6 @@ spec:
              - with no selector (Endpoint is not automatically created) 
         Check documentation for more details 
  
- Note: the hostname of the pod, sub-domain for a pod can be set in the Pod definition file as well, check documentation in that case.
- 
- 
+ Note: 
+    - The hostname of the pod, sub-domain for a pod can be set in the Pod definition file as well, check documentation in that case.
+    - `targetPort`: is the port the container accepts traffic on, `port:` is the abstracted Service port, which can be any port other pods use to access the Service 
