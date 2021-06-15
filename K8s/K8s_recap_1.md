@@ -139,6 +139,11 @@ $ kubectl create secret generic <secret-name> --from-literal=KEY1=VALUE1 --from-
 $ kubectl create secret generic test-secret --from-literal=User=VALUE1 --from-literal=Password=VALUE2
 ## Creating an Yaml definition file and creating it.
 ```
+
+Another example of creating secrets with tls key and certificate
+```
+$ kubectl create secret tls secret-name1 --key /tmp/nginx.key --cert /tmp/nginx.crt
+```
 #### Different ways to and associate the secrets as environment variable to a POD
  - adding secret to pod as environment 
 ```
