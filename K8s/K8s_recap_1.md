@@ -531,4 +531,70 @@ spec:
   Note 2:
     - The created ingress resource contains a `default-http-backend` service which is used to handle any request that doesn't configured in the ingress resource rules.
     - by creating a seperate service with the name `default-http-backend` configured to a application specific 404 or redirection, the traffic will be using that service info.
-   
+  
+  Note 3:
+    - When setting up the NGINX controller, usuall the deployment deinfition is created and a service is exposed as NodePort. this opens up the node port to be accessed from external world.
+    - since the incomming traffic in handled by the NGINX ingress controller deployment, we have to configure ingress resource to access the pods via service set in backend property of the ingress definition.
+ 
+ --------------------------
+ 
+ ### Network policy
+    - Ingress
+    - Egress
+ - Within the cluster the created pods can communicate with each other since by default, it is created with Allow all.
+ - Using network policy we can controll the flow of traffic to the pods.
+ - The Ingress is incoming traffic, Egress is the outgoing traffic from that POD perspective.
+ 
+ ##### The ntework policy created gets associated to a pod, which is defined in the definition file under spec: section using `podSelector`.
+ - If the labels of the pod are placed in different namespace, even then the ingress traffic will be allowed if we restrict it.
+ - using the `namespaceSelector` (in AND) within the yaml array the ingress traffic is restricted to that pod and namespace only.
+
+ ```
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          user: alice
+      podSelector:
+        matchLabels:
+          role: client
+ ```
+ 
+ sample defintion file:
+ ```
+ apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 172.17.0.0/16
+        except:
+        - 172.17.1.0/24
+    - namespaceSelector:
+        matchLabels:
+          project: myproject
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+    - protocol: TCP
+      port: 6379
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 10.0.0.0/24
+    ports:
+    - protocol: TCP
+      port: 5978
+ ```
+ -------------------------
