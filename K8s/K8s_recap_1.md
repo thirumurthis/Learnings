@@ -487,3 +487,46 @@ spec:
  Note: 
     - The hostname of the pod, sub-domain for a pod can be set in the Pod definition file as well, check documentation in that case.
     - `targetPort`: is the port the container accepts traffic on, `port:` is the abstracted Service port, which can be any port other pods use to access the Service 
+
+ -----------
+ ### Ingress 
+     - Ingress controller :- 
+            - actual implementation of ingress. There are different types of implementation available NGINX Ingress controller is managed by K8S community.
+            - Other types available are trafeic, etc. check documentataion.
+     - Ingress Resources :- 
+            - This is the actual yaml definition file where the ingress rules are defined.
+ 
+     - An Ingress is connected to a service, using NodePort type service expose the worker node and port to external world which is a security risk. Ingress address that solution.
+     - Loadbalancer is an option provided by Cloud providers. 
+ 
+ Step 1: Expose a deployment or pod, as a service. Say the service name is service is web and port 8080 is exposed.
+ Step 2: Create a definition file for Ingress as below and pass the service name.
+ 
+ ```
+ apiVersion: networking.k8s.io/v1    ## Starting 1.20+ version use this version
+kind: Ingress
+metadata:
+  name: example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1        # this is also NGINX ingress controller specific check the documentation for more info
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix  # other types available and depends on the implemention. ( ImplementationSpecific and Exact are other values)
+            backend:
+              service:                 # in lower version this section is represented as serviceName and servicePort directly.
+                name: web
+                port:
+                  number: 8080
+ ```
+ 
+ Note:
+    - Creating multiple ingress definition will automatically identified by the Nginx ingress controller.
+    - Say, i have an ingress defintions i namespace-a, the service are exposed for wear, watch application in the same namespace.
+    - I have another application pay, which has a service in namespace-b and application also deployed in namespace-b.
+    - by creating an new ingress resource for the pay service under the namespace-b, without any host section added. The same domain name was able to access the application.
+ 
+ 
+                        
