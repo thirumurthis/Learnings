@@ -522,11 +522,13 @@ spec:
                   number: 8080
  ```
  
- Note:
+ Note 1 :
     - Creating multiple ingress definition will automatically identified by the Nginx ingress controller.
     - Say, i have an ingress defintions i namespace-a, the service are exposed for wear, watch application in the same namespace.
     - I have another application pay, which has a service in namespace-b and application also deployed in namespace-b.
     - by creating an new ingress resource for the pay service under the namespace-b, without any host section added. The same domain name was able to access the application.
  
- 
-                        
+  Note 2:
+    - The created ingress resource contains a `default-http-backend` service which is used to handle any request that doesn't configured in the ingress resource rules.
+    - by creating a seperate service with the name `default-http-backend` configured to a application specific 404 or redirection, the traffic will be using that service info.
+   
