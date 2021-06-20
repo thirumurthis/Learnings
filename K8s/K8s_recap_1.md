@@ -488,6 +488,17 @@ spec:
     - The hostname of the pod, sub-domain for a pod can be set in the Pod definition file as well, check documentation in that case.
     - `targetPort`: is the port the container accepts traffic on, `port:` is the abstracted Service port, which can be any port other pods use to access the Service 
 
+ ** IMPORTANT ** :
+   - If a deployment is created and a service is created, and for some reason if the service is not able to connect when using a temp pod.
+   - say, there is a deployment temp-deploy (label: id=app-deploy), the pod labels ( id=app-deploy), the service selector should be associated to the labels of the Pod not the deployment.
+ 
+ using temp pods to create command (curl, wget)
+ ```
+ $ kubectl -n <name-space> run --rm -i --image=nginx:alpine --restart=Never curl -m 2 <service-name>:<service-port-exposed>
+ 
+ $ kubectl -n <name-space> run --rm -i --image=busybox:stable --restart=Never wget -qO- <service-name>:<service-port-exposed>
+ ```
+  - As service can also be created using defintion yaml file, if there are some issues, probably might be mistake. check along with the debugging service.
  -----------
  ### Ingress 
      - Ingress controller :- 
