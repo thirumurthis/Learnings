@@ -79,6 +79,7 @@ Refer(1)[https://www.youtube.com/watch?v=wuHpqRJMh6Y]
   - First create an image and push to ACR.
   - 
   - STEP 1: Create a Dockerfile like below to create image.
+    - The project can be cloned fomr Microsoft repository in Git. Sample nodejs application
    ```
    FROM node:latest
    
