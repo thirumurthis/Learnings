@@ -32,3 +32,12 @@ spec:
       # this field is optional
       type: DirectoryOrCreate
 ```
+
+- Image used for elastic serach and kibana is as follows
+```
+### Elastic search
+image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+
+### Kibana
+image: kibana:6.4.2
+```
