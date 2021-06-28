@@ -25,20 +25,20 @@ source ~/.bashrc
 ```
 #### export dry run and yaml option in the shell
 ```
-export dr="--dry-run=client -o yaml"
+export do="--dry-run=client -o yaml"
 ```
 
 #### with all set above use below 
 ```
-$ k create deployment nginx --image=nginx $dr > nginx.yaml
+$ k create deployment nginx --image=nginx $do > nginx.yaml
 ```
 
 #### The deletion of pod and deployment sometime takes some time, use force to delete immediately
 ```
-export fk="--grace-period=0 --force"
+export now="--grace-period=0 --force"
 ```
 
 # to force kill your deployment after exporting the 
 ```
-$ k delete deployments.apps nginx $fk
+$ k delete deployments.apps nginx $now
 ```
