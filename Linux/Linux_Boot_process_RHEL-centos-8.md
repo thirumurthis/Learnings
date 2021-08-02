@@ -30,8 +30,8 @@ Steps involved in Linux boot process:
          - `systemd` instance from the `Initramfs` executes all units for `initrd.target` target. This includes mounting the root file system on disk on to the /sysroot directory (this is temporary).
          - Once the system boots up the kernel root FS switched from intiramfs root `/sysroot` to system rootfs (i.e `/`) and systemd re-executes as system version
       - `systemd` looks for default.target
-             - different target like `multi-user.target` or `gui.target`.
-             - system reads the file linked by /etc/systemd/system/default.target
-             - (for example, `/usr/lib/systemd/system/multi-user.target` to determin the defaut system target (equivalent to run level).
-             - The system target file defines the services that systemd starts.
+         - different target like `multi-user.target` or `gui.target`.
+         - system reads the file linked by /etc/systemd/system/default.target
+         - (for example, `/usr/lib/systemd/system/multi-user.target` to determin the defaut system target (equivalent to run level).
+         - The system target file defines the services that systemd starts.
 
