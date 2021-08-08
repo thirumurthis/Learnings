@@ -121,4 +121,15 @@ Note: At least __nine__ sub-strings of a match can be remebered and reused.
 
 `$ time ls` - prints time taken to execute the command
 
-`$ wathc ls -lrht` - monitors the ls command for every 2 seconds 
+`$ watch ls -lrht` - monitors the ls command for every 2 seconds 
+
+---------
+`$ scp -r folder <username>@<remote-server-host>:<destination-path>` - remote secure copy. -r recursively copies all files in a folder
+`$ scp -p file-to-copy <username>@<remote-server-host>:<destination-path>` - remove secure copy to preserve the metadata of files like created time, etc.
+`$ scp -C file-to-copy <username>@<remote-server-host>:<destination-path>` - compress and to copy data use -C 
+
+`$ scp -l 500 file-to-copy <username>@<remote-server-host>:<destination-path>` - copy files with low rate, useful when bandwidth is very low, here the copy data at 500 kbps bytes rate.
+----------
+
+
+
