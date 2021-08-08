@@ -117,3 +117,8 @@ The strings are referred to by the number in the order where matched, so \1 refe
 
 Note: At least __nine__ sub-strings of a match can be remebered and reused.
 
+------------
+
+`$ time ls` - prints time taken to execute the command
+
+`$ wathc ls -lrht` - monitors the ls command for every 2 seconds 
