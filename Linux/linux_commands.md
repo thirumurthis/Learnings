@@ -83,3 +83,51 @@ gpgcheck=0 # if this is 1, then specify the path name
 `$ setenforcing 0` - set the SELinux to permissive mode. {this makes the systemctl to refer the custom location other than /usr/local/bin
 `$ setenforcing 1` - set the SELinux to enforcing mode.
 
+-------
+`$ sed 's/<search-string>/<string-to-replace>/' <file-name-to-search>` - search and replace the string, in console.
+`$ sed 's#<search-string>#<string-to-replace>#' <file-name-to-search>` - using # instead of /
+
+`$ sed '2,$s/<search-string>/<string-to-replace>/' <file-name-to-search>` - to search from the second line onwards. 2 - in the first address is the line from which we wanted to make the substitution onwards. $ - in the second address is the end of the file 
+
+General format: ` $ sed [address, [address] ] <function> [arguuments ]`
+
+`$ sed '/<string-to-start-with>/s/<string-to-search>/<string-to-replace>/' <file-to-search`  
+
+Example : `$ sed '/john/s/doe/known/' text.txt` ( string john doe, will be replaced as john known.)
+
+`$ sed 's/[0-9][0-9]*/2&/' temp.txt` - To add leading 2 to the string matching the pattern.
+
+Example: above command will output
+
+input: "string 00190 hello test"  
+output: "string 200190 hello test"
+
+
+`$ sed 's/\([0-9]\)\([0-9]\)\([0-9]\)/\3\2\1/' text01.txt` - wrapping part of the search string in `\(` and `\)` cases them to be remembered.
+
+For example: reverse the string:
+inputs: 
+  "string 123 test1"
+  "string 200 test2"
+ouputs:
+  "string 321 test1"
+  "string 002 test2"
+
+The strings are referred to by the number in the order where matched, so \1 refers to the number 1, \2 refers to 2 and \3 refers to 3. In the replacement string the sequence \1, \2 and \3 is replaced by the third string, the second string and the first string respectively.
+
+Note: At least __nine__ sub-strings of a match can be remebered and reused.
+
+--------------------
+
+```
+# awktest.awk
+BEGIN {print "example" }
+/[0-9]+/ { for ( I=3; I <= NF; I++ )
+           printf "%s ", $I;
+           print $2
+           }
+END  { print NR, "records" }
+```
+
+`$ awk -f awktest.awk tempfile.txt`
+
