@@ -131,5 +131,15 @@ Note: At least __nine__ sub-strings of a match can be remebered and reused.
 `$ scp -l 500 file-to-copy <username>@<remote-server-host>:<destination-path>` - copy files with low rate, useful when bandwidth is very low, here the copy data at 500 kbps bytes rate.
 ----------
 
+`$ ps -fU <user-name>` - list the process specific to the user
+
+`$ ps -aux --sort=-pcpu,+pmem` - to sort the process with high memory Cpu and memory utilization. + and - used to sort that field.
+
+`$ ps -eo pid,ppid,cmd,i,%mem.%cpu | grep <some-process-name>` - ni is the nice value the priority value assigned to the process.
+
+`$ nice -10 sleep 900 &` - set the nice value for the sleep command in this case.
+`$ renice -10 -p <pid> ` - this will be used to change the nice value. This will be helpful for running any program.
+
+
 
 
