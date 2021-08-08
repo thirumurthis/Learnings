@@ -117,17 +117,3 @@ The strings are referred to by the number in the order where matched, so \1 refe
 
 Note: At least __nine__ sub-strings of a match can be remebered and reused.
 
---------------------
-
-```
-# awktest.awk
-BEGIN {print "example" }
-/[0-9]+/ { for ( I=3; I <= NF; I++ )
-           printf "%s ", $I;
-           print $2
-           }
-END  { print NR, "records" }
-```
-
-`$ awk -f awktest.awk tempfile.txt`
-
