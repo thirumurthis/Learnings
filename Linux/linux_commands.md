@@ -144,5 +144,14 @@ Note: At least __nine__ sub-strings of a match can be remebered and reused.
 
 `$ mount <remotehost>:<dirpath> <localpath>` - mounting path
 
+`$ df -h ` - list the mounted disk along with tmpfs (temp filesystem)
+`$ findmnt -S /dev/sda1` - displays the mount details
+`$ lsblk /dev/sda1` - displays the mount details
+
+`$ findmnt -nr -o target -S /dev/sda1` - return only the mountpoint.
+
+`$ grep /dev/sda1 /etc/mtab` - currently mounted filesystems
+
+`$ lsblk -f /dev/sda1` - also displays the mounted filesystems or mountpoint.
 
 
