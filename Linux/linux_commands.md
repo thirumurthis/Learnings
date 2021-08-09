@@ -140,6 +140,9 @@ Note: At least __nine__ sub-strings of a match can be remebered and reused.
 `$ nice -10 sleep 900 &` - set the nice value for the sleep command in this case.
 `$ renice -10 -p <pid> ` - this will be used to change the nice value. This will be helpful for running any program.
 
+------------
+
+`$ mount <remotehost>:<dirpath> <localpath>` - mounting path
 
 
 
