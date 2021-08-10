@@ -63,6 +63,7 @@ How to setup the Appstream and BaseOs:
   - if we had mounted the ISO file using Vmware or Virtualbox, this would be under the CD/DVD
   - copy the Appstream and BaseOs to /rpms/ (recursively)
 update the `/etc/yum.repos.d/` create a file Appstream.repo
+
 ```
 [AppStream]
 name=app stream repo
@@ -102,7 +103,6 @@ Example: above command will output
 input: "string 00190 hello test"  
 output: "string 200190 hello test"
 
-
 `$ sed 's/\([0-9]\)\([0-9]\)\([0-9]\)/\3\2\1/' text01.txt` - wrapping part of the search string in `\(` and `\)` cases them to be remembered.
 
 For example: reverse the string:
@@ -124,11 +124,15 @@ Note: At least __nine__ sub-strings of a match can be remebered and reused.
 `$ watch ls -lrht` - monitors the ls command for every 2 seconds 
 
 ---------
+
 `$ scp -r folder <username>@<remote-server-host>:<destination-path>` - remote secure copy. -r recursively copies all files in a folder
+
 `$ scp -p file-to-copy <username>@<remote-server-host>:<destination-path>` - remove secure copy to preserve the metadata of files like created time, etc.
+
 `$ scp -C file-to-copy <username>@<remote-server-host>:<destination-path>` - compress and to copy data use -C 
 
 `$ scp -l 500 file-to-copy <username>@<remote-server-host>:<destination-path>` - copy files with low rate, useful when bandwidth is very low, here the copy data at 500 kbps bytes rate.
+
 ----------
 
 `$ ps -fU <user-name>` - list the process specific to the user
@@ -157,4 +161,3 @@ Note: At least __nine__ sub-strings of a match can be remebered and reused.
 `$ lsblk -f /dev/sda1` - also displays the mounted filesystems or mountpoint.
 
 `$ fdisk -l` - details of mount endpoint
-
