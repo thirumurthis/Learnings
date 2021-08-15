@@ -34,7 +34,7 @@ $ npm install bootstrap
     <a class="navbar-brand">My App</a>
     <ul class="navbar-nav me-auto">
       <li class="nav-item">
-        <a class="nav-link">About This Site</a>
+        <a class="nav-link">Site</a>
       </li>
       <li class="nav-item">
         <a class="nav-link">Contact</a>
@@ -137,4 +137,32 @@ import { RouterModule } from '@angluar/router';
 imports: [..., RouterModule ]
 ...
 export class CoreModule { }
+```
+- To add details or content to the _Site_ link in the header component. refer `src/core/header.component.html`
+  - Execute below commend to auto generate the module and routing components 
+```
+$ ng generate module articles --route=articles --module=app-routing
+# --route option defines the url path of the feature that will be updated in the app-routing.module.ts, content like below will be generated
+//  const routes: Route [ ...{ path: 'articles', loadChildren: () => import('./articles/articles.module').then(m => m.ArticlesModule) }..]
+# --module option indicates the routing module that will define this routing configuration that include and activates articles feature
+
+## the above command creates src/app/articles with routed component and activated by default
+## the articels-routing.module.ts files is automatically created with the route configuration information
+## the routing info is also included in the main routing module (app-routing.module.ts)
+```
+  - The `articels-routing.module.ts` imports the RouterModule using `forChild` method to pass the routing configuration to the Angular route.
+```
+...
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]
+...
+```
+  - The `app-routing.module.ts` imports RouteModule using `forRoot` method.
+  - **IMPORTANT**: The **`forChild`** method is used in feature modules, whereas the **`forRoot`** method should be used only in the main application module.
+```
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+  ...
 ```
