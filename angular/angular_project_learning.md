@@ -75,3 +75,10 @@ imports: [ ...
 ]
 ...
 ```
+- Add the native component to the `src/app/app.component.html` 
+
+```html
+<app-header></app-header>
+<router-outlet></router-outlet>
+<app-footer></app-footer>
+```
