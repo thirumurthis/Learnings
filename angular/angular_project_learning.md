@@ -191,3 +191,114 @@ const routes : Routes [..
  - **IMPORTANT:** Define most specific routes first and then add any generic ones such as the default wildcard routes. Angular router parses the route configuration in the order that we have defined and follows a first match wins.
  - Adding the above and starting the ng serve opens the application with content from the `articles.component.html`.
 
+
+-------
+ ###### Using Scully to add some content to make this as a blog site.
+   - **Note:** Scully neeeds at least one route defined in an angular application to work correctly.
+ - Install the Scully library. within the Angular project from command prompt issue below command. This will download and install the Scully npm packages.
+```
+$ ng add @scullyio/init
+```
+  - It imports `ScullyLibModule`, into the main Angular application. check `app.module.ts` file for included libraries and imported modules.
+  - The command also creates a configuration file `scully.my-app.config.ts`. With 
+     - `projectRoot` : path of the source code of main Angular application (src)
+     - `projectName` : name of the main Angular application (my-app)
+     - `outDir` : output path of scully generated files. **_Note: This path should be different than the Angular CLI outputs. The angular cli output is configured in `angular.json`_**
+     - `routes` : contains the route configuration that will be used for accessing blog posts. (Scully will populate automatically) 
+
+###### Initialize blog page
+- Scully provides a specific angluar CLI schematic for initaizlizing an Angluar application, such as blog using markdown (.md) file. Use below command to start the configuration
+
+```
+$ ng generate @scullyio/init:markdown
+## ? what name do you want to use for module? <- type posts 
+## ? what slug do you want for the markdown file ? <- hit enter defaults to id
+## ? where do you want to store your markdown files? <- type mdfiles
+## ? under which route do you want your file to be requested? <- type posts
+```
+ - Now check the `scully-my-app.config.ts` file, routes will be updated accordingly.
+ - The `posts-routing.module.ts` file will be created with routing configuration
+    - `path` for the route is set to `:id` and activates PostsComponent. The `:` indicates that `id` is a route parameter defeined in the slug property defined earlier in command input.
+    - `posts.component.html` - contains `<scully-content></scully-content>`. This page can be customized except the above native html tag.
+  - The installation and configuration is complete.
+
+##### To display the content of the blog in site page (articles route)
+
+- in `articles.component.ts`, import the ScullyRoutesService and inject in constructor and add posts variable. In ngOnInit subscribe to the promise.
+```
+...ts
+import { ScullyRoute, ScullyRoutesService} from '@scullyio/ng-lib';
+
+// import rxjx
+import {Subscription} from 'rxjs';
+export class ArticlesComponent ...
+....
+//to store the scully published blogs
+posts: ScullyRotes[] = [];
+
+//To defined subscription for unsubscribing
+private routeSub : Subscription | undefined;
+
+constructor (private scullyService: ScullyRoutesService){ }
+....
+
+
+ngOnInit() : void{
+   this.scullyService.available$.subscribe(posts -> { this.posts = posts.filter(post => post.title); });
+}
+
+ngOnDestroy() : void {
+   this.routeSub?.unsubscribe();
+}
+```
+- the `available$` property of ScullyRoutesService is an `observable`. To retrive the values, we subscribe to it. The returned posts variable contains available routes of our angular application. _To avoid displaying routes other than those related to blog posts (such as the contact route), we filter ther results from the available$ property._
+
+##### Note: when we subscribe to an observable, we need to unsubscribe from it when our component no longer exits. (otherwise, this may cuse memory leaks in our application)
+- Lets reference the post variable in component.html
+```
+<div class="list-group mt-3">
+  <a *ngFor="let post of posts"
+    [routerLink]="post.route" class="list-group-item list-group-item-action">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">{{post.title}}</h5>
+    </div>
+    <p class="mb-1">{{post.description}}</p>
+  </a>
+</div>
+```
+ - routerLink in the html component, is surrounded by [] called `property binding`.
+    - The routerLink directive is bind to the route property of the post `template reference variable`.
+    
+#### IMPORTATN: Angluar services that provides initialization logic to a component should be called inside the `ngOnInit` method and not in constructor because it is easier to provide mocks about these services when unit testing the component.
+
+- Now we need to publish the scully blogs, build the angular application
+```
+$ ng build
+
+$ npm run scully   ## Execute this command everytime we have added the blog posts.
+## The above command will create scully-route.json file inside src/assests,
+## which contains the routes of our angular application
+
+$ npm run scully:serve
+## above command will start two web servers: 
+### one contains static prerendered version of website built using scully
+### another the Angular live version of our application
+```
+ - Even with the above the blogs will not be listed in the application.
+ - Edit the `*.md` file generated under the `mdfiles`, make publish to `true`, remove slugs if exists. With this edit again issue ` $ ng run scully` then `$ ng run scully:serve`.
+
+- To add more blog, in the md file, issue below command and provide inputs when prompted.
+```
+$ ng generate @scullyio/init:post --name="Angular and Scully"
+
+# ? what's the target folder for this post? <- type mdfiles
+```
+  - Above command would have created a `angular-and-scully.md` file under `mdfiles` folder.
+  - Edit the file, update `publish` from `false` to `true`, add some content in md format.
+     ```
+      this is test content
+      - https://angular.io
+     ```
+ - Now issue `$ ng run scully` and `$ ng run scully:serve`. The application should be up under `http://localhost:1668`
+ - `dist/static` folder will contain prerendered version of our angluar application generated from `npm run scully` command.
+ - `ng  build` command builds our application and outputs files in `dist/my-app` folder.
