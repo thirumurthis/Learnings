@@ -83,3 +83,58 @@ imports: [ ...
 <app-footer></app-footer>
 ```
 #### Note: By convention, group specific features to sperate modules. Angular modules that contains functionality for a specific feature are called feature modules.
+
+- Adding linkable Contact in the header section.
+   - We will create a new module, for contact. For linkable contact we use routeLink to route to contact module.
+```
+$ ng generate module contact
+$ ng generate component contact --path=/src/app/contact --module=contact --export --flat
+# -- flat - make sure to create the component within the same folder of contact module. (not like the core/header)
+```
+  - Update the `contact.component.html` with the content that needs to be displayed
+```html
+<div class="card mx-auto text-center border-light" style="width: 18rem;">
+   <div class="card-body">
+    <h5 class="card-title">My first Application </h5>
+    <p class="card-text">
+      Simple project for learning purposes, uses scully (jamstack)
+    </p>
+    <a href="https://angular.io/" target="_blank" class="card-link">Angular</a>
+    <a href="https://scully.io/" target="_blank" class="card-link">Scully</a>
+  </div>
+</div>
+```
+   - update routing `app-routing.module.ts` to import the contact component and define route for contact
+```
+...
+import { ContactComponent } from './contact/contact.component';
+...
+const routes: Route [
+ { path : 'contact' , component: ContactComponent }   // Make a Note that there is NO "/" in the path contact. "/" adds different meaning
+ ];
+...
+```
+   - Import the ContactModule to the `app.module.ts`, and also add it under imports array
+```
+import { ContactModule} from './contact/contact.module';
+...
+imports : [ ...
+   ContactModule         # Note : Imports in module require module to import so components in that module can be used.
+ ]
+```
+   - update `src/core/header.component.html` to include routeLink
+```html
+...
+<li class="nav-item">
+  <a routerLink="/contact" routerLinkActive="active" class="nav-link">Contact</a>
+</li>
+...
+```
+ - IMPORTANT: To make sure the routeLink is add to `core.module.ts`, import the `RouterModule` to the coreModule where header component is added.
+```
+import { RouterModule } from '@angluar/router';
+...
+imports: [..., RouterModule ]
+...
+export class CoreModule { }
+```
