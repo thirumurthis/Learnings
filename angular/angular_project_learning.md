@@ -1,3 +1,10 @@
+Module contains many component.
+  - In module other modules needs to be imported
+  - In module other component needs to be delared (in declearation)
+  - bootstrap property tells which component is going to be started.
+
+--------------
+
 - Create a new angular project 
 ```
 $ ng new my-app --routing --style=scss 
