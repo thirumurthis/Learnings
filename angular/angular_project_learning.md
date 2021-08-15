@@ -166,3 +166,24 @@ $ ng generate module articles --route=articles --module=app-routing
   exports: [RouterModule]
   ...
 ```
+- Update the `src/core/header.component.html` to include the routerLink 
+```html
+ <a routerLink="/articles" routerLinkActive="active" class="nav-link">Site</a>
+```
+
+- With the updates till now `$ ng serve` will now, enabled the Sites link in the header to display the default content. Using Dev tools in Browser, when clicking the Site, the `articles-articles-module.js` file is requested.
+
+- Now in order to display the Site with the `artice.component.html` we need to add default routes to `app-routing.module.ts`
+  - `''` in the path is default 
+  - `'**'` is wildcard route, which is triggered when the router cannot match a requested URL with a defined route.
+```
+..
+const routes : Routes [..
+  { path: '', pathMatch: 'full', redirectTo: 'articles'},
+  { path: '**', redirectTo: 'articles'}
+  ];
+ ...
+```
+ - **IMPORTANT:** Define most specific routes first and then add any generic ones such as the default wildcard routes. Angular router parses the route configuration in the order that we have defined and follows a first match wins.
+ - Adding the above and starting the ng serve opens the application with content from the `articles.component.html`.
+
