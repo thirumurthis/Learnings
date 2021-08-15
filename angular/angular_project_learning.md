@@ -16,9 +16,13 @@ $ npm install bootstrap
 ```
  - Import the scss file in the `src/styles.scss` file to apply this style globally to all components.
 ```
+  # below for angular 8 version
    @import "~/bootstrap/scss/bootstrap";
    // note the ~ refers to the /node-modules folder within the my-app folder, where the package are installed.
    // the .scss extension is not included which is relative path
+  
+  # for angluar 12 
+  @import "../node_modules/bootstrap/scss/bootstrap.scss";
 ```
 - For the project/application lets add header and footers page.
     - For Header lets create new module called core, this is core module. We then add components to this module to include the html content of header.
