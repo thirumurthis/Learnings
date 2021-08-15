@@ -82,3 +82,4 @@ imports: [ ...
 <router-outlet></router-outlet>
 <app-footer></app-footer>
 ```
+#### Note: By convention, group specific features to sperate modules. Angular modules that contains functionality for a specific feature are called feature modules.
