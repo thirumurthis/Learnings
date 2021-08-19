@@ -123,7 +123,7 @@ const routes: Route [
 import { ContactModule} from './contact/contact.module';
 ...
 imports : [ ...
-   ContactModule         # Note : Imports in module require module to import so components in that module can be used.
+   ContactModule         # Note : Imports here requres modules, doing so those components in that module can be used.
  ]
 ```
    - update `src/core/header.component.html` to include routeLink
@@ -244,7 +244,7 @@ constructor (private scullyService: ScullyRoutesService){ }
 
 
 ngOnInit() : void{
-   this.scullyService.available$.subscribe(posts -> { this.posts = posts.filter(post => post.title); });
+   this.routeSub = this.scullyService.available$.subscribe(posts -> { this.posts = posts.filter(post => post.title); });
 }
 
 ngOnDestroy() : void {
