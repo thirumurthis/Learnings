@@ -275,3 +275,25 @@ ngOnInit() {
   - perform update to component, and latter enable the netowrk in browser refersh the app and wihin few seconds should see the message.
 
 --------------------------------
+
+##### Hosting to Google FireBase.
+  - Using google account create a project. [Firebase](https://console.firebase.google.com.).
+     - click add project button
+     - Enter a name
+     - click continue
+     - disable google analytics
+     - The project will be created, click continue.
+  - The firebase configration is complete now.
+
+  - in your angluar application issue below command
+  ```
+   $ ng add @angualr/fire
+  ```
+   - after installing the package above command will request to  authenticate to firebase 
+      - use the token to authorize the firebase cli to access the project
+   - a bunch of dependecies will be added in `package.json`
+   - will create `.firebaserc` file at root of project, which has the details of selected project
+   - `firebase.json` will be created with the firebase configuration
+   - the default directory of `ng build` is `dist`, the command will add `deploy` entry to the architect section of the `angular.json`
+   - now issue `$ ng deploy`, this will deploy the artifacts to firebase and provides the hosted url back in the console.
+   - After validating, delete project from firebase project settings.
