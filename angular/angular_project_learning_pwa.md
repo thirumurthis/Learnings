@@ -163,5 +163,115 @@ h1 {
 }
 ```
  - At this point, `$ ng serve` command will successfully launch the application.
+ - Check the Audit section in borwser dev tools if the service worker is setup for application.
 
+#### Setting up `service worker` in angular.
+ - Add the pwa package to angluar project
+```
+$ ng add @angular/pwa
+```
+- The above command add `@angular/service-worker` package to dependencies section in `pacakge.json`
+- It also creates `manifest.webmanifest` file in `src` folder. This file has the info about application needed to install and run it as native app. It adds `assests` array of the `build` poperty in `angular.json`.
+- It also creates `ngsw-config.json` at the root of project. this is the service worker congiguration file used to define configration-specific artifacts like which resources to be cached and how they are cached (example options freshnes, prefetch) etc. [link]( https://angular.io/guide/service-worker-config#service-worker-configuration)
+- `angular.json` is updated with ngswConfigPath property of build.
+- the `serviceworker` property is set to true in `build` configuration in `angular.json`
+- It registers service worker in the `app.module.ts` file.
+  ```
+  import {ServiceWorkerModule} from '@angular/service-worker;
+  ...
+  import : [ ...
+  // this will register the service worker as soon as the app is stable or after 30 seconds (whichever comes first)
+  ServiceWorker.register('ngsw-worker.js', 
+    {enabled: environment.production,registrationStrategy: 'registerWhenStable:3000'})
+   ], providers : [],
+  ...
+  ```
+  - `ngsw-works.js` file contains the acutal implementaton of service worker. this is automatically created for us when we build the application in production mode. angular uses `register` method of ServiceWoekermodule class to register it within our application.
+  - Several icons are created alone with tehma color added to `index.html`
+  
+  ##### Installing http-server to the project.
+  ```
+  $ npm install -D http-server
+  
+  $ ng build  // update the environment.production.ts with url and api key
+  ```
+  - In order to execute `$ npm run server` to start the `http-server` update `package.json`
+     - if required add the dependencies of http-server
+  ```
+  ...
+  "scripts" : {
+  ...
+  "server" : "http-server -p 8080 -c-1 dist/weather-app"
+  }
+  ...
+  ```
+  - Now run below command to start the server in 8080 port. The `ng build` will create artifacts under the `dist/weather-app` configured in angualr.json
 
+------------
+  **Note:**: Adding the PWA above will make the app to be chaced in the browser, and any update to the application will not be reflected in the browser.
+  
+  ##### How to update the changes to the chaced PWA apps? we can use `SWUpdate` but here we will use `MatSnackBarModule`.
+  - in `app.module.ts` add/ import {`MatSnackBarModule`} from `'@angular/material/snack-bar'`; update the imports array as well.
+     - MAtSnackBarModule - an angular material module allows us to interact with snack bar. (a snack bar is a pop-up window that usaully appears on bottom of hte page and used for notification puprposes)
+   
+   - Inject `MatSnackBar` and `SWUpdate` services in the constructor of `app.component.ts`.
+      - `SWupdate` service is an angular service worker and contains observables that we can use to notify regarding the update process on our application
+      
+   - Import onInit lifecycle hook to update the changes
+  ```
+import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SwUpdate } from '@angular/service-worker';
+import { switchMap,filter, map  } from 'rxjs/operators';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent implements OnInit {
+  title = 'weather-app';
+  constructor(private updates: SwUpdate,
+              private snackbar: MatSnackBar) {}
+}
+
+ngOnInit() {
+  this.updates.available.pipe(
+    switchMap(() => this.snackbar.open('New version notification!', 
+              'Update now').afterDismissed()),
+              filter(result => result.dismissedByAction),
+               map(() => this.updates.activateUpdate().then(() =>
+      location.reload()))
+  ).subscribe();
+  // upon update now, we are reloading the screen.
+}
+  ```
+   - the `SWUpdate` service contains `available` observable property that can be used to get notified when a new version is available.
+   - Typically, we tend to subscribe to observables, but here we don't instead we subscribe to the pipe method (an RxJS operator used for composing multiple operators) 
+   - `switchMap` - is called when a new version of our application is available. It uses open method of `snackbar` property to show a snack bar witn an action button and subscribes to `afterDismissed` observable. (this afterDismissed observable emits when the snack bar is closed either clicking the button or prorgramatically using its API methods)
+   - `filter` - is called when snack bar is dismissed using button
+   - `map` - calls the `activateUpdate` method of `updates` property to apply new version. once the new version is updated the window is reloaded.
+ 
+ ##### build and start the application
+ ```
+ $ ng build
+ $ npm run server  //server script will be executed to run http-server in 8080
+ ```
+ 
+ Now add a new component to the project. using `$ ng generate component header`
+ - Import `MatButtonModule` and `MatToolBarModule` in `app.module.ts`
+ - Include the header component to `app.component.html` (\<app-header>\</app-header>)
+ - update the `header.component.html` and `header.component.css`.
+ ```
+ <mat-toolbar color="primary">
+  <span>Weather Now</span>
+  <span class="spacer"></span>  // in css file add .spacer { flex: 1 1 auto' }
+  <button mat-icon-button>
+    <mat-icon>refresh</mat-icon>
+  </button>
+</mat-toolbar>
+ ```
+  Now, if we build (`$ ng build`) and start the server (`$ npm run server`). should popup the New version notification message with the button in the browser.
+  - Open up the app in a private browser, in network make it offline.
+  - perform update to component, and latter enable the netowrk in browser refersh the app and wihin few seconds should see the message.
+
+--------------------------------
