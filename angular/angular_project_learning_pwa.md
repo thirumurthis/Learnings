@@ -16,3 +16,9 @@ $ ng add @angular/material --theme=indigo-pink --typography=true --animations=tr
 
 --animations -> enables browser animations, imports BrowserAnimationsModule
 ```
+
+#### IMPORTANT: 
+   - `environment.ts` - the typescript file is used for development environment. It is used when we use `ng serve` command.
+   - `environment.prod.ts` - the typescript file is used for prod environment. It is used when we build the application using `ng build` command.
+
+
