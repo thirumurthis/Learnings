@@ -117,9 +117,64 @@ public class SecurityConfig externds WebSecurityConfigurerAdaptor{
    }
 }
 ```
-
 #### Represetnation of the flow and terminology:
 
 ![image](https://user-images.githubusercontent.com/6425536/130565632-79709a9d-aa2e-4273-872c-1722e2a62fe1.png)
 
+---------------------
 
+##### Creating the spring security project with spring starter io
+- Add following dependecies and create the project.
+   - `spring web starter`
+   - `spring security`
+   - `H2  database`
+   - `jdbc api`
+- Create a RestController with different api's "/", "/user", "/admin"
+
+```java
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
+
+// we need to tell spring about the jdbc source
+@Autowired
+DataSource dataSource;  // right now we have H2 database, this can be external datasource like Mysql db as well.
+
+// Note: since we have H2 embedded database is used, the spring will auto-configure the H2 schema. 
+//This is because spring has default opinion, like spring will create the default 
+// If he clean database is provide, the Spring can create the default schema with authority and user tables. (refer the  withDefaultSchema() below
+// Also write the user info in an sql file, when application is loaded the info will be autmatically loaded to the H2 db
+
+@Override
+public configure(AuthenticateManagerBuilder auth) throws Exception {
+   auth.jdbcAuthentication() // this is the type of authentication we need to use. earlier we used in-memory now jdbc
+   
+   .dataSource(dataSource)  // create the schema and populate the following data
+   .withDefaultSchema()
+   .withUser(
+       User.withUsername("username")
+       .password("password")
+       .roles("USER")
+     )
+     .withUser(
+       User.withUsername("admin")
+       .password("admin")
+       .roles("ADMIN")
+     );
+}
+
+@Bean
+public PasswordEncoder getPasswordEnconder(){
+  return NoOpPasswordEncoder.getInstance();
+}
+
+@Overrider
+public configure(HttpSecurity http) throws Exception {
+      http.authorizeRequests()
+           .antMatchers("/admin").hasRole("ADMIN")
+           .antMatchers("/user").hasAnyRole("USER","ADMIN") // hasAnyRole() for more than one role usage
+           .antMatchers("/").permitAll()  //permitAll the root api can be viewed by all user
+           .and()
+           .formLogin();
+}
+```
