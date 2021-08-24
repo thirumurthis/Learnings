@@ -118,3 +118,8 @@ public class SecurityConfig externds WebSecurityConfigurerAdaptor{
 }
 ```
 
+#### Represetnation of the flow and terminology:
+
+![image](https://user-images.githubusercontent.com/6425536/130565632-79709a9d-aa2e-4273-872c-1722e2a62fe1.png)
+
+
