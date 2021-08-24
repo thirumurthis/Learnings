@@ -539,3 +539,96 @@ public class AuthenticationResponse{
     }
   }
 ```
+ - Till this point, the exposed `/authenticate` endpoint is not authenticated. Remember, the above details and code where `configure(HttpSecurity)` is not overrided yet. Check SecurityConfig class.
+ - Update the SecurityConfig
+
+```java
+//SecurityConig extends WebSecurityConfigurerAdaptor {...
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+// disables and authorize for /authenticate endpoint other 
+  http.csrf().disable()
+      .authorizeRequests()
+      .antMatchers("/authenticate").permitAll()
+      .anyRequest().authenticated();
+}
+
+// also create a bean for AuthenticationManager, starting spring 2+ this needs to be overrided
+@Override
+@Bean
+public AuthenticationManager authenticationManagerBean() throws Exception{
+  return super.authenticationManagerBean();
+}
+```
+  - Now running the aobve application accepts the username and password, returns the JWT token
+  - now is postman, using a POST request to /authenticate, should return the token.
+
+- Till now the JWT token is not being used from the incoming request on the code.
+- We need to intercept all the incoming request and validate the jwt, to extract username and set to execution context. This can be achived by using fitlers `OncePerRequestFilter`.
+
+```java
+public class JwtRequestFilter extends OncePerRequestFilter {
+  
+  @Autowired
+  private UserDetailsService userDetailsService;
+  
+  @Autowired
+  private JwtManagerUtil jwtManager;
+  
+  @Override
+  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse respone, Filter chain) throws ServletException, IOexception {
+  
+  // this is where we exampne the jwt in header, and validate it.
+  
+  //get the jwt from request header Authorization key
+  final String authorizationHeader = request.getHeader("Authorization");
+  
+  //if the header contains valid jwt, extract the username
+  String username = null;
+  String jwt = null;
+  
+  // additionally validate the expiration, active etc.
+  if( authorizationHeader != null && authorization.sartsWith("Bearer ")){
+     jwt = authorizationHeader.substring(7);
+     username = jwtManager.extractUsername(jwt);
+  }
+  
+  //incase the token didn't had the username, fetch it and validate, set to context
+  
+  if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username));
+    
+    // since the user details is fetched, check if the jwt is valid and not expired
+    if (jwtManger.validateToken(jwt,userDetails)){
+    // below step will do this automatically, but sine we need to perform this
+    // only when the jwt is validated.
+       UsernamePasswordAuthenticationToken usernamePasswordAuthencationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+       usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+       
+// this executes only when the authentication is null       securityCotnextHolder.getContext().setAuthtentication(usernamePassworduthenticationToken);
+     }
+  }
+ }
+}
+```
+  - Since we added filter and implemented, we need to add this to `WebSecurityConfigurerAdaptor` extended class.
+
+```java
+// SecurityConfig java
+
+@Autowired
+private JwtRequestFilter jwtRequestFilter;
+
+@Override
+protected configure(HttpSecurity http) throws Exception {
+   http.csrf().disable()
+   .authorizeRequests().antMatchers("/authenticate").permitAll()
+   .anyrequest().authenticated()
+   .and().sessionManagement()  //adding session management, saying spring not to create session.
+   .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+   // this stateless makes spring not to creat session
+   // add the new fiter
+   http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+}
+```
+
