@@ -193,3 +193,16 @@ public configure(AuthenticateManagerBuilder auth) throws Exception {
  - Add this file to the resources to the spring boot app, when the spring starts this file will be loaded.
  - Using `application.properties`, h2 properties the h2 database web console can be accessed.
 
+--------- 
+- If we have our own database for user information and need to query that table instead of default tables, spring provides ways to do it. using `usersByUsernameQuery` and `authoritiesByUsernameQuery`.
+
+```
+@Override
+public configure(AuthenticateManagerBuilder auth) throws Exception {
+   auth.jdbcAuthentication()   
+   .dataSource(dataSource)
+   .usersByUsernameQuery("select username,password,enabled from users "
+      +"where username = ?")
+   .authoritiesByUsernameQuery("select username,authority "
+      +" from authorities where username =? ");
+```
