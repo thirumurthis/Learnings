@@ -197,6 +197,7 @@ public configure(AuthenticateManagerBuilder auth) throws Exception {
 - If we have our own database for user information and need to query that table instead of default tables, spring provides ways to do it. using `usersByUsernameQuery` and `authoritiesByUsernameQuery`.
 - For different data source update the `application.properties`.
 ```
+//securityconfig.java class extends WebSecurityConfigurerAdaptor
 @Override
 public configure(AuthenticateManagerBuilder auth) throws Exception {
    auth.jdbcAuthentication()   
@@ -206,3 +207,64 @@ public configure(AuthenticateManagerBuilder auth) throws Exception {
    .authoritiesByUsernameQuery("select username,authority "
       +" from authorities where username =? ");
 ```
+---------
+
+##### Implementing spring security using JPA or external datasource
+
+- In this case the Security configuration class extending the class `WebSecurityCondigurerAdaptor` doesn't requires a datasoruce, instead a service can be injected to retrive the user details info.
+
+```java
+public class SecurityConfig extends WebSecurityConfiguratorAdaptor{
+//inject the service which will fetch info from DB
+@Autowired
+UserDetailsService userDetailsService;
+
+@Override
+protected configure(AuthenticationManagerBuilder auth) throws Exception{
+  auth.userDetailsService(userDetailsService);
+}
+// use the same configure(HttpSecurity) and PasswordEncoder as in above code
+}
+```
+ - Create a class `CustomUserDetailsService.java` implementing the `UserDetailsService` of Spring security.
+ ```java
+ 
+ public CustomUserDetailsService implements UserDetailsService{
+ 
+ @Override
+ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+   // This method is going to return UserDetails to security
+   // We need to create the UserDetails class implementing UserDetails
+   // Ideally fetch user info from DB and set this object.
+   
+   //For testing purpose the CustomUserDetails implemented from spring UserDetails will take a name.
+    return new CustomUserDetails(username); // since we created this class below
+   }
+ }
+ ```
+ - Implement the UserDetails class 
+ ```
+ public CustomUserDetail implement UserDetails{
+   //There are list of method that should override.
+   
+   private String username;
+   //Creating a constructor with empty and taking username as args
+   public CustomUserDetail(String username){
+       this.username = username;
+   }
+   public CustomUserDetail(){};
+   
+   @Override
+   public String password(){ return "somepasssword";}
+   
+   @Override
+   public String getUserName() { return username;}
+   
+   @Override
+   public Collection<? extends GrantAuthority> getAuthority(){
+      return Arrays.asList(new SimpleGranterAuthority("ROLE_USER");
+   }
+   //There are other methods to override, which we can make to return true.
+ }
+ ```
+ 
