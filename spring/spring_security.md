@@ -229,6 +229,7 @@ protected configure(AuthenticationManagerBuilder auth) throws Exception{
  - Create a class `CustomUserDetailsService.java` implementing the `UserDetailsService` of Spring security.
  ```java
  
+ @Service
  public CustomUserDetailsService implements UserDetailsService{
  
  @Override
@@ -267,4 +268,77 @@ protected configure(AuthenticationManagerBuilder auth) throws Exception{
    //There are other methods to override, which we can make to return true.
  }
  ```
+- Note: This UserDetail implementation is not hitting the Database, this is just to show how just hard coding the password, it any user name only with the hardcoded somepassword.
+
+- The `loadUserByUsername()` method can also connect to the external database and provide back the `UserDetals` object back
+
+- To hit the database for userDetails info, we can update the CustomUserDetails class
+
+ ```java
  
+ @Service
+ public CustomUserDetailsService implements UserDetailsService{
+ 
+ @Autowirded
+ UserRepository userRepo;
+ 
+ @Override
+ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+    // the repo is invked to fetch info from DB
+    Optional<User> user= userRepo.findByUserName(username);
+    
+    user.orElseThrow(()-> new UsernameNotFound("user Not Found : " +username));
+    
+    return user.map(CustomUserDeatils::new).get(); // if there are not user object, we need to perform check exception.
+   }
+ }
+ ```
+ - Create a Entity class for JPA
+```java 
+@Entity
+@Table(name="User")
+public class User{
+  
+  @Id
+  @GenerateValue(strategy = GenerationType.AUTO)
+  private int id;
+  private String userName;
+  // other variables lke userName,password,active,roles
+  //use lombok and tag as data as well since we need gettersetter
+}
+```
+
+- Create a repo for User
+```java
+//Spring data - the datasource is defined in the application.properties file.
+public interface UserRepository extends JpaRepository<User, Integer>{
+    Opitional<User> findByUserName(String userName); //userName defined as in User class
+}
+// note the data source can also be stored in Vault and retrieved from there.
+```
+- Update the `CustomUserDetails` class
+
+```java
+public class CustomUserDetails implements UserDetails{
+// In the earlier class remove all the content of the class
+// new variables are declared.
+  privae String username;
+  private String password;
+  private boolean active;
+  // this value is comming from the Database
+  private List<GrantedAutority> authorities;
+  public CustomUserDetails(User user){
+     this.userName = user.getUserName();
+     this.password=user.getPassword();
+     this.active = user.isActive();
+     this.authorities = Arrays.stream(user.getRole().split(",")
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());                       
+  }
+  //override only those are required
+  // getPassword, getGaurenteedAuthorities, getUserName, getPassword, isEnabled.  
+}
+```
+ - Note: If we use external database, use `@EnableJpaRepositories(basePackagclasses = UserRepository.class)` in the spring applicaiton class.
+ - The datasource can be configured in the application.properties.
+
