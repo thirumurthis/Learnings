@@ -463,13 +463,14 @@ public class JWTManagerUtil{
    }
    
    public String generateToken(UserDetails userDetails){
-      Map<String, object> claims = new HashMap<>();
+      Map<String, object> claims = new HashMap<>(); / for testing this is empty
       return createToken(claims,userDetails.getUserName());
    }
    
    private String createToken(Map<String,Object> claims, String subject){
       return JWts.builder().setClaims(claims).setSubject(subject)
                  .setIssuedAt(new Data(System.currentTimeMillis()))
+                 .setExpiration(new Date(System.currentTimeMillis()+ 1000*60*60))  // the token will expire in 1 hour
                  .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
    }
    
@@ -478,4 +479,63 @@ public class JWTManagerUtil{
       return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
    }
 }
+```
+ - The spring boot already provides default formlogin. 
+ - There is no need for form login, since we don't need any username or password.
+    - We can create an `/authenticate` endpoint API which returns the JWT token in response. This API is not required to redirect to any other API's.
+        - The user will send username/password in post request to the /authenticate endpoint
+    - The client/user should be sending this token for subsequent request.
+    - The code need to validate this token and authorize the request
+
+- Handling JWT token generation 
+   - Create a class to hold the username and password
+```java
+ public class AuthenticationRequest{
+    private string username;
+    private string password; 
+    //define constructors, getter setters
+ }
+```
+   - Create another class to hold the response
+```java
+public class AuthenticationResponse{
+   private final String jwtToken;
+   //corresponding getter setter.
+}
+```
+   - Create the `/authentication` endpoint
+```java
+  @RestController
+  publi class Authenticate{
+    @RequestMapping("/welcome")
+    public String welcome() { return "Welcome";}
+    
+    @Autowired 
+    private UserDetailsService userDetailsService;
+    
+    @Autowired
+    private JwtManagerUtil jwtManagerUtil;
+    
+    //This is the authentication manager handle, which we can invoke authenticate() method
+    @Autowired
+    private AuthenticationManager authentication<anager;
+    
+    @RequestMapping(value="/authenticate", method=RequestMethod.POST)
+    public ResponseEntity<?> generateAuthenticationToken(@RequestBody AuthenticationRequest authenticateRequest) throws Exception{
+    
+    try{
+    //if below authentication we need to catch and throw exception
+      authenticationManager.authenticate(
+         new UsernamePasswordAuthorizationToken(authenticationRequest.getUserName(),authenticationRequest.getPassword()));
+         } catch (BadCredentialsException e){
+            throw new Exception ("Invalid username and password");
+         }
+        // since now validated we need to get the username and generate JWT
+        // autowire the service
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        final jwt = jwtManagerUtil.generateToken(userDetails);
+        
+        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+    }
+  }
 ```
