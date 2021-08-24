@@ -178,3 +178,18 @@ public configure(HttpSecurity http) throws Exception {
            .formLogin();
 }
 ```
+ - Note: Ideal way looks like below
+
+```
+@Override
+public configure(AuthenticateManagerBuilder auth) throws Exception {
+   auth.jdbcAuthentication()    
+   .dataSource(dataSource);
+ }
+```
+ - The default schema information is available in Spring documentation.
+ - just using the `schema.sql` file with create tables (users, authorities) [Note this is not for production case.]
+ - Create another file `data.sql` with the insert or DML queries.
+ - Add this file to the resources to the spring boot app, when the spring starts this file will be loaded.
+ - Using `application.properties`, h2 properties the h2 database web console can be accessed.
+
