@@ -389,3 +389,93 @@ JWT token is passed SERVER, in request Header like below
 `Authorization : Bearer <JWT-tocken>`
 
 ```
+##### how to implement the Spring security using JWT
+
+- Create an new spring boot project with `spring web` and `spring security` dependencies.
+- Create a simple API for "/welcome"
+- Create a class to extend the `WebSecurityConfigurerAdaptor` class
+```java
+@EnableWebSecurity
+public SecurityConfig extends WebSecurityConfigurerAdaptor {
+
+@Autowired
+private CustomUserDetailService customUserDeatilService;
+// the service will be implementing the UserDetailsService, which overrides the 
+// loadUserByUsername() method, to return the user object.
+  @Override
+  protected void configure(AuthenticationBuilderManager auth) throws Exception {
+    return auth.userDetailsService(customUserDeatilsService);
+  }
+}
+```
+- Create the service CustomUserDetailService
+```java
+@Service
+public CustomUserDetails implements UserDetailsService{
+
+   @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+      return new User("user","pass", new ArrayList<>());
+   }
+}
+```
+- Above is only uses generic approach of Authentication, now to update the JWT authorization.
+    - Add following dependencies to pom.xml file
+    ```
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jwt</artifactId>
+        <version>0.9.1</version>
+    </dependency>
+    <dependency> <!-- below is sine we are using java 11 -->
+       <groupId>javax.xml.bind</groupId>
+       <artifcatId>jaxb-api</artifactId>
+       <version>2.3.0</version>
+    </dependency>
+    ```
+- Create a class to extract the JWT generation part, this will be a Util class, which will create the token, etc.
+
+```java
+
+@Service
+public class JWTManagerUtil{
+   private String SECRET_KEY ="verySecretKey";
+   
+   public String extractUserName(String token){
+     return extractclaim(token, Claims::getSubject);
+     }
+   
+   public Date extractExpiration(String token){
+     return extractClaim(token, Claims::getExpiration);
+   }
+   
+   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
+     final Claims claims = extractAllClaims(token);
+     return claimResolver.apply(claims);
+   }
+   
+   private Claims extractAllclaims(String token){
+      return Jwt.parser().setSigningKey(SECRET_KEY).parseClaims(token).getBody();
+   }
+   
+   private Boolean isTokenExpired(String tockent){
+     reurn extractExipration(token).before(new Date());
+   }
+   
+   public String generateToken(UserDetails userDetails){
+      Map<String, object> claims = new HashMap<>();
+      return createToken(claims,userDetails.getUserName());
+   }
+   
+   private String createToken(Map<String,Object> claims, String subject){
+      return JWts.builder().setClaims(claims).setSubject(subject)
+                 .setIssuedAt(new Data(System.currentTimeMillis()))
+                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+   }
+   
+   public Boolean validateToken(String token, UserDetails userDetails){
+      final String userName = extractUsername(token);
+      return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
+   }
+}
+```
