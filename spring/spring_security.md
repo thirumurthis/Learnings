@@ -631,4 +631,8 @@ protected configure(HttpSecurity http) throws Exception {
    http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 }
 ```
-
+ - To Test the JWT implementaion above, use Postman
+    - Hit the `/authenticate` endpoint with post body of username and password
+    - The JWT token will be sent.
+    - Add this to Header `Authorization : Bearer <jwt-token>` access `/welcome` end point. this should return welcome.
+    - If the token is not provided, the access denied message will be displaed, the session is not managed.
