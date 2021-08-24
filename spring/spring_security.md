@@ -195,7 +195,7 @@ public configure(AuthenticateManagerBuilder auth) throws Exception {
 
 --------- 
 - If we have our own database for user information and need to query that table instead of default tables, spring provides ways to do it. using `usersByUsernameQuery` and `authoritiesByUsernameQuery`.
-
+- For different data source update the `application.properties`.
 ```
 @Override
 public configure(AuthenticateManagerBuilder auth) throws Exception {
