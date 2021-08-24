@@ -378,6 +378,14 @@ public class CustomUserDetails implements UserDetails{
 - 
  - `jwt.io` can encode the jwt token except the signature.
 
+##### Note: JWT is mostly used for Authorization, the authentication is already done.
 ```
+
+1. USER  -----> sends credentials to application -------------> SERVER
+2. USER  <---- send JWT to user <------------------------------ SERVER
+3. USER  ------> send JWT token back for subsequent request ---> SERVER
+
+JWT token is passed SERVER, in request Header like below
+`Authorization : Bearer <JWT-tocken>`
 
 ```
