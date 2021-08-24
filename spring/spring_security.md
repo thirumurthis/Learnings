@@ -342,3 +342,42 @@ public class CustomUserDetails implements UserDetails{
  - Note: If we use external database, use `@EnableJpaRepositories(basePackagclasses = UserRepository.class)` in the spring applicaiton class.
  - The datasource can be configured in the application.properties.
 
+----------------
+
+#### using `JWT` (json web tokens):
+  - JWT is commenly used for managing autorization
+  - This is used for communication security.
+  - Open industry specifiction `RFC 7519` explains how JWT be defined and used.
+
+- Types of Authorization strategies:
+   - Session Token
+   - JSON Web Token
+
+- HTTP protocol is a stateless protocol:
+    - In order to make it a bit of state, we use cookies or session.
+    - If we didn't think of session, then everytime the user accessing the application, each API or pages should be authenticated.
+    - The token approach can be used to make the HTTP to be state.
+    - Security needs to be managed, but expiring the session, setting session timeout.
+
+- When the browser request to view the application, the authentication information is sent to server. The authentication is validated and server generates a session id, and sends this info to user.
+- The session id is stored in cookie (this is the most common approach), so when the browser sends the request the cookies is added to the request  header.
+
+- The disadvantage is this is applicable only for monolitic application, or we need to implement loadbalancer with sticky sessions. This apporach is difficult to scalable.
+
+- JWT is easy to implement within the mico-services.
+
+  - The idea of JWT is when the user/browser requests info, the server will create the JWT token (`JWT token is encoded userName or other non important properties`).
+
+- Structure of JWT:
+   - Sample JWT contans `<content1>.<content2>.<content3>` where content's are encoded strings.
+   - content1 - represent `Header` (tells how this JWT is signed, with the algorithm used to verify the signature)
+   - content2 - represent `Payload` ( this is the data with base64, this can be any non critical data)
+   - content3 - represent `Signature` (this is created using the algorithm mentioned in header, with a secret key. this secret key is only available in server.)
+
+- All the JWT informaiton can be decoded using base64 and view the information.
+- 
+ - `jwt.io` can encode the jwt token except the signature.
+
+```
+
+```
