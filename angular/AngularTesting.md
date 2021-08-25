@@ -37,7 +37,7 @@ plugins: [
    require('karma-jasmine'),
    ...
    require('karma-chrome-launcher'),
-   require('karam-firefix-launcher'),
+   require('karam-firefox-launcher'),
    ...
    ]
   ...
@@ -103,4 +103,46 @@ projects : {
  xit(..
 ```
 -------
+
+#### basic concepts of testing (Jasmine is BDD (bhaviour driven development))
+
+- `Describe` - test suite beings with a call to the global Jasmine function describe with two parameter. string and function.
+```
+    describe("test the app component", function (){ //callback
+    
+    // we write it function (this is called specs) - smallest unit test case.
+    });
+```
+- `Specs` - these are defined by calling the global Jasmine function `it`, which, like descirbe takes a string and a function.
+```
+ it("check app title component", function(){//callback function });
+ // there can be multiple it function.
+```
+- `Expect` - Expectations are built with the function excpect which takes a value, called the actual. Expect 
+```
+var actual =100;
+expect ("actual").toBe(100);  // toBe part is the matcher.
+//toBeTruthy(), etc.
+```
+- `Matcher` - It is chained with a matcher function, which takes expected value.
+
+##### First test case
+```js
+// string can be any value
+describe("Hello test", () => {
+   it("First test case",() => { 
+      console.log("inside firs test case");
+   });
+});
+```
+- When adding `f` (focused) to describe that is the only test that will be executed
+```
+fdescribe("Hello test", () => {
+   it("First test case",() => { 
+      //console.log("inside firs test case");  // this will report spec has exptectiatio
+      expect(10).toBe(10); // this will execute to pass in ng test.
+   });
+});
+```
+ - Now executing `$ ng test`, this fdescribe will be executed.
 
