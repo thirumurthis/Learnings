@@ -65,4 +65,42 @@ plugins: [
 --suite=suite
 ```
  - The configuration is present under `protactor.conf.js` config file.
- - 
+----------------
+
+#### code coverage during testing
+```
+$ ng test --code-coverage=true
+```
+Another approach is to update the angular.json, test properties with `codeCoverage`:`true`.
+
+When set in pipeline, better to use the `ng test --code-coverage=true` in CLI itself.
+
+-----
+
+#### how to skip the testing execution
+  - Angular has supports for skipping testing E2E tests
+  - Ways to skipe tests:
+     - 1. for `new` applicaton
+     - 2. for `exiting` application
+     - 3. for `existing test` scripts
+     
+- 1. To skip the test use --skip-test option in CLI when creating 
+```
+$ ng new app-name --skip-test
+```
+- 2. In `angular.json`, update/add. NOTE: This is not recommended.
+```
+projects : {
+...
+"projectType: : "application",
+   "schematics/angular:component": { "skipTests" : true }
+ ...  
+```
+- 3. Adding `x` in front of the tests case like `describe` and `it`
+    - x prefixed means the test case will be suppressed.
+```
+ xdescribe(...
+ xit(..
+```
+-------
+
