@@ -19,6 +19,10 @@ Check links
 
 [4. Video ] (https://www.youtube.com/watch?v=cpdL73GsM5c&feature=emb_title)
 
-Git links for saga details:
+[5. Presentation] (https://www.slideshare.net/chris.e.richardson/microcph-managing-data-consistency-in-a-microservice-architecture-using-sagas)
+
+
+###### Git links for saga details:
 [1](https://github.com/eventuate-tram/eventuate-tram-sagas)
 [2](https://github.com/eventuate-tram/eventuate-tram-sagas-examples-customers-and-orders)
+
