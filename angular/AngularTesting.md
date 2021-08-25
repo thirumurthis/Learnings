@@ -164,4 +164,24 @@ fdescribe("Hello test", () => {
 3. describe () function
 
 4. inside describe (), it function
+
+5. inside there is a fixture
+   - fixture is a wrapper for component and the template
+   - using fixture, we can get the properties of component class and template.
+6. BeforeEach method
+    - Before running up the test case, the setup needs to be done, this should setup at this method.
+    - why 2 beforeEach method.
+    
+ 7. TestBed - main utility to define and test modules
+```
+- Sample to query css value
+```
+...
+beforeEach(()=> {
+fixture = TestBed.createComponent(Appcomponent);
+component = fixture.componentInstance;
+const queryElement = fixture.debugElement.query(By.css('.brand'))); // to get the properties from template.
+fixture.detectChanges();
+});
+...
 ```
