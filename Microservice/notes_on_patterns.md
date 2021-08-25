@@ -12,9 +12,12 @@ Saga pattern, for distributed transaction.
 
 Check links 
 [1. Event Driven approach](https://eventuate.io/whyeventdriven.html)
+
 [2. General Microservice blogs](https://microservices.io/adopt/index.html)
+
 [3. Saga pattern ](https://microservices.io/patterns/data/saga.html)
 
+[4. Video ] (https://www.youtube.com/watch?v=cpdL73GsM5c&feature=emb_title)
 
 Git links for saga details:
 [1](https://github.com/eventuate-tram/eventuate-tram-sagas)
