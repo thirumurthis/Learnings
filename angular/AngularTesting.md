@@ -47,4 +47,22 @@ plugins: [
   ...
   
 ```
+- Angular uses `Protractor` for running the end to end tests
+- `ng e2e` is used to run the end to end e2e run.
+- A report will be generated at the end of execution.
+- All the e2e test cases are located in e2e folder
+- `*.e2e.spec.ts` -> contains e2e config test info under e2e folder
 
+`ng e2e` can be passed with arguments
+```
+--browsers=browser
+--baseUrl=baseUrl
+--specs
+--host=host
+--port=port
+--prod=true|false
+--main=main
+--suite=suite
+```
+ - The configuration is present under `protactor.conf.js` config file.
+ - 
