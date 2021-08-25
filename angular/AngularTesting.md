@@ -145,4 +145,23 @@ fdescribe("Hello test", () => {
 });
 ```
  - Now executing `$ ng test`, this fdescribe will be executed.
+-------------
+### Default generated test files and its details
 
+- `TestBed`,`Async` - Import from built-in modules from core package
+- Import the requries Modules 
+- Import required Components
+- 2 BeforeEach Methods - this comes within the describe function, basic setup is done here.
+- TestBed.configureTestingModule({ // this is setting up a module, pass module, components etc.  });
+- Fixture - is a wrapper for the components and it's template.
+
+```
+1. Imports the rquired classes and interfaces like 
+ async, TestBed, ComponentFixture
+ 
+2. Import the components required for testing (at least it should contain the component for which the testing is executed.)
+
+3. describe () function
+
+4. inside describe (), it function
+```
