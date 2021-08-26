@@ -103,7 +103,7 @@ Removing the node 6 from the tree
 ```
 
 Scenario 3:
-  - The removing node has both right which has left node.
+  - The removing node that has both right and left node.
 
 Removing the node 6 from tree.
 ```
@@ -120,7 +120,12 @@ The node 6 has a right child 8 which has left child 7
 The right child's left most node will replace the searched/identified node.
 In this case 7 will replace the 6 node.
 Doing so the invariant structure is retained.
-                       
+
+in simple terms:
+  - if the node to be deleted has both right and left nodes, and that has to be removed
+  - find the node with minimum value from the right sub-tree from the node to be removed, and the removed node with this.
+  - if there is no right sub-tree then use left subtree
+                      
 ```
 
 #### Tree Traversals
