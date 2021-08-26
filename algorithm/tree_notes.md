@@ -170,7 +170,20 @@ Usage of Tree traversal:
   
  Program:
    Try to get list of words from the user and sort using binary tree.
-   
+-----------------
+
+### Height vs Depth:
+  `Height` - is the number of edges in longest path from root to Leaf node. 
+     - What is the height of the node? - the number of edges between that node to the leaf node.
+     - Height of the leaf node is 0.
+     - The root node will have the height.
+  `Depth` - number of edges from root to that node or leaf node.
+       - Root node the depth is 0
+       - The leaf node will have max depth.
+  
+  Note: 
+    - The max depth = height of the tree. 
+    - Node connected by edges is called vertices.
 ---------------------
 
 ## Hash Table
@@ -226,8 +239,3 @@ Note: Use the available Hashing function or algorithm, it is already provied.
 | MD5 | Y | Y | N | N |
 | SHA-2 | Y | Y | N | Y |
 
-
-
-
-  
- 
