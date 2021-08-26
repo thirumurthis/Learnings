@@ -59,7 +59,7 @@
       
    - non-leaf node
       - find the correct child, to replace the node that we are deleting.
-      - 3 scenarios
+      - 3 scenarios exits in deleting non-leaf node, listed below
       
 Scenario: 1     
           - Remove node that has no right child
