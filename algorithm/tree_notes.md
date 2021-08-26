@@ -59,14 +59,15 @@
       
    - non-leaf node
       - find the correct child, to replace the node that we are deleting.
-      - 3 scenarios exits in deleting non-leaf node, listed below
+      - **_3 scenarios_** exits in deleting non-leaf node, listed below
       
-Scenario: 1     
-    - Remove node that has no right child
-      - the serached/matched node doesn't has no child on the right
-      - promote the left node to the identified node.
+Scenario: 1
+
+ - Remove node that has no right child
+   - if the searched/matched node doesn't have child on the right, then
+   - promote the left node to the identified node.
          
-Removing the node 8, from the tree         
+Removing the node 8 from the tree         
  ```
  
                        4                                    4
@@ -79,9 +80,12 @@ Removing the node 8, from the tree
     # once the node 8 is identified
     # promote the node 6 (on the left) to that identified node
  ```
+
 Scenario 2:
-   - Removing a node has right child no left child.
-   
+
+ - Removing a node has right child no left child.
+
+Removing the node 6 from the tree   
 ```
                   4                       4
                 /   \                    /  \
@@ -91,16 +95,17 @@ Scenario 2:
                            \
                             8 
     
- # removing 6, has right child 7 which has no left child.
+ # removing 6, it has right child 7 which has no left child.
  # promote the left child (7) node to at 6.
  # Note 7 should become the parent.
- The invariant structure of the tree is not breaked.
+ Doing so the invariant structure of the tree is not breaked.
  
 ```
 
 Scenario 3:
   - The removing node has both right which has left node.
-  
+
+Removing the node 6 from tree.
 ```
                   4                        4                            
                 /   \                     /  \
@@ -114,14 +119,14 @@ The node 6 has a right child 8 which has left child 7
 
 The right child's left most node will replace the searched/identified node.
 In this case 7 will replace the 6 node.
-The invariant structure is retained.
+Doing so the invariant structure is retained.
                        
 ```
 
 #### Tree Traversals
 
  - Breadth First Search
- - Depth First Search ( Pre-Order, In-Order, Post-Order)
+ - Depth First Search ( Pre-Order, In-Order, Post-Order) - can be achived with recurrsion
     ```
      <root><left><right>  => D L R - pre-order  ( D - root node; L - Left node;  R - Right node)
      <left><root><right>  => L D R - in-order (sorted)
