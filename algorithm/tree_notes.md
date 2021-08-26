@@ -168,8 +168,10 @@ Usage of Tree traversal:
   - Traversal (pre-order and post-order) is used in mathematical evaluation
   - used in runtime behaviour of in compiler. like step 1 should operate before step 2, where the operation is stored as tree.  
   
- Program:
-   Try to get list of words from the user and sort using binary tree.
+ - Program example to try using tree:
+    - Try to get list of words from the user and sort using binary tree.
+
+
 -----------------
 
 ### Height vs Depth:
@@ -217,8 +219,6 @@ Explanation of determining the height
          return Math.max(findHeight(tree.getLeftNode()),findHeight(tree.getRightNode()))+1;
     }
 ```
-
-
 ---------------------
 
 ## Hash Table
