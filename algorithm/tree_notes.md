@@ -62,9 +62,9 @@
       - 3 scenarios exits in deleting non-leaf node, listed below
       
 Scenario: 1     
-          - Remove node that has no right child
-             - the serached/matched node doesn't has no child on the right
-             - promote the left node to the identified node.
+    - Remove node that has no right child
+      - the serached/matched node doesn't has no child on the right
+      - promote the left node to the identified node.
          
 Removing the node 8, from the tree         
  ```
