@@ -119,6 +119,14 @@ The invariant structure is retained.
 ```
 
 #### Tree Traversals
+
+ - Breadth First Search
+ - Depth First Search ( Pre-Order, In-Order, Post-Order)
+    ```
+     <root><left><right>  => D L R - pre-order  ( D - root node; L - Left node;  R - Right node)
+     <left><root><right>  => L D R - in-order (sorted)
+     <left><right><root>  => L R D - post-order
+    ```
    - Pre-order (Root node -> Left node -> Right node)
    ```
          4
@@ -130,8 +138,8 @@ The invariant structure is retained.
    4 2 1 3 6 5 7 
    ```
 
-   - In-order  (Left node -> Root node -> right node) (SORT order)
-       - visit left, its left until no more left, then visit its root then right.
+  - In-order  (Left node -> Root node -> right node) (SORT order)
+     - visit left, its left until no more left, then visit its root then right.
    ```
          4
        /   \
@@ -141,17 +149,15 @@ The invariant structure is retained.
    1 2 3 4  5 6 7
    ```
    
-   - Post-order (Left node -> right node -> Root node)
-      
-
-   ```
+  - Post-order (Left node -> right node -> Root node)
+  ```
          4
        /   \
       2      6
     /   \   /  \
    1     3  5    7
    1  3 2 5 7 6 4
-   ```
+ ```
 
 Usage of Tree traversal:
   - Traversal (pre-order and post-order) is used in mathematical evaluation
