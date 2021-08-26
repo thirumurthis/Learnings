@@ -184,6 +184,32 @@ Usage of Tree traversal:
   Note: 
     - The max depth = height of the tree. 
     - Node connected by edges is called vertices.
+    
+- Algorithm to find the height of the tree,
+   - Max of (Left sub-tree, Right sub-tree) + 1. 
+
+```
+// height of the tree from leaf node (is number of edges from root to leaf node)
+ int findHeight(Tree tree){
+        if(tree == null){
+            return -1;  // using -1 number of edges will be returned -1  // returning 0 here will give number of nodes or vertices in the longesth path/ height from leaf
+        }
+         return Math.max(findHeight(tree.getLeftNode()),findHeight(tree.getRightNode()))+1;
+    }
+```
+
+```
+Binary tree height = 4  for data = {4,2,1,6,7,9,3,5,8,};
+                  4
+                /    \
+               2       6
+              /  \    /  \
+             1    3   5   7
+                           \
+                             9
+                              \
+                                8
+```
 ---------------------
 
 ## Hash Table
