@@ -207,14 +207,16 @@ Explanation of determining the height
 
 
 ```
-// height of the tree from leaf node (is number of edges from root to leaf node)
+// height of the tree from leaf node (is number of edges from root to leaf node) [ Edges are lines connecting the nodes.]
 // rightheight <- findHeight(tree.right)
 // leftheight <- findHeight(tree.left)
 // return max (rightheight,leftheight)+1
 
  int findHeight(Tree tree){
         if(tree == null){
-            return -1;  // using -1 number of edges will be returned -1  // returning 0 here will give number of nodes or vertices in the longesth path/ height from leaf
+            return -1;  
+            // consider if there is only one node, if we return null the left and right sub tree will be 0 and max (0,0)+1, will be returning 1
+            // so we need to return -1, since we are already including 1.
         }
          return Math.max(findHeight(tree.getLeftNode()),findHeight(tree.getRightNode()))+1;
     }
