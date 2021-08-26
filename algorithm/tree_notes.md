@@ -83,7 +83,8 @@ Removing the node 8 from the tree
 
 Scenario 2:
 
- - Removing a node has right child no left child.
+ - Removing a node that has right child NO left child or node.
+ - Removing a node that has left child NO right child or node.
 
 Removing the node 6 from the tree   
 ```
@@ -96,7 +97,7 @@ Removing the node 6 from the tree
                             8 
     
  # removing 6, it has right child 7 which has no left child.
- # promote the left child (7) node to at 6.
+ # promote the right child (7) node to node at 6. (like linking the subtree of 6 to its parent).
  # Note 7 should become the parent.
  Doing so the invariant structure of the tree is not breaked.
  
@@ -122,11 +123,18 @@ In this case 7 will replace the 6 node.
 Doing so the invariant structure is retained.
 
 in simple terms:
+
   - if the node to be deleted has both right and left nodes, and that has to be removed
-  - find the node with minimum value from the right sub-tree from the node to be removed, and the removed node with this.
-  - if there is no right sub-tree then use left subtree
-                      
+  Approach #1:
+     - find the node with MINIMUM value from the RIGHT sub-tree from the node to be removed.
+     - Copy that (min right node value) to the node to be rmoved, and delete the duplicate.
+  Approach #2:  
+     - find the node with MAXIMIM value from the LEFT sub-tress from the node to be removed.
+     - Copy that (max left node value) to the node to be removed, and delete that duplicate.
 ```
+- Properties:
+    - In a tree or sub-tree, if the node has a minimum value, it won't have a left child. (If there is a left child, that value should be lesser). There may/may not be right child, if we had right child then this will be scenario 2.
+    - 
 
 #### Tree Traversals
 
