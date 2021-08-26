@@ -189,7 +189,27 @@ Usage of Tree traversal:
    - Max of (Left sub-tree, Right sub-tree) + 1. 
 
 ```
+Binary tree height = 4  for data = {4,2,1,6,7,9,3,5,8,};  - time complexity is O(n)
+Explanation of determining the height 
+                                    height of left sub-tree of 4 is 1            height of right sub-tree of 4 is 3    in order to consder the edges from root, we add 1
+                  4                                2                                  6
+                /    \                           /   \                              /   \     
+               2       6                        1     3                            5      7
+              /  \    /  \                                                                 \
+             1    3   5   7                                                                 9
+                           \                                                                  \
+                             9                                                                 8
+                              \
+                                8
+```
+
+
+```
 // height of the tree from leaf node (is number of edges from root to leaf node)
+// rightheight <- findHeight(tree.right)
+// leftheight <- findHeight(tree.left)
+// return max (rightheight,leftheight)+1
+
  int findHeight(Tree tree){
         if(tree == null){
             return -1;  // using -1 number of edges will be returned -1  // returning 0 here will give number of nodes or vertices in the longesth path/ height from leaf
@@ -198,18 +218,7 @@ Usage of Tree traversal:
     }
 ```
 
-```
-Binary tree height = 4  for data = {4,2,1,6,7,9,3,5,8,};
-                  4
-                /    \
-               2       6
-              /  \    /  \
-             1    3   5   7
-                           \
-                             9
-                              \
-                                8
-```
+
 ---------------------
 
 ## Hash Table
