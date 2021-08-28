@@ -1,6 +1,7 @@
 
 #### Depth first search  (uses stack datastructure)
-   - In-Order without recursion
+   - In-Order without recursion 
+   - Vist Left Node - Root Node - Right node (LDR)
 
 - Algorithm
 
@@ -85,5 +86,16 @@ int findMin(Node rootNode){
      rootNode = rootNode.right; // right is the only change
   }
   return rootNode.data;
+}
+```
+- Recursive approach for finding min in a subtree
+```
+int findMin(Node rootNode){
+   if(rootNode == null ) {
+      return -1; //return error or null
+   }else if (rootNode.left == null){
+      return rootNode.data;
+   }
+   return findMin(rootNode.left);//more like searching through subtree
 }
 ```
