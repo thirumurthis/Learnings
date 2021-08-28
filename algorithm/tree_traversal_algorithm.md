@@ -99,3 +99,65 @@ int findMin(Node rootNode){
    return findMin(rootNode.left);//more like searching through subtree
 }
 ```
+
+#### Inserting data into BTS tree
+- Algorithm
+```
+- if the rootNode is null, create a rootNode and add the data with left and right node with null
+- if the rootNode is not null, then check if the data (to be inserted) is less than the rootNode.data
+   - if it is less, then create the temp node and set it to LEFT of rootNode
+   - if it is greater than rootNode, then create node and set to RIGHT of rootNode
+```
+- code recursive approach
+```java 
+Node insert(Node rootNode, int data){
+        if(rootNode== null){
+            Node temp = new Node();
+            temp.setData(data);
+            temp.setRightNode(null);
+            temp.setLeftNode(null);
+            rootNode = temp;
+        } else if( data <= rootNode.getData()){
+            rootNode.setLeftNode(insert(rootNode.getLeftNode(),data));
+        }else {
+            rootNode.setRightNode(insert(rootNode.getRightNode(),data));
+        }
+        return rootNode;
+    }
+```
+- code non recursive approach
+```java
+//The Node node = null; is class level variable. 
+void insert (int data){
+        // Create the Temp node at the start
+        Node temp = new Node();
+        temp.setData(data);
+        temp.setRightNode(null);
+        temp.setLeftNode(null);
+        Node current, parent ;
+        // If the node is null then temp needs to be added (very first node to be added to tree) 
+        if (this.node == null){
+            this.node = temp;
+        }else {
+            current = this.node;  // this node variable for holding the current node
+            parent = null;        // this node variable for holding the parent node of current node.
+            while(true){
+                parent = current;
+                if (data < parent.getData()){ // 
+                    current = current.getLeftNode(); // if the current node leftnode is null, then add the temp node and retrun
+                    if(current == null) {
+                        parent.setLeftNode(temp);
+                        return;
+                    }
+                }else{
+                    current = current.getRightNode();
+                    if(current == null){
+                        parent.setRightNode(temp);
+                        return;
+                    }
+                }
+            }
+        }
+     }
+
+```
