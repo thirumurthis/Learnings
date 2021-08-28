@@ -40,13 +40,50 @@ List<Integer> inOrderTraverseIteration(Node tree){
         }
     }
 //Node class
-class Tree{
-    Tree leftNode=null;
+class Node{
+    Node leftNode=null;
     int data;
-    Tree rightNode = null;
+    Node rightNode = null;
     boolean isLeafNode (){
         return this.leftNode == null && this.rightNode == null;
     }
   //getter setter methods
+}
+```
+
+#### Finding a min and max algorithm
+- with out recurrsion
+  - Note: The minimum value of the BST tree will be the left most leaf node.
+  - Note: The maxumum value of the BST tree will be the right most leaf node.
+  
+- To find Minimum value.
+```
+# rootNode is the passed node to the function
+1. if rootNode is null, return error or some distinct value.
+2. iterate till rootNode is not null.
+    1. for each iteration set rootNode = rootNode.left
+3. return rootNode.data. (step 2. breaks when the leaf node is reached, rootNode.left is null)
+```
+- code
+```java
+int findMin(Node rootNode){
+  if (rootNode == null) return -1; // error 
+  
+  while( rootNode !=null){
+     rootNode = rootNode.left;
+  }
+  return rootNode.data;
+}
+```
+- To find Max value, same algorithm, traverse Right instead of Left
+- code
+```java
+int findMin(Node rootNode){
+  if (rootNode == null) return -1; // error 
+  
+  while( rootNode !=null){
+     rootNode = rootNode.right; // right is the only change
+  }
+  return rootNode.data;
 }
 ```
