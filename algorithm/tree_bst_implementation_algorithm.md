@@ -163,7 +163,7 @@ void insert (int data){
 ```
 
 -Deleting:
-   - Check the other link for the detail algorithm
+   - Check the other [link](https://github.com/thirumurthis/Learnings/blob/master/algorithm/tree_notes.md) for the detail algorithm
 ```java
 Node deleteNode(Node node,int data){
         if(node == null){
