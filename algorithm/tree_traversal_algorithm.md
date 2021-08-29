@@ -161,3 +161,36 @@ void insert (int data){
      }
 
 ```
+
+-Deleting:
+   - Check the other link for the detail algorithm
+```java
+Node deleteNode(Node node,int data){
+        if(node == null){
+            return null;
+        }else if(data < node.getData()){
+            node.setLeftNode(deleteNode(node.getLeftNode(),data));
+        }else if(data > node.getData()){
+            node.setRightNode(deleteNode(node.getRightNode(),data));
+        }else{
+            //Scenario 1: no child
+            if(node.getLeftNode()==null && node.getRightNode()==null){
+                 return null;
+            }
+            //Scenario 2: only either Right or Left node of node to be removed
+            if(node.getLeftNode() == null){
+                return node.getRightNode();
+            }
+            else if(node.getRightNode() == null){
+                return node.getLeftNode();
+            }
+            // scenario 3: if there are both Right and Left node of the node to be removed
+            else{
+                Node tempNode = findMin(node.getRightNode());
+                node.setData(tempNode.getData());
+                node.setRightNode(deleteNode(node.getRightNode(),tempNode.getData()));
+            }
+        }
+       return tree;
+    }
+```
