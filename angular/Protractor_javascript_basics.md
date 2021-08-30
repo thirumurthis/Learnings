@@ -45,3 +45,19 @@ $ protractod config
 - To specify the browser, update the capabilities section on the configuration file, check docs.
 
 **Important**: To working with non-Angular, check the documentation `browser.waitForAngularEnabled(false);`
+
+##### How to use repeater, chain locators
+ - If the angular app, inspect element uses ng-repeator, then we can use repeaters
+
+```js
+describe('simple test11', ()=>{
+
+    it('test calculate',()=>{
+        browser.get("http://juliemr.github.io/protractor-demo/");
+        element(by.model("first")).sendKeys(1);
+        element(by.model("second")).sendKeys(2);
+        element(by.id("gobutton")).click();
+        //chaining element over another element, the scope of the css will be within that element 
+        // not the result in memory ng-repeat is table with two tds, and we need to get the text and value of the second child.
+        element(by.repeater("result in memory").element(by.css("td:nth-child(2)").getText(); // the result 
+```
