@@ -10,7 +10,10 @@ Within the orgnizaton, it may require to login o the repostory of npm
   ``` npm login http://hostname.com/path```
   
 Install protractor
+
 ``` npm install -g protractor```
+
 ``` Protractor --version```
-  Normally the angular package will install protractor.
+
+Normally the angular package will install protractor.
   
