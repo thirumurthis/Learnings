@@ -160,11 +160,28 @@ browser.getAllWindowsHandles().then(function(handle){
 })
 ```
 - Using the above child winodow handle, from child window.
-```
+```js
 browser.getAllWindowsHandles().then(function(handle){
   browser.getTitle().then((title)=>{console.log("parent : "+title);}
   browser.switchTo().window(handle[1]);
   browser.getTitle().then((title)=>{console.log("child: "+title);} // returns the child window title since after switch
 })
 
+```
+
+##### How to handle `alerts` in protractor.
+- Clicking the option the clicking button when alerts open.
+- This is mostly for non angluar app or hybrid apps. 
+```js
+it('test alert',()=>{
+
+        browser.waitForAngularEnabled(false);
+        browser.get("https://www.rahulshettyacademy.com/AutomationPractice/");
+        element(by.id('confirmbtn')).click();
+        browser.switchTo().alert().accept(); // This will create alerts and click ok which is possitve
+        element(by.id('confirmbtn')).click();
+        browser.switchTo().alert().dismiss().then(()=>{
+            browser.sleep(4000); //instead of accept use dismiss
+        });
+    });
 ```
