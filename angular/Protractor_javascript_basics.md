@@ -97,3 +97,11 @@ it('all test',()=>{
             });
   
 ```
+#### how to use `tagName` locator?
+```
+ element.all(by.tagName("option")).each((item)=>{
+                  item.getAttribute("value").then(function(val){
+                    console.log("option: "+val);
+                  })
+              });
+```
