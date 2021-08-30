@@ -59,5 +59,41 @@ describe('simple test11', ()=>{
         element(by.id("gobutton")).click();
         //chaining element over another element, the scope of the css will be within that element 
         // not the result in memory ng-repeat is table with two tds, and we need to get the text and value of the second child.
-        element(by.repeater("result in memory").element(by.css("td:nth-child(2)").getText(); // the result 
+        element(by.repeater("result in memory").element(by.css("td:nth-child(2)").getText(); // the result : 3+5 promise is returned
+        
+        //to resolve the promise, use .then()
+        element(by.repeater("result in memory").element(by.css("td:nth-child(3)").getText().then((test)=>{
+        console.log(test);
+        })
+        });
+```
+##### using `all` locators
+ - the link  `http://juliemr.github.io/protractor-demo/`, prints the results in a table appended to the result section
+ - How to grab more than one results and validate?
+
+```js
+it('all test',()=>{
+            browser.get("http://juliemr.github.io/protractor-demo/");
+            element(by.model("first")).sendKeys(1);
+            element(by.model("operator")).element(by.css("option:nth-child(4)")).click();
+            element(by.model("second")).sendKeys(2);
+            element(by.id("gobutton")).click();
+
+            element(by.model("first")).sendKeys(2);
+            element(by.model("second")).sendKeys(2);
+            element(by.id("gobutton")).click();
+            
+
+            // this will print the count where count send the promise which needs to be handled.
+            element.all(by.repeater('result in memory')).count().then((cnt)=>{
+                 console.log("Count: "+cnt);
+            });
+             //in order to loop through the repeates and pring the results of the 3rd td 
+             element.all(by.repeater('result in memory')).each(function(item){
+                item.element(by.css("td:nth-child(3)")).getText().then((text)=>{
+                console.log("product : "+text);
+              });
+            
+            });
+  
 ```
