@@ -41,3 +41,7 @@ exports.config = {
 $ protractod config 
 ```
 - Info: to update the IE driver ` > webdriver-manager update --ie`
+
+- To specify the browser, update the capabilities section on the configuration file, check docs.
+
+**Important**: To working with non-Angular, check the documentation `browser.waitForAngularEnabled(false);`
