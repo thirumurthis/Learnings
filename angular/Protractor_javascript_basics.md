@@ -28,9 +28,10 @@ describe('simple test11', ()=>{
 - Since we are using the protractor demo site, we can crate a config file as below
 
 ```js
-// name as config.js  - note no need for local webmanger driver to be started since we are hitting the website directly.
+// name as config.js  - note no need for local webmanger driver will be started by default.
+// recommended: to start the webmanger sever externally using  > webdirver-manager start 
 exports.config = {
-   // seleniumAddress: 'http://localhost:4444/wd/hub',
+    seleniumAddress: 'http://localhost:4444/wd/hub',
     specs: ['spec1.js']
   };
 ```
@@ -39,3 +40,4 @@ exports.config = {
 // passing the config file, make sure the config file exists in the path where the command is executed. .js extension is options.
 $ protractod config 
 ```
+- Info: to update the IE driver ` > webdriver-manager update --ie`
