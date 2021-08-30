@@ -105,3 +105,66 @@ it('all test',()=>{
                   })
               });
 ```
+
+##### Handling auto-suggest/auto-complete text box.
+
+ - From Protractor API, we can use `action`
+ - Moving cursor can be moved, using action.
+ 
+```js
+// in angular app if we have a dropdown, we can select text box and the dropdown list using actions
+
+//for selection of auto-suggest box and inputing chars
+browser.actions().mouseMove(
+      element(by.model("locationQuery")
+    ).sendKeys("lond")).perform();
+
+//for selecting the dropdown value suggested after passing lond
+browser.actions.sendKeys(protractor.Key.ARROW_DOWN).perform();
+
+//for entring the key or selecting from dropdown list
+browser.actions.sendKeys(protractor.Key.ENTER).perform();
+
+//to slow down the browser usign sleep
+browser.actions.sendKeys(protractor.Key.ENTER).perform().then (()=>{
+  browser.sleep(5000);//to sleep 5 sec
+});
+```
+
+- Using regular expressiong in `by.css()`
+```
+//selecting the tile of serach and clikcing the specific href link
+element(by.css("a[ng-href*='Island']").click();
+
+element(by.css("a[ng-href*='Island']").click().then(()=>{
+  browser.sleep(3000);
+});
+```
+
+##### Handling the click opens another window, rather then within that window.
+   - Protractor, will perform the serach only within the parent window.
+   - Any child window search, the protractor should instructed to focus to the child window.
+
+ - This can be donw using `switchTo()`.
+
+```
+browser.switchTo().window(nameOrhandle); // how get the handle of the child window.
+// protractor has an API
+
+browser.getAllWindowsHandles(); //this gives the handle of all the opned window/tab and returled in the array. 
+// the handle promise needs to be handled.
+browser.getAllWindowsHandles().then(function(handle){
+ // Node: handle[0] - this has the parent window handle.
+ // in this case handle[1] - has the child window (since this is opned per protractor test)
+  browser.switchTo().window(handle[1]);
+})
+```
+- Using the above child winodow handle, from child window.
+```
+browser.getAllWindowsHandles().then(function(handle){
+  browser.getTitle().then((title)=>{console.log("parent : "+title);}
+  browser.switchTo().window(handle[1]);
+  browser.getTitle().then((title)=>{console.log("child: "+title);} // returns the child window title since after switch
+})
+
+```
