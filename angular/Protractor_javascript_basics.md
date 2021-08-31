@@ -145,7 +145,7 @@ element(by.css("a[ng-href*='Island']").click().then(()=>{
    - Protractor, will perform the serach only within the parent window.
    - Any child window search, the protractor should instructed to focus to the child window.
 
- - This can be donw using `switchTo()`.
+ - This can be done using `switchTo()`.
 
 ```
 browser.switchTo().window(nameOrhandle); // how get the handle of the child window.
@@ -166,7 +166,6 @@ browser.getAllWindowsHandles().then(function(handle){
   browser.switchTo().window(handle[1]);
   browser.getTitle().then((title)=>{console.log("child: "+title);} // returns the child window title since after switch
 })
-
 ```
 
 ##### How to handle `alerts` in protractor.
@@ -174,14 +173,82 @@ browser.getAllWindowsHandles().then(function(handle){
 - This is mostly for non angluar app or hybrid apps. 
 ```js
 it('test alert',()=>{
-
-        browser.waitForAngularEnabled(false);
-        browser.get("https://www.rahulshettyacademy.com/AutomationPractice/");
-        element(by.id('confirmbtn')).click();
-        browser.switchTo().alert().accept(); // This will create alerts and click ok which is possitve
+     browser.waitForAngularEnabled(false);
+     browser.get("https://www.rahulshettyacademy.com/AutomationPractice/");
+      element(by.id('confirmbtn')).click();
+      // accept returns a promise and we are handling it here.
+       browser.switchTo().alert().accept().then(()=>{   
+         browser.sleep(1000);
+       });
+      //  browser.switchTo().alert().accept(); // This will create alerts and click ok which is positve
         element(by.id('confirmbtn')).click();
         browser.switchTo().alert().dismiss().then(()=>{
             browser.sleep(4000); //instead of accept use dismiss
         });
     });
 ```
+#### How to handle frames. (iframe).
+  - Embedding another site within a site. 
+  - use `switchTo().frame()` in this case, below is code example. refer protractor API for more info.
+```js
+  it("test frame", ()=>{
+        browser.waitForAngularEnabled(false);
+        // as a best practice maximize the browser when you perform testing.
+        // there are no protractor also uses the selinium code for this.
+        browser.driver.manage().window().maximize(); // in selinium simply use driver.manage().window().maximize();
+        browser.get("https://www.rahulshettyacademy.com/AutomationPractice/");
+
+        browser.switchTo().frame(element(by.tagName('iframe')).getWebElement());
+        element(by.css("a[href*='sign_in']")).getText().then((txt)=>{
+            console.log("iframe title : "+txt);
+        })
+    });
+```
+#### Synchronization in non-angular app.
+ - Protractor works with angular to handle waits and synchronization.
+ - In non-angular app, clicking an button in some case might take long time to render.
+   - That is where we need to synchronize the calls.
+   - Don't use browser.sleep(), we never know how long to wait. 
+
+For synchronization and sleep required for non-angular app use expected condiction
+  - __Protractor uses concept called `expected condition`, where it has timeout.__
+ - Check protractor API documentation for expectedconditions
+
+```
+## declare the variable EC with expected condition
+var EC = protractor.ExpectedConditions;
+// below waits for id abc to be no longer visible on the dom
+browser.wait(EC.invisibilityOf($('#abc')),5000);
+```
+- sample code
+```js
+ it('test synchronization',()=>{
+
+        //for non-angular app
+        browser.waitForAngularEnabled(false);
+
+       /*
+        //without synchronization 
+        browser.get('https://www.itgeared.com/demo/1506-ajax-loading.html');
+        //when clicking the link, it takes sometime to load the string
+        element(by.css("a[href*='loadAjax']")).click();
+        //printing the text after clicking which takes time.
+        element(by.id("results")).getText((text)=>{
+            console.log(text);
+        });
+        */
+
+        var EC = protractor.ExpectedConditions;
+        browser.get('https://www.itgeared.com/demo/1506-ajax-loading.html');
+        //when clicking the link, it takes sometime to load the string
+        element(by.css("a[href*='loadAjax']")).click();
+
+         // wait till 5 sec, if response recived before 5 sec perform next step
+        browser.wait(EC.invisibilityOf(element(by.id("loader"))),10000);
+        element(by.id("results")).getText().then((text)=>{
+            console.log(text);
+        });
+    });
+````
+
+
