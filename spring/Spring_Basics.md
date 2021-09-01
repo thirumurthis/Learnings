@@ -95,3 +95,31 @@ public class UuidService{
   }
 }
 ```
+- Simple restcontroller to hit the external url and fetch the data
+
+```java
+@SpringBootApplication
+public class SpringBootDemo{
+  public static void main(String ... args){
+     SpringApplication.run(SpringBootDemo.class, args); 
+  }
+}
+
+@RestController
+class TestDemo{
+
+private RestTemplate template;
+
+TestDemo(RestTemplate template){
+  this.template = template;
+  }
+  
+ @GetMapping("/books/{isbn}")
+ String getBookinfo(@PathVariable("isbn") String isbn){
+    ResponseEntity<String> exchange = this.template
+    .exchange("https://www.googleapis.com/books/v1/volumes?1=isbn:" + isbn, HttpMethod.GET,
+    null,String.class);  // parameter passed Url, Request method, any body to be sent since this is GET, response type to be recived
+    
+   return exchange.getBody(); // this will get the body from response and sent back
+ }
+```
