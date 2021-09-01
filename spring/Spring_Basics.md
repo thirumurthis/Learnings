@@ -56,7 +56,7 @@ class Foo(){}
 
 - In the above example lets say Car takes an uuid
 
-
+```java
 @SpringBootApplication
 public class SpringBootDemo{
   public static void main(String ... args){
@@ -94,3 +94,4 @@ public class UuidService{
      return UUID.randomUUID().toString();
   }
 }
+```
