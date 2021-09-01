@@ -250,6 +250,8 @@ TestDemo(RestTemplate template){
 #### Authentication
    - User name and password to authenticaton for form based and http-basic.
    - Single-sign on token authentication
+   - Certificate
+   - Link in an email
 
 #### Authroization
    - After the authentcated
