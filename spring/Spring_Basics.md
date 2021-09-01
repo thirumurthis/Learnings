@@ -229,7 +229,7 @@ TestDemo(RestTemplate template){
     long time = System.currentTimeMilis();
     chain.doFilter(request,response);
     long diff = System.currentTimemilis() - time;
-    this.log.info("request time take " + diff);
+    this.log.info("request time take " + diff +" ms");
  }
  
  @Override
