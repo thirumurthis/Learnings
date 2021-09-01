@@ -123,3 +123,63 @@ TestDemo(RestTemplate template){
    return exchange.getBody(); // this will get the body from response and sent back
  }
 ```
+#### Spring AOP
+  - using AspectJ pointcut defintion, a simple program to introduce functionalilty that will logs the execution of all methods in application package.
+
+
+```
+package com.example.demo;
+@SpringBootApplication
+public class SpringBootDemo{
+  public static void main(String ... args){
+     SpringApplication.run(SpringBootDemo.class, args); 
+  }
+}
+
+@Component
+@Aspect
+class LoggingAspect{
+
+private final Log log = LogFactory.getLog(getClass());
+  // this package where the example demo code is preset.
+  @Around("execution(* com.example..*.*(..) )");  // the expression says, want to invoke anything with package com.example. and match any type and any method with any parameter
+  public Object log(ProceedingJoinPoint pjp) throws Throwable{
+     //before -  in the beging of the method invocation
+     this.log.info("before" + pjp.toString());
+     Object obj = pjp.proceed();
+     this.log.info("after" +pjp.toString());
+     
+     // after invoking the method
+     // if some condition, then apply the logic.
+     
+     retunr obj
+  }
+}
+
+class Car(){
+  private final Foo foo; //spring will deduce this since we annotated with @Component
+  // Another approach - in case if we are not using @Bean to define this bean we can directly set @value of uuid in constructor like below
+  Car(Foo foo,  @Value("#{uuid.buildUuid()}") String uuid,
+                @Value("#{ 2 >1 }") boolean test){  // we can also set condition, like calling another bean and check during construction time.
+     // to print just create a log
+     private final LOG log = LogFactory.getLog(getClass());
+     this.foo = foo;
+     this.log.info(uuid);
+     this.log.info(test); // this will be true since the expression evaluated is 2 > 1 evaluating condition.
+    };
+}
+
+class Foo(){}
+
+//say the logic to generate the UUID can be put as service
+
+@Component
+public class UuidService{
+  public String buildUud(){
+     return UUID.randomUUID().toString();
+  }
+}
+```
+  - Executing the above code, if the `UuidService` is invoked from the SpringBootDemo class, then the logs should indicate the AOP pointcut applied before and after the methos calls of that uuidservice.
+
+
