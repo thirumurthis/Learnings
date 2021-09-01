@@ -182,4 +182,58 @@ public class UuidService{
 ```
   - Executing the above code, if the `UuidService` is invoked from the SpringBootDemo class, then the logs should indicate the AOP pointcut applied before and after the methos calls of that uuidservice.
 
+#### Filters in spring 
+  - say we have the rest controller to fetch the books info, we can intercept the request and detect the request using filters
+```java
+
+@SpringBootApplication
+public class SpringBootDemo{
+  public static void main(String ... args){
+     SpringApplication.run(SpringBootDemo.class, args); 
+  }
+}
+
+@RestController
+class TestDemo{
+
+private RestTemplate template;
+
+TestDemo(RestTemplate template){
+  this.template = template;
+  }
+  
+ @GetMapping("/books/{isbn}")
+ String getBookinfo(@PathVariable("isbn") String isbn){
+    ResponseEntity<String> exchange = this.template
+    .exchange("https://www.googleapis.com/books/v1/volumes?1=isbn:" + isbn, HttpMethod.GET,
+    null,String.class);  // parameter passed Url, Request method, any body to be sent since this is GET, response type to be recived
+    
+   return exchange.getBody(); // this will get the body from response and sent back
+ }
+ 
+ class LoggingFilter implements javax.servlet.Filter{
+ private final Log log = LogFacatory.getLog(getClass());
+ @override
+ public void init(FilterConfig filterconfig) throws ServletException{}
+ 
+ @Override
+ public void  doFilter(ServletRequest request, ServletResponse response, FliterChain chain) throws IOException,ServletException{
+    Assert.isTrue(request instanceof HttpRequest", "a http request test");
+    
+    HttpServletRequest httpServletRequest = HttpServletRequest.class.cast(request);
+    String url = httpServletRequest.getRequestURI();
+    this.log.info("new request : "+url);
+    
+    //after handling we need to forward this using the chain
+    //here we are the request can be wrapped and sent to downstream system, they recieve 
+    long time = System.currentTimeMilis();
+    chain.doFilter(request,response);
+    long diff = System.currentTimemilis() - time;
+    this.log.info("request time take " + diff);
+ }
+ 
+ @Override
+ public void destroy () {
+ }
+```
 
