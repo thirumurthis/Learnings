@@ -236,4 +236,22 @@ TestDemo(RestTemplate template){
  public void destroy () {
  }
 ```
+#### Spring security works based on filters, the heart is `FilterChainProxy.java` filter. This can be used to debug and check how this works.
+   - we can add a debug point in this class
+   - SecurityContext are updated and set to the webcontext, servletcontext,etc.
+   - getFilters() in this code, will provide a list of filters used.
+   - This is the entry point for all web-based security.
+
+
+- How does spring security or other congigurations are configured in Spring boot? using the `springboot-autoconfigure**.jar`.
+- This jar has `spring.factories` where the congigurations are specified. Auto configure key is, `org.springframework.boot.autoconfigure.EnableAutoconfiguration` key.
+- Check for the security keyword and can see a bunch of configuration classes.
+
+#### Authentication
+   - User name and password to authenticaton for form based and http-basic.
+   - Single-sign on token authentication
+
+#### Authroization
+   - After the authentcated
+
 
