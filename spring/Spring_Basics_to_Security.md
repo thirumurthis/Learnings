@@ -251,9 +251,76 @@ TestDemo(RestTemplate template){
    - User name and password to authenticaton for form based and http-basic.
    - Single-sign on token authentication
    - Certificate
-   - Link in an email
-
+   - Link in an confirmation email
+ - Who is making this request?
+ 
 #### Authroization
    - After the authentcated
+ - What are proven roles the authenticated user have.
 
+ - Most commonly form based user name password is used.
+ - Usually a POST request is made, with username and password in the body of the http request.
+   - The password should be encoded and compared.
 
+- InMemoryAuthentication
+  - This is only useful for development and poc purpose.
+  - Create a spring web project from Spring start io with dependencies, Security, Web, Lombok.
+
+```java
+@SpringBootApplication
+public class SpringInMemory {
+
+ //After reading the below notes, we are creating a in memory user.
+ @Bean
+ UserDetailsManager userDetailsService(){
+    return new InMemoryUserDetailsManager();
+ }
+ 
+ @Bean
+ InitializingBean initializer(UserDetailsManager manager){ //injecting the pointer to the userdetailmanager bean
+ // call back interface, this will call the afterproerties on the lambcda
+    return () -> {
+      // using the builder api, withDefaultPasswordEncoder() is depricated.
+      UserDetails thiru = User.withDefaultPasswordEncoder().username("thiru").password("pass").roles("USER").build();
+      manager.createUser(thiru);
+      UserDetails ram = User.withUserDetails(thiru).username("ram").build();
+      manager.createUser(ram);
+    }
+ }
+
+  public static void main(String ... args){ SpringApplication.run(SpringInMemory.class, args); }
+}
+
+@RestController
+class GreetingController{
+
+ @GettingMapping ("/greeting")
+ String greeting(Principal principal){  // The authenticated prinicpal is injected by spring security, this is available as long as the 
+                                        // prinicpal is available in context
+   return "hello "+prinicpal.getName();
+ }
+}
+
+/*Locking down all the request going to application unless they can authenticate using http basic*/
+class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
+  @Override
+  protected void configure(HttpSecurity http) throws Exception{
+    http.httpBasic(); //other builder like, formlogin, httpbasic, ldap - how to handle the authentication
+    
+    http.authorizeRequests().anyRequest().authenticated();
+  }
+}
+```
+
+```
+Notes:
+//curl -uv username:password http://localhost:8080/greeting
+//The above, spring security has already at this point taken the http header (X509 certificate, token, authorization token, cookies) and converted to authetnication object.
+// The authentication object is passed it to object type UserDetails. This has the username, password, active, etc.
+// check UserDetails.java is part of spring security
+// UserDetailsService.java - in most case requires to be overrided since most of the case some sort of identiy store.
+// Authentication.java - has creditentials, object details, isAuthenticated etc. This is authentication object, is passed to Authentication manger.
+// Check AuthetincationManager.java -> authnticate() 
+// This authentication object, will be passed to AuthenticationProvider to check which channel provider is available.
+// DoaAuthenticationProvier.java  -> this delicates by taking a username and returns the userdetails.
+```
