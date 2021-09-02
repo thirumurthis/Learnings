@@ -421,4 +421,42 @@ class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
   }
 }
 ```
+ ##### using formlogin
  
+ ```java
+ 
+ //for the same inmemory login example - below would be the configuration
+ // note that since we are customziing the view using html
+ 
+ // we are not going to use @RestController here. We will be using html views to redirect
+ // from the custom login
+ 
+ class SecurityConfig extends WebSecurityConfiguratorAdaptor{
+   @Override
+  protected void configure(HttpSecurity http) throws Exception{
+    //http.httpBasic();  //- this can be used since we can't expect user to provide login credentials for every access
+    
+    // To enable spring security and  ask authentication details for every request   
+    http.authorizeRequests().anyRequest().authenticated();
+    
+    http.formLogin(); // this enables default login page
+    http.logout();   //this enables default logout page
+    
+    // The above can be customized to open our custom view
+    // we can use below
+   
+     http.formLogin().loginPage("/login").permitAll(); // we allow access to this page to all
+     http.logout().logoutUrl("/logout").logoutSuccessful("logout-success"); 
+     // the logoutSuccessful() is signout page
+     
+     // instead of logoutSuccessful() we can use logoutSuccessfulHandler, which is a callback handler so if we need to clear the session etc. can be done here
+     
+     http.logout().logoutUrl("/logout").logoutSuccessHandler(new LogoutSuccessHandler{
+       @Override
+       public void onLogutSuccess(HttpServletRequest request, HttpServeltResponse response, Authentication auth){
+        // handle logic here to clear it.
+       }
+     }); 
+  }
+}
+ ```
