@@ -67,8 +67,7 @@ public class SpringBootDemo{
   @Bean
   Car car(Foo foo, @Value("#{uuid.buildUuid()}") String uuid){ 
     return new Car(foo);
-  }
-  
+  } 
 }
 
 class Car(){
@@ -447,16 +446,39 @@ class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
    
      http.formLogin().loginPage("/login").permitAll(); // we allow access to this page to all
      http.logout().logoutUrl("/logout").logoutSuccessful("logout-success"); 
-     // the logoutSuccessful() is signout page
+     // the logoutSuccessful() is  used to display after user hit logout html page
      
      // instead of logoutSuccessful() we can use logoutSuccessfulHandler, which is a callback handler so if we need to clear the session etc. can be done here
-     
+     // use either this or the above
      http.logout().logoutUrl("/logout").logoutSuccessHandler(new LogoutSuccessHandler{
        @Override
        public void onLogutSuccess(HttpServletRequest request, HttpServeltResponse response, Authentication auth){
         // handle logic here to clear it.
        }
      }); 
+  }
+  
+  @Controller
+  class LoginController{
+    @GetMapping("/")
+    String index(Model model){  // model contains the attributes from the from
+      return "index"; //return view the index.html
+      }
+      // similarly for login, login-successful define @GetMapping...
+  }
+  
+  // in the app above, the user info is 
+  // is a object isn't a controller itself
+  // this has the ability to do all that controller can do
+  // it is used to create a model attributes and can be shared by other controller
+  
+  // Example below the currently authenticated user can be used by View and Controller
+  @ControllerAdvice
+  class PrincipalControllerAdvice{
+  
+  @ModelAttribute("currentUser")
+  Principal principal(Principal p){ // if tihs Principal is null then user is about login/ had logged out.
+     return p;
   }
 }
  ```
