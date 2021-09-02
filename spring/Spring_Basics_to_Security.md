@@ -126,7 +126,6 @@ TestDemo(RestTemplate template){
 #### Spring AOP
   - using AspectJ pointcut defintion, a simple program to introduce functionalilty that will logs the execution of all methods in application package.
 
-
 ```
 package com.example.demo;
 @SpringBootApplication
@@ -278,9 +277,9 @@ public class SpringInMemory {
  
  @Bean
  InitializingBean initializer(UserDetailsManager manager){ //injecting the pointer to the userdetailmanager bean
- // call back interface, this will call the afterproerties on the lambcda
+ // call back interface, this will call the afterproerties on the lambda
     return () -> {
-      // using the builder api, withDefaultPasswordEncoder() is depricated.
+      // using the builder api, withDefaultPasswordEncoder() is deprecated.
       UserDetails thiru = User.withDefaultPasswordEncoder().username("thiru").password("pass").roles("USER").build();
       manager.createUser(thiru);
       UserDetails ram = User.withUserDetails(thiru).username("ram").build();
@@ -324,3 +323,66 @@ Notes:
 // This authentication object, will be passed to AuthenticationProvider to check which channel provider is available.
 // DoaAuthenticationProvier.java  -> this delicates by taking a username and returns the userdetails.
 ```
+
+#### JDBC authentication
+  - Mostly we have database where the idetntity are stored.
+  - H2 database can be used.
+   - Create a spring project with dependencies jdbc, h2, web, lombok
+```java
+
+@SpringBootApplication
+public class JdbcSpringSecurity {
+
+ //After reading the below notes, we are creating a in memory user.
+ @Bean
+ UserDetailsManager jdbc(DataSource ds){
+    //Any user creation delete can be configured here if needed
+    JdbcUserDetailsManager jdbcUserDetailsManager= new JdbcUserDetailManager();  // this implementation is updated. 
+    jdbcUserDetailsMananger.setDataSource(ds);
+    return jdbcUserDetailManager(); 
+    // create schema rquired needs to be created, create a file called schema.sql
+ }
+ 
+ // Note: create a table for user and authority - check the documentation for fields of the table.
+ 
+ @Bean
+ InitializingBean initializer(UserDetailsManager manager){ //injecting the pointer to the userdetailmanager bean
+ // call back interface, this will call the afterproerties on the lambda
+    return () -> {
+      // using the builder api, withDefaultPasswordEncoder() is deprecated.
+      UserDetails thiru = User.withDefaultPasswordEncoder().username("thiru").password("pass").roles("USER").build();
+      manager.createUser(thiru);
+      UserDetails ram = User.withUserDetails(thiru).username("ram").build();
+      manager.createUser(ram);
+    }
+ }
+  public static void main(String ... args){ SpringApplication.run(JdbcSpringSecurity.class, args); }
+ 
+}
+
+@RestController
+class GreetingController{
+
+ @GettingMapping ("/greeting")
+ String greeting(Principal principal){  // The authenticated prinicpal is injected by spring security, this is available as long as the 
+                                        // prinicpal is available in context
+   return "hello "+prinicpal.getName();
+ }
+}
+
+/*Locking down all the request going to application unless they can authenticate using http basic*/
+class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
+  @Override
+  protected void configure(HttpSecurity http) throws Exception{
+    http.httpBasic(); //other builder like, formlogin, httpbasic, ldap - how to handle the authentication
+    
+    http.authorizeRequests().anyRequest().authenticated();
+  }
+}
+
+```
+- Note:
+```
+ - JdbcUserDetailsManager.java - has the bunch of queries that are used to fetch and insert to the schema. And these can be overrided.
+```
+
