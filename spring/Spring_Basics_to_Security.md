@@ -311,9 +311,8 @@ class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
   }
 }
 ```
-
+- Notes:
 ```
-Notes:
 //curl -uv username:password http://localhost:8080/greeting
 //The above, spring security has already at this point taken the http header (X509 certificate, token, authorization token, cookies) and converted to authetnication object.
 // The authentication object is passed it to object type UserDetails. This has the username, password, active, etc.
@@ -389,3 +388,37 @@ class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
  - JdbcUserDetailsManager.java - has the bunch of queries that are used to fetch and insert to the schema. And these can be overrided.
 ```
 
+#### using LDAP authenticatione, note spring provides as empty ldap embedded server, use .ldif file in the class path with user info and domain details.
+   - On startup the ldif file will be loaded into memory. The application.properties should be updated with the ldap info. like port number, ldif file and domain info where to fetch user.
+
+```
+// For LDAP we need to check the authentication provider
+
+@Configuration
+@EnableWebSecurity
+class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
+  
+  //AuthenticationManagerBuilder needs to be checked the ldap authetication
+  @Override
+  protected void configure(AuthetincationManagerBuilder auth){
+    auth.ldapAuthentication()
+    .userDnPattern("uid={0},ou=people") // this is providing template query
+    .groupSearchBase("ou=groups)   //this is to look up for groups, this can be compared with Roles and groups - 
+                                  // how they are stored as different tables similarly in LDAP this is different query
+    .contextSource()
+    .url("ldap://127.0.0.1:<port-specified-in-application-properties>/dc=<domain-component>,dc=<domain-component>")
+    .and()
+    .passwordCompare()
+    .passwordAttribute("userPassword")
+    .passwordEncoder(new LdapShaPasswordEncoder()); // sha is not a secured encoder don't use that in prod.
+  }
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception{
+    http.httpBasic(); //other builder like, formlogin, httpbasic, ldap - how to handle the authentication
+    
+    http.authorizeRequests().anyRequest().authenticated();
+  }
+}
+```
+ 
