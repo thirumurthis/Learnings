@@ -299,7 +299,8 @@ class GreetingController{
    return "hello "+prinicpal.getName();
  }
 }
-
+@Configuration
+@EnableWebSecurity
 /*Locking down all the request going to application unless they can authenticate using http basic*/
 class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
   @Override
@@ -370,6 +371,8 @@ class GreetingController{
  }
 }
 
+@Configuration
+@EnableWebSecurity
 /*Locking down all the request going to application unless they can authenticate using http basic*/
 class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
   @Override
