@@ -569,6 +569,12 @@ class CustomAuthentication implements AuthenticationProvider{
 @SpringBootApplication
 public class CustomAuthenticationApplication{
   
+  // without the password encoder bean the application will fail
+  @Bean
+  PasswordEncoder passwordEncoder(){
+    return NoOpPasswordEncoder.getInstance(); // this is strictly for development purpse only
+  }
+  
   @Bean
   CustomUserDetailsService customUserDetailsService(){
    Collection<UserDetails> users = Arrays.asList(
