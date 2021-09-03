@@ -830,4 +830,11 @@ public CustomUserDetails (String username, String password, boolean active, Stri
    //other override variables 
 }
 ```
-  
+##### Audit logs - to see what is going on the system. Who is authenticating the system example.
+  - using spring boot actuators, just add the dependencies 
+  - in order to expose the endpoint, we can configure it in application.properites
+     - update `management.endpoints.web.exposure.include=*` ; * - is everything exposed
+     - Note: since we inclded spring security, we need to have username password to access the endpoint.
+  - once application is up, hit `http://localhost:8080/actuator` to view the list of endpoints exposed.
+      - `http://localhost:8080/actuator/auditevents` endpoint provides information about who is authenticated etc. Tip: use jq util to format the json pay load.
+      - events are displayed successful and unsuccessfule authentications.
