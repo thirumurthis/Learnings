@@ -563,9 +563,9 @@ class CustomAuthentication implements AuthenticationProvider{
 #### Custom UserDetailsService
  - In case if we need to communicate to the no sql database or some different identity store. This requires custom userdetails service
 
- - for demo purpose the user info is stored in a concurrent hash map and lets fetch using custom userdetails
-```
-
+ - for demo purpose the user info is stored in a concurrent hash map and lets fetch using custom UserDetails
+ - 
+```java
 @SpringBootApplication
 public class CustomAuthenticationApplication{
   
@@ -666,4 +666,159 @@ public CustomUserDetails (String username, String password, boolean active, Stri
  - Say we have a database table user, and in this case we can have a UserDetails implementation that wraps and deligates the important bits to that user.
  - UserDetails is a simple interface, which has an authority(), username, etc
  ```
+##### Encoding password is more critical
+
+```java
+//in the above example of custom user details
+// the delegating password encoder, is a composite of mulitple encode option.
+// this encoder contains different options as a map will encode based and match the attempted value with the encoded value.
+// delegating encoder prefix the algorithm used "{bcrypt}.." which is used to identify
+// we can delegate the password to be encoded by the factory
+ @Bean
+ PasswordEncoder passwordEncoder(){
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+ }
  
+ // so the bean we injected with password will be updated - but this still for development
+ // if this is a form based, then the password will be coming from login page
+ @Bean
+  CustomUserDetailsService customUserDetailsService(){
+   Collection<UserDetails> users = Arrays.asList(
+       new CustomUserDetails("thiru",passwordEncoder().encode("password"), true, "USER");
+     );
+   return new CustomUserDetailsService(users);
+  }
+  
+  // in case if we need to provide a specific encoder from the delegating encoder 
+  
+  @Bean
+  PasswordEncoder oldPasswordEncoder(){
+    String md5= "md5";
+      return nw DelegatingPasswordEncoder(md5,Collections.singletonMap(md5, new MessageDigestPasswordEncoder(md5));
+  }
+```
+
+- Note:
+```
+ - in case of migrating from one algorithm to different one, better use case to create an event to Users and ask them to provide a new one. so new one inserted will be new encoded one.
+```
+  - In a scenario, if we nee to udpate the old password encoded with the new password encoder, automatically when the user updates, using `UserDetailsPasswordService`
+
+```
+// spring security 2.1.0 build onwards we can use the UserDetailsPasswordService
+@SpringBootApplication
+public class CustomAuthenticationApplication{
+  
+  // without the password encoder bean the application will fail
+  @Bean
+  PasswordEncoder passwordEncoder(){
+    return NoOpPasswordEncoder.getInstance(); // this is strictly for development purpse only
+  }
+  
+  @Bean
+  CustomUserDetailsService customUserDetailsService(){
+   Collection<UserDetails> users = Arrays.asList(
+       new CustomUserDetails("thiru","password", true, "USER");
+     );
+   return new CustomUserDetailsService(users);
+  }
+}
+@RestController
+class WelcomeController{
+  @GetMapping("/welcome")
+  String greet(Principal p ){
+    return "welcome "+p.getName();
+  }
+}
+
+// with the main spring application is created
+@Configuraton
+@EnableWebSecurity
+class CustomSecurityConfig extends WebSecurityConfiugreAdaptor {
+   
+   @Override 
+   protected vod configure(HttpSecurity http)throws Exception {
+      http.httpBasic();
+      http.authorizeRquests().anyRequest().authenticated();
+   }
+ }
+ 
+ @Log42J //from lombok
+ //  @Service  - comment out this and lets the be injected as bean in the main app
+ class CustomUserDetailsService implemtn UserDetailsService,
+ UserDetailsPasswordService{  // this interface has a method updatePassword
+    private final Map<String, User> users = new ConcurrentHashMap<>();
+    
+    //initialize user in the constructor
+    public CustomUserDetailsService(Collection<Userdetails> users){
+    // map.put (key,value)
+      users.forEach(users-> this.user.put(users.getUsername(), user));
+    }
+    
+    // this interface takes old user, and newpassword 
+    @Override
+    public UserDetails updatePassword(UserDetails user, String newPassword){
+    // incliding a log statement
+    
+    log.info("updated password for user " +user.getUsername());
+      //update the usedetails map here, or persist it in the database/identity store.
+      this.users.put(user.getUsername(), new CustomerUserDetails(
+        user.getUsername(),
+        newPassword,  //setting up new password
+        user.isEnabled(),        user.getAuthorities().stream.map(GrantedAuthorities::getAuthorities).collect(Collectors.toList()).toArray(String[]::new)
+        
+        // the aobve is different form of this - user.getAuthorities().stream.map(ga -> ((GrantedAuthority) ga).getAuthority()).collect(Collectors.toList()).toArray(new String[0])
+        };
+      return this.loaduserByName(user.getUsername());  // username is the key in hash map, but that needs to be validated to true or false, so call the delicate method.
+    }
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+     
+     // here we use the hashmap or call the service and send the user details
+     
+     if(this.users.containsKey(username)){
+       return this.users.get(username); // sends the userdetails since the hashmap created that way.
+     }
+     // if we don't find username in the hashmap
+      throw new UsernameNotFoundException("Couldn't find username "+username);
+    }
+ }
+
+Class CustomUserDetails implement UserDetails{
+// declare to hold the authorities
+  private final Set<GrantedAuthority> authorities ;
+  private final String username,password;
+  private final boolean active;
+// we will initalize a construtor to get the values
+
+// this is a simeple domain 
+public CustomUserDetails (String username, String password, boolean active, String ... authroities){
+  this.username=username;
+  this.password=password;
+  this.active = active;
+  this.authorities = Stream.of(authorities)
+    .map(SimpleGrantedAuthority::new)  // this is shortcut of a -> new SimpleGrantedAuthority()
+    .collect(Collectors.toSet(); // the passed in value is converted as set here
+}
+  @Override 
+  public Collection<? extends GrantedAuthority> getAuthotities (){
+  // since we have set these values in the constructor we now send these
+     return this.authorities;
+  }
+  
+  @Override
+  public String getPassword() {
+    return this.password;
+    }
+    
+  @Override
+  public boolean isActive(){
+    return this.active;
+   }
+   //other override variables 
+}
+```
+
+```
+  
