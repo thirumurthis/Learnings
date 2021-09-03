@@ -559,3 +559,105 @@ class CustomAuthentication implements AuthenticationProvider{
     }
 }
 ```
+
+#### Custom UserDetailsService
+ - In case if we need to communicate to the no sql database or some different identity store. This requires custom userdetails service
+
+ - for demo purpose the user info is stored in a concurrent hash map and lets fetch using custom userdetails
+```
+
+@SpringBootApplication
+public class CustomAuthenticationApplication{
+  
+  @Bean
+  CustomUserDetailsService customUserDetailsService(){
+   Collection<UserDetails> users = Arrays.asList(
+       new CustomUserDetails("thiru","password", true, "USER");
+     );
+   return new CustomUserDetailsService(users);
+  }
+}
+@RestController
+class WelcomeController{
+  @GetMapping("/welcome")
+  String greet(Principal p ){
+    return "welcome "+p.getName();
+  }
+}
+
+// with the main spring application is created
+@Configuraton
+@EnableWebSecurity
+class CustomSecurityConfig extends WebSecurityConfiugreAdaptor {
+   
+   @Override 
+   protected vod configure(HttpSecurity http)throws Exception {
+      http.httpBasic();
+      http.authorizeRquests().anyRequest().authenticated();
+   }
+ }
+ 
+ //  @Service  - comment out this and lets the be injected as bean in the main app
+ class CustomUserDetailsService implemtn UserDetailsService {
+    private final Map<String, User> users = new ConcurrentHashMap<>();
+    
+    //initialize user in the constructor
+    public CustomUserDetailsService(Collection<Userdetails> users){
+    // map.put (key,value)
+      users.forEach(users-> this.user.put(users.getUsername(), user));
+    }
+    
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+     
+     // here we use the hashmap or call the service and send the user details
+     
+     if(this.users.containsKey(username)){
+       return this.users.get(username); // sends the userdetails since the hashmap created that way.
+     }
+     // if we don't find username in the hashmap
+      throw new UsernameNotFoundException("Couldn't find username "+username);
+    }
+ }
+
+Class CustomUserDetails implement UserDetails{
+// declare to hold the authorities
+  private final Set<GrantedAuthority> authorities ;
+  private final String username,password;
+  private final boolean active;
+// we will initalize a construtor to get the values
+
+// this is a simeple domain 
+public CustomUserDetails (String username, String password, boolean active, String ... authroities){
+  this.username=username;
+  this.password=password;
+  this.active = active;
+  this.authorities = Stream.of(authorities)
+    .map(SimpleGrantedAuthority::new)  // this is shortcut of a -> new SimpleGrantedAuthority()
+    .collect(Collectors.toSet(); // the passed in value is converted as set here
+}
+  @Override 
+  public Collection<? extends GrantedAuthority> getAuthotities (){
+  // since we have set these values in the constructor we now send these
+     return this.authorities;
+  }
+  
+  @Override
+  public String getPassword() {
+    return this.password;
+    }
+    
+  @Override
+  public boolean isActive(){
+    return this.active;
+   }
+   //other override variables 
+}
+```
+ - Note:
+ ```
+ - If we have the records of type UserDetails, then it would be easy.
+ - Say we have a database table user, and in this case we can have a UserDetails implementation that wraps and deligates the important bits to that user.
+ - UserDetails is a simple interface, which has an authority(), username, etc
+ ```
+ 
