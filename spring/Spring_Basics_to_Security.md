@@ -498,16 +498,62 @@ class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
     
 ```java
 
+//create a bean
+@Configuration
+@EnableWebSecurity
+class CustomSecurityConfig extends WebSecurityConfiguratorAdaptor{
+
+//inject that custom provider to the constructor
+private final CustomAuthenticationProvider ap;
+
+//construtor binding
+CustomSecurityConfig(CustomAuthenticationProvider ap){
+   this.ap = ap;
+}
+
+//block all the request for security
+@Override
+protected void configure(HttpSecurity http)throws Exception{
+  http.httpBasic()
+  http.authorizeRequests().anyRequest().authenticated();
+}
+// we will provide our custom authenticator provider here
+// this is how we tie the custom authenticaion provider to spring securitu.
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception{
+   auth.authenticationProvider(this.ap); // already injected to this constructor.
+  }
+}
+
 // Creating our own custom authentication provider
+@Component
 class CustomAuthentication implements AuthenticationProvider{
+
+ //lets create a condition
+ private boolean isValid(String user, String pass){
+    return user.equals("thiru") && pass.equals("password");
+ }  
+
     @Override
     public Authentication authentication(Authentication authentication) throws AuthenticationException {
-     reutrn null;
+    // This needs to return if the user is authenticated or not logic goes here
+    
+    String username = authentication.getName();
+    String password= authentication.getCredentials().toString();
+    if (isValid(username,password){
+      return new UsernamePasswordAuthenticationToken(username, password, Collection.singletonList(return new SimpleGrantedAuthority("USER")
+      ));
+      // the list of Authorities can be created as a variable and passed above
+    }
+    //if failed then
+     reutrn new BadCredientialsException("Coudln't authenicate"); // or usernamenotfound exception.
     }
     
     @Override
     public boolean support(class<?> authentication){
-       return authentication.equals(..);
+    // we need to determine whether we can handline any authentication type for incoming request.
+    // we will do a username password authentication provider and tell it support this type of provider
+       return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
     }
 }
 ```
