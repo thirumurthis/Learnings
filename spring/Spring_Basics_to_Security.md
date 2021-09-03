@@ -704,21 +704,29 @@ public CustomUserDetails (String username, String password, boolean active, Stri
 ```
   - In a scenario, if we nee to udpate the old password encoded with the new password encoder, automatically when the user updates, using `UserDetailsPasswordService`
 
-```
+```java
 // spring security 2.1.0 build onwards we can use the UserDetailsPasswordService
 @SpringBootApplication
 public class CustomAuthenticationApplication{
   
   // without the password encoder bean the application will fail
+  // this is the new encoder using bycrypt (default) at this time.
   @Bean
   PasswordEncoder passwordEncoder(){
     return NoOpPasswordEncoder.getInstance(); // this is strictly for development purpse only
   }
   
+   @Bean
+  PasswordEncoder oldPasswordEncoder(){
+    String md5= "md5";
+      return nw DelegatingPasswordEncoder(md5,Collections.singletonMap(md5, new MessageDigestPasswordEncoder(md5));
+  }
+  
   @Bean
   CustomUserDetailsService customUserDetailsService(){
    Collection<UserDetails> users = Arrays.asList(
-       new CustomUserDetails("thiru","password", true, "USER");
+    // encoding with the old Md5 encoder, this is to simulate how to user UpdatePasswordService
+       new CustomUserDetails("thiru",oldPasswordEncoder().encoder("password"), true, "USER");
      );
    return new CustomUserDetailsService(users);
   }
@@ -755,6 +763,9 @@ class CustomSecurityConfig extends WebSecurityConfiugreAdaptor {
       users.forEach(users-> this.user.put(users.getUsername(), user));
     }
     
+    // Spring security will automatically called for us with user 
+    // and new password. Since the password is no longer matching.
+    //once updates we will need to update the identity store
     // this interface takes old user, and newpassword 
     @Override
     public UserDetails updatePassword(UserDetails user, String newPassword){
@@ -818,7 +829,5 @@ public CustomUserDetails (String username, String password, boolean active, Stri
    }
    //other override variables 
 }
-```
-
 ```
   
