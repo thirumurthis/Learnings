@@ -529,7 +529,9 @@ protected void configure(HttpSecurity http)throws Exception{
 @Component
 class CustomAuthentication implements AuthenticationProvider{
 
- //lets create a condition
+ //lets create a condition to mock some service
+ // since we have access to the password and info, pass it to the backend system and 
+ //peform authenticaiton by matching.
  private boolean isValid(String user, String pass){
     return user.equals("thiru") && pass.equals("password");
  }  
