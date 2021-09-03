@@ -482,3 +482,32 @@ class SecurityConfiguration extends WebSecurityConfiguratorAdaptor{
   }
 }
  ```
+--- 
+#### Custom Authetication Provider
+ - For example, in case the identity management system is not able to provide user details, rather provide true or false for the passed in credientials. Ex. Atlassian identity cloud system does similar to this.
+ - How to handle this type of scenario? We can write our own AuthenticationProvider
+
+- The AuthenticationProvider, mirrors the AuthenticationManager which has authenticate () method.
+- The authenticate() method take authentication attempt object. This Authentication object  has isAuthenticate() boolean, getDetails(), getCredientials().
+   - By default Authentication object, isAutenticate() is false.
+   - When this goes to Authentication manager, if the isAuthenticate() is either set to true or false. If the isAuthenticate() is true, then this allows user.
+- Only the AuthenticationProvider can be extended.
+- ProviderManager manages collection of Authentication provider.
+  - AuthenticationProvider supports() method - given the incoming request, can i support his kind of authentication like username/password or Ldap
+- The AuthenticationManager Chain of responsibility implmentation
+    
+```java
+
+// Creating our own custom authentication provider
+class CustomAuthentication implements AuthenticationProvider{
+    @Override
+    public Authentication authentication(Authentication authentication) throws AuthenticationException {
+     reutrn null;
+    }
+    
+    @Override
+    public boolean support(class<?> authentication){
+       return authentication.equals(..);
+    }
+}
+```
