@@ -1079,7 +1079,36 @@ public class SecurityConfigurator extends WebSecurityConfiguratorAdaptor{
   - If we don't add cache control, spring controller will add its own.
   - But if we add ours like `Cache-Cotnrol: max-age=86400` then spring security won't add it.
 
+###### Https 
+  - When the user types a domain url in the browser by default, it requests for http based url, which is then redirected. In developer tools check for 302 redirection. (man in the middle attach can happen before redirection)
+  - How to tell browser to user https, even when the user types just the domin name. 
+     - by setting a header in http response, with `Strict-Transport-Security: max-age=313600; includeSubDomains` - max age of 1 year.
+     - Now if the domain is tried again without a protocol. we might see 307 (internal redirect)
+     - This header requests https without going over the network.
 
+ - How to configure this setup in WebSEcurity configuration
+    - By default sts header is added by spring security.
+    - But we need to add a redirect for ourself. (we need a requst matcher)
+    - reqestMatcher() - is a way to tell spring security, when i need to do this operation.
+  
+```
+@EnableWebSecurity
+... extends WebSecurityConfiguratorAdaptor{
+ ...  configure(HttpSecurity http)...
+      http
+         .headers()
+         .httpStrictTransportSecurity().disable () // to disable manually - but don't do this in production - max age can be set
+         .and()
+         .requiresChannel()
+             .requestMatchers(r -> r.getHeader("x-forwarder-proto")!=null)
+             .requiresSecure();
+ //above request matcher looks for a header "x-forwarder-proto" and set it.
+ // so this will be applied only in production where the x-forwader-prot is set 
+ //requresSecure() - sets the redirects of https header
+ 
+```
+  - `HeaderWriterFilter.java ` - writes the header to the response.
+  - `HstsHeaderWriter.java` - adds the hsts header.
 
 
 
