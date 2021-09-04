@@ -1185,3 +1185,7 @@ http.headers()
 - using CDN for javascript this Ok for modern javascript libraries, maclious attacker can use the older version and exploit the old library and try to attack the system.
 - **Tip: Using report only feature of content security policy.** (check (link)[report-uri.com]).
 
+##### RFD attacks
+  - check (link)[https://trustwave.com/Resources/SpiderLabs-Bloc/Reflectd-File-Download-A-New-Web-Attack-Vector]
+
+
