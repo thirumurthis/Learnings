@@ -1121,4 +1121,5 @@ public class SecurityConfigurator extends WebSecurityConfiguratorAdaptor{
   - By Default spring security will add a Xss header in the response.
   - `X-XSS-Protection: 1; mode=block` the mode=block indicates the IE to block don't modify the request.
 
-
+#### content sniffing
+   - spring security by default adds protection by adding a header `X-Content-Type-Options: nosniff`.
