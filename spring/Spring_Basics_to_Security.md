@@ -1194,7 +1194,7 @@ http.headers()
  Using `@Secured`, `@PreAuthorize` and `@PostAuthrize`
  
  - Create spring app using dependencies web, security, jpa, lomobok from spring start io site.
-
+ - `@Secured` and `@RolesAllowed` - both are the same in usage. 
 
 ```java
 package com.sec.app.MethodSecurityApp;
@@ -1519,4 +1519,27 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 }
 */
 ```
+##### `@PreAuthorize` and `@PostAuthorize` annotation, which used spring spel 
+  - `@PreAuthorize` is similar to the RolesAllowed/Secured, where the Authorize step happens before the methods gets invoked.
+        - In the above code, under MessageRepository interface add below code
+        - The `hasRole()` method is part of the `SpringExpressionRoot.java` of spring boot spel expression which also has `hasAuthority` etc. which ca nbe used as well.
+  - `@PostAuthorize` will be called after the method is invoked, this can be used if we need to valdate the data that can be accessed by that user. Applied to the data after fetching .
+         - The @PostAuthorize can invoke a method as a SPEL expression and perform validation
+         - Code reference is below 
 
+**`@PreAuthorize` Code
+```java 
+
+//	String QUERY = "select m from Message m where m.id= ?1";  // this query should already by the interface.
+	@Query(QUERY)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	Message findByIdPreAuthorize(Long id);
+
+```
+
+**`@PostAuthorize` code
+```java
+	@Query(QUERY)
+	@PostAuthorize("@authz.check()")
+	Message findByIdPostBeanValidation(Long Id);
+```
