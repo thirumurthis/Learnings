@@ -125,7 +125,7 @@ TestDemo(RestTemplate template){
 #### Spring AOP
   - using AspectJ pointcut defintion, a simple program to introduce functionalilty that will logs the execution of all methods in application package.
 
-```
+```java
 package com.example.demo;
 @SpringBootApplication
 public class SpringBootDemo{
