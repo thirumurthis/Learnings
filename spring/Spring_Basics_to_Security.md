@@ -1110,5 +1110,15 @@ public class SecurityConfigurator extends WebSecurityConfiguratorAdaptor{
   - `HeaderWriterFilter.java ` - writes the header to the response.
   - `HstsHeaderWriter.java` - adds the hsts header.
 
+###### Aboud XSS (cross site scripting) attacks
+ 
+ ```
+ // below is a way to disable xss, but never do this in production
+ http.
+     headers()
+        .xssProtection().dsiable();
+ ```
+  - By Default spring security will add a Xss header in the response.
+  - `X-XSS-Protection: 1; mode=block` the mode=block indicates the IE to block don't modify the request.
 
 
