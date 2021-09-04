@@ -1173,5 +1173,15 @@ IMPORTANT:- If using anyother ui languge, like anugular then we need to set it. 
  - frame busting, dom clobberring can be used to bust the iframe.
  - for more readin check [link](https://cure53.de/xfo-clickjacking.pdf)
 
+##### Content Security Policy
+  - For Xss reflected attach, where the script is executed in Firefox browser.
+  - To avoid this using below security policy in websecurityconfigrator adaptor implementation
+  - Adding the contentsecuritypolcy like below, we need to externalize the javascript in application.
+```
+http.headers()
+    .contentSecurityPolicy("default-src 'self'"); // this default-src means there can't be any inline javascript, everything should be as a file.
+```
 
+- using CDN for javascript this Ok for modern javascript libraries, maclious attacker can use the older version and exploit the old library and try to attack the system.
+- **Tip: Using report only feature of content security policy.** (check (link)[report-uri.com]).
 
