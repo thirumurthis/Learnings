@@ -1055,3 +1055,31 @@ protected void configure(HttpSecurity http) throws Exception{
  - How the end point are secured here.
  - Above example, where we can match set of the acutator endpoint and allow only health endpoint to be opned.
  - since we are using httpBasic, use curl command or http utils.
+
+-----------------
+
+ ##### Common development consideration in spring security
+  - Cache control 
+  - When the user logged out, hitting backbutton would render the data, which is cached in the request header. If the cache control is set in header, the browser will clear it out.
+  - To mockup this behaviour we can explicitly diable this header in security configuratore. DON'T DO THIS UNLESS IT IS REQUIRED.
+```
+
+@EnableWebSecurity
+public class SecurityConfigurator extends WebSecurityConfiguratorAdaptor{
+   @Override 
+   protected void configure (HttpSecurity http) throws Exception{
+     super.configure(http);
+     http.headers()
+        .cacheControl().disable(); // explicitly disabled. By default the cache control is enabled.
+   }
+}
+```
+  - By using the default configruaton, after logout hitting back button will prompt for login page.
+  - If we need to cahce data in the application, better to create our own cache header. 
+  - If we don't add cache control, spring controller will add its own.
+  - But if we add ours like `Cache-Cotnrol: max-age=86400` then spring security won't add it.
+
+
+
+
+
