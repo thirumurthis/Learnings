@@ -1,4 +1,4 @@
-- Create a Spring boot project using `spring web` and `spring Aop` depenecies
+- Create a Spring boot project using `spring web` and `spring Aop` dependencies.
 
 - `@component` and `@Bean` annotation can be used to tell spring to scan those class/bean.
 
@@ -1012,7 +1012,46 @@ class WebSecurity extends WebSecurityConfiguratorAdaptor{
   - Acutator - mostly not exposed to external world
 
 ```
-// in application.properties enabling the endpoint
+// in application.properties add below to enable the actuator endpoint
 management.endpoints.web.exposure.include=*
 management.endpoints.health.show-details=always
 ```
+- there are lots of end points, not to be exposed to outside world.
+  - log 
+  - env
+- NOTE: we are creating a New Security configuration in the same application a above.
+- Add the below class in the above application (refer end points /z,/y, etc)
+
+**Spring security can hole different security configuration in the same application for different set of endpoints **
+   - This helps certain set of endpoints has httpBasic, certain set has formbased authentication, and certain set has Oauth, etc.
+   - __Spring security can capable of hosting multiple security confugrators.__
+```
+@Configuration
+@EnableWebSecurity
+class ActuatorSecurityConfig extends WebSecurityConfiguratorAdaptor {
+
+@Override
+protected void configure(HttpSecurity http) throws Exception{
+   //configure how to secure the endpoint, we create 
+   // a custom request matcher that uses static method toAnyEndpoint() in
+   // Spring boot actuator of EndpointRequest class 
+   // this method toAnyEndpoint() - matches any requst going to /actuator
+   
+   http.requestMathcer(EndpointRequest.toAnyEndpoint())
+   .authorizeRequest()
+   .requestMatchers(EndpointRequest.to(Health.class)).permitAll()
+   .anyRequest().authenticated()
+   .and()
+   .httpBasic();  // not using formbased login.
+   
+   // .requestMatchers(EndpointRequest.to(Health.class)).permitAll() - is sub matcher, to match subset of above request from toAnyEndpoint()
+}
+
+}
+
+```
+ - If add the ActuatorSecurity to the above application, already we have another WebSecurity which also implements same WebSecurityConfiguratorAdapotr. So we need to diffrentiate both.
+ - We diffrentiate this with `@Order(1)` ( other options is `qualifier`)
+ - How the end point are secured here.
+ - Above example, where we can match set of the acutator endpoint and allow only health endpoint to be opned.
+ - since we are using httpBasic, use curl command or http utils.
