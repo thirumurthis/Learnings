@@ -838,3 +838,181 @@ public CustomUserDetails (String username, String password, boolean active, Stri
   - once application is up, hit `http://localhost:8080/actuator` to view the list of endpoints exposed.
       - `http://localhost:8080/actuator/auditevents` endpoint provides information about who is authenticated etc. Tip: use jq util to format the json pay load.
       - events are displayed successful and unsuccessfule authentications.
+
+------------
+#### Authorization 
+  - Path and Matcher
+  - How to secure actuator endpoint
+
+- What is Authorization?
+   - Authentication is already done at this time.
+   - What resorces the user has access to.
+
+- create a spring application with jpa, security, web, actuator dependencies
+```java
+
+@SpringBootApplication
+public class AuthorizationExampleApp{
+ public static void main(String .. args){
+    SpringApplication.run(AuthorizationExampleApp.class, args);
+  }
+}
+
+// simple user and user detailservice 
+@Service
+class CustomUserDetailService implements UserDetailsService {
+
+
+// setting a map of user just for hack - this is for mocking 
+private final Map<String, UserDetails> userdetail = new HashMap<>();
+
+// installing some user at the constructor
+CustomUserDetailsService(){
+  this.userdetail.put("thiru", new CustomUser("thiru","pass",true,"USER"));
+  this.userdetail.put("ram",new CustomUser("ram","pass",true,"USER","ADMIN"));
+}
+
+ @Override
+ public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+  // when some request is made, this have to return userdetails object.
+  // so we have CustomUser class defined
+    
+    if(!this.userdetail.containsKey(username))){
+       throw new UsernameNotFoundException(username);
+    }
+    return this.userdetail.get(username);
+   }
+}
+
+// Creating few endpoints
+
+@RestController
+class RootController{
+ @GetMapping("/root")
+ String root(){
+    return "root";
+ }
+}
+
+@RestController
+class LetterController{
+  @GetMapping("/z")
+  String z(){
+     return "z";
+  }
+  
+  @PostMapping("/y")
+  String y(){
+     return "y";
+  }
+  @GetMapping("/u")
+  String z(){
+     return "u";
+  }
+}
+
+@RestController
+class UserController{
+  @GetMapping("/user/{name}"){
+  String userName(@PathVariable String name){
+     return "user " + name;
+   }
+}
+
+class CustomUser implements UserDetails{
+
+// declare to hold the authorities
+  private final Set<GrantedAuthority> authorities = new HashSet<>() ;//no duplicates 
+  private final String username,password;
+  private final boolean active;
+// we will initalize a construtor to get the values
+
+// this is a simeple domain 
+public CustomUser (String username, String password, boolean active, String ... authroities){
+  this.username=username;
+  this.password=password;
+  this.active = active;
+  this.authorities.addAll(Arrays.asList(authorities)
+    .stream()
+   // .map(SimpleGrantedAuthority::new)
+   .map(SimpleGrantedAuthority("ROLE_"+a)) // since in the next section we added websecrity configuration
+    .collect(Collectors.toSet()); // the passed in value is converted as set here
+}
+  @Override 
+  public Collection<? extends GrantedAuthority> getAuthotities (){
+  // since we have set these values in the constructor we now send these
+     return this.authorities;
+  }
+  
+  @Override
+  public String getPassword() {
+    return this.password;
+    }
+    
+  @Override
+  public boolean isActive(){
+    return this.active;
+   }
+   //other override variables 
+}
+```
+ - We can see how to secure above application
+    - Ant Matcher - matches the pattern in the way the ant regex works.
+       - Ant matcher is very precise in mathcing,
+       -  incase if we have a struts application and include spring security then we can use ant matcher.
+       -  Due the preciseness, spring mvc itself may not realy on ant matcher.
+    - mvc matcher - is more consistent with the other areas in spring expression
+        - Spring mvc use mvc mathcer
+        - Matching end-point with /foo then mvc can match foo.html, foo.php
+```java
+//create a websercuity configurator extending WebSecurityConfiguratorAdaptor
+@EnableWebSecurity
+@Configuration
+class WebSecurity extends WebSecurityConfiguratorAdaptor{
+// bunch of method can be overrloaded
+ @Override
+ protected void configure(HttpSecurity http) throws Exception{
+   http.httpBasic();
+   http.csrf().disable(); // don't do this unless other jwt approach is set
+   http.authorizeRequests()
+   .mvcMatchers("/root").hasAnyAuthority("ROLE_ADMIN")
+   .mvcMatchers(HttpMethod.GET,"/z").access("hasRole('ROLE_ADMIN')")
+   .mvcMatchers(HttpMethod.Post,"/y").access("@authz.check(request, principal)")    
+   //@auth is a bean that we created below, calling the method check()
+   // passing the current request and currently authenticated principal
+   .mvcMatchers("/users/{name}").access("#name == principal?.username ")
+   // above matcher, we can use spel, get the acess to name variable
+   // extracting the path variable, and checking that agains principal. username.
+   .anyRequest().permitAll();
+   
+   //request matcher - can use the existing one are crate your custom one 
+   // permitAll() - allows all the request Order it based on specifi request
+   // more specific request that needs to be secured should be at top
+   // .authenticated () - request needs to be authenitcated
+   // .access() - can be used to override the authenitcated.
+   // .hasRole() - spell expression calling method on the spring security expression root.
+   
+   @Log4j2  //include lombok
+   @Service("authz")
+   class AuthService{
+     public boolean check(HttpServletRequest request, CustomUser p){ 
+     //note customuser is overriden class, using principal will cause exception
+       log.info("checking incoming request "+request.getRequestURI() + " - " + p.getUsername());
+       return true;
+     }
+   }
+ }
+}
+```
+- Above was flexible with custom authorization rules.
+
+#### Securing the Actuator endpoint
+  - Actuator - gathers information about the application
+  - Acutator - uses operational info of the application
+  - Acutator - mostly not exposed to external world
+
+```
+// in application.properties enabling the endpoint
+management.endpoints.web.exposure.include=*
+management.endpoints.health.show-details=always
+```
