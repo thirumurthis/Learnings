@@ -1123,3 +1123,35 @@ public class SecurityConfigurator extends WebSecurityConfiguratorAdaptor{
 
 #### content sniffing
    - spring security by default adds protection by adding a header `X-Content-Type-Options: nosniff`.
+
+
+##### CSRF attach
+  - This attack happens when the malicious user get hold of the JSESSIONID.
+  - this can also happen in case of httpbasic
+  - Even we are in seperate domain, still the attack is possible.
+
+- When enabling the csrf, inspecting the html form element, we could see a hidden input with _\_csrf_ token. 
+- __csrf token is known as synchronous token pattern , this means that every request that changes the state of application needs to have a `csrf` token.__
+- This is enabled by default.
+- The code is done in `CsftFilter.java` within spring security, which has a token repository that loads the default csrf token.
+- This token is by default stored in Http Session.
+- This token can be customized to put in Cookie, this is not secure. But possible in a single page application.
+- POST, PUT, DELETE - changes the state of application, so the csrf token is verfied. Not performed in GET, HEAD
+- Make sure to expose the endpoint with POST,PUT,DELETE, so spring security can apply csrf. (don't use GET to change the state of the application, this request won't be protected)
+- Main part is including this CSRF token in the request at clientside, in Thymleaf, using `th:action` will automatically add that hidden input.
+
+IMPORTANT:- If using anyother ui languge, like anugular then we need to set it. spring security includes this csrf token in included in the request attribute as `_csrf`. This can be used it, and provide it view technology.
+
+  - The special case is multi-part upload or file upload. In multi-part the data is sent in segments, for this reason it might be difficult to read the csrf token. One way to get over this, to include the token in the action, instead of adding into parameter of request.
+ - Alternatively, we can use spring multi-part request filter, ahead of spring security. This can also cause issue.
+ - Better to add the csrf token in form action itself
+ ```
+ <form method="post" enctype="multipart/form-data" th:action="@{/upload(_csrf=${_csrf.token})"> ...  
+ ```
+ 
+
+
+
+
+
+
