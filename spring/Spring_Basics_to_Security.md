@@ -1149,9 +1149,29 @@ IMPORTANT:- If using anyother ui languge, like anugular then we need to set it. 
  <form method="post" enctype="multipart/form-data" th:action="@{/upload(_csrf=${_csrf.token})"> ...  
  ```
  
+##### Session fixation:
+  - Don't use the JSESSIONID in path parameter, spring security uses it in Http header or body.
+ ```
+  http.header().formOptions().disable; // don't do this in prod code.
+ ```
+ - Spring security as soon as the user login, the new sessionid is provided.
 
-
-
+#### Click Jacking
+  - using the overlaying css button, the malicious user can gain access.
+ 
+ ```
+ //css
+  #hid-content
+  {
+    width: 200px; height: 100px; overflow: hidden;top:0; position:absolute;opacity:0;border:1px solid black;
+  }
+ <div id="hid-content">
+   <iframe src="http://localhost:8080/"></iframe>
+ </div>
+ ```
+ - Spring security adds the header `X-Frame-options: DENY`. Easy way to enable protection.
+ - frame busting, dom clobberring can be used to bust the iframe.
+ - for more readin check [link](https://cure53.de/xfo-clickjacking.pdf)
 
 
 
