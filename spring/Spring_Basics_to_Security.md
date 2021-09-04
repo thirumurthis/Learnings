@@ -1188,4 +1188,120 @@ http.headers()
 ##### RFD attacks
   - check (link)[https://trustwave.com/Resources/SpiderLabs-Bloc/Reflectd-File-Download-A-New-Web-Attack-Vector]
 
+-----------------
+#### Method Security:
+
+ Using `@Secured`, `@PreAuthorize` and `@PostAuthrize`
+ 
+ - Create spring app using dependencies web, security, jpa, lomobok from spring start io site.
+
+
+```java
+
+@SpringBootApplication
+public class MethodSecureityApp{
+
+  public static void main (String .. args)
+   { SpringApplication.run(MethidSecurityApp.class, args); }
+}
+
+//Creating a simple runner, which runs when teh application starts up
+
+@Transactional // making this class tranasctional
+@Log4j2
+@Component  // Below is for testing the creation of user
+class Running implements ApplciationRunner{
+     private final UserRepository userRepo;
+     private final AuthorityRepository authRepo;
+     private final MessageRepository msgRepo;
+     
+     // create all param constructor, passing all the repos as parameter
+     
+     @Override
+     public void run (ApplicationArguments args) throws Exception{
+        // data creation
+        Authority user = this.authRepo.save(new Authority("USER")),
+             admin=this.authRepo.save(new Authority("ADMIN"));
+        
+        User thiru = this.userRepo.save(new User("thiru","password",admin);
+        Message thiruMsg = this.msgRepo.save(new Message("hello",thiru));
+        
+        User ram = this.userRepo.save(new User("ram","password",user);
+
+        //print using log
+        log.info(thiru);
+        log.info(ram);
+     }
+} 
+
+interface MessageRepository extends JpaRepository<Message,Long>{
+}
+
+interface UserRepositroy extends JpaRepository<User, Long>{
+}
+
+interface AuthorityRepositiry extends JpaRepostiory<Authority, Long>{
+}
+
+// below classes in seperate file
+@Entity // jpa entity 
+@AllAgsConstructor
+@NoArgsConstructor
+@Data
+class Message {
+@Id
+@GeneratedValue
+private Long id;
+private String text;
+@OneToOne
+private User messageTo;
+}
+@Entity // jpa entity 
+@AllAgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(exclude= "authorities") // to execute that field
+@Data
+class User{
+
+@Id
+@GeneratedValue
+private Long id;
+private String mail, password;
+// create a constructores as needed for all arguments
+// create a derived constructor, for different prams per requirement.
+@ManyToMany(mappedby = "users")
+private List<Authority> authortiies = new ArrayList<>();
+}
+@Entity // jpa entity 
+@AllAgsConstructor
+@NoArgsConstructor
+@ToString(exclude="users") //just not to include user on toString override
+@Data
+class Authority{
+
+//create constructre 
+public Authority(String authority, Set<Users> users){
+this.users.addAll(users;
+this.authority = authority;
+}
+//constructore with no user 
+public Authority(String authority){
+  this.authority = authority;
+}
+@Id
+@GeneratedValue
+private Long id;
+
+private String authority;
+
+//used to link two tables as congigured 
+@ManyToMany (cascade= { CascadeType.PERSIST,CascasdeType.MERGE)
+@JoinTable (name="authoity_user",
+joinColumns = @JoinColumn (name = "authority_id"),
+inverseJoinColumns = @JoinColumn (name ="user_id"))
+private List<User> users= ArrayList<>();
+
+}
+}
+```
 
