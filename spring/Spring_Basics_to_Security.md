@@ -1984,9 +1984,11 @@ AuditorAware<String auditr(){
 @EntityLinsteners(AudingEntityListener.class)
 class Message{
 ...
-// add a field 
+// add a field - and include the annotation createdby and created date
+@CreateBy 
 private String createdBy;
 
+@CreatedDate
 @Temporal(TemporalType.TIMESTAMP)
 private date createDate;
 ...
