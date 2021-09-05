@@ -1554,9 +1554,10 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 ```
 
 <details>
-	<summary> Complete code usage of pre and post authorize </summary>
-	```java
-	package com.sec.app.MethodSecurityApp;
+    <summary> Complete code usage of pre and post authorize </summary>
+	
+```
+package com.sec.app.MethodSecurityApp;
 
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
@@ -1911,5 +1912,5 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 */
-	```
+```
 </details>
