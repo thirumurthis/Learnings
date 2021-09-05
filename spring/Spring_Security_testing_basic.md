@@ -5,6 +5,8 @@
   - using `@SpringBootTest` already, uses the `@ExtendWith(SpringExtension.class)` call.
   - Already the required dependency are included, if mockito dependency is need include that in pom.xml. Below test case example doesn't require any mockito.
 
+[Link for documentation](https://docs.spring.io/spring-security/site/docs/current/reference/html5/#test)
+
 - Assume below code is the application which we need to test
 ```java
 
@@ -189,3 +191,73 @@ public class AutomatedMessageServiceTest {
 	}
 }
 ```
+ ##### How does `@WithMockUser` works
+   - When the springrunner is setup, the `TextContextManager` is iterating over list of `TextExecutionListener`. 
+   - Spring security provides `WithSecurityContextTestExecutionListener` - this reads the annoation at the method and class level, and creates and sets up the security context for us.
+   - The `@WithMockUser` class, it is annotated with `@WithSecurityContext()` and passed in a factory. The annoataion and the factory will take care of creating the security context.
+
+- Lets see how we can refactor the code further, if we need to run more class using the Admin role.
+   - _The meta annoataion can be added at the class level soe it will be appled to the test methods_. The test case reduces further as below.
+
+```java
+package com.test.learn.TestSecurityApp;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@MetaAnnotationWithAdmin
+@SpringBootTest
+public class TestClassMessageService {
+
+	@Autowired
+	private MessageService ms;
+	
+	@Test
+	public void testAuthorizesuccess() {
+		this.ms.getMessage();
+	}
+}
+```
+  - In case if we need to override any of the test case, when  `@WithMockUser(role="ADMIN")` annotation used at class level?
+     - We can use annotation at the method level, so any annoation at the method level will override the class level annotation. refer below code.
+
+```java
+package com.test.learn.TestSecurityApp;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+
+@MetaAnnotationWithAdmin
+@SpringBootTest
+public class TestClassMessageService {
+
+	@Autowired
+	private MessageService ms;
+	
+	@Test
+	public void testAuthorizesuccess() {
+		this.ms.getMessage(); //add assertion as needed
+	}
+	
+	@Test
+	@WithAnonymousUser //at method level this will override, here throws exception
+	public void testAuthorizeUnsuccess() {
+		this.ms.getMessage(); //add assertion as needed
+	}
+}
+```
+
+##### How to leverage the use of user existing in the system.
+   - All above methods are when the user is not present in the system, we are mocking.
+   - What happens if we need to test case to use a user present in our system
+   - If we have declared `UserDetailsService` we can use that to get the information of particular user from system. This becomes handy when we have custom authentication.
+   
+ - We can use `@WithUserDetails` annotation to leverage custom authentication test using custom authenticated user.
+
+
+
+
+
