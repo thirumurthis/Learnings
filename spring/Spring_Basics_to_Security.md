@@ -1914,3 +1914,80 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 */
 ```
 </details>
+
+ #### Spring security data
+  - Say if int he postAuthorize method if we have millions of records, it would be hard to store all those in memory and perform this hcecks.
+  - This is where spring security data can help, by quering the require data at the query level. //this was in older version of sprong, nw this is include with spring data
+  - `spring-securty-data` dependency needs to be added to the project 
+  - in order to use this, we need to setup an extension to spring data that will make available to the currently authenticated princial from within the query. 
+  (Note: spring boot does this  automatically via spring data configuration )
+  - for this we need to write custom query to return Page results.
+
+```
+// below is note requiered for latest spring security 
+@Bean
+SecurityEvaluationContextExtension securityEvaluationContextExtension(){
+   return new SecurityEvaluationContextExtension();
+}
+```
+ - Refer [link](https://docs.spring.io/spring-security/site/docs/4.2.x/reference/html/data-query.html)
+```java 
+// in messageRepostiory add below code
+// the query passed is jpaql, within this we have access to currently authenticate prinicipal
+
+// in this case we are valdiating the user before the @PostAuthorize valdiation 
+
+// Note : we can stil luse @RolesAllowed in here.
+@Query("select m from message m where m.messageTo.id = ?#{ principal?.user?.id}") 
+     // ? - elvis operator for null check
+     // the principal objects user id us used in this case 
+ Page<Message> findMessageFor (Pageable pageable);
+
+// now in the test ApplicationRunner class user the below to call it (refer the above code)
+	authenticate(thiru.getMail());
+		this.msgRepo.findMessageFor(PageRequest.of(0,5))
+				.forEach(log::info);
+		authenticate(ram.getMail());
+		this.msgRepo.findMessageFor(PageRequest.of(0,5))
+				.forEach(log::info);
+// executing above faced below exception 
+//EL1008E: Property or field 'principal' cannot be found on object of type
+ //'java.lang.Object[]' - maybe not public or not valid?
+// the reason was used principal.userid.
+```
+
+#### Enabling JPA audting 
+- include annaotation `@EnableJpaAuditing` at the class level
+- and it looks for a bean AuditorAware a callback interface, which looks for a name to be stahed on teh audit.
+```java
+//in the main method class include below bean
+@Bean
+AuditorAware<String auditr(){
+  return new AuditorAware<String>(){
+      @Override
+       public Optional<String> getCurrentAuditor(){
+          SecurityContext context = SecurityContextholder.getContext();
+          Authentication authentication - context.getAuthentication();
+          if(null != authentication){
+             return Optional.ofNullable(authentication.getName());
+           } else {
+             return Optional.empty();
+           }
+      }
+   }
+}
+
+ //At the entity add the annotation @EntityListeners
+
+@Entity
+@Data
+@EntityLinsteners(AudingEntityListener.class)
+class Message{
+...
+// add a field 
+private String createdBy;
+
+@Temporal(TemporalType.TIMESTAMP)
+private date createDate;
+...
+```
