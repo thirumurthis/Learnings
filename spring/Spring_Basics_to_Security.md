@@ -1525,7 +1525,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         - The `hasRole()` method is part of the `SpringExpressionRoot.java` of spring boot spel expression which also has `hasAuthority` etc. which ca nbe used as well.
   - `@PostAuthorize` will be called after the method is invoked, this can be used if we need to valdate the data that can be accessed by that user. Applied to the data after fetching .
          - The @PostAuthorize can invoke a method as a SPEL expression and perform validation
-         - Code reference is below 
+         - Code usage is bleow 
 
 **`@PreAuthorize` Code
 ```java 
@@ -1540,6 +1540,376 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 **`@PostAuthorize` code
 ```java
 	@Query(QUERY)
-	@PostAuthorize("@authz.check()")
+	@PostAuthorize("@authz.check(returnedObject, principal?.user)") // the prinicpal is set already in the securoty context 
 	Message findByIdPostBeanValidation(Long Id);
+	..
+	
+	@Service("authz")
+        class AuthzService {
+	public boolean check(Message msg, User usr){
+	  log.info("checking - " + usr.getMail()+ " accessTo  message of "+msg.getMessageTo().getId()  );
+	  return msg.getMessageTo().getId().equals(usr.getMail()); // true when message of user and accessing user matched
+	}
+}
 ```
+
+<details>
+	<summary> Complete code usage of pre and post authorize </summary>
+	```java
+	package com.sec.app.MethodSecurityApp;
+
+import lombok.*;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.security.RolesAllowed;
+import javax.persistence.*;
+import javax.transaction.Transactional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+@SpringBootApplication
+// to enabled method level security
+// and activate few features
+@EnableGlobalMethodSecurity(
+		prePostEnabled = true,
+		jsr250Enabled = true,  // this has a bunch of annotations
+		securedEnabled = true
+)
+public class MethodSecurityAppApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MethodSecurityAppApplication.class, args);
+	}
+
+}
+
+//Creating a simple runner, which runs when the application starts up
+@Component  // Below is for testing the creation of user
+@Transactional // making this class transactional
+@Log4j2
+// this class is like a test class to perform validation
+class Running implements ApplicationRunner {
+	public Running(UserRepository userRepo, AuthorityRepository authRepo, MessageRepository msgRepo,UserRepoUserDetailsService customUserDetailsService) {
+		this.userRepo = userRepo;
+		this.authRepo = authRepo;
+		this.msgRepo = msgRepo;
+		this.customUserDetailsService = customUserDetailsService;
+	}
+
+	private final UserRepository userRepo ;
+	private final AuthorityRepository authRepo ;
+	private final MessageRepository msgRepo ;
+   //to test injecting the custom user details service we creatd
+	private final UserRepoUserDetailsService customUserDetailsService;
+	// create all param constructor, passing all the repos as parameter
+
+	// A simple method to authenticate using the custom user service
+	// and create a username password token and set it to the context
+	// so this can be used by the downstream calls
+    // the token is set to the security context
+	private void authenticate(String username) { //here it is the mail
+		UserDetails userDetailsInfo = this.customUserDetailsService.loadUserByUsername(username);
+		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetailsInfo,
+				userDetailsInfo.getPassword(),userDetailsInfo.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	}
+	@Override
+	public void run (ApplicationArguments args) throws Exception{
+		// data creation
+		Authority user = this.authRepo.save(new Authority("USER")),
+				admin=this.authRepo.save(new Authority("ADMIN"));
+
+		User thiru = this.userRepo.save(new User("thiru","password",admin,user));
+		Message msg = this.msgRepo.save(new Message("hello",thiru));
+
+		User ram = this.userRepo.save(new User("ram","password",user));
+
+		//print using log
+		log.info(thiru.toString());
+		log.info(ram.toString());
+
+	//	 reusableAttempts(thiru.getMail(),ram.getMail(), thiruMsg.getId(), id -> this.msgRepo.findByIdRolesAllowed(id));
+		//above can be re-written like below
+		reusableAttempts(thiru.getMail(),ram.getMail(), msg.getId(), this.msgRepo::findByIdRolesAllowed);
+		reusableAttempts(thiru.getMail(),ram.getMail(), msg.getId(), this.msgRepo::findByIdSecured);
+		reusableAttempts(thiru.getMail(),ram.getMail(), msg.getId(), this.msgRepo::findByIdPreAuthorize);
+		try {
+			reusableAttempts(thiru.getMail(), ram.getMail(), msg.getId(), this.msgRepo::findByIdPostBeanValidation);
+		}catch(Throwable th){
+			log.error("Post method access failed "+ram.getMail());
+		}
+		/* commenting out and using generic multi attempt method
+		authenticate(thiru.getMail());
+		//the above call has authenticated
+		// now if we invoke different method that has not role it will fail
+
+		// let fire a query in message repo, when the method level security
+		// can be added to that
+		log.info(msgRepo.findByIdRolesAllowed(thiruMsg.getId())); // this should succeed since amdin role
+
+		authenticate(ram.getMail());
+		//since below message throws exception
+		try {
+			msgRepo.findByIdRolesAllowed(ram.getId()); // this should fail to access since user role
+		}catch(Throwable th){
+			log.error("Cannot access ",th);
+		}
+		 */
+	}
+
+	protected void reusableAttempts(String adminUser,String regularUser, Long msgId,
+									Function<Long,Message> fn){
+		authenticate(adminUser);
+		//the above call has authenticated
+		// now if we invoke different method that has not role it will fail
+
+		// let fire a query in message repo, when the method level security
+		// can be added to that
+		log.info(fn.apply(msgId)); // this should succeed since amdin role
+
+		authenticate(regularUser);
+		//since below message throws exception
+		try {
+			log.info(fn.apply(msgId)); // this should fail to access since user role
+			                           // using function passed as parameter
+		}catch(Throwable t){
+			//log.error("Cannot access ",th);
+			log.error("Cannot access by -- "+regularUser);
+		}
+	}
+}
+
+interface MessageRepository extends JpaRepository<Message,Long> {
+
+	String QUERY = "select m from Message m where m.id= ?1";
+
+	@Query(QUERY)
+	@RolesAllowed("ROLE_ADMIN") //JSR 250 annotation which is very old and stable.
+	Message findByIdRolesAllowed(Long id); // the spring data will not be able to fetch query based on name of the method
+	                                // we need to pass the custom query
+
+	@Query(QUERY)
+	@Secured("ROLE_ADMIN") // This is jsr 250 annotation similar to @RolesAllowed
+	Message findByIdSecured(Long id);
+
+	@Query(QUERY)
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	Message findByIdPreAuthorize(Long id);
+
+	@Query(QUERY)
+	@PostAuthorize("@authz.check(returnObject, principal?.user)") // in order to validate the user in expression
+	                                                              // create a getter in customUserdetail object
+	Message findByIdPostBeanValidation(Long Id);
+}
+@Service("authz")
+@Log4j2
+class AuthzService {
+
+	public boolean check(Message msg, User usr){
+		log.info("checking - " + usr.getMail()+ " accessTo  message of "+msg.getMessageTo().getId()  );
+		return msg.getMessageTo().getId().equals(usr.getMail()); // true when message of user and accessing user matched
+	}
+}
+interface UserRepository extends JpaRepository<User, Long>{
+	//create a custom query to find the user in db using name
+	User findByMail(String mail);
+}
+
+interface AuthorityRepository extends JpaRepository<Authority, Long>{
+}
+
+// below classes in separate file
+@Entity // jpa entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class Message {
+	public Message(String text, User messageTo) {
+		this.text = text;
+		this.messageTo = messageTo;
+	}
+
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String text;
+	@OneToOne
+	private User messageTo;
+}
+@Entity // jpa entity
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(exclude= "authorities") // to exclude that field since we get recursive graph due to jointable
+@Data
+class User{
+	public User(String mail, String password, Set<Authority> authorities) {
+		this.mail = mail;
+		this.password = password;
+		this.authorities.addAll(authorities);
+	}
+
+	public User(String mail, String password, Authority ... authorities) {
+		this(mail,password,new HashSet<>(Arrays.asList(authorities)));
+	}
+
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String mail, password;
+	// create a constructors as needed for all arguments
+// create a derived constructor, for different prams per requirement.
+	@ManyToMany(mappedBy = "user")
+	private List<Authority> authorities = new ArrayList<>();
+}
+@Entity // jpa entity
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude="user") //just not to include user on toString override
+@Data
+class Authority{
+
+	//create constructor
+	public Authority(String authority, Set<User> user){
+		this.user.addAll(user);
+		this.authority = authority;
+	}
+	//constructor with no user
+	public Authority(String authority){
+		this.authority = authority;
+	}
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	private String authority;
+
+	@ManyToMany (cascade= {CascadeType.PERSIST,CascadeType.MERGE})
+	@JoinTable (name="authority_user",
+			joinColumns = @JoinColumn (name = "authority_id"),
+			inverseJoinColumns = @JoinColumn (name ="user_id"))
+	private List<User> user= new  ArrayList<>();
+
+}
+
+@Service
+//creating user details
+class UserRepoUserDetailsService implements UserDetailsService{
+
+	// this is the wrapper of the authenticated object, this can be used
+    // for httpBasic or form-based logins, etc.
+
+	class UserDetailsInfo implements UserDetails{
+
+		private final User user;
+
+		public User getUser() {
+			return user;
+		}
+
+		private Set<GrantedAuthority> authorities ;
+		//constructor
+		public UserDetailsInfo(User user){
+			this.user = user;
+			this.authorities = this.user.getAuthorities()
+					.stream()
+					.map(a -> new SimpleGrantedAuthority("ROLE_"+a.getAuthority()))
+					.collect(Collectors.toSet());
+		}
+
+		@Override
+		public Collection<? extends GrantedAuthority> getAuthorities() {
+			return this.authorities;
+		}
+
+		@Override
+		public String getPassword() {
+			return this.user.getPassword();
+		}
+
+		@Override
+		public String getUsername() {
+			return this.user.getMail();
+		}
+
+		@Override
+		public boolean isAccountNonExpired() {
+			return true;
+		}
+
+		@Override
+		public boolean isAccountNonLocked() {
+			return true;
+		}
+
+		@Override
+		public boolean isCredentialsNonExpired() {
+			return true;
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return true;
+		}
+	}
+	private UserRepository userRepo ;
+
+	public UserRepoUserDetailsService(UserRepository userRepo) {
+		this.userRepo = userRepo;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
+		User usr = userRepo.findByMail(mail);
+		if (null != usr){
+           // we need to return the UserDetails, which is defined as implementation of userdetails form spring sec.
+			return new UserDetailsInfo(usr);
+		}
+		else
+			throw new  UsernameNotFoundException("User not fond "+mail);
+	}
+}
+/*
+@EnableWebSecurity
+class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	protected  void configure(HttpSecurity http) throws Exception{
+
+		http.httpBasic();
+
+		http.authorizeRequests()
+			.mvcMatchers("/h2-console/**").permitAll()
+			.anyRequest().authenticate();
+		//http.csrf().disable();
+		//http.headers().frameOptions().disable();
+
+	}
+}
+*/
+	```
+</details>
