@@ -1923,12 +1923,20 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   (Note: spring boot does this  automatically via spring data configuration )
   - for this we need to write custom query to return Page results.
 
-```
-// below is note requiered for latest spring security 
+```java
+// below is to be added 
 @Bean
 SecurityEvaluationContextExtension securityEvaluationContextExtension(){
    return new SecurityEvaluationContextExtension();
 }
+```
+```xml
+/* pom.xml  - should include 
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-data</artifactId>
+		</dependency>
+*/
 ```
  - Refer [link](https://docs.spring.io/spring-security/site/docs/4.2.x/reference/html/data-query.html)
 ```java 
@@ -1940,7 +1948,8 @@ SecurityEvaluationContextExtension securityEvaluationContextExtension(){
 // Note : we can stil luse @RolesAllowed in here.
 @Query("select m from message m where m.messageTo.id = ?#{ principal?.user?.id}") 
      // ? - elvis operator for null check
-     // the principal objects user id us used in this case 
+     // prinicipl is only passed into spring expression only when the springevalucationcontextextenstion is added.
+     // the principal objects user id is used in this case 
  Page<Message> findMessageFor (Pageable pageable);
 
 // now in the test ApplicationRunner class user the below to call it (refer the above code)
