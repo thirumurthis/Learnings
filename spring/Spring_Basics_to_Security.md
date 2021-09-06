@@ -338,7 +338,7 @@ public class JdbcSpringSecurity {
     //Any user creation delete can be configured here if needed
     JdbcUserDetailsManager jdbcUserDetailsManager= new JdbcUserDetailManager();  // this implementation is updated. 
     jdbcUserDetailsMananger.setDataSource(ds);
-    return jdbcUserDetailManager(); 
+    return jdbcUserDetailManager; 
     // create schema rquired needs to be created, create a file called schema.sql
  }
  
