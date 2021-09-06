@@ -344,11 +344,11 @@ public class AutoMVCTest {
 	}
 }
  ```
- ##### using `@AutoConfitureWebMvc` doesn more configuration for us. Refer below code.
+ ##### using `@AutoConfitureMockMvc` doesn more configuration for us. Refer below code. (note: don't use @AutoConfigureWebMvc, it won't work here)
    - Below code is not working fix it latter
  
- ```java
- package com.test.webmvc.TestWebMVCApp;
+```java
+package com.test.webmvc.TestWebMVCApp;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -361,6 +361,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -371,7 +372,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @SpringBootTest
 //Adding this annotation we get more benefits
 // all the configuration part of @BeforeEach is done in annotation
-@AutoConfigureWebMvc
+@AutoConfigureMockMvc
 
 public class MockAllMvcTest {
 
@@ -382,7 +383,8 @@ public class MockAllMvcTest {
 	@WithMockUser  // we saw this on the method level security test case
 	public void allowAll() throws Exception{
 		mockMvc.perform(get("/"))
-		       .andExpect(status().isOk());	 
+		       .andExpect(status().isOk());
+	 
 	}
 	
 	@Test
@@ -390,6 +392,7 @@ public class MockAllMvcTest {
 	public void failsAsNoUser() throws Exception{
 		mockMvc.perform(get("/"))
 		       .andExpect(status().isUnauthorized());
+	 
 	}
 	
 	//With MockMVC support, we can leverage request post processor rather than using annotation
@@ -452,5 +455,8 @@ public class MockAllMvcTest {
 		       .andExpect(status().is3xxRedirection())  //check why there is a client error instead here 
 		       .andExpect(unauthenticated());
 	}
+
+
 }
+
 ```
