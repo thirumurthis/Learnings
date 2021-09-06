@@ -302,7 +302,14 @@ public class TestWithUserDetailsExample {
 	@WithMockMessageUser  // @WithSecuritycontext used for injecting custom or mock user
 	public void testWithMockedUser() {
 	   this.messageService.getMessage();	// apply assertion for the return value 
+	}
+	
+	@Test
+	@WithMockMessageUser(mail="user") // this will fail
+	public void testWithMockedUser() {
+	   this.messageService.getMessage();	// apply assertion for the return value 
 	}	
+
 }
 // ------------------- Mock custom user class
 package com.test.learn.TestSecurityApp;
@@ -333,17 +340,14 @@ public class MockCustomUserFactory implements WithSecurityContextFactory<WithMoc
 		
 		// set the principal in security context
 		SecurityContext context = SecurityContextHolder.createEmptyContext();
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, principal.getPassword(),principal.getAuthorities());
+		UsernamePasswordAuthenticationToken authentication = 
+		             new UsernamePasswordAuthenticationToken(principal, principal.getPassword(),principal.getAuthorities());
 		context.setAuthentication(authentication);
 		return context;
 	}
-
 	private User createMessage(WithMockMessageUser mockMessageUser) {
-		
-		return new User(mockMessageUser.mail(),mockMessageUser.value(),new Authority("ROLE_USER"));
-		//return new User(mockMessageUser.id(),mockMessageUser.value(),null);
+    	   return new User(mockMessageUser.mail(),mockMessageUser.value(),new Authority("ROLE_USER"));
 	}
-
 }
 //-------------------- Mock user object to generate user
 package com.test.learn.TestSecurityApp;
@@ -372,6 +376,24 @@ public interface MessageService{
 	//@PostAuthorize("@authz.check(returnObject, principal?.user)")
 	public Message getMessage();
 }
+//------------------- Message data overrides teh message service
+package com.test.learn.TestSecurityApp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class MessageData implements MessageService{
+
+	@Autowired
+	MessageRepository mr;
+	@Override
+	public Message getMessage() {
+		//Optional<Message> msg =  mr.findById(1l); // this just for testing purpose added 1 long for id
+		//return msg.orElse(null);
+		return new Message(1L,"Hello",new User("demouser","password",new Authority("ROLE_ADIM")));  //CURRENTLY HARDCODED THIS VALUE, IDEALLY need to fetched from db.
+	}
+}
+
 //-------------------- Message Support class sperate file 
 package com.test.learn.TestSecurityApp;
 
@@ -433,9 +455,9 @@ interface MessageRepository extends JpaRepository<Message,Long>  {
 
 	String QUERY = "select m from Message m where m.id= ?1";
 	@Query(QUERY)
-	@RolesAllowed("ROLE_ADMIN") //JSR 250 annotation which is very old and stable.
+	@RolesAllowed("ROLE_ADMIN")            //JSR 250 annotation which is very old and stable.
 	Message findByIdRolesAllowed(Long id); // the spring data will not be able to fetch query based on name of the method
-	                                // we need to pass the custom query
+	                                       // we need to pass the custom query
 }
 
 interface UserRepository extends JpaRepository<User, Long>{
@@ -446,7 +468,6 @@ interface UserRepository extends JpaRepository<User, Long>{
 interface AuthorityRepository extends JpaRepository<Authority, Long>{
 }
 
-// below classes in separate file
 @Entity // jpa entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -456,7 +477,6 @@ class Message {
 		this.text = text;
 		this.to = to ;
 	}
-
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -464,6 +484,7 @@ class Message {
 	@OneToOne
 	private User to;
 }
+
 @Entity // jpa entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -475,11 +496,9 @@ class User{
 		this.password = password;
 		this.authorities.addAll(authorities);
 	}
-
 	public User(String mail, String password, Authority ... authorities) {
 		this(mail,password,new HashSet<>(Arrays.asList(authorities)));
 	}
-
 	@Id
 	@GeneratedValue
 	private Long id;
@@ -489,6 +508,7 @@ class User{
 	@ManyToMany(mappedBy = "user")
 	private List<Authority> authorities = new ArrayList<>();
 }
+
 @Entity // jpa entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -508,7 +528,6 @@ class Authority{
 	@Id
 	@GeneratedValue
 	private Long id;
-
 	private String authority;
 
 	@ManyToMany (cascade= {CascadeType.PERSIST,CascadeType.MERGE})
@@ -516,7 +535,6 @@ class Authority{
 			joinColumns = @JoinColumn (name = "authority_id"),
 			inverseJoinColumns = @JoinColumn (name ="user_id"))
 	private List<User> user= new  ArrayList<>();
-
 }
 
 @Service
