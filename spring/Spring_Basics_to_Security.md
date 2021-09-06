@@ -353,7 +353,7 @@ public class JdbcSpringSecurity {
       manager.createUser(thiru);
       UserDetails ram = User.withUserDetails(thiru).username("ram").build();
       manager.createUser(ram);
-    }
+    };
  }
   public static void main(String ... args){ SpringApplication.run(JdbcSpringSecurity.class, args); }
  
