@@ -264,6 +264,336 @@ public class TestClassMessageService {
   - In order to mock the user, we can create a custommockuserfactory and use it with mockuser
   - With the use of `@WithSecurityContext` annotation
 
+```java
+ // new file under the test directory 
+ package com.test.learn.TestSecurityApp;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 
+@SpringBootTest
+public class TestWithUserDetailsExample {
+	@Autowired
+	MessageService messageService;
+	
+	//@Disabled //we don't want to run this is just a demo
+	// the principal in withmockuser is not custom user details so it fails
+	@Test
+	@WithMockUser
+	// this annotation provides a different type, since we have userdetails
+	/* EXECPTED output will be */
+	//java.lang.IllegalArgumentException: Failed to evaluate expression 'retrunedObject.to.id == principal?.id'
+	//at org.springframework.security.access.expression.ExpressionUtils.evaluateAsBoolean(ExpressionUtils.java:33)
+	public void testFailIncorrectType() {
+		assertThatCode(()->this.messageService.getMessage()).isInstanceOf(IllegalArgumentException.class);  // assert if needed
+	}
+	
+	@Test
+	@WithUserDetails("tim")  // when the username exists in the system 
+	//@WithUserDetails(value="tim",userDetailsServiceBeanName = "userRepoUserDetailsService")
+	public void testWithCustomUserTypeGranted() {
+		this.messageService.getMessage();
+	}
+	
+	@Test
+	@WithMockMessageUser  // @WithSecuritycontext used for injecting custom or mock user
+	public void testWithMockedUser() {
+	   this.messageService.getMessage();	// apply assertion for the return value 
+	}	
+}
+// ------------------- Mock custom user class
+package com.test.learn.TestSecurityApp;
+import static org.hamcrest.CoreMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.mockito.ArgumentMatchers;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithSecurityContextFactory;
+
+public class MockCustomUserFactory implements WithSecurityContextFactory<WithMockMessageUser>{
+	//Below is the way to mock the user - to leverage when we don't want to load 
+	// user from the system. since we might now know what exists in system. unless
+	// the system has a separate identity store that never changes
+	@Override
+	public SecurityContext createSecurityContext(WithMockMessageUser mockMessageUser) {
+		// leveraging mockito to mock the userrepository
+		UserRepository user = mock(UserRepository.class);
+		when(user.findByMail(ArgumentMatchers.any())).thenReturn(createMessage(mockMessageUser));
+		
+		//Setting that in the user repository details
+		UserRepoUserDetailsService userRepo = new UserRepoUserDetailsService(user);
+		//create principal, with the userdetails object
+		UserDetails principal = userRepo.loadUserByUsername(mockMessageUser.mail());
+		
+		// set the principal in security context
+		SecurityContext context = SecurityContextHolder.createEmptyContext();
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, principal.getPassword(),principal.getAuthorities());
+		context.setAuthentication(authentication);
+		return context;
+	}
+
+	private User createMessage(WithMockMessageUser mockMessageUser) {
+		
+		return new User(mockMessageUser.mail(),mockMessageUser.value(),new Authority("ROLE_USER"));
+		//return new User(mockMessageUser.id(),mockMessageUser.value(),null);
+	}
+
+}
+//-------------------- Mock user object to generate user
+package com.test.learn.TestSecurityApp;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import org.springframework.security.test.context.support.WithSecurityContext;
+
+@Retention(RetentionPolicy.RUNTIME)
+@WithSecurityContext(factory = MockCustomUserFactory.class)
+public @interface WithMockMessageUser {
+	//add attribute to be customized
+	//long id() default 1L;
+	String mail() default "demouser";
+	String value() default "message";
+}
+
+//--------------------- message service seperate java class
+package com.test.learn.TestSecurityApp;
+
+import org.springframework.security.access.prepost.PostAuthorize;
+public interface MessageService{
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PostAuthorize("retrunObject.to.mail == principal?.user?.mail") //returnObject is a pre-defined name of return object. use as is
+	//@PostAuthorize("@authz.check(returnObject, principal?.user)")
+	public Message getMessage();
+}
+//-------------------- Message Support class sperate file 
+package com.test.learn.TestSecurityApp;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.security.RolesAllowed;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
+import javax.transaction.Transactional;
+
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
+
+public class MessageSupport {}
+
+interface MessageRepository extends JpaRepository<Message,Long>  {
+
+	String QUERY = "select m from Message m where m.id= ?1";
+	@Query(QUERY)
+	@RolesAllowed("ROLE_ADMIN") //JSR 250 annotation which is very old and stable.
+	Message findByIdRolesAllowed(Long id); // the spring data will not be able to fetch query based on name of the method
+	                                // we need to pass the custom query
+}
+
+interface UserRepository extends JpaRepository<User, Long>{
+	//create a custom query to find the user in db using name
+	User findByMail(String mail);
+}
+
+interface AuthorityRepository extends JpaRepository<Authority, Long>{
+}
+
+// below classes in separate file
+@Entity // jpa entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class Message {
+	public Message(String text, User to) {
+		this.text = text;
+		this.to = to ;
+	}
+
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String text;
+	@OneToOne
+	private User to;
+}
+@Entity // jpa entity
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(exclude= "authorities") // to exclude that field since we get recursive graph due to jointable
+@Data
+class User{
+	public User(String mail, String password, Set<Authority> authorities) {
+		this.mail = mail;
+		this.password = password;
+		this.authorities.addAll(authorities);
+	}
+
+	public User(String mail, String password, Authority ... authorities) {
+		this(mail,password,new HashSet<>(Arrays.asList(authorities)));
+	}
+
+	@Id
+	@GeneratedValue
+	private Long id;
+	private String mail, password;
+	// create a constructors as needed for all arguments
+// create a derived constructor, for different prams per requirement.
+	@ManyToMany(mappedBy = "user")
+	private List<Authority> authorities = new ArrayList<>();
+}
+@Entity // jpa entity
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude="user") //just not to include user on toString override
+@Data
+class Authority{
+
+	//create constructor
+	public Authority(String authority, Set<User> user){
+		this.user.addAll(user);
+		this.authority = authority;
+	}
+	//constructor with no user
+	public Authority(String authority){
+		this.authority = authority;
+	}
+	@Id
+	@GeneratedValue
+	private Long id;
+
+	private String authority;
+
+	@ManyToMany (cascade= {CascadeType.PERSIST,CascadeType.MERGE})
+	@JoinTable (name="authority_user",
+			joinColumns = @JoinColumn (name = "authority_id"),
+			inverseJoinColumns = @JoinColumn (name ="user_id"))
+	private List<User> user= new  ArrayList<>();
+
+}
+
+@Service
+@Log4j2
+@NoArgsConstructor
+//creating user details
+class UserRepoUserDetailsService implements UserDetailsService{
+
+     // this is the wrapper of the authenticated object, this can be used
+    // for httpBasic or form-based logins, etc.
+        //inner class
+	class UserDetailsInfo implements UserDetails{
+		private final User user;
+		public User getUser() {return user;}
+		private Set<GrantedAuthority> authorities ;
+		//constructor
+		public UserDetailsInfo(User user){
+			this.user = user;
+			this.authorities = this.user.getAuthorities()
+					.stream()
+					.map(a -> new SimpleGrantedAuthority("ROLE_"+a.getAuthority()))
+					.collect(Collectors.toSet());
+		}
+		@Override
+		public Collection<? extends GrantedAuthority> getAuthorities() {return this.authorities;}
+		@Override
+		public String getPassword() {return this.user.getPassword();}
+		@Override
+		public String getUsername() {return this.user.getMail();}
+		@Override
+		public boolean isAccountNonExpired() {return true;}
+		@Override
+		public boolean isAccountNonLocked() {return true;}
+		@Override
+		public boolean isCredentialsNonExpired() {return true;}
+		@Override
+		public boolean isEnabled() {return true;}
+	}
+	private UserRepository userRepo ;
+	public UserRepoUserDetailsService(UserRepository userRepo) {
+		this.userRepo = userRepo;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String mail) throws UsernameNotFoundException {
+		User usr = userRepo.findByMail(mail);
+		if (null != usr){
+           // we need to return the UserDetails, which is defined as implementation of userdetails form spring sec.
+			UserDetails userDetails = new UserDetailsInfo(usr);
+			log.info("principal info :- "+userDetails.toString());
+			return userDetails;
+		}
+		else
+			throw new  UsernameNotFoundException("User not fond "+mail);
+	}
+}
+/// used this to debug and check the return of @PostAuthorize between returned object and prinicpal.
+@Service("authz")
+@Log4j2
+class AuthzService {
+
+	public boolean check(Message msg, User usr){
+		log.info("checking - " + usr.getMail()+ " accessTo  message of "+msg.getTo().getMail()  );
+		return msg.getTo().getMail().equals(usr.getMail()); // true when message of user and accessing user matched
+	}
+}
+
+@EnableWebSecurity
+@Configuration
+class WebSecurityConfig extends WebSecurityConfigurerAdapter{	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception{
+		http.httpBasic();
+		
+		http.authorizeRequests().mvcMatchers("/**").permitAll();
+	}
+}
+```
 
 
