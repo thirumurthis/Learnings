@@ -281,5 +281,112 @@ public class AutoMVCTest {
 	}
 }
  ```
+ ##### using `@AutoConfitureWebMvc` doesn more configuration for us. Refer below code.
  
- 
+ ```java
+ package com.test.webmvc.TestWebMVCApp;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+
+@SpringBootTest
+//Adding this annotation we get more benefits
+// all the configuration part of @BeforeEach is done in annotation
+@AutoConfigureWebMvc
+
+public class MockAllMvcTest {
+
+   @Autowired
+   MockMvc mockMvc;
+	
+	@Test
+	@WithMockUser  // we saw this on the method level security test case
+	public void allowAll() throws Exception{
+		mockMvc.perform(get("/"))
+		       .andExpect(status().isOk());	 
+	}
+	
+	@Test
+	//no mock user added here.
+	public void failsAsNoUser() throws Exception{
+		mockMvc.perform(get("/"))
+		       .andExpect(status().isUnauthorized());
+	}
+	
+	//With MockMVC support, we can leverage request post processor rather than using annotation
+	@Test
+	public void allowedUserRequestPostProcessor() throws Exception{
+		MockHttpServletRequestBuilder request = get("/")
+				.with(user("user")); // using with and passing the user directly here. the default role is ROLE_USER
+		mockMvc.perform(request)
+		       .andExpect(status().isOk());
+	}  // All the user, etc method are available on  SecurityMockMvcRequestPostProcessor.java
+	// lots of other test support is available in that class like custom authentication, custom security context as well
+	
+	@Test
+	public void allowedUserExtractedRpp() throws Exception{
+		MockHttpServletRequestBuilder request = get("/")
+				.with(userinfo()); // extracted to local statuc method userinfo 
+		mockMvc.perform(request)
+		       .andExpect(status().isOk());
+	}
+
+	//Static method extracted out this is sim
+	private static SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor userinfo() {
+		return SecurityMockMvcRequestPostProcessors.user("user");
+	}
+		
+	
+	@Test
+	@WithMockUser  // we saw this on the method level security test case
+	public void postFails() throws Exception{
+		MockHttpServletRequestBuilder request = post("/transfer")
+				.param("amount", "1");
+		mockMvc.perform(request)
+		       .andExpect(status().isForbidden());
+	}
+	
+	//Below is performing the above test case with valid CSRF token
+	@Test
+	@WithMockUser  // we saw this on the method level security test case
+	public void postPassWithCSRF() throws Exception{
+		MockHttpServletRequestBuilder request = post("/transfer")
+				.param("amount", "1")
+				.with(csrf()); // adding with csrf 
+		mockMvc.perform(request)
+		       .andExpect(status().isOk()); // this is failing now with 400 - check later
+		// if we use post on redirect pattern after posting we are redirect to GET - user is3xxRedirection() to validate 
+	}
+
+	//FORM Based login testing example :
+	@Test
+	public void loginTest() throws Exception {
+		mockMvc.perform(formLogin())
+		       .andExpect(status().is3xxRedirection()) //check why there is a client error instead here
+		       .andExpect(authenticated()); // this test case is also failing 
+	}
+	
+	// Making a failed login case 
+	@Test
+	public void loginTestFail() throws Exception {
+		mockMvc.perform(formLogin().password("invalid"))
+		       .andExpect(status().is3xxRedirection())  //check why there is a client error instead here 
+		       .andExpect(unauthenticated());
+	}
+}
+```
