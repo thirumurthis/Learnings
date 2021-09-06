@@ -256,7 +256,13 @@ public class TestClassMessageService {
    - If we have declared `UserDetailsService` we can use that to get the information of particular user from system. This becomes handy when we have custom authentication.
    
  - We can use `@WithUserDetails` annotation to leverage custom authentication test using custom authenticated user.
+ - The problem with this `@WithUserDetails` is that user should exists in our system
+ - The @WithUserDetails can be used as a meta annotation as well.
 
+###### What if we want to run as an mocked user of custom type.
+  - in previous @WithUserDetails, the custom authentication is used, and the user info should exists in the system.
+  - In order to mock the user, we can create a custommockuserfactory and use it with mockuser
+  - With the use of `@WithSecurityContext` annotation
 
 
 
