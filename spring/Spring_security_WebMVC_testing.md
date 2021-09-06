@@ -78,12 +78,21 @@ public class ManualMVCTest {
 		    .andExpect(status().isOk());
 	}
 }
+```
+```java
 //-------------------- MAIN application file //------------------------------
 package com.test.webmvc.TestWebMVCApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
@@ -92,23 +101,32 @@ public class TestWebMvcAppApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TestWebMvcAppApplication.class, args);
 	}
+
 }
 
 @RestController
 class SimpleController{
+	
+	double balance =100.00 ; 
 	@GetMapping("/")
 	public String hello() {
 		return "hello User";
 	}
+	
+	@PostMapping("/transfer")
+	public String transfer(@RequestParam double amount) {
+		this.balance = balance - amount;
+		return "redirect:/?success";
+	}
 }
-//-------------------------- WEBSECURITY configuration
+
 @EnableWebSecurity
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.httpBasic();
+		http.formLogin();
 		http.authorizeRequests()
 		    .anyRequest().authenticated();
 	}
@@ -124,9 +142,14 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 ///----------------- The spring Restcontroller is same as the above code.
 package com.test.webmvc.TestWebMVCApp;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -191,10 +214,50 @@ public class AutoMVCTest {
 		       .andExpect(status().isOk());
 	}
 
-	//Static method extracted out this to static method
+	//Static method extracted out this is sim
 	private static SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor userinfo() {
 		return SecurityMockMvcRequestPostProcessors.user("user");
-	}		
+	}
+		
+	
+	@Test
+	@WithMockUser  // we saw this on the method level security test case
+	public void postFails() throws Exception{
+		MockHttpServletRequestBuilder request = post("/transfer")
+				.param("amount", "1");
+		mockMvc.perform(request)
+		       .andExpect(status().isForbidden());
+	}
+	
+	//Below is performing the above test case with valid CSRF token
+	@Test
+	@WithMockUser  // we saw this on the method level security test case
+	public void postPassWithCSRF() throws Exception{
+		MockHttpServletRequestBuilder request = post("/transfer")
+				.param("amount", "1")
+				.with(csrf()); // adding with csrf 
+		mockMvc.perform(request)
+		       .andExpect(status().isOk()); 
+		// if we use post on redirect pattern after posting we are redirect to GET - user is3xxRedirection() to validate 
+	}
+
+	//FORM Based login testing example :
+	@Test
+	@WithMockUser
+	public void loginTest() throws Exception {
+		mockMvc.perform(formLogin())
+		       .andExpect(status().is3xxRedirection()) //check why there is a client error instead here
+		       //.andExpect(authenticated()); // this test case is also failing - authentication object missing
+		       .andExpect(status().isOk());
+	}
+	
+	// Making a failed login case 
+	@Test
+	public void loginTestFail() throws Exception {
+		mockMvc.perform(formLogin().password("invalid"))
+		       .andExpect(status().is3xxRedirection())  //check why there is a client error instead here 
+		       .andExpect(unauthenticated());
+	}
 }
 ```
 
@@ -282,6 +345,7 @@ public class AutoMVCTest {
 }
  ```
  ##### using `@AutoConfitureWebMvc` doesn more configuration for us. Refer below code.
+   - Below code is not working fix it latter
  
  ```java
  package com.test.webmvc.TestWebMVCApp;
