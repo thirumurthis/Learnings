@@ -59,7 +59,7 @@ public class SecurityConfig externds WebSecurityConfigurerAdaptor{
    // This is a requirement
    @Bean
    public PasswordEncoder getPasswordEncoder(){
-      return NoOpPassowrdEncoder.getInstance(); //don't use this in production system.
+      return NoOpPasswordEncoder.getInstance(); //don't use this in production system.
    }
 }
 ```
