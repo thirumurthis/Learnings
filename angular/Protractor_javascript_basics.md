@@ -35,10 +35,13 @@ exports.config = {
     specs: ['spec1.js']
   };
 ```
+- Tips: using `npm init` will creat e a `pacakge.json` file, unde rthe scripts attribute adding the command for execution will make exeuction easier
+        For example, `scripts [ "start" : "protractor config.js", ..]` thne using `$ npm start` will execute the protractor command.
+        
 - issue below command to run the test
 ```
 // passing the config file, make sure the config file exists in the path where the command is executed. .js extension is options.
-$ protractod config 
+$ protractor config 
 ```
 - Info: to update the IE driver ` > webdriver-manager update --ie`
 
@@ -250,5 +253,30 @@ browser.wait(EC.invisibilityOf($('#abc')),5000);
         });
     });
 ````
+
+##### `Page Object` and `jasmin data provider`
+- Page Object 
+    - If there is a simple javascript object, it can be used in another javascript file by using `module.exports` and using `requires(file-name.js)`.
+    - In the above, comparing java it is like importing the class from different package.
+
+```
+// file1.js
+var Car = { "make" : "BMW", "model" : 2020 };
+
+module.export = new Car();
+
+//file2.js
+
+var car = requires('file1.js);
+
+console.log(car.make); // prints BMW
+
+//NOTE: using node.js above program can be executed as node file2.js
+```
+  - The above underling concept can be used for protractor as well, creating a java script object, and using requires to import those into test class.
+  - by conventions, the page object files are named as `*.po.ts`
+  
+- Data provider
+   -  similar to Page object, the using jasmine data provider npm plugin, we can extract the data out of the test class as well.
 
 
