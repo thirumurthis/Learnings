@@ -67,6 +67,7 @@ variables:
  
  k8s-deployment:
     stage: deploy
+    before_script:
       - *azure_setup
       - az_login
       - az_config
