@@ -245,3 +245,25 @@ test2:
    - cat artifact*.*
 ```
 
+#### Passing variables between jobs
+ - Declaring and using variables
+ - Declaring group variables
+- The variables has to be set in the GitLab UI, under `Settings` -> `CI/CD` -> `Environment Variables` section
+   - Add the VAR1 and some value; (protected option, just makes it available to build time, but not displayed for other users, based on roles)
+ 
+ - Groups and sub-groups:
+    - Groups are collection of projects
+      - we can apply the variables at the group level, so this will be applied to the sub-groups and its individual projects.
+ - when we run the Runpipeline manually, by using the gitlab ui via button in the Run Pipeline button, we can override the group variable or variables with different values.
+
+```yaml
+build:
+  script:
+    - "echo Var1 $VAR1"
+    - "echo Var2 $VAR2"
+    - "echo $GRPVAR"
+    - ./script.sh
+    
+ ## script.sh - content
+ ##  echo " from within the script of git ci variable used: $VAR1"
+```
