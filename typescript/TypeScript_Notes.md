@@ -64,4 +64,15 @@ console.log (add(...numToAdd)) // will pass the array directly without the ? elv
  
  // using backticks
  console.log(`The lucky number of ${user.name} is ${user.luckynumber}`);
+ // backticks also support multi liner
+ console.log(`The lucky number of ${user.name} 
+              will alway be ${user.luckynumber}`);
+              
+ // Arrays in the backticks are stringified, so prints as comma sperated values.
+ let numToAdd : Array<number> = [2,4,6];
+ console.log(`print - ${numToAdd}`);
+ console.log(`print -`, numToAdd); // if needed to print the array itslef use conventional way
+ // printing class, will print the object as such, not the properties.
+ console.log(`print object`,user);
 ```
+
