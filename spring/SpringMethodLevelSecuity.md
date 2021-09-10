@@ -10,6 +10,8 @@
 
 - Assignemnt, write Test cases for controller, using spring-security-test. use `@WithMockUser` ,`@MockBean` if hitting the database.
 
+[REFERENCE](https://www.baeldung.com/spring-security-create-new-custom-security-expression)
+
 ```java
 package com.general.auth;
 
