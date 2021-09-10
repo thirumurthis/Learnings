@@ -4,6 +4,12 @@
 - To create custom evaluator, we can implement the `PermissionEvaluator.java` below is the code details
 - Important details, adding the spring security, use the `user` and generated password. the default user name is `user`
 
+- The `@PostAuthorize` included in the userService accessing the methd
+- The `@PreAuthorize` also used in the controller. 
+      - When logged in as `user@password` and issuing `http://localhost:8080/user/admin` -> it will be a access denied message
+
+- Assignemnt, write Test cases for controller, using spring-security-test. use `@WithMockUser` ,`@MockBean` if hitting the database.
+
 ```java
 package com.general.auth;
 
@@ -184,11 +190,9 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 public class CustomMethodSecurityConf extends GlobalMethodSecurityConfiguration{
 	
 	@Override
-	protected MethodSecurityExpressionHandler createExpressionHandler()
-	{
+	protected MethodSecurityExpressionHandler createExpressionHandler(){
 		DefaultMethodSecurityExpressionHandler expHandler = new DefaultMethodSecurityExpressionHandler();
-		
-		// pass in the created custom PermissionEvaluator// so it can be used part of hasPermission
+	       // pass in the created custom PermissionEvaluator// so it can be used part of hasPermission
 		expHandler.setPermissionEvaluator(new CustomPermissionEvaluator());
 		return expHandler;
 	}
