@@ -140,7 +140,6 @@ stages:
         - ./test-app-script.sh
 ``` 
 #### how to capture the artifacts:
-  - How to pass the artifact created by from one job to another job.
   - The artifacts are downloadable form web.
   - Say in the pipe line, we need to get the npm audit on the json file, to download of the build.
 - in the UI, there should be a download job artifact section, where we can download.
@@ -192,3 +191,57 @@ stages:
       script:
         - ./test-app-script.sh
 ``` 
+
+#### How to pass the captured artifacts from one job to another
+ - Automatic artifacts between stages
+ - declaring dependencies explitly
+
+- By default without declaring any stages the default order of stage is build, test , deploy.
+  - Since the stages is not mentioned, any aritifacts that are produced in by the job will be available to other job by default
+  
+```yaml
+buid:
+  stage: build
+  script:
+   - echo "demo for the artifact to pass between jobs" > artifact.txt
+  artifacts:
+    paths:
+      - artifact.*
+
+test:
+  stage: test
+  script:
+    - cat artifact.*
+```
+  - But what happens is want certain artifacts to be available to certain jobs?
+```yaml
+buid:
+  stage: build
+  script:
+   - echo "demo for the artifact to pass between jobs" > artifact.txt
+  artifacts:
+    paths:
+      - artifact.*
+buid2:
+  stage: build
+  script:
+   - echo "Second content for artifact2" > artifact2.txt
+  artifacts:
+    paths:
+      - artifact2.*
+
+test:                # since the dependencies were not defined, both the artifacts will be displayed
+  stage: test
+  script:
+    - cat artifact*.*
+    
+ ## adding the artifact created by build2 to this job
+ 
+test2:
+ stage: test 
+ dependencies:   # this is way we pass the artifact of one job to another, in this case the output pipeline will list only the build2 artifacts only
+   - build2
+ script:
+   - cat artifact*.*
+```
+
