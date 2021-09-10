@@ -3,8 +3,8 @@
 
 ```yaml
 stages:
+   - test                             # order of execution is a key, if the test fails per the job declared, the build will not happen saving some performance benefit.
    - build
-   - test
    - deploy
   
  variables:
@@ -35,6 +35,20 @@ stages:
       - docker build -t $DOCKER_IMAGE_TAG .
       - docker push $DOCKER_IMAGE_TAG
       
+  test:
+    stage: test
+    image: node:latest
+    services:
+      - name: postgres:latest
+        alias: db
+    variables:
+       POSTGRES_DB: "${DATABASE_NAME}"
+       POSTGRES_USER: "${DB_USER}"
+       POSTGRES_PASSWORD: "${DB_PASS}"
+       DATABASE_URL: "postgers://${DB_USER}:${DB_PASS}@db/${DATABASE_NAME}
+    script:
+     - ./script-to-test.sh
+      
 ```
 - From the output of the stages:
    - The docker:dind container will be downloaded first and sets up once that service is up and running.
@@ -43,3 +57,16 @@ stages:
       - In the docker:stable container, git clones the repository
       - does the docker login, using the CI_JOB_TOKEN provided for us.
       - other script are executed, docker pushes the image to the registry - Note the docker repository created by git itself, not the docker hub 
+-------------
+
+##### Build Stages, Variables
+
+ - Stage and jobs: 
+    - This is kind of container for the job.
+    - Each stage has one or more job in it, each job is run in the order they are declared
+    - If any job in the stage makes the stage as failed.
+    - If the stage is marked as failed, the subsequent stage will be skipped.
+  - Note: Any unassigned job is assigned to "test" stage by default
+  
+  
+   
