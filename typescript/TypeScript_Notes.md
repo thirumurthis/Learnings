@@ -25,7 +25,7 @@ undefined - can only retur or store either undefined or null
  ```
 
 #### Spread (...) and backtick (\`\`)
- - Spread
+ - Spread in array
 ```ts
  let fruits : Array<string> = ["apple","orange","banana"];
  let cars : string[] = ["BMW","Benz", "Ford"];
@@ -34,5 +34,34 @@ undefined - can only retur or store either undefined or null
  let fruitsAndCars: Array<string> : [...fruits, ...cars]; // will hold ["apple","orange","banana" "BMW","Benz", "Ford"];
  console.log(fruitsAndCars);
 ```
+- Spread in Object
+```
+let fromPerson1 = { "fromName": "user1"}
+let toPerson2 = { "toName" : "user2" }
+let department = { ...user1, ...user2, "toAddress": "nowhere" }; // {"fromName" : "user1", "toName" : "user2", "toAddress" : "noWhere" }
+```
+- Spread in function
+```
+function add ( a? : number, b?: number, c?: number){ // addind an elvis operator before the make this optional;
+  return a + b + c;
+}
 
-  
+let numToAdd : Array<number> = [2,4,6];
+//conventional way
+console.log ( add(numToAdd[0],numToAdd[1],numToAdd[2]);
+
+//using spread operator
+console.log (add(...numToAdd)) // will pass the array directly without the ? elvis operator there will be compilation error in Typescript editor 
+
+```
+ ##### backticks was created in ES6
+  - mostly used for template string
+
+```
+ let user = { "name" : "thiru", "lukynumber" : 0}
+ //conventional way 
+ console.log("The lucky number of "+user.name+" is "+ user.luckynumber); //concatenation is peformed
+ 
+ // using backticks
+ console.log(`The lucky number of ${user.name} is ${user.luckynumber}`);
+```
