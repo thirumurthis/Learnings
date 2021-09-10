@@ -15,10 +15,10 @@ stages:
     
  build:
    stage: build
-   image: docker:stable   # this is the stable image within the docker hub itself - client software packaged in it
-   services:              # sercives property 
+   image: docker:stable   # this is the stable image within the docker hub itself - client software packaged in it [The build will be running in this docker]
+   services:              # sercives property used for 
       - docker:dind       # dind - docker-in-docker, this step will sartup the secondary docker container, running the dind image
-                          # that dind image running a docker daemon in the docker stable itself.
+                          # that dind image running a docker daemon.
    
    # below is used to connect to the docker daemon
    # from the docker client (that we are running the build) to connect to the docker-in-docker (dind) container
@@ -36,3 +36,10 @@ stages:
       - docker push $DOCKER_IMAGE_TAG
       
 ```
+- From the output of the stages:
+   - The docker:dind container will be downloaded first and sets up once that service is up and running.
+      - This is a sperate container that will be running in parallel to the other docker container used for actual build
+   - The docker:stable container is downloaded and  starts running
+      - In the docker:stable container, git clones the repository
+      - does the docker login, using the CI_JOB_TOKEN provided for us.
+      - other script are executed, docker pushes the image to the registry - Note the docker repository created by git itself, not the docker hub 
