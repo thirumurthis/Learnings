@@ -35,8 +35,8 @@ stages:
       - docker build -t $DOCKER_IMAGE_TAG .
       - docker push $DOCKER_IMAGE_TAG
       
-  test:
-    stage: test
+  test:      #JOB NAME           # This is the job name, this can be any name
+    stage: test                  # this is the stage reference, that this job is used, THIS ASSIGNMENT IS IMPORTANT, else this will be running as TEST stage, in parallel
     image: node:latest
     services:
       - name: postgres:latest
@@ -68,5 +68,72 @@ stages:
     - If the stage is marked as failed, the subsequent stage will be skipped.
   - Note: Any unassigned job is assigned to "test" stage by default
   
-  
-   
+ -------------------
+ #### Running the job in parallel and running more than one job in single stage.
+   - Say if we need to test the application on different version on node.
+   - The test stage wanted to run in parallel. Simply assinging the jobs to same stage, then it will run in parallel.
+ ```yaml
+  ## same as the above yaml file, adding additional test stage
+  stages:
+     - test
+     - build
+     
+   test-node10:
+      stage: test    # USED TEST STAGE
+      image: node:10
+      script:
+        - ./test-app-script.sh
+        
+   test-nodelatest:
+      stage: test   # USED SAME TEST STAGE
+      image: node:latest
+      script:
+        - ./test-app-script.sh
+ ```
+   - Another option, in a case if we need to run the same job multiple time to identify occasionally occuring bugs. we can use parallel property in job
+ ```yaml
+  ## same as the above yaml file, adding additional test stage
+  stages:
+     - test
+     - build
+     
+   test-node10:
+      stage: test    # USED TEST STAGE
+      image: node:10
+      parallel: 5      # This will run the same instance multiple times in parallel.
+      script:
+        - ./test-app-script.sh
+        
+   test-nodelatest:
+      stage: test   # USED SAME TEST STAGE
+      image: node:latest
+      script:
+        - ./test-app-script.sh
+ ``` 
+#### Speeding of the build by cache
+  - GitLab CI mostly runs with a clean environment every time.
+  - So it has to download the necessary dependencies everytime.
+     - say the same node image of specific version is being used but downloaded every time there by using resources.
+ 
+ - the cache can be applied at global level, so it can be applied to all the jobs.
+ - Use of key `CI_COMMIT_REF_SLUG` -  this variable is provided by GITLAB CI for us, this indicates to define an id for cache and use it
+ - In a big project, there will commits happening in multiple feature and master branches. This key will provide a key to the cache of specific branch.
+    - the Gitlab will provide a best guess and associates an id to cache, say if this had identified as master branch and when the build is executed on the master branch it will use the cached info.
+    - so seperate branches will have a different cache. 
+ ```yaml
+  ## same as the above yaml file, adding additional test stage
+  stages:
+     - test
+     - build
+     
+   test-node10:
+      stage: test    
+      image: node:10
+      cache:                        # This is the configuration for cache NOTE, THIS CAN BE USED AT THE GLOBAL LEVEL AS WELL                       
+         key: ${CI_COMMIT_REF_SLUG} # this variable is provided by GITLAB CI for us, this indicates to define an id for cache and use it
+         paths:
+          - node_modules/           # when npm install runs, the package are stored in node_modules/
+      parallel: 5      
+      script:
+        - ./test-app-script.sh
+``` 
