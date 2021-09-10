@@ -120,6 +120,8 @@ stages:
  - In a big project, there will commits happening in multiple feature and master branches. This key will provide a key to the cache of specific branch.
     - the Gitlab will provide a best guess and associates an id to cache, say if this had identified as master branch and when the build is executed on the master branch it will use the cached info.
     - so seperate branches will have a different cache. 
+    - note: first time when the build runs, the folder won't be available, so it will display the message and created it.
+           - the dependencies are zipped and used for latter builds of same branch
  ```yaml
   ## same as the above yaml file, adding additional test stage
   stages:
@@ -133,6 +135,59 @@ stages:
          key: ${CI_COMMIT_REF_SLUG} # this variable is provided by GITLAB CI for us, this indicates to define an id for cache and use it
          paths:
           - node_modules/           # when npm install runs, the package are stored in node_modules/
+      parallel: 5      
+      script:
+        - ./test-app-script.sh
+``` 
+#### how to capture the artifacts:
+  - How to pass the artifact created by from one job to another job.
+  - The artifacts are downloadable form web.
+  - Say in the pipe line, we need to get the npm audit on the json file, to download of the build.
+- in the UI, there should be a download job artifact section, where we can download.
+ ```yaml
+  ## same as the above yaml file, adding additional test stage
+  stages:
+     - test
+     - build
+     
+   test-node10:
+      stage: test    
+      image: node:10
+      cache: 
+         key: ${CI_COMMIT_REF_SLUG}
+         paths:
+          - node_modules/
+      artifacts:              # key used
+         paths:
+           - package-lock.json         # need to get this file after build
+           - npm-audit.json            # need to get this file after build
+      parallel: 5      
+      script:
+        - ./test-app-script.sh
+``` 
+ - In case if the build fails, the aritifact will not be saved part of the above configuration
+ - often git lab doesn't capture the artifacts if the stage fails, in the above case the aritifact is generated and then test fails. 
+   - in this case if we need artifacts we can add configuration.
+
+ ```yaml
+  ## same as the above yaml file, adding additional test stage
+  stages:
+     - test
+     - build
+     
+   test-node10:
+      stage: test    
+      image: node:10
+      cache: 
+         key: ${CI_COMMIT_REF_SLUG}
+         paths:
+          - node_modules/
+      artifacts:              # key used
+         when : always       # There are three options, success (default), unsuccesful, always
+         expire_in: 1 week   # to hold on to the artifact for 1 week and delet it after, so we don't use more disk spaces of stored artifacts
+         paths:
+           - package-lock.json         # need to get this file after build
+           - npm-audit.json            # need to get this file after build
       parallel: 5      
       script:
         - ./test-app-script.sh
