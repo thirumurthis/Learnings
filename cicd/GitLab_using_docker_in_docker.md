@@ -194,7 +194,7 @@ stages:
 
 #### How to pass the captured artifacts from one job to another
  - Automatic artifacts between stages
- - declaring dependencies explitly
+ - declaring dependencies explictly
 
 - By default without declaring any stages the default order of stage is build, test , deploy.
   - Since the stages is not mentioned, any aritifacts that are produced in by the job will be available to other job by default
