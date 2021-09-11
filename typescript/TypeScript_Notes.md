@@ -280,3 +280,33 @@ const worker:Department = new Department("storage",1,`john`,`doe`,0);
 console.log(worker.getFullName());
 ```
 - We can use `getter` and `setter` methods. But the parent class can't access the getter and setter if it is present in child class in javascript
+
+##### Interface
+
+```
+
+interface vip{
+    readonly isVip : boolean;  //using readonly property will protect from overwritted
+    
+}
+interface Person extends vip{
+    firstName: string;
+    lastName: string;
+}
+
+const user: Person = {
+    firstName: '', 
+    lastName: '',
+    isVip: false
+}
+
+//user.isVip = true; // this will throw it is read-only property
+
+//impementing the interface
+
+class Employee implements Person{
+    firstName = "";  // we are declaring
+    lastName = "";
+    isVip = false;
+}
+```
