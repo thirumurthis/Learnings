@@ -346,3 +346,43 @@ import {message as msg, Person as user} from '/relative-path-to-module';  // usi
 import simpleDefautExportFunction as defaultExport, { add as operater} from '/relative-path-to-module'; 
 
 ```
+
+#### Fetch
+  - Fetch provides better flexibility in making API calls than `XMLHttpRequest`.
+
+```js
+// old way usage
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://jsonplaceholder.typicode.com/user/1');
+xhr.send();
+xhr.onLoad(...);
+xhr.onProgress(....);
+xhr.onError();
+```
+
+- New approach using `fetch()`
+
+```js 
+
+fetch('https://jspnplanceholder.typicode.com/user/1')
+   .then(response => response.json())
+   .then(user => console.log('reponse user ",user);
+```
+
+#### async/await 
+- The fetch method returns a promise. which can be used to capture and wrapped within async/wait method
+- async/wait applies as syntatic sugar to the code.
+
+```
+
+function toFetch(){
+   return fetch('https://jsonplaceholder.typicode.com/user/1)
+             .then(response -> response.json());
+}
+
+// initialize function with async, this will run async way.
+// since we are using await, no need to use of then() on the recived promise
+async function getUser(){
+  const user = await toFetch();
+}
+```
