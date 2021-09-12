@@ -310,3 +310,39 @@ class Employee implements Person{
     isVip = false;
 }
 ```
+#### Modules (import/export)
+ - ES6 provides modularity to code
+ - Earlier third party libraries came to support modularity like commonjs
+ - Then AMD (Asynchronous Module Defintion)
+
+- In general, one javascript file corresponds to one module, and uses `import/export`
+- In html when including these script file, use `type="module"`, this is how the browser will render graph
+
+- Different ways to use import and export 
+- DefaultExport -> can only be one per javascript file
+``js
+// declaring export functtion
+export const addFunction = (a: number, b: number) { return a+b;}
+
+// declaring multiple function/class and then exporting 
+function message() { return "temp message"};
+class Person { ... }
+interface Human {...}
+export {message , Person, interface }
+
+// declaring default export
+function simpleDefaultExportFunction(){return "from simple function"}
+export default simpleDefaultExportFunction; 
+```
+- how to import the exported modules
+
+```js
+// normal exported modules that can be imported
+import {add} from '@some/module'; 
+import simpleDefaultExportFunction from '../some/other/module';  // note there is no need to use {}, since its default export
+import * as aliasedExport from './relative-path-to-module';  // node the use * wild char, this includes all the modules of the file.
+import {message as msg, Person as user} from '/relative-path-to-module';  // using alias
+
+import simpleDefautExportFunction as defaultExport, { add as operater} from '/relative-path-to-module'; 
+
+```
