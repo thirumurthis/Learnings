@@ -82,8 +82,7 @@ x ends
   - For IO intense operation (netowrk calls - http/https calls, Database calls) the thread will wait for response, most of the threads will wait for response.
      - In this case, we can provide more number of threads, like 20 or 30, even 100.
 
-
-  #### Callable - used when the thread has to return any data. 
+#### Callable - used when the thread has to return any data. 
    - Java provides a Future<> object as a place holder. using Future obeject `get()` is a blocking operation.
 
 ```java
@@ -209,3 +208,5 @@ for(int i=0; i< 10; i++){
                     .thenAcceptAsync((s3) -> performStep4(s3));
 */
 ```
+
+#### For more easy concurrent handling, check Rx java library
