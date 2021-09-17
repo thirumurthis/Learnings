@@ -30,3 +30,15 @@ var json = JSON.parse(responseBody);
 postman.setEnvironmentVariable("azureApp_bearerToken", json.access_token); //where azureApp_bearToken is another variable in evironment
 //adding this cose will set the variable current value else,we need to manually add for consequtive request.
 ```
+
+ Now with the bearer token. environment variabel, logAnalytics_workspace is set to hold APP id of loganalytics
+ https://api.loganalytics.io/v1/workspaces/{{logAnalytics_workspace}}/query  with the query will render results
+ - The Header is set with Authorization as "Bearer {{zureApp_bearerToken}}"
+ - setting the body with below content
+
+```
+{ 
+   "query": "Perf | where CounterName == 'Available MBytes Memory' | summarize avg(CounterValue) by bin(TimeGenerated, 2h)",
+    "timespan": "PT12H"
+}
+```
