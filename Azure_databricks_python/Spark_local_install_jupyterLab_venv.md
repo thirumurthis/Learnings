@@ -97,7 +97,9 @@ Step 4:
    - PySpark - is the spark used to work with python language.
    - from the command prompt
       > pip install pyspark
+      
 Step 4.1:
+
    After installing the pyspark as above - the application didn't open up the spark.
    
    1. Additionally download https://spark.apache.org/download.html (select stable vesion, Pre-built for Hadoop) 
@@ -404,7 +406,7 @@ RDD operations are typically referred to as Transformation and Actions, and oper
 
 RDDs are fault-tolerant 
 
-RDD is lowel api.
+RDD is low level api.
 
 Why RDD?
 - to handle unstructured data that cannot be handed by structured API's such as Dataframe and Datasets. unstructured data such as streams or streams of text.
