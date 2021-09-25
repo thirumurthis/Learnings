@@ -1,80 +1,73 @@
-Spark: INCLUDING local installation via PySpark
-
-  PySpark is a python API for spark
+### Spark: 
+  - Below will be local installation via PySpark.
+  - `PySpark` is a python API for Spark
+  - **Spark** is not a programming language, it is a library that can be used to write program.
+  - `pyspark` allows you to write phyton based data processing applications that execute on distributed cluster in parallel.
+  - `Apache Spark` is an analytical processing enging for large powerful distributed data processing and also machine learning applications.
   
-  spark is not a programming language. it is a library that can be used to write programming
+### Apache spark architecture:
   
-  pyspark allows you to write phyton based data processing applications that execute on distributed cluster in parallel
-  
-  Apache Spark is an anlytical processing enging for large powerful distributed data processing and also machine learning applications.
-  
-  Apache spark architecture:
-  
-   Apache Spark works on Master - Slave architecture
-    Where master node is referred as "Driver"
-    The slave nodes are referred as "Worker"
+ - Apache Spark works on Master - Slave architecture
+   - Where master node is referred as __"Driver"__
+   - The slave nodes are referred as __"Worker"__
     
-   When running a application,
-   a Spark session creates a Spark context which is the entry point 
+   - When running a application,
+     -A `Spark session` creates a `Spark context` which is the entry point. 
    
-   Resources on worker nodes are managed by Cluster Manager
+   - Resources on worker nodes are managed by Cluster Manager
    
 ```
-
 Spark Application
    Spark Driver                                          Worker Node1 (Spark Executor)
    spark session    --------   Master Node      ------   Worker Node2 (Spark Executor)
-   spark context                Cluster Manager
-     
+   spark context               Cluster Manager  
 ```
 
- The Resource and Cluster Manager 
+#### The Resource and Cluster Manager 
+  - Companies relies on a resource management system such as Apache YARN, Mesos or in Spark standalone mode.
+  - Two main components of __resource manager__ are **cluster manager** and **worker**.
  
- companies relies on a resource management system such as Apache YARN, Mesos or in Spark standalone mode.
+ - `Cluster manager` knows where the `workers` are located, how much `memory` and `cpu` each worker has.
+ - When running a spark program, the `cluster manager` determines how many `worker nodes` will be required, how much memory(RAM) and cpu required on each worker node to run the program
  
- Two main components of resource manager are cluster manager and worker 
- 
- Cluster manager knows where the workers are located, how much memory and cpu each worker has
- 
- When running a spark program, the cluster manager determines how many worker nodes will be required, how much memory(RAM) and cpu required on each worker node to run the program
- 
- The Spark driver
+#### Spark driver:
   - this is central coordinator of Spark application
   - this interacts with the cluster manager, to figure out which machine to run the program logic on.
   - this requests the cluster manager to launch a spark executor to do the processing on worker nodes
   - this creates a Spark session (which created spark context) which then executes Spark configuraton to allocate required API's for your application (API - allocation of required tools)
   
-The Spark Executor:
+#### Spark Executor:
   - is a process, which does the actual logic on the worker nodes.
-  
 
-unified Stack:
+#### Unified Stack:
 
-The spark unified stack is built on top of a Spark Core.
-
-The Spark core, provides all necessary functionality o manage and run distributed applications such as scheduling and fault tolerance.
+  - The spark unified stack is built on top of a Spark Core.
+  - The __Spark core__, provides all necessary functionality to manage and run distributed applications such as scheduling and fault tolerance.
 
 ```
 Spark SQL     Spark Streaming               MLib      GraphX
                (real-time process)
                
-         Spark core
+                Spark core
      
      Standalone Scheduler    YARN    Mesos
+     
+# read above as layers or levels
 ```
 
-Spark can work with data formats such as CSV,JSON, Avro, ORC, Parquet.
-Can read data into dataframe, using pure sql syntax
+ - `Spark` can work with data formats such as `CSV`, `JSON`, `Avro`, `ORC`, `Parquet`.
+ - Can read data into `dataframe`, using pure sql syntax
 
-Spark streaming: 
-  ablitiy to process real-time data, data can be injected from Apache kafka, flume, twitter, etc.
+#### Spark streaming: 
+  - this is ablitiy to process real-time data, data can be injected from Apache kafka, flume, twitter, etc.
 
 -------------
 Installing Spark:
-Step 1:
+##### Step 1:
   - Install the Java (latest java jdk 15 from oracle) 
   - Set the JAVA_HOME environment variable, so the SPARK can identify java and include it in path (if needed)
-Step 2:
+ 
+##### Step 2:
   - Spark has a dependency to hadoop.
      - It is difficult to setup the hadoop.
      - we can trick Spark, that we have a hadoop cluster is installed and available.
@@ -86,19 +79,19 @@ Step 2:
    - We need to set the spark the hadoop path variable, by adding the environment variables.
    - Create a new environment variables, HADOOP_HOME (value path to the winutils.exe location) also add it to path.
    
-Step 3:
+##### Step 3:
    - Python installation as main development language
    - make sure the path variable to environment variable
    - in order to exist the python shell type `exit()`
    
-Step 4:
+##### Step 4:
    - The python flavour of Spark, PySpark. 
    - PySpark is easy to install using pip (python package manager)
    - PySpark - is the spark used to work with python language.
    - from the command prompt
       > pip install pyspark
       
-Step 4.1:
+##### Step 4.1:
 
    After installing the pyspark as above - the application didn't open up the spark.
    
@@ -110,9 +103,9 @@ Step 4.1:
    5. Add HADOOP_HOME=C:/spark/spark-3.2.1-hadoop-3.1/hadoop
    6. in path add %HADOOP_HOME%\bin
 
-After above steps the spark setup was compelted.
+- After above steps the spark setup was compelted.
 
-To test the pyspark
+- To test the pyspark in the local
 
 ```
 >>> big_list = range(1000)
@@ -151,13 +144,13 @@ set PYSPARK_PYTHON=C:\Users\thirumurthi\AppData\Local\Programs\Python\Python39\p
   
 #### Jupyter Note book installation
 
-- 3.9 jupyter needs Microsoft C++ build tools .
-https://visualstudio.microsoft.com/visual-cpp-build-tools/
+- OPTIONAL:
+   - 3.9 jupyter needs Microsoft C++ build tools.
+     https://visualstudio.microsoft.com/visual-cpp-build-tools/
  
 - set the path of the Python and python/scripts where pip exe exists in environment path variable
 C:\Users\thirumurthi\AppData\Local\Programs\Python\Python39\Scripts
-
-- issue 
+ 
 ```
   > pip install jupyter
   # navigate to a folder
@@ -169,7 +162,7 @@ C:\Users\thirumurthi\AppData\Local\Programs\Python\Python39\Scripts
  - The jupyter notebook runs outside the spark.
  - To use spark in Jupyter notebook we need to import pyspark. since it doesn't comes automatically.
  
- in jupyter notebook cell 
+ - In jupyter notebook cell 
  ```
  import pyspark
  
@@ -180,13 +173,12 @@ C:\Users\thirumurthi\AppData\Local\Programs\Python\Python39\Scripts
  ## local[*] => means running in the local with single machine node; * - means to create as many worker threads as needed for logical units
  ```
  
- if the jupyter notebook doesn't recognize pyspark
- in jupyter notebook
- 
+ - if the jupyter notebook doesn't recognize pyspark in jupyter notebook, one way is to use findspark and pass the library of spark hadoop library
 ```
 issue ->  > pip install findspark
 
 # below code should be first to import pyspark
+
 import findspark
 findspark.init('C:\spark\spark-3.1.2-bin-hadoop3.2')
 
@@ -198,76 +190,67 @@ odds = rdd.filter(lambda x:x%2 != 0)
 odds.take(4)
  ```
  
- #### Spark Web ui
-  - apache spark provides the spark web ui to moniotr and track the process
+ ## Spark Web ui
+  - `Apache Spark` provides the spark web ui to moniotr and tracks the process
   
-  1. load the pyspark shell in command prompt
-  
-  Below is a simple application which computes square for the list of number passed 
-  
-  we will user RDD Map function to transform the data
-  we also need to use function map transformation, which is used for complex oparation.
-  
-# Declar a variable to hold list
+ - 1. Load the pyspark shell in command prompt
+ - 2. Below is a simple application which computes square for the list of number passed 
+ - 3. We will use `RDD Map function` to transform the data
+ - 4. We also need to use function map transformation, which is used for complex operation.
 
+```  
+### Declar a variable to hold list
 >>> nums_list = [1,2,3,4]
 >>> rdd = sc.parallelize(nums_list)
-### create a variable to hold lamda 
 
+### create a variable to hold lamda 
 >>> squared = rdd.map(lambda x: x*x).collect()
 
-#### create the function
+### create the function
 ### print tab
 >>> for num in squared:  ### press enter
         print(num)    ### press tab first to indent
                       ### press enter twice to print output
 
-To find the data type 
+### To find the data type 
 >>> type(rdd)   ## this displays the data type of the rdd
+```
+##### To launch the Spark UI, DON'T stop the pyspark shell. 
+  - In browser use " http://localshot:4040", this opens the ui.
+  - The UI has different tabs:
+     - jobs, stage, etc.
+   - The `application name` is default with PySparkShell. This application name can be changed.
+  - When we write application, we need to create our own application name. 
+  - Each program has its own assigned URL, so the port will be different
+     - If we are running more than one job, then the port number will be localhost:4040, localhost:4041, 4042..
 
-#### to launch the Spark ui, DON'T stop the pyspark shell.
-  " http://localshot:4040"
-
-this ui opens the ui.
-
-The UI has different tabs:
-   jobs, stage, etc.
-the application name is default with PySparkShell
-
-When we write application, we need to create our own application name. Each program has its own assigned URL
-
-If we are running more than one job, then the port number will be localhost:4040, localhost:4041, 4042..
-
-Scheduling mode:
-
-three scheduling mode:
+##### `Scheduling mode:`
+ - Three scheduling mode:
    - standalone mode (FIFO)
    - YARN mode  ( this makes sense of large cluster)
    - Mesos mode ( this makes sense of large cluster)
 
-A spark job is equal to the number of actions in the application. like above `squared = rdd.map(lambda x:x *x ).collect()` - this is one job where we map and collect
+- A `spark job` is equal to the number of actions in the application, like above `squared = rdd.map(lambda x:x *x ).collect()` - this is one job where we map and collect
 
-Each spark JOB should have one or more STAGE.
-spark stages are created based on what operations can be performed serially or in parallel.
+- Each `Spark JOB` should have one or more `STAGE`.
+- `Spark stages` are created based on what operations can be performed serially or in parallel.
 
-STAGE represents a UNIT OF WORK
-Each STAGE can have one or more TASK
+- `STAGE` represents a `UNIT OF WORK`
+- Each `STAGE` can have one or more `TASK`
 
-Example stages:
-  Connecting to a database is one stage
-  another stage is shuffling the data
+- Example __stages__:
+  - Connecting to a database is one stage
+  - another stage is shuffling the data
 
-understanding the Event timeline in spark ui
-
-I provides an indication of the application flow over a period of time.
-  like, when the executor service was instantiated.
-   also displays when collect action was called.
+- understanding the Event timeline in `Spark UI`
+   - It provides an indication of the application flow over a period of time.
+      - like, when the executor service was instantiated.
+      - also displays when collect action was called.
    
- The time line represents the Spark session, since we didn't close the spark pyspark shell this displays the info.
+  - The time line represents the Spark session start, since we didn't close the spark pyspark shell this displays the info.
  
  #### Stages:
- 
- DAG visualization -> Directed Acyclic Graph, which represent Spark execution methodology.
+ - __DAG visualization__ -> **Directed Acyclic Graph**, which represent `Spark execution methodology`.
  
  Aggregated metrics by Executor.
  
@@ -281,14 +264,14 @@ I provides an indication of the application flow over a period of time.
  
  ===================
  
- Spark concepts:
+#### Spark concepts:
  
   - 1. Create a new directory where we want the spark data to be placed.
   - 2. open the Command prompt, and navigate there
   - 3. create a new directory for salesdata (C:/thiru/learn/python/spark-program/salesdata)
   - data is at https://github.com/PacktPublishing/Apache-Spark-3-for-Data-Engineering-and-Analytics-with-Python-/tree/main/Section%202%20Resources
   
-  Navigate to the directory where the csv file is placed.
+- Navigate to the directory where the csv file is placed.
   
   - Open up the jupyter notebook using below command
     > jupyter notebook  
