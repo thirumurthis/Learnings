@@ -255,35 +255,23 @@ insert into databasename.tablename values ("value1","value2")
  
 ### DBUTILS command:
 
-### Command to create directory in DBFS
-### command to create file and write data to it
-
-### command to display file content
-
-### command to list content in a directory
-
-### command to move files form one directory to another
-
-### command to remove file and directories
-
-### command to mount and unmount file system 
-
-### command to list donw mount 
-
-### command to refresh mount point
-
-### command to install packages
-
-### command to find current notebook path from UI
-
-### command to run one notebook to another 
-
-### command to exist notebook execution
-
-### command to list secret scopes
+##### Command to create directory in DBFS
+##### command to create file and write data to it
+##### command to display file content
+##### command to list content in a directory
+##### command to move files form one directory to another
+##### command to remove file and directories
+##### command to mount and unmount file system 
+##### command to list donw mount 
+##### command to refresh mount point
+##### command to install packages
+##### command to find current notebook path from UI
+##### command to run one notebook to another 
+##### command to exist notebook execution
+##### command to list secret scopes
   - To read the data from keyvault using secret scopes.
   
-## Commands for above operations
+### Commands for above operations
 ```
 #### create a directory
 dbutils.fs.mkdirs("/path/directoryname")
@@ -371,7 +359,6 @@ dubutils.secrets.listScopes()
  ```
 
 #### options to list the files with notebook
-
 ```
 #### in command cell
 
