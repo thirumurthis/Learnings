@@ -45,7 +45,7 @@ def spam(key, value, list_=None, dict_=None):
     list_.append(value)
     dict_[key] = value
 ```
-### Class properties
+### Class properties Scopes
  - in below code, like functional arguments the list and dictionaries are shared in the class
  - A better alternative is to initialize the mutable objects within the __init__ method of the class.
 ```py
@@ -152,3 +152,119 @@ def eggs1():
 eggs1()
 ## works now 
 ```
+### Conventions: to 
+ - in some case to avoid overwriting global functions. 
+ - The PEP8 convention for naming your functions—similar to built-in statements, functions, and variables—is to use a trailing underscore.
+ ```py 
+ list = [1,2,3]
+ # instead of above, use something like below
+ list_ = [1,2,3]
+ 
+import = 'Some import'
+'''
+Traceback (most recent call last):
+...
+SyntaxError: invalid syntax
+'''
+```
+
+## Modifying while iterating
+  - while iterating through mutable objects such as lists, dicts, or sets, you cannot modify them
+  - below code example will throw `RuntimeError`
+```py
+dict_ = {'spam': 'eggs'}
+list_ = ['spam']
+set_ = {'spam', 'eggs'}
+
+for key in dict_:
+   del dict_[key]
+   
+for item in list_:
+   list_.remove(item)
+   
+for item in set_:
+    set_.remove(item)
+```
+ - This can be **avoided** by copying the object. The most convenient option is by using the list function
+```py 
+dict_ = {'spam': 'eggs'}
+list_ = ['spam']
+set_ = {'spam', 'eggs'}
+
+for key in list(dict_):
+   del dict_[key]
+   
+for item in list(list_):
+   list_.remove(item)
+   
+for item in list(set_):
+   set_.remove(item)
+```
+
+## Exception handling:
+  - in below code, teh use of `except ValueError as exception:` sets the exception as local scope, but the return exception doesn't have visiblity
+```py
+def spam(value):
+   try:
+      value = int(value)
+   except ValueError as exception:
+       print('We caught an exception: %r' % exception)
+   return exception
+   
+spam('a')
+'''
+  There will be an exception 
+  We caught an exception: ValueError("invalid literal for int() with base 10: 'a'")
+Traceback (most recent call last):
+  File "c:\thiru\learn\python\spark-program\python_example\SimpleSpam.py", line 37, in <module>
+    spam('a')
+  File "c:\thiru\learn\python\spark-program\python_example\SimpleSpam.py", line 35, in spam
+    return exception
+UnboundLocalError: local variable 'exception' referenced before assignment
+'''
+```
+ - the above scenrario can be handled better with below approach
+```py
+def spam(value):
+     exception = None   # local variable with the scope now visible
+     try:
+        value = int(value)
+     except ValueError as exception:
+          print('We caught an exception: %r' % exception)
+          
+     return exception
+ 
+ spam('a')
+ 
+ ## this works now 
+```
+- Another point to note:
+   - We really need to save it explicitly because Python 3 automatically deletes anything saved with as variable at the end of the except statements. 
+   - The reason for this is that exceptions in Python 3 contain a __traceback__ attribute. 
+   - Having this attribute makes it much more difficult for the garbage collector to handle as it introduces a recursive self-referencing cycle 
+   - (exception -> traceback -> exception -> traceback… adnauseum). 
+   - To solve this, Python essentially does the following
+   ```
+   exception = None
+    try:
+      value = int(value)
+    except ValueError as exception:
+    try:
+      print('We caught an exception: %r' % exception)
+    finally:
+      del exception
+   ```
+ - Better to use the below approach to allow variable to garbage collect
+```py
+def spam(value):
+   exception = None
+   try:
+       value = int(value)
+   except ValueError as e:
+       exception = e
+       print('We caught an exception: %r' % exception)
+       
+   return exception
+```
+ - The Python garbage collector is smart enough to understand that the variables are not visible anymore and will delete it eventually, but it can take a lot more time.
+
