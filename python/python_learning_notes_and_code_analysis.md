@@ -360,4 +360,29 @@ eggs()
   - So always the current package will loaded than the global package.
 
 
+## Collections:
+  list - is mutable
+     - append, get, set, and len takes `o(1)` time complexity
+     - insert, remove takes `o(n)` time complexity
+     - min, max, in takes `o(n)` time complexity
+- Note: When executing a large number of deletions, a `filter` or `list comprehension` is a much faster solution 
+        because, if properly structured, it needs to copy the list only once.
+```py
+# List comprehension
 
+primes = [1,2,3,5,7]
+items = list (range(10))
+result = [item for item in items if item not in primes]
+print(result)
+# [0, 4, 6, 8, 9]
+
+
+# Filters
+items = list(range(10))
+res = list(filter(lambda item: item not in primes, items))  # filter (function , iterable) - lambda function and list iterable is passed
+print(res)
+```
+- Comparision:
+   - The latter two (filter/list comprehension) are much faster for large lists of items. This is because the operations are much faster. 
+   - To compare using n=len(items) and m=len(primes), the first takes `O(m*n)=5*10=50` operations, whereas the latter two take `O(n*1)=10*1=10` operations. 
+ 
