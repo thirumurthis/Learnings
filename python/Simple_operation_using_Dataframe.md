@@ -7,6 +7,7 @@ timeFmt = mdates.DateFormatter('%H:%M')
 
 import os
 import re
+import panda as pd
 
 plt.style.use('ggplot')
 ```
@@ -18,15 +19,10 @@ print(len(df))
 print(df['FAN_speed'].isna().sum())
 df[~df['FAN_speed'].isna()].groupby('angle_or_phase').count()
 ```
-```
+```py
 df.drop_duplicates().groupby('sensor_id').apply(len)
 ```
-
-```
-grp
-```
-
-```
+```py
 df = pd.read_csv('input_data_2.csv', parse_dates=['time'])
 
 parameter = 'fan_speed'
@@ -41,7 +37,7 @@ for key, grp in df.groupby('sensor_id'):
     plt.show()
 ```
 
-```
+```py
 files = [f for f in os.listdir('.') if re.search('input.+\.csv', f)]
 
 specific_id = 1000.0
