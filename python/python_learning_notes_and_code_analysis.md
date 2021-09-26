@@ -242,7 +242,6 @@ def spam(value):
    - We really need to save it explicitly because Python 3 automatically deletes anything saved with as variable at the end of the except statements. 
    - The reason for this is that exceptions in Python 3 contain a __traceback__ attribute. 
    - Having this attribute makes it much more difficult for the garbage collector to handle as it introduces a recursive self-referencing cycle 
-   - (exception -> traceback -> exception -> traceback… adnauseum). 
    - To solve this, Python essentially does the following
    ```
    exception = None
@@ -268,3 +267,12 @@ def spam(value):
 ```
  - The Python garbage collector is smart enough to understand that the variables are not visible anymore and will delete it eventually, but it can take a lot more time.
 
+## Late Binding - `Closuer` __are a method of implementing local scopes in code__.
+  - Closuers makes it possible to locally define variables without overriding variables in the parent (or global) scope and hide the variables from the outside scope later.
+  - The problem with closures in Python is that Python tries to bind its variables as late as possible for performance reasons.
+```py
+eggs = [lambda a: i * a for i in range(3)]
+
+for egg in eggs:
+   print(egg(5))
+```
