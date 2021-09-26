@@ -271,8 +271,93 @@ def spam(value):
   - Closuers makes it possible to locally define variables without overriding variables in the parent (or global) scope and hide the variables from the outside scope later.
   - The problem with closures in Python is that Python tries to bind its variables as late as possible for performance reasons.
 ```py
-eggs = [lambda a: i * a for i in range(3)]
+nums = [lambda a: i * a for i in range(3)]
 
-for egg in eggs:
-   print(egg(5))
+for num in nums:
+   print(num(5))
 ```
+ - Expected result:
+```
+0
+5
+10
+```
+ - Actual output:
+```
+10
+10
+10
+```
+ - similar to how class inheritance works with properties. Due to late binding, the variable i gets called from the surrounding scope at call time, and not when it's actually defined.
+ - To solve the above issue , `the variable needs to be made local.`
+
+ #### To perform immediate binding we can curry the function with partial
+ 
+```py 
+import functools
+nums = [functools.partial(lambda i, a: i * a, i) for i in range(3)]
+
+for num in nums:
+   print ( num(5))
+```
+-  **A better solution would be to avoid binding problems altogether by not introducing extra scopes (the lambda), that use external variables.**
+-  **IMPORTANT **: in the above lamba if both i and a were specified as arguments to lambda, this will not be a problem.
+
+### Circular imports 
+```py 
+# file name eggs.py:
+from spam import spam
+def eggs():
+     print('This is eggs')
+     spam()
+
+# file name spam.py:
+from eggs import eggs
+def spam():
+     print('This is spam')
+
+if __name__ == '__main__':
+   eggs()
+```
+ - Above code will throw exception, this is because spam() imports
+ - This issue requires restructuring the code, but in this case we can simply use module name to access the function
+
+```py 
+# file name eggs.py:
+from spam import spam
+def eggs():
+     print('This is eggs')
+     spam.spam()  # use the module imported 
+
+# file name spam.py:
+from eggs import eggs
+def spam():
+     print('This is spam')
+
+if __name__ == '__main__':
+   eggs()
+```
+  - Another alternate solution is to move the import within the function itself
+```py
+# file name eggs.py:
+def eggs():
+    from spam import spam    # import statement local to function
+    print('This is eggs')
+    spam()
+
+# file name spam.py:
+def spam():
+    from eggs import eggs
+    print('This is spam')
+
+if __name__ == '__main__':
+eggs()
+```
+ - Other possible approaches are `Dynamic imports` which is not recommended since they check the dependency at runtime.
+
+## import collision
+  - Most case if we use `from <module> import <package>` would solve.
+  - So always the current package will loaded than the global package.
+
+
+
