@@ -153,10 +153,27 @@
    
    #### After updating the configMap.yaml, if we need to view the content before deploying it to K8s cluster. Use below command
    ```
+   ## helm template name /path/of/charts
    > helm template first-demo-chart .
    ### this displays how the config file would be resolved by the template engine
    ```
-   
+-------------------------------
+  - Say if the packaged as below 
+   ```
+   helm-charts
+        |_ app0-charts
+        |_ app1-charts
+            |_ Charts.yaml
+            |_ values-dev.yaml
+            |_ values1-dev.yaml
+            |_ template/
+                |_ app1-deployment.yaml
+    
+    $ cd helm-charts
+    $ helm template app1-deploy app1-charts/ --values app1-charts/values-dev.yaml
+    ### above command will apply the values and render the app1-deployment locally wihout installing
+   ```
+  ------------------ 
    #### Now we need to apply the updates in configMap to the k8s cluster using below command.
    ```
    > helm upgrade first-demo-chart .
