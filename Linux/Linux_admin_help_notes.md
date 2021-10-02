@@ -41,9 +41,9 @@ $ sudo systemctl restart sshd
   - Login and copy the public key content `id_rsa.pub` to the `~/.ssh/authorized_keys` directory. Append to it in case if there some content already exists. 
   
 #### To copy the content to remote machine below are different ways:- from client machine,
-    - use `scp file username@hostname:~/path-to-where-file-to-be-copied`. 
-	- use `ssh-copy-id -i /path-to-private-key username@hostname`
-	- copy paste to the `authorized_keys` directly, appending to existing content in the file.
+  - use `scp file username@hostname:~/path-to-where-file-to-be-copied`. 
+  - use `ssh-copy-id -i /path-to-private-key username@hostname`
+  - copy paste to the `authorized_keys` directly, appending to existing content in the file.
 
 **Note:**
 
