@@ -6,7 +6,7 @@
      - Databricks runtime 9.1 LTS requires 3.8 python
 
 ### To install 3.8.12 version of python 
- Follow this link https://rakeshjain-devops.medium.com/how-to-install-python-3-on-centos-7-7-using-yum-and-source-and-set-as-default-1dee13396f7
+ Follow this [link] (https://rakeshjain-devops.medium.com/how-to-install-python-3-on-centos-7-7-using-yum-and-source-and-set-as-default-1dee13396f7)
  
  ```
  ## Setup libs 
@@ -52,7 +52,7 @@
  ```
  
  ### Install Databricks connect 
- - (followed this link https://docs.databricks.com/dev-tools/databricks-connect.html) 
+ - Followed this [link]( https://docs.databricks.com/dev-tools/databricks-connect.html) 
  ```
  $ pip3.8 uninstall pyspark
  $ pip3.8 install -U "databricks-connect=9.1.*"
@@ -84,7 +84,7 @@
  $ databricks-connect configure
  ```
  
-  - i faced an issue, similar as in this link https://forums.databricks.com/questions/20144/databricks-connect-test-problem.html
+  - i faced an issue, similar as in this [link]( https://forums.databricks.com/questions/20144/databricks-connect-test-problem.html)
   ```
   import com.databricks.service.SparkClientManager <console>:23: error: object databricks is not a member of package com import com.databricks.service.SparkClientManager
   ```
