@@ -339,7 +339,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-cmap
-  {{- template "example2.lables" }}
+  {{- template "example2.lables" }}   ---------> the template is accessed
 data: 
     {{- range $key, $val := .Values.cars }}
       {{ $key }}: {{ $val | quote}}
@@ -364,3 +364,32 @@ data:
       2: "Honda"
       3: "Kia"
 ```
+- Note: important: Best Practice is to define the custom named template in a `_helper.tpl` file or new file with `_custom-helper.tpl` file. Doing so, we will not be updating the k8s manifest files.
+
+- Note: when extracing the Named template into helper function in an helm object file. we need to send scope.
+- IMPORTANT: make sure the `_custom-helper.tpl` to be placed within the `/templates/` folder.
+- 
+```
+### template yaml file
+ metadata:
+  name: {{ .Release.Name }}-cmap
+  {{- template "example2.lables" . }}   ----> . is a scope which needs to e sent.
+```
+
+- Using include
+```
+ metadata:
+  name: {{ .Release.Name }}-cmap
+  {{- template "example2.lables" . }}
+  
+ data:
+ {{- template "example2.lables" . }}  --------> this will print the value wihout indentation
+ 
+ ## the above is because, the {{- tempalte ...}} is an action 
+```
+ - If we need to pass function out put to another named templates or pipe to some built-in named templates (this is refered here as functions).
+```
+### in template yaml
+ {{ include "example2.labels" . | nindent 2 }} --> using include instead of template.
+```
+
