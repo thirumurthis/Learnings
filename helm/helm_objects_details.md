@@ -102,6 +102,148 @@ data:
   - `Name`
   - `Basepath`
 
-
 ## Template functions and pipeline
- - 
+ - Template functions:
+    - There are many built-in function which can be used to transform the data provided in values chart.
+    - Syntax usage: `function_name arg1 arg2...`
+    - Different template function and example:
+    - `quote`, 
+    - `upper`,
+    - `lower`,
+    - `nindent`,
+    - `indent`,
+    - `repeat`,
+    - `include`, - similar to import in java
+    - `required`, - makes the properties to be provided in Values.yaml as mandatory
+    -  `default`, - adds a default value to the properties if not provided in Values.yaml the default value will be used
+    -  `toYaml`, - the convert the content to yaml
+    -  `eq` 
+   ```
+   #### values.yaml, has below content 
+   favorite:
+      car:
+        - make : BMW
+
+    ### using in template function-usage.yaml, etc
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+        name:  {{ .Release.Name }}-configMap
+     data:
+       value1: "function example"
+       car: {{ quote .Values.favourite.car.make }}  -------------> this will create a double quotes before and after the string
+     
+   ```
+ - Pipelines
+    - Like unix/Linux where the output of once command to another.
+ ```
+   #### values.yaml, has below content 
+   favorite:
+      car:
+        - make : BMW
+
+    ### using in template function-usage.yaml, etc
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+        name:  {{ .Release.Name }}-configMap
+     data:
+       value1: "function example"
+       car: {{ .Values.favourite.car.make | quote }}  -------------> this will create a double quotes before and after the string
+  ```
+
+  ### Flow control:
+  - This is a control structure the ability to control the flow of template generation.
+     - `if/else` - for conditional block creation 
+     - `with` - to specify scope
+     - `range` - a for-each type loop
+
+ ###### If/else:
+  - Basic structure:
+  ```toml
+   {{ if CONDITION1 }}
+     # Perform someaction
+   {{ else if CONDITION2 }}
+     # Perform someaction
+   {{ else }}
+      # Default action
+    {{ end }}
+  ```
+  - The CONDITION1 is set to false in case, if boolean false, zero, an empty string, a nil (empty or null), an empty collection (map,slice,tuple,dict,array)
+  - Example:
+```
+   #### values.yaml, has below content 
+   favorite:
+      car:
+        - make : BMW
+
+    ### using in template function-usage.yaml, etc
+     apiVersion: v1
+     kind: ConfigMap
+     metadata:
+        name:  {{ .Release.Name }}-configMap
+     data:
+       value1: "function example"
+       {{ if eq .Values.favourite.car.make "BMW" }} 
+        car: true
+       {{ end }}
+  ```
+   - NOTE: In above case the if block will print out in new line, since if itself takes line space, to fix that we can do below
+   ```
+   Option 1:
+   {{- if eq .Values.favourite.car.make "BMW" }}
+   
+   {{- end}}
+   
+   Option2:
+   **{{- if eq .Values.favourite.car.make "BMW" }}
+   
+   **{{- end}}
+   ```
+
+#### with
+  - used for scope defintion
+  - `.` is always current scope
+
+```
+{{ with VARIABLE }}
+  ## restricted scope
+{{ end }}   // When this statement is reached, the next will make the . scope is used.
+```
+  - example:
+
+```
+   {{- with .Values.favourite.car }}  ---------------> note that the values.yaml only top level of is used
+      model: {{ .model | default "toyota" | upper | quote }}
+   {{- end }}
+```
+#### Range
+- to iterate through map, list, arrays, dict, etc.
+- Example:
+```
+ ## values.yaml
+ 
+ cars:
+   - toyota
+   - kia
+   - honda
+   - hyundai
+   
+ ## template yaml file
+ 
+   cars: |- 
+     {{- range .Values.cars }}  -----------------> Specifying the scope within the cars 
+       - {{ . | title | quote }}
+     {{- end }}
+```
+
+### Helm comments
+   - Template commenting sytax that is not evaluated by Helm engine
+   ```
+   {{/* {{- with .Values.favourite.car.model }}
+   
+   {{- end }} */}}
+   ```
+   - Using yaml comment syntax `#`. but this will be printed and include in the templates as well.
+   - Note the yaml comments are also evaluated.
+
