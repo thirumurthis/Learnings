@@ -68,7 +68,7 @@ description: A Helm chart for Kubernetes
  - In this case we have to use some file with configuration.
 
 - Under the example1 folder, create `config.toml`, and include some content, say my-config. (don't create inside chart folder)
-- in the template folder you can create a Config.yaml file, and read the contents from the `config.toml` 
+- in the template folder you can create a Config.yaml file, and read the contents from the `config.toml` - works only for toml file
    - with below approach only files from the chart folder can be accessed, any files within template folder cannot be accessed.
 ```
 apiVersion: v1
@@ -78,5 +78,16 @@ metadata:
 data: 
   simple: |-
          {{ .Files.Get  "config.toml" }}             ---------------> This is how to refere the content of the files
- 
 ```
+
+- `Files.Get` 
+- `Files.GetBytes` - when dealing with binary data, like png,etc.
+- `Files.Glob` - This function returns list of file that matches file patterns, we can loop through
+- `Files.Lines` - To read line by line
+- `Files.AsSecrets` - To encode with base64.
+- `Files.AsConfig` - returns files content as yaml.
+
+#### Values Object
+ - The values are passed to template from the values.yaml file and from user supplied value files. Default most of the values will be empty.
+
+
