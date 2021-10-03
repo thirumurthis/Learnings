@@ -90,4 +90,16 @@ data:
 #### Values Object
  - The values are passed to template from the values.yaml file and from user supplied value files. Default most of the values will be empty.
 
+#### Capabilities object
+ - This provides information about the what capablities the kubernetes cluster supports.
+ - `Capabilities.APIVersions` - provides the API versions 
+ - `Capabilities.APIVersions.Has $version` - this returns whether the specific version is present in K8s or not
+ - `Capabilities.KubeVersion.Major`
+ - `Capabilities.KubeVersion.Minor`
+ 
+#### Templates Object
+  - Contains information about the current template that being executed.
+  - `Name`
+  - `Basepath`
+
 
