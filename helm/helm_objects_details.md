@@ -213,6 +213,12 @@ data:
   - example:
 
 ```
+### values.yaml
+favourite:
+    car:
+      model: bmw
+      
+### in template file
    {{- with .Values.favourite.car }}  ---------------> note that the values.yaml only top level of is used
       model: {{ .model | default "toyota" | upper | quote }}
    {{- end }}
@@ -247,3 +253,114 @@ data:
    - Using yaml comment syntax `#`. but this will be printed and include in the templates as well.
    - Note the yaml comments are also evaluated.
 
+### Variables
+ - Variables are less fequently used in templates
+ - used to simplify code, to make better use of `with` and `range`
+ - format ` {{- $variableName := values -}}`
+ - the variable can be accessed by any other scopes including current scope .
+ ```
+ {{- with .Values.favourite.car }}
+   car: {{ .model | default "toyota" | upper | quote }}
+   release : {{ .Release.Name }}  ----------------------- > This will fail since it is local scoped, cannot access global scope or ,
+ {{- end }}
+ ```
+- The above can be fixed, by declaring the release in variables
+
+```
+{{- $relName := .Release.Name -}}
+{{- with .Values.favourite.car }}
+   car: {{ .model | default "toyota" | upper | quote }}
+   release : {{ $relName }}   
+ {{- end }}
+ 
+ ## use command helm install --debug --dry-run app-release-v1 example2/ to render output
+```
+ #####  Using variable in `range`
+```
+## values.yaml
+favourite:
+    car:
+      model: bmw
+
+cars:
+   - Toytoa
+   - Ford
+   - Honda
+   - Kia
+   
+## simple template yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Release.Name }}-configMap
+data:
+   {{- $relName := .Release.Name -}}
+   {{- with .Values.favourite.car }}
+     model: {{ .model | title| upper | quote }}
+     release: {{ $relName }}
+   {{- end }}
+     cars: |-
+       {{- range $index, $car := .Values.cars }}  -------------> dont use -}} it causes issue at the end
+        {{ $index }}: {{ $car }}
+       {{- end }}
+```
+
+### Named Templates 
+ - `NOTES.txt` and `helpers.tpl` are not kubernetes specific files.
+ - These files are not rendered as kubernetes manifests
+ - Creating named templates:
+    - name the file such a way to begins with an underscore
+- Declaring and using templates
+
+```
+## to define
+
+{{ define "MYTEMPLATE.NAME" }}
+  # body of the template here
+{{ end }}
+
+## using it in tempalte file 
+metadata:
+   name: {{ .Release.Name }}-configMap
+   {{- template "MYTEMPALTE.NAME" }}
+```
+
+- Example:
+
+```
+# custom named template - and scope is global
+# defining the same named template mulitple times, the last will be used
+{{- define "example2.lables" }}
+  labels: 
+     generator: helm
+     date: {{ now | htmlDate }}
+{{- end}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-cmap
+  {{- template "example2.lables" }}
+data: 
+    {{- range $key, $val := .Values.cars }}
+      {{ $key }}: {{ $val | quote}}
+    {{- end }}
+
+```
+- output (note the labels should be spelled correctly
+```
+# Source: example2/templates/function.yaml
+# custom named template - and scope is global
+# defining the same named template mulitple times, the last will be used
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-release1-cmap
+  labels:
+     generator: helm
+     date: 2021-10-03
+data:
+      0: "Toytoa"
+      1: "Ford"
+      2: "Honda"
+      3: "Kia"
+```
