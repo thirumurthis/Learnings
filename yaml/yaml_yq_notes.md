@@ -27,11 +27,11 @@ orange:
 ```
 ------------
 ### Yaml with `|` and `>` representation
-  `|` - preserves the white space
-     - `|` can have `+` and `-` like `|+` and `|-`.
-     - `|+` - indicatest to keep the last white space
-     - `|-` - indicates to not consider the last white space
-     - 
+`|` - preserves the white space
+  - `|` can have `+` and `-` like `|+` and `|-`.
+  - `|+` - indicatest to keep the last white space
+  - `|-` - indicates to not consider the last white space
+ 
 ```yaml
 vehicle:
   two.wheeler: |
