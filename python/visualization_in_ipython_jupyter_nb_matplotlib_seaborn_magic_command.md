@@ -56,6 +56,26 @@ for bar, frequency in zip (axes.patches, frequencies):
 
 ![image](https://user-images.githubusercontent.com/6425536/136715532-ab9e32ea-00bc-4b26-aa68-5fe2573829d3.png)
 
------
+- To clean the axis
+```
+plt.cla() # this will create a default plot which will clear the axis
+
+## we can run the same again
+```
+
+- To pop up the window when running the above as script use `plt.show()`
+  - check the code for reference [roll.py](https://github.com/pdeitel/PythonFundamentalsLiveLessons/blob/master/examples/ch05/RollDie.py)
+ 
+----
+### Magic command tip: `recall`
 - to recall the # statement we can use `%recall #number-of-command-in-ipython-or-jupyter-notebook`
+```
+%recall <#start-command-num>-<#end-command-num>
+```
 - `Cntr + r` = performs backward search
+
+### Magic command tip: `save`
+```
+%save <file-name.py> #<start-command-number>-<end-command-number>
+```
+-------
