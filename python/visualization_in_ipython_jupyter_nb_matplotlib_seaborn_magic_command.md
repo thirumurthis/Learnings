@@ -5,7 +5,7 @@
 - We can also start the matplotlib even in an existing ipython session which is started using `ipython` command, using `magic` command.
 
 ```
-## below % magic will enable to use matplotlib in the current session of iplython
+## below % magic will enable to use matplotlib in the current session of ipython
 %matplotlib
 ```
    - For Jypter notebook this would `%matplotlib inline`  (mostly import will work in this case)
@@ -56,3 +56,6 @@ for bar, frequency in zip (axes.patches, frequencies):
 
 ![image](https://user-images.githubusercontent.com/6425536/136715532-ab9e32ea-00bc-4b26-aa68-5fe2573829d3.png)
 
+-----
+- to recall the # statement we can use `%recall #number-of-command-in-ipython-or-jupyter-notebook`
+- `Cntr + r` = performs backward search
