@@ -33,5 +33,26 @@ Terminology:
     - how to calculate the standard deviation?
       - This is the square root of variance
       - This tones down the effect of the outliers
+      - this helps understanding how the data is spread around the mean.
+    - Important observation:
+      - smaller the value are for the variance and std devition, the closer to the mean.
 
-  
+### Using python for cacluating the `vairance` and `standard deviation`:
+```py
+import statistics
+
+data_set=[1,3,4,2,6,5,3,4,5,2]
+
+# population variance
+statistics.pvariance(data_set)
+#2.5
+
+# this helps understanding how the data is spread around the mean.
+statistics.pstdev(data_set)
+# 1.5
+```
+
+ - `variance` vs `std. deviation`:
+   - the units of `variance` is squared unit
+   - the units of the `std. deviation` which is the sequre root of the variance which is the actual unit.
+
