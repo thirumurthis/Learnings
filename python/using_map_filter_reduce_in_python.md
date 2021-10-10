@@ -120,6 +120,26 @@ nums2d = [[0,1,1],[1,0,1],[1,1,0]]
 for i in range(len(nums2d)):
     print(nums2d[i][i], end=' ')
 ```
-Below libraries provides arrays which can be used for create 1 or 2 dimensional array.
-- pandas
-- numpy 
+- To print the two dimensions as such
+```
+for row in nums2d:
+    for item in row:
+        print(item,end=' ')
+    print()
+```
+
+- To print using the enumerate function which returns the tuple with the indes
+```
+for i,row in enumerate(nums2d):
+    for j,item in enumerate(row):
+        print(f'nums2d[{i}{j}]={item}',end=' ')
+    print()
+## output 
+# nums2d[00]=0 nums2d[01]=1 nums2d[02]=1 
+# nums2d[10]=1 nums2d[11]=0 nums2d[12]=1 
+# nums2d[20]=1 nums2d[21]=1 nums2d[22]=0 
+```
+
+- Below libraries provides arrays which can be used for create 1 or 2 dimensional array easily.
+  - pandas
+  - numpy 
