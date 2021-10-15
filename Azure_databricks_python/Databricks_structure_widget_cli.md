@@ -505,8 +505,9 @@ NOTE: In the community version, i see the Widgets updates quickly only when exec
 - NOTE 
    - Host:`To get the Azure databricks host copy the url`
    - Token: `To get the token in the User Setting, click on generate new token`
-```
+
 ### How to create cluster
+
 ```
 ### To create cluster using cli
 $ databricks clusters create --json "{\"culster_name":\"mycluster\",\"spark_version\":\"8.1.x-hls-scala2.12\",\"node_type_id\":\"Standard_D3_v2\",\"num_workers\":0}" 
@@ -553,6 +554,7 @@ $ databricks workspace list /Users/
 ## to create folder using cli
 $ databricks workspace mkdirs /cli-folder
 ```
+
 ### How to import notebook into databricks from local
 ```
 $ databricks workspace import -l python C:/localpath/test.py /Users/cli-folder
@@ -570,6 +572,7 @@ $ databricks workspace import -o -l python C:/localpath/test.py /Users/cli-folde
 $ databricks workspace import_dir  C:/localpath/test.py /Users/cli-folder
 
 ```
+
 ### How to export notebook
 ```
 $ databricks workspace export /Users/cli-folder/test.py C:/localpath/
