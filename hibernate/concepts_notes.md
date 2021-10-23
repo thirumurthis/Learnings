@@ -395,3 +395,20 @@ class Employee{
      - detached state - If the object is in persistent state which update the database everytime the object state changes. If we need to remove the persistent state on the object then it will be moved to detached state. using detach(). This is a way like Transient state, since any change to entity class is not written to DB.
      - remove state - when issuing delete() or remove() on the entity class object, the data is removed from the database but not from the java. The object is in removed state
 ```
+### Get Vs Load 
+ - Both will fetch the results from the DB
+ - Different is the Load will returns the proxy object which means, the query will be fired only when that object is used.
+ - It also throws a different exception
+
+```java
+   Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+    ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+    SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+    //Session 1
+    Session session1 = sessionFactory.openSession()
+    session1.beginTranscation();
+    Laptop laptop = session1.load(Laptop.class,1);
+    Thread.sleep(5000); // delay of 5 second to visually see the query in the log
+    System.out.println(laptop); // only at this point the query is fired to DB
+```
+
