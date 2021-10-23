@@ -184,6 +184,20 @@ session.getTransaction().commit();
 
 ### Hibernate `caching`
  - Hibernate provides us with caching feature.
-   - First level caching 
-   - Secondary level caching
+   - First level caching (Default one provided by hibernate)
+     - Say when a select query i fired and records are fetched, those data will be stored in the cache. This is first level cache
+     - This first level cache is available for one particular session.
+     - So when a new session either created by the same user or different user in an application will have its own first level cache.
+     
+   - Secondary level caching (This needs to be configured)
+     -  In secondary level caching, multiple session can use this cache
+     -  In order to configure secondary level cache, we need to use 3rd party providers like EHCACHE, OS, SWARM. (ehcache - is more preferred)
+ - Configuring Secondary level cache:
+    - include the `ehcache` library, hibernate-ehcache libs.
+    - update the `hibernate.cfg.xml`
+    - In the Entity that needs to be cached requires an annotation 
+       - `@Cachable` - This tells hibernate that this entity is eligible for caching
+       - `@Cache` - This is used to configure chace propertis like evict, etc.
+
+
 
