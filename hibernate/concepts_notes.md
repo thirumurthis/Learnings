@@ -121,4 +121,63 @@ Session session = sessionFactory.openSession()
 session.beginTranscation();
 session.save(employee); //An employee object is already created and stored in variable employee
 session.getTransaction().commit();
+
+ // possibly begin new transcation
+ Employee e1 = session.get(Employee.class, 101); //101 - is eid stored in db
+```
+
+### Fetch Stratergy EAGER , LAZY
+- `LAZY` fetching example.
+- From the above relationship entity example, for below case lets assume @OneToMany relationship with no mapper table is used where Employee can have list of Laptops.
+```java
+Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+Session session = sessionFactory.openSession()
+session.beginTranscation();
+
+Employee e1 = session.get(Employee.class, 101);  // Note: toString() method is overrided in Employee class
+System.out.println(e1.toString()); // This will print only the Employee table information, this will not FETCH the collection of laptop
+
+//to print the laptop collection
+Collection<Laptop> laptop = e1.getLaptop(); // Only at this time the collection query is fired and data is fetched which is LAZY fetch
+System.out.println(laptop.toString());
+
+session.getTransaction().commit();
+
+```
+- How to make the fetchtype as EAGER?
+  - In the `@OneToMany(mappedBy="employee")` annotation include the `fetch` property
+  - Note, this would be based on the requirement to enable EAGER fetch
+```java
+
+@Entity
+class Laptop{
+  @Id
+  private int lid;
+  private String laptopName;
+  
+  @ManyToOne   //this needs to be specified to say create a new column to store the employee eid in the laptop table
+  private Employee employee
+}
+@Entity
+class Employee{
+  @Id
+  private int eid;
+  private String name;
+  @OneToMany(mappedBy="employee",fetch=FetchType.EAGER)     // If we didn't specify the mappedBy, then a mapper table will be created which we don't want in this case
+  private List<Laptop> laptop;
+}
+
+//main method 
+Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+Session session = sessionFactory.openSession()
+session.beginTranscation();
+
+Employee e1 = session.get(Employee.class, 101);  // Note: toString() method is overrided in Employee class
+System.out.println(e1.toString()); // Since EAGER is set, now the single query with LEFT OUTER join will be used to fetch the data of Collection
+
+session.getTransaction().commit();
 ```
