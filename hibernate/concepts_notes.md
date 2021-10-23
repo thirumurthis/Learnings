@@ -336,3 +336,62 @@ class Employee{
     Object[] e1 = (Object[])query.uniqueResult();
     System.out.println("employee"+ e1[0]);
 ``` 
+#### How to bind java vairable to the HQL query
+
+```java
+    int val = 101
+    Query query = session1.createQuery(" from Employee where eid = :employeeid"); // using :
+    query1.setParameter("employeeid",val);
+    Employe e1 = (Employee)query.uniqueResult();
+    System.out.println("employee"+ e1);
+```
+
+### How to use the Native SQL query
+```java
+//main method 
+    Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+    ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+    SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+    //Session 1
+    Session session1 = sessionFactory.openSession()
+    session1.beginTranscation();
+
+    SQLQuery query = session1.createSQLQuery("select * from Employee where eid > 101");
+    // to convert the result to entity 
+    query.addEntity(Student.class)
+    
+    List<Employee> e1 = query.list();
+    e1.forEach(System.out::print)
+    session1.getTransaction().commit();
+    session1.close();
+```
+#### How to assign the specific rows of native sql query into a object
+```java
+
+    SQLQuery query = session1.createSQLQuery("select name,info from Employee where eid > 101");
+    // convert the result to map
+    query.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP);
+    
+    List e1 = query.list();
+    for (Object obj: e1){
+      Map m = (Map) obj;
+      System.out.println(m.get("name"));
+      }
+    session1.getTransaction().commit();
+    session1.close();
+```
+
+### Persistent life cycle/ Object states
+```
+ - an object in java has 
+     - newly instatiate state  (using new keyword)
+     - destroy state (end state)
+
+ - an object in hiberate
+     - newly instatiate state  (using new keyword)
+     - Transient state - When the entity class object is created it will be in transit state. In this state if the application/jvm is closed the data will be lost
+     - Persistent - If we issue save() or persist() over the Entity class object, it will be in persistent state. In this state the data will be stored in database as well. The object in persistent state and any change to the object in this state will be written to database.
+            - using get() or find() over the entity class object, the object will be in persistent state 
+     - detached state - If the object is in persistent state which update the database everytime the object state changes. If we need to remove the persistent state on the object then it will be moved to detached state. using detach(). This is a way like Transient state, since any change to entity class is not written to DB.
+     - remove state - when issuing delete() or remove() on the entity class object, the data is removed from the database but not from the java. The object is in removed state
+```
