@@ -23,6 +23,7 @@ class User{
 
 ### How to create a one-to-one relation ship?
   - using `@OneToOne` annotation
+  - in below case lid will created in the Employee table
 ```java
 @Entity
 class Laptop{
@@ -109,3 +110,14 @@ class Employee{
  - 4. Begin transcation
  - 5. use `save` or `get` to insert or fetch data respecively
  - 5. commit transcation
+
+```java
+
+Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+Session session = sessionFactory.openSession()
+session.beginTranscation();
+session.save(employee); //An employee object is already created and stored in variable employee
+session.getTransaction().commit();
+```
