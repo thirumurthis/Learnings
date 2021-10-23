@@ -193,7 +193,7 @@ session.getTransaction().commit();
    In the below code, enabling show_sql = true, only one query will be fired, and second get will get data from cache.
  
  ```java
-    //main method 
+//main method 
     Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
     ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
     SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
@@ -257,4 +257,82 @@ class Employee{
 ```
  - with the above configuration now, running with multiple session will fire query to DB only once.
 
+### How to cache at the custom query
+ - with the secondary level cache configured
+```java
+//main method 
+    Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+    ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+    SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+    //Session 1
+    Session session1 = sessionFactory.openSession()
+    session1.beginTranscation();
 
+    //defining custom query 
+    Query query = session1.createQuery("from Employee where eid =101");
+    // caching the result
+    Employee e1 = query.uniqueResult(Employee.class, 101);   // using query object
+    
+    System.out.println(e1); 
+    session1.getTransaction().commit();
+    session1.close();
+    
+    // session 2
+   Session session2 = sessionFactory.openSession()
+    session2.beginTranscation();
+   
+    //defining custom query 
+    Query query2 = session2.createQuery("from Employee where eid =101");
+    Employee e2 = query2.uniqueResult(Employee.class, 101);   // using query object
+    System.out.println(e2); 
+
+    session2.getTransaction().commit();
+    session2.close();
+  // The above example will fire two queries since we are using custom queries.
+  // In order to make use of secondary level cache for queries (refer below point)
+```
+  - To use the cache for the custom query, update the hibernate.cfg.xml with below property
+ ```xml
+<property name="hibernate.user_query_cache">true</property>
+ ```
+  - Then update the custom query object with `query.setCacheable(true)` in the transaction. (use this in the above code)
+
+### HQL
+  - In order to use complex query, joining multiple table.
+  ```
+   select <property-of-class> from <entity-class-name>
+  ```
+  - comparing SQL to HQL
+  ```
+  //sql 
+  select * from Employee;
+  
+  //HQL
+  from Employee;
+  ```
+  - Using sql in the hibernatives is called `native queries`
+  - Using HQL, when executed will return the list of object, not the result set as in the native sql.
+  - 
+```
+//main method 
+    Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+    ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+    SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+    //Session 1
+    Session session1 = sessionFactory.openSession()
+    session1.beginTranscation();
+
+    //defining custom query 
+    Query query = session1.createQuery("from Employee");
+    List<Employee> e1 = query.list();
+   
+   session1.getTransaction().commit();
+    session1.close();
+```
+  - Note if we need to use specific columns in the HQL `select eid,name from Employee` and the result will be stored in and Object[]
+
+```java
+    Query query = session1.createQuery("select eid, name from Employee where eid =101");
+    Object[] e1 = (Object[])query.uniqueResult();
+    System.out.println("employee"+ e1[0]);
+``` 
