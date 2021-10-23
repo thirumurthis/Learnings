@@ -60,6 +60,7 @@ class Employee{
 }
 ```
  - If we don't want to create a mapper table, and load the Employee eid part of laptop object
+   - use `@ManyToOne` annotation, and update the `@OneToMany` annotation with `mappedBy` properties with the @ManyToOne variable name
 ```java
 @Entity
 class Laptop{
@@ -75,11 +76,31 @@ class Employee{
   @Id
   private int eid;
   private String name;
-  @OneToMany
+  @OneToMany(mappedBy="employee")               // If we didn't specify the mappedBy, then a mapper table will be created which we don't want in this case
   private List<Laptop> laptop;
 }
 ```
 
+### How to create a many-to-may relation
+```java
+@Entity
+class Laptop{
+  @Id
+  private int lid;
+  private String laptopName;
+  @ManyToMany
+  List<Employee> employee;
+}
+@Entity
+class Employee{
+  @Id
+  private int eid;
+  private String name;
+  @ManyToMany(mappedBy="employee")   // Note: if the mappedBy is NOT provied there will be sperate tables (laptop_employee table and employee_laptop table)
+  private List<Laptop> laptop;
+}
+
+```
 
 ### How to insert or query the Database using Hibernate.
  - 1. Use Configuration class to configure the hibernate.cgf.xml file with database info
