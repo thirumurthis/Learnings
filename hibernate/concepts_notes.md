@@ -23,7 +23,7 @@ class User{
 
 ### How to create a one-to-one relation ship?
   - using `@OneToOne` annotation
-  - in below case lid will created in the Employee table
+  - in below case lid will be created in the Employee table
 ```java
 @Entity
 class Laptop{
@@ -62,6 +62,7 @@ class Employee{
 ```
  - If we don't want to create a mapper table, and load the Employee eid part of laptop object
    - use `@ManyToOne` annotation, and update the `@OneToMany` annotation with `mappedBy` properties with the @ManyToOne variable name
+   - eid will be created in the Laptop table
 ```java
 @Entity
 class Laptop{
@@ -77,7 +78,7 @@ class Employee{
   @Id
   private int eid;
   private String name;
-  @OneToMany(mappedBy="employee")               // If we didn't specify the mappedBy, then a mapper table will be created which we don't want in this case
+  @OneToMany(mappedBy="employee")     // If we didn't specify the mappedBy, then a mapper table will be created which we don't want in this case
   private List<Laptop> laptop;
 }
 ```
