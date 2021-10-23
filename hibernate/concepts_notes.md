@@ -181,3 +181,9 @@ System.out.println(e1.toString()); // Since EAGER is set, now the single query w
 
 session.getTransaction().commit();
 ```
+
+### Hibernate `caching`
+ - Hibernate provides us with caching feature.
+   - First level caching 
+   - Secondary level caching
+
