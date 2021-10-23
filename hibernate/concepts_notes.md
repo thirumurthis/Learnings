@@ -218,8 +218,43 @@ session.getTransaction().commit();
     - include the `ehcache` library, hibernate-ehcache libs.
     - update the `hibernate.cfg.xml`
     - In the Entity that needs to be cached requires an annotation 
-       - `@Cachable` - This tells hibernate that this entity is eligible for caching
+       - `@Cacheable` - This tells hibernate that this entity is eligible for caching
        - `@Cache` - This is used to configure chace propertis like evict, etc.
 
+ - To configure second level cache using ehcace, `hibernate.cfg.xml`
+```xml
+<hibernate-configuration>
+   <session-factory>
+     <property name="hibernate.connection.driver_class"><!-- update corresponding driver oracle or mysql --></property>
+     <property name="hibernate.connection.url"><!--url info --></property>
+     <property name="hibernate.connection.username"><!--user info --></property>
+     <property name="hibernate.connection.password"><!-- info --></property>
+     <property name="hibernate.connection.dialect"><!--dialect info --></property>
+     <property name="hbm2ddl.auto">update<!--other values is create --></property>
+     <property name="show_sql">true</property>
+     
+     <!-- for secondary level cache 1. enable it -->
+     <property name="hibernate.cache.user_second_level_cache">true</property>
+     <!-- specify the provider for the secondary level cache -->
+     <property name="hibernate.cache.region.factory_class"> org.hibernate.cache.ehcache.EhcacheRegionFactory </property> <!-- hibernate 4 uses -->
+   </session-factory>
+</hibernate-configuration>
+```
+ - sepcify the `@Cacheable` over the entity 
+ - `@Cache` for configuring it with option Read-only, Read-Write, none, transactonal
+ 
+```java
+@Entity
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.READ_ONLY)
+class Employee{
+  @Id
+  private int eid;
+  private String name;
+  @OneToMany(mappedBy="employee")
+  private List<Laptop> laptop;
+}
+```
+ - with the above configuration now, running with multiple session will fire query to DB only once.
 
 
