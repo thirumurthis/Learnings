@@ -184,11 +184,33 @@ session.getTransaction().commit();
 
 ### Hibernate `caching`
  - Hibernate provides us with caching feature.
+##### First level caching
    - First level caching (Default one provided by hibernate)
      - Say when a select query i fired and records are fetched, those data will be stored in the cache. This is first level cache
      - This first level cache is available for one particular session.
      - So when a new session either created by the same user or different user in an application will have its own first level cache.
-     
+
+   In the below code, enabling show_sql = true, only one query will be fired, and second get will get data from cache.
+ 
+ ```java
+    //main method 
+    Configuration config = new Configuration().configure().addAnnotatedClass(Employee.class).addAnnotatedClass(Laptop.class);
+    ServiceRegistry sRegistry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+    SessionFactory sessionFactory = config.buildSessionFactory(sRegistry);
+    Session session1 = sessionFactory.openSession()
+    session1.beginTranscation();
+
+    Employee e1 = session1.get(Employee.class, 101);  // checks first level cache, if not then checks second level cache is configured and if data not exists will fetch from DB
+    System.out.println(e1.toString()); 
+    
+    Employee e2 = session1.get(Employee.class, 101);  
+    System.out.println(e1.toString()); 
+    session.getTransaction().commit();
+
+    // In the above case if the hibernate.cfg.xml -> set with show_sql property as true
+    // There will be only the select query only
+```
+##### Secondary level caching
    - Secondary level caching (This needs to be configured)
      -  In secondary level caching, multiple session can use this cache
      -  In order to configure secondary level cache, we need to use 3rd party providers like EHCACHE, OS, SWARM. (ehcache - is more preferred)
