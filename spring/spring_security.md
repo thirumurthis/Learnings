@@ -244,7 +244,7 @@ protected configure(AuthenticationManagerBuilder auth) throws Exception{
  }
  ```
  - Implement the UserDetails class 
- ```
+ ```java
  public CustomUserDetail implement UserDetails{
    //There are list of method that should override.
    
@@ -421,7 +421,7 @@ public CustomUserDetails implements UserDetailsService{
 ```
 - Above is only uses generic approach of Authentication, now to update the JWT authorization.
     - Add following dependencies to pom.xml file
-    ```
+    ```xml
     <dependency>
         <groupId>io.jsonwebtoken</groupId>
         <artifactId>jwt</artifactId>
@@ -429,7 +429,7 @@ public CustomUserDetails implements UserDetailsService{
     </dependency>
     <dependency> <!-- below is sine we are using java 11 -->
        <groupId>javax.xml.bind</groupId>
-       <artifcatId>jaxb-api</artifactId>
+       <artifactId>jaxb-api</artifactId>
        <version>2.3.0</version>
     </dependency>
     ```
