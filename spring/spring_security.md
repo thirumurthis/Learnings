@@ -436,8 +436,6 @@ public CustomUserDetailService implements UserDetailsService{
 - Create a class to extract the JWT generation part, this will be a Util class, which will create the token, etc.
 
 ```java
-package com.stock.finance.service;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
