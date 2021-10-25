@@ -411,7 +411,7 @@ private CustomUserDetailService customUserDeatilService;
 - Create the service CustomUserDetailService
 ```java
 @Service
-public CustomUserDetails implements UserDetailsService{
+public CustomUserDetailService implements UserDetailsService{
 
    @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
@@ -424,7 +424,7 @@ public CustomUserDetails implements UserDetailsService{
     ```xml
     <dependency>
         <groupId>io.jsonwebtoken</groupId>
-        <artifactId>jwt</artifactId>
+        <artifactId>jjwt</artifactId>  <!-- note: jjwt -->
         <version>0.9.1</version>
     </dependency>
     <dependency> <!-- below is sine we are using java 11 -->
