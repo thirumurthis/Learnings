@@ -436,13 +436,26 @@ public CustomUserDetailService implements UserDetailsService{
 - Create a class to extract the JWT generation part, this will be a Util class, which will create the token, etc.
 
 ```java
+package com.stock.finance.service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
-public class JWTManagerUtil{
+public class JWTManagerUtil {
    private String SECRET_KEY ="verySecretKey";
    
    public String extractUserName(String token){
-     return extractclaim(token, Claims::getSubject);
+     return extractClaim(token, Claims::getSubject);
      }
    
    public Date extractExpiration(String token){
@@ -450,35 +463,36 @@ public class JWTManagerUtil{
    }
    
    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-     final Claims claims = extractAllClaims(token);
-     return claimResolver.apply(claims);
+     final Claims claims = extractAllclaims(token);
+     return claimsResolver.apply(claims);
    }
    
    private Claims extractAllclaims(String token){
-      return Jwt.parser().setSigningKey(SECRET_KEY).parseClaims(token).getBody();
+      return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJwt(token).getBody();
    }
    
-   private Boolean isTokenExpired(String tockent){
-     reurn extractExipration(token).before(new Date());
+   private Boolean isTokenExpired(String token){
+     return extractExpiration(token).before(new Date());
    }
    
    public String generateToken(UserDetails userDetails){
-      Map<String, object> claims = new HashMap<>(); / for testing this is empty
-      return createToken(claims,userDetails.getUserName());
+      Map<String, Object> claims = new HashMap<>(); // for testing this is empty
+      return createToken(claims,userDetails.getUsername());
    }
    
    private String createToken(Map<String,Object> claims, String subject){
-      return JWts.builder().setClaims(claims).setSubject(subject)
-                 .setIssuedAt(new Data(System.currentTimeMillis()))
+      return Jwts.builder().setClaims(claims).setSubject(subject)
+                 .setIssuedAt(new Date(System.currentTimeMillis()))
                  .setExpiration(new Date(System.currentTimeMillis()+ 1000*60*60))  // the token will expire in 1 hour
                  .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
    }
    
    public Boolean validateToken(String token, UserDetails userDetails){
-      final String userName = extractUsername(token);
+      final String userName = extractUserName(token);
       return (userName.equals(userDetails.getUsername()) && !isTokenExpired(token));
    }
 }
+
 ```
  - The spring boot already provides default formlogin. 
  - There is no need for form login, since we don't need any username or password.
