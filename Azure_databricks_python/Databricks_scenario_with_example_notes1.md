@@ -31,3 +31,12 @@
   ## python type to view the data type of data
   type(data)
  ```
+#### Dataframe with data and column seperately
+
+```py 
+column = ['Employee','ID','Salary']
+data1 = [('A','1',100.0),('B','2',200.0)]
+
+# use toDF and pass the column list with * in arg
+data1_df = spark.createDataFrame(data1).toDF(*column)
+```
