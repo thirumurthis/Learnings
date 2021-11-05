@@ -195,7 +195,7 @@ Usage of Tree traversal:
    - Height of the leaf node is 0.
    - The root node will have the max height.
 ```
-Height of node 9  - is 2 (# edges from that SPECIFIC NODE to LEAF ) - downwards
+Height of node 9  - is 2 (# edges from that SPECIFIC NODE to LEAF ) (that point to down)
            8
          /   \  
         4      9  
@@ -210,7 +210,7 @@ Height of node 9  - is 2 (# edges from that SPECIFIC NODE to LEAF ) - downwards
   - For Root node the depth is 0
   - The leaf node will have max depth.
 ```
-Depth of node 9  - is 1 (# of edges from ROOT to that SPECIFIC NODE ) - upwards
+Depth of node 9  - is 1 (# of edges from ROOT to that SPECIFIC NODE ) - (top to that point)
            8
          /   \ \ ------------------ 1 
         4      9  
