@@ -210,7 +210,7 @@ Height of node 9  - is 2 (# edges from that SPECIFIC NODE to LEAF ) (that point 
   - For Root node the depth is 0
   - The leaf node will have max depth.
 ```
-Depth of node 9  - is 1 (# of edges from ROOT to that SPECIFIC NODE ) - (top to that point)
+Depth of node 9  - is 1 (# of edges from ROOT to that SPECIFIC NODE ) - (top to that point) (towards root)
            8
          /   \ \ ------------------ 1 
         4      9  
