@@ -579,48 +579,68 @@ public AuthenticationManager authenticationManagerBean() throws Exception{
 - We need to intercept all the incoming request and validate the jwt, to extract username and set to execution context. This can be achived by using fitlers `OncePerRequestFilter`.
 
 ```java
+package com.stock.finance.filter;
+
+import java.io.IOException;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.stock.finance.service.JWTManagerService;
+
 public class JwtRequestFilter extends OncePerRequestFilter {
-  
-  @Autowired
-  private UserDetailsService userDetailsService;
-  
-  @Autowired
-  private JwtManagerUtil jwtManager;
-  
-  @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse respone, Filter chain) throws ServletException, IOexception {
-  
-  // this is where we exampne the jwt in header, and validate it.
-  
-  //get the jwt from request header Authorization key
-  final String authorizationHeader = request.getHeader("Authorization");
-  
-  //if the header contains valid jwt, extract the username
-  String username = null;
-  String jwt = null;
-  
-  // additionally validate the expiration, active etc.
-  if( authorizationHeader != null && authorization.sartsWith("Bearer ")){
-     jwt = authorizationHeader.substring(7);
-     username = jwtManager.extractUsername(jwt);
-  }
-  
-  //incase the token didn't had the username, fetch it and validate, set to context
-  
-  if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-    UserDetails userDetails = this.userDetailsService.loadUserByUsername(username));
-    
-    // since the user details is fetched, check if the jwt is valid and not expired
-    if (jwtManger.validateToken(jwt,userDetails)){
-    // below step will do this automatically, but sine we need to perform this
-    // only when the jwt is validated.
-       UsernamePasswordAuthenticationToken usernamePasswordAuthencationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-       usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-       
-// this executes only when the authentication is null       securityCotnextHolder.getContext().setAuthtentication(usernamePassworduthenticationToken);
-     }
-  }
- }
+
+	@Autowired
+	private UserDetailsService userDetailsService;
+
+	@Autowired
+	private JWTManagerService jwtManager;
+
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse respone, FilterChain chain) throws ServletException, IOException {
+
+		// this is where we example the jwt in header, and validate it.
+
+		//get the jwt from request header Authorization key
+		final String authorizationHeader = request.getHeader("Authorization");
+
+		//if the header contains valid jwt, extract the username
+		String username = null;
+		String jwt = null;
+
+		// additionally validate the expiration, active etc.
+		if( authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
+			jwt = authorizationHeader.substring(7);
+			username = jwtManager.extractUserName(jwt);
+		}
+
+		//in case the token didn't had the username, fetch it and validate, set to context
+
+		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+			// since the user details is fetched, check if the jwt is valid and not expired
+			if (jwtManager.validateToken(jwt,userDetails)){
+				// below step will do this automatically, but sine we need to perform this
+				// only when the jwt is validated.
+				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+				usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+				// this executes only when the authentication is null       securityCotnextHolder.getContext().setAuthtentication(usernamePassworduthenticationToken);
+			}
+		}
+	}
 }
 ```
   - Since we added filter and implemented, we need to add this to `WebSecurityConfigurerAdaptor` extended class.
