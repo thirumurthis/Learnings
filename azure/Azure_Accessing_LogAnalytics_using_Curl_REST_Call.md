@@ -25,6 +25,10 @@ Using Postman,
   - The set variables can be used in the url like `https://login.microsoftonline.com/{{directoryId}}/oauth2/token`
   - Update testing section with below value
 
+![image](https://user-images.githubusercontent.com/6425536/140666259-3f8902f7-8ce4-4048-8324-02344cbea545.png)
+
+![image](https://user-images.githubusercontent.com/6425536/140666265-fe3c1287-549f-4376-90a8-854eba4cd0fd.png)
+
 ```
 var json = JSON.parse(responseBody);
 postman.setEnvironmentVariable("azureApp_bearerToken", json.access_token); //where azureApp_bearToken is another variable in evironment
