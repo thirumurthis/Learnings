@@ -22,7 +22,7 @@ check Url [Link](https://dev.loganalytics.io/documentation/Authorization/OAuth2)
 Using Postman,
   - we can create Evnironment which holds the variable. Say, directoryId holds the AAD tenant id then
      - Add few more variables, so the bearer token can be stored directly in it.
-  - The set variables can be used in the url like `https://login.microsoftonline.com/{{directoryId}}/oauth2/token
+  - The set variables can be used in the url like `https://login.microsoftonline.com/{{directoryId}}/oauth2/token`
   - Update testing section with below value
 
 ```
