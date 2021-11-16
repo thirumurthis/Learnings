@@ -1,4 +1,4 @@
-#### in case if we need to setup the Xterm on a headless machine
+#### in case if we need to setup the Xterm on a headless machine (centos)
 
 STEP: 1
 ```
