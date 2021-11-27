@@ -12,3 +12,6 @@ VNet, Subnet representation:
 ![image](https://user-images.githubusercontent.com/6425536/143666662-44f0eaa5-a9c1-4e02-bec7-3eab0a4a6ef1.png)
 
 
+Netowrking
+
+![image](https://user-images.githubusercontent.com/6425536/143671160-cef78c58-9d3a-42c5-a9b6-7940e60096a8.png)
