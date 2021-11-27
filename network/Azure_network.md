@@ -15,3 +15,8 @@ VNet, Subnet representation:
 Netowrking
 
 ![image](https://user-images.githubusercontent.com/6425536/143671160-cef78c58-9d3a-42c5-a9b6-7940e60096a8.png)
+
+About IP's
+
+![image](https://user-images.githubusercontent.com/6425536/143671467-95a02c83-5979-4815-ae8d-5ff2bea2443a.png)
+
