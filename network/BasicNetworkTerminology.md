@@ -38,3 +38,8 @@ Difference between Gateway and Router
       - Doesn't support Dynamic routing
       - Protocol conversion like, VOIP to PSTN or Network Access control etc.
       - Translate from one protocol to another
+
+GATEWAY and Data frame flow:
+
+![image](https://user-images.githubusercontent.com/6425536/143733725-e0401758-e190-4d30-9986-176321fe2517.png)
+
