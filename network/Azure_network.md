@@ -2,8 +2,10 @@
 Simple representation of Azure network:
 
 VNet - Any resource within the VNet can communicate to another resource without any Route tables.
+     - When creating VNet, create it on specific location or region (West US). Any virtual machine created should be grouped under the VNet of same location or region.
+     - To connect VM between two VNet (running on West US) with VM machine in with VNet in East US. It can be achievied using `VNet peering`.
 
-Subnet 
+Subnet - Small network range.
 
 Route tables - Used to connect one VNet to another VNet. Example, we can create a Route table in Azure to connect to on-perm network.
 
@@ -31,5 +33,16 @@ About IP's
 | ASG (Application Security Group) | Application Security Group helps to manage the security of Virtual machines by grouping them according to the applicaton that run on them. An Application centric way of using NSG. Say, if there are group of VM's act as Web server, few VM's act as Application Servers, few VM's act as DB servers - Say the DB server should be connected by the Application Web server. So the using ASG we can provide granular controll. Addign a VM to the service group the ASG can be applied.|
 | Azure Firewall| Azure Firewall is a managed, cloud based network security service that protects Azure Virtual network.|
 | Azure Firewall Manager | This is a security Management service that provides central security policy and route manamgement for cloud-based security perimeters. |
-| Bastion Host | 
+| Bastion Host (also called as Jump box) | Azure provided service for more security. |
+
+
+Bastion:
+
+![image](https://user-images.githubusercontent.com/6425536/143789522-22542165-5ce5-4bdd-a751-c43c8062da80.png)
+
+To access the VM in the VNet,
+   Option 1: Expose the RDP port (in case of Windows machine) and SSH port (in case of Linux) so it can be accessed over Internet, but this is NOT a secure way to do in enterprise.
+   Option 2: Bastion server based login for more secure approach. Azure provides Bastion Host/server which accepts connection over HTTPS (or port 443) protocol. In this case the user doesn't need any RDP/SSH client, they can access via Azure portal.
+   
+ 
 
