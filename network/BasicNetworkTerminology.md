@@ -7,3 +7,10 @@ Simple Representation and details:
 Wireless Access Point and Wireless Bridge info
 
 ![image](https://user-images.githubusercontent.com/6425536/143666266-143147cd-7eea-439e-adee-979f03217af0.png)
+
+
+
+DMZ - (DeMilitarization Zone)
+    - This is the network between two firewall.
+    
+![image](https://user-images.githubusercontent.com/6425536/143732186-b022577b-4ff2-405b-8771-1326d5ef9510.png)
