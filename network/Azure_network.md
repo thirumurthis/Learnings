@@ -58,3 +58,8 @@ Application Gateway representation:
 Azure Traffic Manager:
    - Say if the Application is running in different regions like West US, East US, UK. Configuring a Traffic manager, will redirect the User from West US to West US hosted servers.
 
+ExpressRoute:
+   - One option to connect on-perm to Azure network with dedicated connection.   
+   
+   ![image](https://user-images.githubusercontent.com/6425536/143802687-27db65c9-b88c-49ca-a2d7-381f6e915293.png)
+
