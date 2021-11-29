@@ -53,6 +53,6 @@ Application Gateway representation:
 
 ![image](https://user-images.githubusercontent.com/6425536/143800123-ae6429d7-2620-4e19-80c3-2da5e97c4f92.png)
 
-
-
+Azure Traffic Manager:
+   - Say if the Application is running in different regions like West US, East US, UK. Configuring a Traffic manager, will redirect the User from West US to West US hosted servers.
 
