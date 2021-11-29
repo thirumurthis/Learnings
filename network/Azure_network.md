@@ -34,12 +34,13 @@ About IP's
 | Azure Firewall| Azure Firewall is a managed, cloud based network security service that protects Azure Virtual network.|
 | Azure Firewall Manager | This is a security Management service that provides central security policy and route manamgement for cloud-based security perimeters. |
 | Bastion Host (also called as Jump box) | Azure provided service for more security. |
-| NAT Gateway | Virtual Network NAT (Network Address Translation) simplifies outbound-only internet connectivity for virtual networks. It basically hides the identity or IP address of the VM to the client. |
+| NAT Gateway | Virtual Network NAT (Network Address Translation) simplifies outbound-only internet connectivity for virtual networks. It basically hides the identity or IP address of the VM to the client. This is highly resilient and fully managed. |
+| Azure DNS | Azure DNS is a hosting service for DNS domains that provides name resolution by using Microsoft Azure infrastructure. DNS handles converting name (www.microsoft.com) to IP address. |
 
 
 Bastion:
 
-![image](https://user-images.githubusercontent.com/6425536/143789522-22542165-5ce5-4bdd-a751-c43c8062da80.png)
+![image](https://user-images.githubusercontent.com/6425536/143797522-18bf629e-5517-4523-b24d-07cd1424c8ae.png)
 
 To access the VM in the VNet,
    Option 1: Expose the RDP port (in case of Windows machine) and SSH port (in case of Linux) so it can be accessed over Internet, but this is NOT a secure way to do in enterprise.
