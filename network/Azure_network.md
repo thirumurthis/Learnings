@@ -38,6 +38,8 @@ About IP's
 | Azure DNS | Azure DNS is a hosting service for DNS domains that provides name resolution by using Microsoft Azure infrastructure. DNS handles converting name (www.microsoft.com) to IP address. |
 | Azure LoadBalancer | Based on the traffic the load will be blanced by this service. Types - Round robin, Client Affinity, Server affinity. This can be configured at Layer 7 (application layer - HTTP/HTTPS) level and Layer 4 (TCP/IP, UPD) level.| 
 | Application Gateway| Application Gateway is similar to **Load Balancer**, only difference is Application gateway can only be configured at Layer 7 (Application layer - HTTP/HTTPS). Additionally Application gateway provides Path based routing - based on URL path traffic can be routed to different application. Multi-site routing- based on the URL domain the traffic can be routed to pool of servers. | 
+| Azure Traffic Manager | This is another network service provided by Azure. Traffic Manager deteremines the best possible endpoint to route the client request. When the client/user hits an url from browser usually the DNS will share the IP address of IP address of the server or load balancer, in this case the traffic manager IP address will be provided to the user by DNS. Based on the user request and rules defined in the Traffic manager, it will determine the best route to access the application. This can be used for Highly available solution or disaster recovery. |
+
 
 Bastion:
 
