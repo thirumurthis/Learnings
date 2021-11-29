@@ -34,6 +34,7 @@ About IP's
 | Azure Firewall| Azure Firewall is a managed, cloud based network security service that protects Azure Virtual network.|
 | Azure Firewall Manager | This is a security Management service that provides central security policy and route manamgement for cloud-based security perimeters. |
 | Bastion Host (also called as Jump box) | Azure provided service for more security. |
+| NAT Gateway | Virtual Network NAT (Network Address Translation) simplifies outbound-only internet connectivity for virtual networks. It basically hides the identity or IP address of the VM to the client. |
 
 
 Bastion:
