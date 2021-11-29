@@ -36,7 +36,8 @@ About IP's
 | Bastion Host (also called as Jump box) | Azure provided service for more security. |
 | NAT Gateway | Virtual Network NAT (Network Address Translation) simplifies outbound-only internet connectivity for virtual networks. It basically hides the identity or IP address of the VM to the client. This is highly resilient and fully managed. |
 | Azure DNS | Azure DNS is a hosting service for DNS domains that provides name resolution by using Microsoft Azure infrastructure. DNS handles converting name (www.microsoft.com) to IP address. |
-
+| Azure LoadBalancer | Based on the traffic the load will be blanced by this service. Types - Round robin, Client Affinity, Server affinity. This can be configured at Layer 7 (application layer - HTTP/HTTPS) level and Layer 4 (TCP/IP, UPD) level.| 
+| Application Gateway| Application Gateway is similar to **Load Balancer**, only difference is Application gateway can only be configured at Layer 7 (Application layer - HTTP/HTTPS). Additionally Application gateway provides Path based routing - based on URL path traffic can be routed to different application. Multi-site routing- based on the URL domain the traffic can be routed to pool of servers. | 
 
 Bastion:
 
@@ -46,5 +47,10 @@ To access the VM in the VNet,
    Option 1: Expose the RDP port (in case of Windows machine) and SSH port (in case of Linux) so it can be accessed over Internet, but this is NOT a secure way to do in enterprise.
    Option 2: Bastion server based login for more secure approach. Azure provides Bastion Host/server which accepts connection over HTTPS (or port 443) protocol. In this case the user doesn't need any RDP/SSH client, they can access via Azure portal.
    
- 
+Application Gateway representation:
+
+![image](https://user-images.githubusercontent.com/6425536/143800123-ae6429d7-2620-4e19-80c3-2da5e97c4f92.png)
+
+
+
 
