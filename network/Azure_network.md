@@ -26,7 +26,7 @@ About IP's
 | Topic | Description |
 | ------ | ------- | 
 | Route tables | Route tables is used for routing network/data from one network to another network. For example, a machine from VNet1 to needs to communitcate to machine in VNet2, if a machine from VNet1 needs to access Storage account, or a Network that needs to communicate to on-perm. (VNet peering is another option for connecting network)|
-| Route table.. | Say if a machine wanted to access on-perm network, then create a route rule with an ip address (10.10.0.1/16). So if any machine in the VNet network tries to access the IP address rule of the ruote table, takes to on-perm network. | 
+| Route table.. | Say if a machine wanted to access on-perm network, then create a route rule with an ip address (10.10.0.1/16). So if any machine in the VNet network tries to access the IP address rule of the ruote table, takes to on-premisis network. | 
 | NSG | NSG (Network security Group) is used to filter network traffic to and from Azure resources in Azure VM. A NSG contains security rules that allow or deny inbound netowrk traffic to, or outbound traffic from, several types of resources. Each rule requires destination, port and protocol. | 
 | NIC | A network interface (NIC) is the interconnection between a VM and a virtual network (VNet). A VM must have at least one NIC, but can have more than one, depending on the size of the VM you create. Each NIC attached to a VM must exist in the same location and subscription as the VM. Each NIC must be connected to a VNet that exists in the same Azure location and subscription as the NIC. You can change the subnet a VM is connected to after it's created, but you cannot change the VNet.|
 | Service EndPoint | Virtual Network (VNet) Service Endpoint policy allows to filter egress (outgoing) VNet traffic to a particular Azure service. The Azure service can be Azure Storage account, Azure Database. This provides granular controll over the network access |
@@ -39,9 +39,8 @@ About IP's
 | Azure LoadBalancer | Based on the traffic the load will be blanced by this service. Types - Round robin, Client Affinity, Server affinity. This can be configured at Layer 7 (application layer - HTTP/HTTPS) level and Layer 4 (TCP/IP, UPD) level.| 
 | Application Gateway| Application Gateway is similar to **Load Balancer**, only difference is Application gateway can only be configured at Layer 7 (Application layer - HTTP/HTTPS). Additionally Application gateway provides Path based routing - based on URL path traffic can be routed to different application. Multi-site routing- based on the URL domain the traffic can be routed to pool of servers. | 
 | Azure Traffic Manager | This is another network service provided by Azure. Traffic Manager deteremines the best possible endpoint to route the client request. When the client/user hits an url from browser usually the DNS will share the IP address of IP address of the server or load balancer, in this case the traffic manager IP address will be provided to the user by DNS. Based on the user request and rules defined in the Traffic manager, it will determine the best route to access the application. This can be used for Highly available solution or disaster recovery. |
-| ExpressRoute | This is one-way of connecting Azure Network to on-perm or customer data center. This will create a dedicated connection (or pipe) between datacenter and Azure network. |
-| VPN Gateway | This is another way of connecting Azure network to on-perm network. |
-
+| ExpressRoute | This is one-way of connecting Azure Network to on-prem or customer data center. This will create a dedicated connection (or pipe) between datacenter and Azure network. Being dedicated connection this will be very fast, also expensive. On-prem network will also setup a Gateway (some a device to create a gateway.) |
+| VPN Gateway | This is another way of connecting Azure network to on-prem network. This option where a secure but data transfered via internet, the metwork bandwidth depends on the internet connection.  |
 
 Bastion:
 
