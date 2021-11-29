@@ -42,6 +42,8 @@ About IP's
 | ExpressRoute | This is one-way of connecting Azure Network to on-prem or customer data center. This will create a dedicated connection (or pipe) between datacenter and Azure network. Being dedicated connection this will be very fast, also expensive. On-prem network will also setup a Gateway (some a device to create a gateway.) |
 | VPN Gateway | This is another way of connecting Azure network to on-prem network. This option where a secure but data transfered via internet, the metwork bandwidth depends on the internet connection.  |
 | VNet Peering | Connecting one VNet to another VNet. Same region can have multiple VNet, and to connect between these VNet we can use VNet peering. This is called `Regional VNet peering`. When connecting different VNet accross region (say, West US to East US) this is called as `Global VNet peering`. Under Virutal Network of Azure portal, select Peering option to configure VNet Peering. |
+| Hub and Spoke Model | More than two network (for example say three networks) that needs to connect to On-prem netowrk, instead of creating VPN Gateways on all the the networks, we can use Hub and Spoke model where we can configure all the three networks in peering with a central network and configure the VPN Gateway only on the hub network. But we need to configure a `Gateway Transit`|
+| Gateway Transit | Gateway Transit is a peering property that lets one virtual network use the VPN gateway in peered virtual network for cross-premsis or vnet to vnet connectivity | 
 
 Bastion:
 
