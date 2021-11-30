@@ -41,3 +41,15 @@
        //using http headers and rest template create the url to fire the query to obtain the result from log analytics
   }
   ```
+-------
+
+### Using jayway Jackson jsonpath to parse the response like XML xpath way.
+ - check the [link](https://www.baeldung.com/guide-to-jayway-jsonpath)
+
+```
+//result from the query, cant be converted to string
+//import com.jayway.jsonpath.JsonPath;
+
+  int numberOfRows = JsonPath.read(response.getBody(), "tables[0].rows[0].[1]");
+  // response.getBody() -> returns the query result from the resttemplate. XPath way for json to grab the result
+```
