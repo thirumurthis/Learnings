@@ -28,3 +28,45 @@ When creating a standalone spring application below scope are applicable
    - by implementing InitalizeBean, DisposeBean, and corresponding `afterSetProperties()` and `destroy()` method. - This is not recommended approach.
    - We can also specify the `default-init` and `default-destroy` method at the <bean> schema defintion level in the spring context.
   
+
+  ##### Web application scopes.
+     - request  A bean will be created for all the http request if declared at bean level. ( request vs prototype - 
+     - session
+     - application (from spring 5.x+)
+     - websocket  (from spring 5.x+)
+  
+  There can be multple dispatch servlet per spring application.
+ 
+  
+```
+  
+                    Servlet Context  (Application Scope), any bean with this scope will be accessed by all dispatch servlet's application context
+                   /              \
+        dispatchServlet (1)        dispatchServlet (2) ....   
+          /                         \ 
+        Application Context          Application Context 
+```
+  
+####### Simple java config based Spring web application creation
+  
+  ```java 
+  public class ApplicationInitializer1 implements WebApplicationInitializer{
+    public void onStartup(ServletContext servletContext) throws ServletException{
+      AnnotationConfigWebApplicationContext webApplicationContext = new AnnotationConfigWebApplicationContext();
+      webApplicationContext.register(AppConfig.class);
+      DispatchServlet ds1 = new DispatchServlet(webApplicationContext);
+  
+     ServletRegistration.Dynamic customDispatchServlet = servletContext.addServlet("customdispatchservlet",ds1);
+     customDispatchServlet.setLoadOnStartup(1);
+     customDispatchServlet.addMapping("/application1/*");
+     
+    }
+  }
+  
+  @EnableWebMvc
+  @Configuration
+  @ComponentScan(basePackages = {"com.mycode.api"})
+  public class AppConfig implements WebMvcConfigurer{
+  
+  }
+  ```
