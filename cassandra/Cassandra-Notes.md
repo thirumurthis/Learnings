@@ -93,7 +93,7 @@ Developer can take control the avialablity and performance, using the correct co
  Points:
    - Consistency level, set at each read/write request. (per query)
  
- ##### How fast read and write data in Cassandra depends on the Consistency level.
+ ##### How fast the data read and write in Cassandra depends on the Consistency level.
  
  Lower the consistency level (with replication factor RF= 3, even if two nodes down the client is served) , high availablity.
  Higher the consistency level (need to hear from more nodes, more nodes to be online which is less tolerant to node going down), low availablity.
@@ -115,7 +115,7 @@ Developer can take control the avialablity and performance, using the correct co
      - 2. Then the data is merged to an in-memory representation called `memtable`.
      - 3. Responds back to the Client, that the data is written.
   - Every data that is being written in Cassandra gets a timestamp associated to it.
-     - 4. `memtable` memory runs out, Cassandra flushes the data to the disk behind the scenes asynchornously (sequential IO operation which is fast, taking the in-memory data and serializing it to disk). The disk is called `SSTable`.
+     - 4. when `memtable` memory runs out, Cassandra flushes the data to the disk behind the scenes asynchornously (sequential IO operation which is fast, taking the in-memory data and serializing it to disk). The disk is called `SSTable`.
   
   ![image](https://user-images.githubusercontent.com/6425536/74626761-76eab100-5105-11ea-8228-93c19c14bc9d.png)
   
