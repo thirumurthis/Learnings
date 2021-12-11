@@ -29,9 +29,20 @@ RC file process,
   - RC file row group size is 4MB which is slower, higher the block size high read efficient.
 
 #### ORC (Optimized Row Columnar) - from hortonworks
-
+- Metadata about the column are also stored.
+- The ORC file also performs horizontal and vertical partition to create the row and column foramt. 
+       - In ORC the row group is called `Stripes` (stripe is horizontal partioned data)
+       - In RC file the row group is 4MB, in ORC the `stripes` is 64 MB and above. (to take advantage of sequential reads)
+- ORC maintains `file level statistics` (few index). 
+   - File footer contains 
+      - Stripe level index (The index (or statistics) will be at the individual stripe level)
+      - File level index  (The index (or statistics) will be at the file level - combining all the stripes)
+   - `index in ORC is statistics about column` like min, max. 
 - Simple represetnation of the ORC file with elements (refer the notes below the screen shot for more details)
 ![image](https://user-images.githubusercontent.com/6425536/145660765-11f27e4a-4f7b-443e-89e5-f976d93c190d.png)
+
+ - Say if we are firing a query `select * from table where volume = 100`.
+ - 
 
 #### ORC Internals:
 
