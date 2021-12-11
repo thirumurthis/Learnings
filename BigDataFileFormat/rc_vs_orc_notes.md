@@ -98,6 +98,68 @@ Details about the stripes:
 ...
 ```
 
+#### File Structure:
+
+ - Break file into sets of row called Stripes
+    - Default size is 250 MB
+    - Large size enables efficient read of columns
+ - Footer
+    - contains list of Stripe location 
+    - Self-described type
+    - Count, min, max and sum of each column
+ - postscript
+    - Contains compression parameters
+    - Size of compressed folder
+
+#### Stripe Structure:
+
+  - Data 
+     - Composed of multiple stream per column
+  - Index 
+     - Required for skipping rows
+     - Defaults to every 10,000 rows
+     - Min and Max for each column 
+  - Footer 
+     - Directory of stream locations
+     - Encoding of each column
+      
+![image](https://user-images.githubusercontent.com/6425536/145664122-650ad230-c4fe-44d1-915e-3f3a2dedc7e5.png)
+
+##### Compound Type Serialization 
+
+- List
+    - Encode the number of items in each value
+    - Uses the same run length encoding
+    - Uses child writer for value
+- Maps
+    - Encode the number of items ¡n each value
+    - Uses the same run length encoding
+    - Uses the key and value child writers
+
+#### Memory management
+
+Managing Memory
+  - The entire stripe needs to be buffered
+  - ORC uses a memory manager
+     - Scales down buffer sizes as number of writers increase
+     - Configured using hive.exec.orc.memory.pool
+     - Defaults to 50% of JVM heap size
+  - It may improve performance to provide more memory to insert queries
+     - Scaling down stripe size cuts disk IO size
+
+Notes:
+   - Metadata is stored using Protocol Buffers
+        - Allows addition and removal of fields
+   - Reader supports seeking to a given row #
+   - Metadata tool (hive —service orcfiledump file.orc)
+   - User metadata can be added at any time before the ORC writer is closed.
+
+### Vectorization
+  - Columnstore and vectorization are big break and adopter in DW DBMS
+  - Vectorize inner loop 
+     - operate on 1024 row batch at once
+     - Batch column is a vector of a primitive type
+
 ###### Below are configuration parameters: 
   (for example, id we need compression we can specify this formats or none, refer the above link for docs)
 
