@@ -1,6 +1,8 @@
 RC - Row Columnar file (RC File)
 ORC - Optimized Row columnar file (successor for RC file)
 
+Reference to write ORC file in java [link](https://orc.apache.org/docs/core-java.html)
+
 > Both are row store + column store
 
 ![image](https://user-images.githubusercontent.com/6425536/145654256-ba14c02d-b869-439b-96a4-23ce34b22f01.png)
