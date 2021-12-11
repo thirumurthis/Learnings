@@ -180,6 +180,42 @@ Notes:
    - Codec can be Snappy, Zlib or none
    - Compressed blocks can be skipped over without having to be decompressed or scanning. Positions in the stream are reporesented by `block start location` and an `offset` into the block.
 
+### ORC file more info
+
+![image](https://user-images.githubusercontent.com/6425536/145664565-8a5491ad-fb2f-4920-911f-003639113fbc.png)
+
+![image](https://user-images.githubusercontent.com/6425536/145664578-b0a21157-5cea-4fe4-86ba-287a44043938.png)
+
+#### FILE STRUCTURE: 
+- The `file footer` contains:
+   - Metadata — schema, file statistics
+   - Stripe information — metadata and location of stripes
+   - `Postscript` with the compression, buffer size, & file version
+- ORC file data ¡s divided into stripes.
+  - `Stripes` are self contained sets of rows organized by columns.
+  - `Stripes` are the smallest unit of work for tasks.
+  - Default is ~64MB, but often configured larger.
+
+#### STRIPE STRUCTURE
+  - Within a stripe, the metadata data is in the `stripe footer`.
+     - List of streams
+     - Column encoding information (eg. direct or dictionary)
+  - Columns are written as a set of streams. There are 3 kinds:
+     - Index streams
+     - Data streams
+     - Dictionary streams
+
+![image](https://user-images.githubusercontent.com/6425536/145664824-0a99d848-50bc-4bb5-af04-0df6dc5e5168.png)
+
+STREAMS
+- Streams are an independent sequence of bytes
+- Serialization into streams depends on column type & encoding
+- Optional pipeline stages:
+   - Run Length Encoding (RLE) — first pass integer compression
+   - Generic compression — Zlib, Snappy, LZO, Zstd
+   - Encryption - AES/CTR
+
+
 ### Miscellaneous
 ##### How Index works in Database link 
    - Creating an index over the high-cardinality columns makes accessign a single row very fast (High-cardinality refers to columns with values that are very uncommon or unique)
