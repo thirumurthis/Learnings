@@ -39,7 +39,8 @@ Details about the stripes:
  - Stripe Footer:
      - contains directroy of stream location (serialized data)
 
-
+#### Simple physical representation of the ORC file 
+  - Each stripe can only be 250 MB
 ```
 
 | ID                 |  Name                   |   country               |  \
@@ -47,10 +48,11 @@ Details about the stripes:
 |--------------------|-------------------------|-------------------------|  /
 | 1                  |  tim                    |     USA                 |
 ...........
-| 10000               |................ ........|........................| ------------------------> First 10,000 rows
+| 10000              |................ ........|........................| ------------------------> First 10,000 rows
 
 | ID                 |  Name                   |   country               |  \
-| (min=1, max=10000) |  (dictionary, min, max) |  (dictionary, min, max) |    ----------> Stripe index
+| (min=10000,        |  (dictionary, min, max) |  (dictionary, min, max) |    ----------> Stripe index
+|   max=20000)       |                         |                         |
 |--------------------|-------------------------|-------------------------|  /
 | 10001              |  Ram                    |     USA                 |
 ...........
@@ -59,3 +61,25 @@ Details about the stripes:
 ...
 ...
 ```
+
+###### Below are configuration parameters: 
+  (for example, id we need compression we can specify this formats or none, refer the above link for docs)
+
+![image](https://user-images.githubusercontent.com/6425536/145658609-40309acf-1eb1-40cc-b672-bf88423516ed.png)
+
+#### Serialization in the ORC 
+   - The serialization in ORC depends on the data type. 
+   - Serialization is uses in transfer of data from one node to another over network.
+  - The serialization of Integer column is transfered as stream of integer values.
+  - The serialization of String uses the `dictionary` mechanism
+       - `dictionary` is used to form unique column values. And keeps only those unique values, duplicates not present. Look up will be faster.
+       - The orc keeps a `dictionary` that is sorted to speed up predicate filtering. 
+       - `dictionary` improves compression ratios.
+
+##### Compression:
+   - Streams are compressed using codel. (which is specified as a table property for all streams in table.)
+   - compression is done incrementally as each block is produced, to optimize the memory use.
+   - Codec can be Snappy, Zlib or none
+   - Compressed blocks can be skipped over without having to be decompressed or scanning. Positions in the stream are reporesented by `block start location` and an `offset` into the block.
+  
+
