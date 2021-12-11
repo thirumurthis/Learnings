@@ -33,16 +33,22 @@ RC file process,
 - The ORC file also performs horizontal and vertical partition to create the row and column foramt. 
        - In ORC the row group is called `Stripes` (stripe is horizontal partioned data)
        - In RC file the row group is 4MB, in ORC the `stripes` is 64 MB and above. (to take advantage of sequential reads)
-- ORC maintains `file level statistics` (few index). 
+- ORC maintains `file level statistics` (few index). `index in ORC is statistics about column` like min, max. 
    - File footer contains 
       - Stripe level index (The index (or statistics) will be at the individual stripe level)
       - File level index  (The index (or statistics) will be at the file level - combining all the stripes)
-   - `index in ORC is statistics about column` like min, max. 
-- Simple represetnation of the ORC file with elements (refer the notes below the screen shot for more details)
-![image](https://user-images.githubusercontent.com/6425536/145660765-11f27e4a-4f7b-443e-89e5-f976d93c190d.png)
+   - `Stripe` contains (more than one stripes can be in the ORC file)
+     - Row level index: For every 10K rows there will be an index.
+     - Then followed by the actual data.
 
- - Say if we are firing a query `select * from table where volume = 100`.
- - 
+- Simple represetnation of the ORC file with elements (refer the notes below the screen shot for more details)
+![image](https://user-images.githubusercontent.com/6425536/145661815-f3379a44-f3ed-48d0-b4a4-f95dcc761626.png)
+
+ - Say if we are firing a query `select * from table where volume > 100`.
+    - when executing the query in hive environment 
+       - First it looks at the `file level index` for the statistics of volume column, in this case the ORC file contains it so it will read it. If it is less than 100 no point in reading that file at all. [If the ORC file is 2G and we skip it, we no need to read the complete files. which provides better efficiency.]
+       - Next it looks at the `stripe level index` for the statistics of volume column, since 100 is preset in stripe 1. so it will read data from that one and stripe 2.
+       - Then check the `row level index` for the volume set of data to be read.
 
 #### ORC Internals:
 
