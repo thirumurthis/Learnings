@@ -13,6 +13,25 @@ RC file process,
 
 ![image](https://user-images.githubusercontent.com/6425536/145654305-466b0990-f93f-4561-a315-218c857b9307.png)
 
+##### How does the where condition works in columnar store
+   - From the snapshot below, the query checks for symbol RSC
+      - In this case, the RC file doesn't decompress all the columns, it only decompress the Sybmol column in row group.
+         - If the column has RSC, then it will decompress other columns.
+         - If doesn't has the RSC it will NOT decompress other columns.
+    - The above is called `Lazy Decompression` in RC file.
+  
+  Note: Where condition is called the `predicate`
+  
+![image](https://user-images.githubusercontent.com/6425536/145659628-bfabeaa8-c3d8-435d-b078-edd947a4e04c.png)
+
+##### Disadvantages of RC file is it doesn't have any metadata about the column.
+  - RC file basically did a horizontal partition and a vertical partition, to combine the row-major and column-major format.
+  - RC file row group size is 4MB which is slower, higher the block size high read efficient.
+
+#### ORC (Optimized Row Columnar) - from hortonworks
+
+- Simple represetnation of the ORC file with elements (refer the notes below the screen shot for more details)
+![image](https://user-images.githubusercontent.com/6425536/145660765-11f27e4a-4f7b-443e-89e5-f976d93c190d.png)
 
 #### ORC Internals:
 
@@ -81,5 +100,11 @@ Details about the stripes:
    - compression is done incrementally as each block is produced, to optimize the memory use.
    - Codec can be Snappy, Zlib or none
    - Compressed blocks can be skipped over without having to be decompressed or scanning. Positions in the stream are reporesented by `block start location` and an `offset` into the block.
-  
+
+### Miscellaneous
+##### How Index works in Database link 
+   - Creating an index over the high-cardinality columns makes accessign a single row very fast (High-cardinality refers to columns with values that are very uncommon or unique)
+   - Creating composite index on combined column also increase efficiency of query if we are using those column in query.
+   - [Link](https://chartio.com/learn/databases/how-does-indexing-work/)
+
 
