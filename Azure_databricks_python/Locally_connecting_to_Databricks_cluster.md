@@ -130,19 +130,19 @@ print("TEST - ",spark.range(100).count())
  - Pass in the Cluster name, URL, Generated token, in my case created a profile to connect to dev Databricks cluster.
 
 #### To push the schema to databricks for local development
-  - Created the `message_raw.json` schema definition file locally and used below command to push to Databricks.
-  - Use below command, which will copy the file from the local to Databricks
+  - Created the `table1_raw.json` schema definition file locally and use below command to push to Databricks.
+  - Below command will copy the file from the local to Databricks
 ```
-$ databricks fs cp ./schemas/message_raw.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
+$ databricks fs cp ./schemas/table1.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
 
 ```
 
  - To update with any change, if the file is already exits in the Cluster
 ```
-$ databricks fs rm dbfs:/FileStore/custom-datalake-schema/message_raw.json --profile dev
+$ databricks fs rm dbfs:/FileStore/custom-datalake-schema/table1_raw.json --profile dev
 
 ## then copy the file
-$ databricks fs cp ./schemas/message_raw.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
+$ databricks fs cp ./schemas/table1_raw.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
 ```
 
 If the token is expired, create a new token and set it using 
@@ -150,7 +150,7 @@ If the token is expired, create a new token and set it using
 $ databricks configure --token --profile dev
 
 ## This will display the existing Databricks cluster url
-## Then request for token
+## Then request for token <-- provide input
 ```
 
 Once updated use below command to verify the Databricks access
