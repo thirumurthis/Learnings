@@ -6,7 +6,7 @@
      - Databricks runtime 9.1 LTS requires 3.8 python
 
 ### To install 3.8.12 version of python 
- Follow this (link)[https://rakeshjain-devops.medium.com/how-to-install-python-3-on-centos-7-7-using-yum-and-source-and-set-as-default-1dee13396f7]
+ Follow this [link](https://rakeshjain-devops.medium.com/how-to-install-python-3-on-centos-7-7-using-yum-and-source-and-set-as-default-1dee13396f7)
  
  ```
  ## Setup libs 
@@ -84,7 +84,7 @@
  $ databricks-connect configure
  ```
  
-  - i faced an issue, similar as in this (link)[https://forums.databricks.com/questions/20144/databricks-connect-test-problem.html]
+  - i faced an issue, similar as in this [link](https://forums.databricks.com/questions/20144/databricks-connect-test-problem.html)
   ```
   import com.databricks.service.SparkClientManager <console>:23: error: object databricks is not a member of package com import com.databricks.service.SparkClientManager
   ```
@@ -123,4 +123,37 @@ from pyspark.sql import SparkSession
 spark = SparkSession.builder.getOrCreate()
 
 print("TEST - ",spark.range(100).count())
+```
+-------
+
+ - Use `databricks --help` to configure the cli locally. command `databricks configure --token`
+ - Pass in the Cluster name, URL, Generated token, in my case created a profile to connect to dev Databricks cluster.
+
+#### To push the schema to databricks for local development
+  - Created the `message_raw.json` schema definition file locally and used below command to push to Databricks.
+  - Use below command, which will copy the file from the local to Databricks
+```
+$ databricks fs cp ./schemas/message_raw.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
+
+```
+
+ - To update with any change, if the file is already exits in the Cluster
+```
+$ databricks fs rm dbfs:/FileStore/custom-datalake-schema/message_raw.json --profile dev
+
+## then copy the file
+$ databricks fs cp ./schemas/message_raw.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
+```
+
+If the token is expired, create a new token and set it using 
+```
+$ databricks configure --token --profile dev
+
+## This will display the existing Databricks cluster url
+## Then request for token
+```
+
+Once updated use below command to verify the Databricks access
+```
+$ databricks fs ls dbfs:/FileStore/custom-datalake-schema/
 ```
