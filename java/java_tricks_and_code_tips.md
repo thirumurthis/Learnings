@@ -153,12 +153,10 @@ class Test{
 ---------------
 #### 7. Can a static method in class be overridden or overloaded? - NO
   - [Link](https://stackoverflow.com/questions/13695999/polymorphism-and-static-methods)
-  - For static, the actual class reference method will be invoked. For example, in below code whem using `Car c = new Toyota()`, the Car class make is invoked.
-  - Since static method will not be overriden
+  - For static, the actual class reference method will be invoked. For example, in below code whem using `Car c = new Toyota()`, the `Car.make()` method will be invoked since its static.
 
 ```java
 public class StaticExamplePolymorphism {
-
     public static void main(String args[]) {
         Car c = new Toyota();
         c.make();  // Since static method cannot be overriden, the Car make will be invoked
@@ -169,7 +167,6 @@ public class StaticExamplePolymorphism {
         t.type();
    }
 }
-
 class Car {
     public static void make(){
         System.out.println("Parent car := make");
