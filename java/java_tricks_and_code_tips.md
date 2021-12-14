@@ -46,19 +46,24 @@ NOTE: `Compilation error occurs, if we include another method with parameter typ
 
 ```java
 public class OverloadingExampler {
-
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {	
 		OverloadingExampler over = new OverloadingExampler();
 		over.input(null);
 	}
-	
 	public void input (Object str) {
 		System.out.println("input of object: "+str);
 	}
-	
 	public void input(String str) {
 		System.out.println("Input of String: "+str);
 	}
 }
 ```
+- Output:
+```
+Input of String: null
+```
+ - Compilation error
+ - 
+![image](https://user-images.githubusercontent.com/6425536/145922899-04e25d46-4f8e-4023-bac8-3a48788ace37.png)
+
+-------------------
