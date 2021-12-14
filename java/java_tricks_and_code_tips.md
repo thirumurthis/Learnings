@@ -67,3 +67,48 @@ Input of String: null
 ![image](https://user-images.githubusercontent.com/6425536/145922899-04e25d46-4f8e-4023-bac8-3a48788ace37.png)
 
 -------------------
+#### 4. Trick question with static, with counter not being incremented before main() call
+```java
+public class MainTest {
+	 static int cnt = 0;
+	public static void main(String[] args) {
+		if(cnt < 3) {
+			main(null);
+		}else {
+			cnt++;
+		}
+		System.out.println("Main Test program");
+	}
+}
+```
+- Output:
+```
+Exception in thread "main" java.lang.StackOverflowError
+	at com.java.test.MainTest.main(MainTest.java:10)
+	at com.java.test.MainTest.main(MainTest.java:10)
+```
+-----------------
+#### 5. Trick question with static main call in recurion, with couter. How many times the string gets printed.
+   - since the cnt variable declared with 0, there are 4 statement printed out. 
+   - Since recursion of main method is used, the method is pushed to stack, and retrieved LIFO order
+```java
+public class MainTest {
+	 static int cnt = 0;
+	public static void main(String[] args) {
+		if(cnt < 3) {
+			cnt++; // Added to the flow.
+			main(null);
+		}else {
+			cnt++;
+		}
+		System.out.println("MainTest outstatement: "+cnt);
+	}
+}
+```
+- Output
+```
+MainTest outstatement: 4
+MainTest outstatement: 4
+MainTest outstatement: 4
+MainTest outstatement: 4
+```
