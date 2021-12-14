@@ -38,7 +38,7 @@ static class SimpleTask implements Runnable{
     x ends
   ```
   
-#### `ExecutorService` - is a framwork where we define a pool of threads to perform the tasks.
+#### `ExecutorService` - is a framework where we define a pool of threads to perform the tasks.
 
 ```java
 
@@ -83,7 +83,7 @@ x ends
      - In this case, we can provide more number of threads, like 20 or 30, even 100.
 
 #### Callable - used when the thread has to return any data. 
-   - Java provides a Future<> object as a place holder. using Future obeject `get()` is a blocking operation.
+   - Java provides a Future<> object as a place holder. using Future object `get()` is a blocking operation.
 
 ```java
 // Simple implemention 
@@ -130,9 +130,10 @@ main
 |
 | create pool      _________________________________
 |-----------------| fixed number of threads         | uses blocking queue -> stores the tasks submitted, 
-| service.submit()  t0 t1 t2 ..................t9                         -> and all the 10 threads will 1. fetch the next task from queue and 2. executes it
-| Future = blank     |  |  |  | ............... |
-|                    |  |  |  | ............... |      say if t0 thread processed the simple task, then it will start process next simple task
+| service.submit()  t0 t1 t2 ..................t9                         -> and all the 10 threads will do below 1 & 2-
+| Future = blank     |  |  |  | ............... |                              1. fetch the next task from queue 
+|                    |  |  |  | ............... |                              2. executes it
+|                    |  |  |  | ............... |      say if t0 thread processed the simple task, then it will start processing next simple task
  blocked Future.get()
                   |_________________________________|
 | Future = result
