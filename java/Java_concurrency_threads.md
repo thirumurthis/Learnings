@@ -63,10 +63,12 @@ main
 |
 | create pool      _________________________________
 |-----------------| fixed number of threads         | uses blocking queue -> stores the tasks submitted, 
-| for(0 to 100)     t0 t1 t2 ..................t9                         -> and all the 10 threads will 1. fetch the next task from queue and 2. executes it
-| service.start      |  |  |  | ............... |
-|                    |  |  |  | ............... |      say if t0 thread processed the simple task, then it will start process next simple task
-|                 |_________________________________|
+| for(0 to 100)     t0 t1 t2 ..................t9                         -> and all the 10 threads will perform 1 & 2
+| service.start      |  |  |  | ............... |                             1. fetch the next task from queue and 
+|                    |  |  |  | ............... |                             2. executes it
+|                    |  |  |  | ............... |    
+|                    |  |  |  | ............... |        - say, if t0 thread processed the simple task, 
+|                 |_________________________________|           then it will start process next simple task
 |
 x ends
 ```
@@ -134,8 +136,8 @@ main
 | service.submit()  t0 t1 t2 ..................t9                         -> and all the 10 threads will do below 1 & 2-
 | Future = blank     |  |  |  | ............... |                              1. fetch the next task from queue 
 |                    |  |  |  | ............... |                              2. executes it
-|                    |  |  |  | ............... |      say if t0 thread processed the simple task, then it will start processing next simple task
- blocked Future.get()
+|                    |  |  |  | ............... |        - say, if t0 thread processed the simple task,
+ blocked Future.get()                                           then it will start processing next simple task 
                   |_________________________________|
 | Future = result
 |
