@@ -112,3 +112,43 @@ MainTest outstatement: 4
 MainTest outstatement: 4
 MainTest outstatement: 4
 ```
+
+#### 6. Polymorphism (the capacity to take different forms).
+ - In language like Java, it describes languate ability to process objects of various types and classes through singe, uniform interface.
+
+ - Types of Ploymorphism
+    - **Compile time ploymorphism** _(static binding)_ => `method overloading`
+    - **Runtime polymorphism** _(Dynamic binding)_ => `method overriding`
+
+Example:
+   - ` Animal is a class, where Cat is a subclass`
+
+Static ploymorphism:
+  - Achived through `method overloading`, where several methods of a class having same name, but different types/order/number of parameters.
+  - At compile time java knows, which method to invoke by checking the method signature.
+
+Dynamic polymorphism:
+  - A Sub class overrides a method from Super class
+  - Note: As the method to call is determined during runtime it is called `dynamic binding` or `late binding`
+  ```java
+  class Animal{
+    public void legs(){
+    System.out.println(“has multiple legs”);
+    }
+}
+
+class Cat extends Animal{
+    public void legs(){
+    System.out.println(“has 4 legs”);
+    }
+}
+
+class Test{
+    public static void main(String[] args){
+    Animal animal=new Cat();
+    animal.move();    // prints Cat object, has 4 legs
+    animal=new Animal();
+    animal.move();    // prints Animal object, has multple legs
+    }
+ }
+  ```
