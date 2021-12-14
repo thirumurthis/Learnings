@@ -83,7 +83,8 @@ x ends
      - In this case, we can provide more number of threads, like 20 or 30, even 100.
 
 #### Callable - used when the thread has to return any data. 
-   - Java provides a Future<> object as a place holder. using Future object `get()` is a blocking operation.
+   - Java provides a `Future<>` object as a place holder. 
+     - using Future objects `get()` method is a blocking operation.
 
 ```java
 // Simple implemention 
@@ -109,7 +110,7 @@ static class Simpletask implements Callable{
    }
 }
 ```
-
+ ##### callable visualization (without executor service) 
 ```
   ## callable visualization (without executor service) - Future object get method blocks the main thread
     main thread
@@ -123,7 +124,7 @@ Future.get()      |
     |
     x ends
  ```
-  
+##### Callable visualization with Executor service  
 ```
 ## Callable visualization with Executor service 
 main
