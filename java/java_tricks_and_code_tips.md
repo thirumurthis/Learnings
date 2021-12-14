@@ -112,7 +112,7 @@ MainTest outstatement: 4
 MainTest outstatement: 4
 MainTest outstatement: 4
 ```
-
+----------------
 #### 6. Polymorphism (the capacity to take different forms).
  - In language like Java, it describes languate ability to process objects of various types and classes through singe, uniform interface.
 
@@ -136,13 +136,11 @@ Dynamic polymorphism:
     System.out.println(“has multiple legs”);
     }
 }
-
 class Cat extends Animal{
     public void legs(){
     System.out.println(“has 4 legs”);
     }
 }
-
 class Test{
     public static void main(String[] args){
     Animal animal=new Cat();
@@ -151,4 +149,49 @@ class Test{
     animal.move();    // prints Animal object, has multple legs
     }
  }
-  ```
+ ```
+---------------
+#### 7. Can a static method in class be overridden or overloaded? - NO
+  - [Link](https://stackoverflow.com/questions/13695999/polymorphism-and-static-methods)
+  - For static, the actual class reference method will be invoked. For example, in below code whem using `Car c = new Toyota()`, the Car class make is invoked.
+  - Since static method will not be overriden
+
+```java
+public class StaticExamplePolymorphism {
+
+    public static void main(String args[]) {
+        Car c = new Toyota();
+        c.make();  // Since static method cannot be overriden, the Car make will be invoked
+        c.type();
+        
+        Toyota t = new Toyota();
+        t.make();
+        t.type();
+   }
+}
+
+class Car {
+    public static void make(){
+        System.out.println("Parent car := make");
+    }
+    public void type(){
+        System.out.println("Parent car := manual or auto ");
+    }
+}
+
+class Toyota extends Car {
+    public static void make() {
+        System.out.println("Toyota make");
+    }
+    public void type(){
+        System.out.println("Toyota auto type");
+    }
+}
+```
+- Output:
+```
+Parent car := make
+Toyota auto type
+Toyota make
+Toyota auto type
+```
