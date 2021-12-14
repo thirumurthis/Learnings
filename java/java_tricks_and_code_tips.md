@@ -192,3 +192,15 @@ Toyota auto type
 Toyota make
 Toyota auto type
 ```
+----------------
+#### 8. Map interface and implementaitons
+  - Implementation of map
+
+| Map | Ordering |
+|-----|------|
+|HashMap |Insertion order of key is NOT preserved.  |
+|TreeMap | Like HashMap, but the keys will be `sorted` |
+|LinkedHasMap | Insertion order of key will be preserved | 
+|HashTable | Like HashMap, but synchorized and thread-safe. use of HashMap is preferred, if thread-safety is not required |
+
+- `ConcurrentHashMap`
