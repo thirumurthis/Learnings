@@ -2,8 +2,8 @@
  
    - 1 Java thread is 1 OS thread, and creating on its own is an expensive operation
    - we need a fixed number of threads to be created as a pool, and we submit the task to it.
-       - if we need 100 threads to run certain task, we can create a thread pool with 10 fixed threads, and submit the tasks to it
-       - so at any point of time 10 threads will be processed by the thread pool, once it one thread is freed up, another task will be processed by another thread
+       - If we need 100 threads to run certain task, we can create a thread pool say with 10 fixed threads, and submit the tasks to it
+       - At any point of time 10 threads will be processed by the thread pool, once one thread is freed up, another task will be processed by another thread
    
   #### Runnable - doesn't return any data 
 
