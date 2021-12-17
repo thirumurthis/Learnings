@@ -272,3 +272,16 @@ public static void main(String args[]){
 }
 ```
 
+#### 12. Sorting a list of string based on the char at an index.
+ - Logic is to substring in the lambda and sort it. uses `sorted()` with comparator function
+```java
+	private void sortStringBasedOnPositionOfChar() {
+		List<String> lines = Arrays.asList("deV0","doI0","d1X5");
+		int n=2;
+		List<String> sortedLines = lines.stream()
+	            .sorted(Comparator.comparing(itm -> itm.substring(n)))
+	            .collect(Collectors.toList());
+		System.out.println(lines.toString() + "\n" +sortedLines.toString());
+	}
+
+```
