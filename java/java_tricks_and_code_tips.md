@@ -2,8 +2,9 @@
   - This prints `String`. (refer code snipper in next section)
 
 -----------------------
-#### 2. List maintains the insertion order and sort integer string first since ascii representation.
-  - Sorting the list containing with String and String integers. (the integer string will be printed first"
+#### 2. List maintains the insertion order. 
+  - How does string of integer in list gets sorted. (based on ascii representation).
+  - Sorting the list containing with String and String integers. (the integer string will be printed first)
    
 Refer below code:
  ```java
