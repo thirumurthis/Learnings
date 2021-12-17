@@ -204,3 +204,70 @@ Toyota auto type
 |HashTable | Like HashMap, but synchorized and thread-safe. use of HashMap is preferred, if thread-safety is not required |
 
 - `ConcurrentHashMap`
+To continue....
+-----------
+
+#### 9. How to compare input string, does it contains any char from str array.
+
+<details>
+	<summary>click to expand</summary>
+	
+```java
+	
+	public static void main(String[] args) {
+	     String[] romanLtr = {"I","V","X"};
+	     String inputStr = "devI";
+	     boolean containsStr = Arrays.stream(romanLtr).anyMatch(inputStr::contains)
+	     System.out.println(containStr); //true
+        }
+	
+```
+	
+</details>
+
+------------
+#### 10. Comparator vs Comparable
+
+ - COMPARABLE
+   - With Comparable, 
+     - The class needs to implement the comparable interface
+     - And need to override its `compareTo()` method. 
+   So when you call the Collections.sort method on an object of your class, the implementation of the `compareTo()` method is called INTERNALLY, and the objects are sorted accordingly.
+
+ Note:
+   - The drawback is that if you want to sort based on some other property of your class you need to provide another implementation of the comparable interface.
+
+- COMPATRATOR
+  - With comparator,
+    - It's a bit easier. 
+    - Collections class also has a method which excepts an implementation of the comparator interface.
+    ```java
+    Arrays.sort(inAsCharArray,  (Character c1, Character c2) -> Character.toLowerCase(c1)-Character.toLowerCase(c2));
+    ```
+--------------
+
+#### 11. Convert the String to Character Array (as wrapper) object using lambdas
+```
+Character[] inAsCharArray = input.chars().mapToObj(item -> (char)item).toArray(Character[]::new);
+```
+ - Note to convert to char[] array, use `"inputString".toCharArray()`
+
+```java
+
+public static void main(String args[]){
+ String input= "somestring";
+ 
+ // Steps to convert string to Character[] object
+ Character[] inAsCharArray = input.chars().mapToObj(item -> (char)item).toArray(Character[]::new); 
+ 
+ // Using comparator.
+ Arrays.sort(inAsCharArray,  (Character c1, Character c2) -> Character.toLowerCase(c1)-Character.toLowerCase(c2));
+ 
+ StringBuilder sb  = new StringBuilder(inAsCharArray.length);
+ for (Character c : inAsCharArray)
+         sb.append(c.charValue());
+
+ System.out.println(sb.toString());
+}
+```
+
