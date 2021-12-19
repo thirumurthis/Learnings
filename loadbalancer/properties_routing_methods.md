@@ -17,4 +17,7 @@
    
    - IP Hash
       - Routes client to server based on IP 
-      - This is useful for stateful sessions
+      - This is useful for stateful sessions (in case we need to maintain session)
+        - In certain applicaton the client needs data stored in particular server, in that case we hash the IP address so when the user/client sends request from that IP address it will routed this that server. Example, use case Shopping cart application, for example if the user/client refresh the page and wanted to render the data in server.
+
+
