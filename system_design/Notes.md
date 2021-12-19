@@ -137,6 +137,23 @@ Note: The data written to the database should be immediately updated or rendered
             - In case of master-replica if connection between the master & replica is down it leads to consitency issue. Client request might render with stale data.
             - This provide fault tolerance.
        - Paritioning
-          - Sharing (Horizontal partitioning)
-             -  
-      
+          - 1. Sharing (Horizontal partitioning)
+             - The schema of the table stays the same, but split accross multiple DB.
+               - for example, Say if we are storing user name the user name starting with A-F will be stored in one database, G-M in another.
+               - Now since we have the read replicas setup this can handle more writes.
+             - Pros: 
+                - Handles more traffic.
+             - Cons: 
+                -  Hot Keys, say if the username with A has more traffic, then that shared will be hit with more traffic leading to uneven traffic.
+                -  No joins accross shards.
+               Note:
+                 - Instagram had an hot key issue with popular celebrity name had way more traffic than others. 
+         - 2. Vertical Partitioning:
+            - Dividing up the schema of database into seperate tables
+            - This will be done by functionality, for example say we have one big data of user in analytics not certain amounts are not used together, so split them.
+            - Most data in row isn't needed for most queries.
+
+Selecting NoSQL:
+  - The trade offs are known upfront.
+  - CAP theorm. Consistency - Availabilty - Partitioning.
+  - For transaction based system, consistency is required.
