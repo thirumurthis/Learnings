@@ -30,5 +30,11 @@ Checkout [link](https://www.vinsguru.com/rate-limiter-pattern/)
      - Cons: still threads are blocked for short duration
      
 ### Retry Pattern
+  - When running multiple instances of same Service for high availability and load balancing. If one of the instances has issue and it does not respond properly to our request, If we retry the request, the load balancer could send the request to a healthy node and get the response properly. So with Retry option, we have more chance for getting the proper response.
+    - Use `@Retry` annotation with configuration in application.yaml
 
 ### Bulkhead pattern
+  - A ship is split into small multiple compartments using Bulkheads. Bulkheads are used to seal parts of the ship to prevent entire ship from sinking in case of flood.
+  - The application should be split into multiple components and resources should be isolated in such a way that failure of one component is not affecting the other.
+  - Bulkhead Pattern helps us to allocate limit to resources which can be used for specific services. So that resource exhaustion can be reduced.
+  - Use `@Bulkhead` annotation with configuration in application.yaml
