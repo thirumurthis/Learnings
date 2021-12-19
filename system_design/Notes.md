@@ -88,3 +88,55 @@ Note: The data written to the database should be immediately updated or rendered
 
 -------------
 
+### Database Scaling
+  - Application servers are mostly stateless, so it can be horizontally scalled without much issues.
+  - Scaling database itself has lots of challenges - replication, partition, etc.
+
+- Most of the web apps are majority reads only. for example, in twitter or facebook the post are written once but read multiple times.
+- The above is also a design consideration.
+
+##### Basic scaling techniques:
+   - Indexes 
+     - Pros:
+       - Create index based on the column that is frequently accessed 
+         - creating index on most unique or high cardinality field will make lookup efficient
+       - indexes speeds up read performance
+     - Cons:
+       - Writes and updates becomes slightly slower. This is due to the fact that the index also needs to be udpated.
+       - Indexes occupies more storage.
+
+   - Denormalization
+      - This desinging the database based on the standard best practice.
+        - Pros:
+           - For example, Add redundant data to tables to reduce joins (with other table)
+           - Boost read performance
+        - Cons:
+           - Slows down writes
+          - Risk of inconsistent data across tables
+          - Harder to write code, to update redundant data in different tables.
+
+   - Connection pooling
+     - Allow multiple application thread to use same DB connection 
+     - Save overhead of independent DB connections. 
+
+   - Caching
+     - This is not implemented within the database.
+     - Cache is setup in front of DB layer to handle request and serve content
+     - Not all data can be cached.
+     - for a request, if the data NOT exists in the cache a database request is made, for any subsequent request if the data is available in cache it will be served.
+     - Example: Reids, Memcached
+   - Vertical scaling:
+      - Buy a bigger server with more memory, processor, disk.
+      - Easiest solution, just buy high compute machine and steup the database and move the data to it.
+
+   - Replicaton and Partitioning 
+      - Replication and partitioning are continous scaling
+       - Replication
+          - Create replica servers to handle read request
+          - Master server dedicated only to writes. 
+            - In case of master-replica if connection between the master & replica is down it leads to consitency issue. Client request might render with stale data.
+            - This provide fault tolerance.
+       - Paritioning
+          - Sharing (Horizontal partitioning)
+             -  
+      
