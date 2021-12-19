@@ -1,3 +1,7 @@
+##### Different load balancing options
+   - Nginx, HAProxy - Software based
+   - F5, Citrix - Hardware based  (costly, since designed specific for load balancing)
+
 
 ##### Routing methods:
    - Round Robin:
