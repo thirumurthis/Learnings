@@ -39,7 +39,6 @@
    - This is used for replication
    - Similar to data redundant store, using Active and Passive cache. Passive cache might be idle most of the time, having backups would save sudden load spikes in server.
 
-
 #### Cache Eviction
   - This is performed to prevent stale data.
   - Caching only most valuable data to save cost and resources. For example it is not required to store most of the database data in cache we can pre calculate which needs to be cached based on requirement.
@@ -61,5 +60,31 @@
 
  Note: 
    - The highly requeste data is stored in the cache, the least accessed data is requested from the database or application.
+ 
+ Example for LRU/LFU:
+   - For a twitter like application, say to keep the most recent tweet with million likes in the cache. For a few year old tweet with less like can be fetched from database.
+ 
+ Insight: 
+   - Check `Thundering herd problem`
+    - Case study from facebook
+       - Situation: When a popular post is uploaded, Facebook dumps from cache to refresh cache and if there are many simultaneous request coming in at the same time to view that post. The request might try to read from the cache in this case since cache is not available the read request is sent to database. This causes issues in the database due to spiked request.
+       - Solution to issue at scale cache eviction was that to implement lease and have a backup cache and serve that old data.
+ 
+ #### Caching strategies
+   - Cache Aside  (this is the most commonly used)
+   - Read Through
+   - Write Through (used for write heavy application) 
+      - In write through, to increase the amount of writes the database can handle the cache is updated before writting to database itself.
+      - This allows to maintain high consistency between the cache it creates latency in writting the data to database.
+   - Write Back (used for write heavy application)
+      - In this case data is written directly to the cache, and latter to database. In this case if the cache fails the data will be lost.
+      - If consistency isn't essential this can be used.
+ 
+ #### Cache Consistency
+  -  How to maintain the consitency between database and cache efficency.
+  -  This mostly depends on the use case.
+
+Note: The data written to the database should be immediately updated or rendered in case if that data is displayed to user.
+
 -------------
 
