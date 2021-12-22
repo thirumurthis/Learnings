@@ -494,9 +494,13 @@ spec:
  
  using temp pods to create command (curl, wget)
  ```
- $ kubectl -n <name-space> run --rm -i --image=nginx:alpine --restart=Never curl -m 2 <service-name>:<service-port-exposed>
+ $ kubectl -n <name-space> run --rm -it --image=nginx:alpine --restart=Never --command /bin/sh
+ # issue curl command or wget ; not the -it in this case opens up terminal
  
- $ kubectl -n <name-space> run --rm -i --image=busybox:stable --restart=Never wget -qO- <service-name>:<service-port-exposed>
+ or 
+ $ kubectl -n <name-space> run --rm -i --image=nginx:alpine --restart=Never --command curl -m 2 <service-name>:<service-port-exposed>
+ 
+ $ kubectl -n <name-space> run --rm -i --image=busybox:stable --restart=Never --command wget -qO- <service-name>:<service-port-exposed>
  ```
   - As service can also be created using defintion yaml file, if there are some issues, probably might be mistake. check along with the debugging service.
  -----------
