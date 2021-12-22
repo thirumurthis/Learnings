@@ -60,7 +60,12 @@ protected IndexingPolicy getIndexingPolicy(String[] indexes) {
       CosmosContainerProperties containerProperties = new CosmosContainerProperties(containerName,partitionKeyOfContainer);
       containerProperties.setIndexingPolicy(indexingPolicy); //policy returned by above method
       containerProperties.setDefaultTimeToLiveInSeconds(24*10*3600); //ttl seconds 10 days
-      // pass this part of the client creation
+      // pass this part of the container creation
+      
+      CosmosDatabaseResponse res = client.createDatabaseIfNotExists(databaseName);
+      CosmosDatabase database = client.getDatabase(res.getProperties().getId()); 
+      CosmosContainerResponse containerResponse = database.createContainerIfNotExists(containerProperties); //passing the index policy
+      CosmosContainer container = database.getContainer(containerResponse.getProperties().getId());
 ```
 
 - Full java program
