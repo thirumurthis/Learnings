@@ -1,34 +1,34 @@
-### 1. Install the emulator.
+##### 1. Install the emulator.
   - Note: After installation faced an issue since the 8081 port was sued by McAfee.
   - From commnad prompt, navigate to the Cosmosdb Emulator exe, and start the executable in command line passing argument `/port=8085`, default it will start the emulator.
 
-### 2. When connecting with Java, with maven pom.xml, make sure to inclde `<properties> <maven.target.version>11...` and also the maven plugin.
 
-### 3. Add the SLF4J dependencies and apache commons.
+##### 2. When connecting with Java, with maven pom.xml, make sure to inclde `<properties> <maven.target.version>11...` and also the maven plugin.
 
-### 4. During client implementation in java faced certifcate authentication issue, followed the instruction provided in this [link](https://docs.microsoft.com/en-us/answers/questions/557456/cosmos-db-emulator-connection-fails-with-certifica.html)
+##### 3. Add the SLF4J dependencies and apache commons.
+
+##### 4. During client implementation in java faced certifcate authentication issue, followed the instruction provided in this [link](https://docs.microsoft.com/en-us/answers/questions/557456/cosmos-db-emulator-connection-fails-with-certifica.html)
    - Check documentation to set the certifcate locally, [Link](https://docs.microsoft.com/en-us/azure/cosmos-db/local-emulator-export-ssl-certificates)
-      - From windows certificate manager select personal, serach for CosmosDbEmulatoreCertificate. Open and copy as file. (don't include private key)
+      - From windows certificate manager select personal, serach for DocumentDbEmulatorCertificate. Open and copy as file. (don't include private key, choose x509 cer)
       - Move the .cer file to diffrent location, this will be used to create keystore
       - use command `keytool -importcert -alias cosmosdbemu -file documentemulatorcert.cer -keystore cosmosemulator.keystore`, when prompted for password provide it.
       - Since we don't want the jacerts (java) to be updated with this keystore, we created a seprate keystore.
       - In order to include it witin the jvm conttext use `System.properties("javax.net.trustStore","/path/to/truststore");`
 
-### 4. Note `id` in the document is mandatory, without an id in the document cosmosdb throws exception.
+##### 4. Note `id` in the document is mandatory, without an id in the document cosmosdb will throws exception.
 
-### 5. Use `container.close` without this the jvm will be running, simply the client session will be on.
+##### 5. Use `container.close` without this the jvm will be running, simply the client session will be on.
 
-#### Terminology:
+##### Terminology:
   - Database
   - Container
   - Item (row)
      - Partition key
 
-#### All the queries are executed via rest api call
+###### All the queries are executed via rest api call
 
-#### IndexPolicy can also be defined, from java. By default, CosmosDb performs indexing.
+###### IndexPolicy can also be defined, from java. By default, CosmosDb performs indexing.
 ```java
-
 /*
  //Sample indexs list, which is needs to be indexed
  
