@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:  myapp-az-k8s-config   #{{ .Release.Name }}-az-k8s-config # when using helm
+  namespace: myapp-dev         #{{ .Release.Namespace }}
+data:
+  kibana.yml: |-
+    server.name: myapp-kibana
+    server.host: "0"
+    server.publicBaseUrl: "https://myapp.domain.com/app-kibana"
+    server.basePath: "/myapp-kibana"
+    server.rewriteBasePath: false 
+    elasticsearch.hosts: ["http://<ip-address-of-elasticsearch-host>:9200"]
+    xpack.monitoring.ui.container.elasticsearch.enabled: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-kibana-deployment      #{{ template "application.fullname" . }}-kibana-deployment
+  labels:
+    app: myapp-kibana                #{{ template "application.fullname" . }}-kibana
+spec:
+  replicas: 2                        #{{.Values.replicaCount.kibana}}
+  revisionHistoryLimit: 1
+  strategy:
+      type: RollingUpdate
+  selector:
+    matchLabels:
+      app: myapp-kibana              # {{ template "application.fullname" . }}-kibana
+  template:
+    metadata:
+      labels:
+        app: myapp-kibana            # {{ template "application.fullname" . }}-kibana
+    spec:
+      containers:
+        - name: app-kibana-container
+          image: docker.elastic.co/kibana/kibana:7.2.16         #{{.Values.deploymentVersion.kibana}}
+          imagePullPolicy: Always
+          volumeMounts:
+          - name: env-variables-volume 
+            mountPath: /usr/share/kibana/config
+          ports:
+            - containerPort: 5601                      #{{.Values.servicePort.kibana}}
+              name: http  
+          resources:
+            requests:
+              cpu: 100m                                # "{{.Values.resources.requests.cpu.kibana}}"
+              memory: 128Mi                            # "{{.Values.resources.requests.memory.kibana}}"
+            limits:
+              cpu: 1000m                               # "{{.Values.resources.limits.cpu.kibana}}"
+              memory: 2Gi                              # "{{.Values.resources.limits.memory.kibana}}"
+      volumes:
+      - name: env-variables-volume
+        configMap:
+          name: myapp-az-k8s-config                    # refer the config map name above
+          items:
+            - key: kibana.yml
+              path: kibana.yml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-kibana-service            #{{ template "application.fullname" . }}-app-kibana-service
+  labels:
+    app: my-app-kibana-service           #{{ template "application.fullname" . }}-app-kibana-service
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5601                         #{{.Values.servicePort.kibana}}
+      nodePort: 30110                    # {{.Values.loadBalancePort.kibana}}
+      protocol: TCP
+  selector:
+    app: my-app-kibana                   # {{ template "application.fullname" . }}-app-kibana
