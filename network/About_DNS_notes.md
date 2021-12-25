@@ -19,7 +19,20 @@
 #### What is TTL's and Caches?
   - When quering a domain name the browser will ask your local resolving name server if they have DNS records for that domain cached.
   - The resolving name server is typically you ISP (internet service provider), and popular websites will likely be cached.
-  - 
+  - Local name resolution, avoind DNS lookup process.
+  - When creating a record, you have option to set a TTL (time to live)
+  - TTL's tell resolving name servers how long they can store the record information. (this can rang from 30s to days)
+
+  - If the records are not cached, then resolving name server will ask the root name server for the TLD for that domain, which will point you to the provider authoritative for hosting the records.
+
+```
+
+ [Request] ---> { ISP       } ----> {Root      } ---> { TLD        } ---> { Authoritative } ----> { DNS    } -----> { web server } ----> { request served }
+                  Resolving          Nameserver         Nameserver          Nameserver              Record            and site 
+                  nameserver                            like .com           DNS hosting                               files
+                                                        or .net             Provider
+
+```
 
 
 
