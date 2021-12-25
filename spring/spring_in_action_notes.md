@@ -39,3 +39,12 @@ private String ccCVV;
        <version>2.5.2</version>
 </dependency>
 ```
+#### Lombok annotation
+
+```
+@RequiredArgsConstructor
+@NoArgsConstructor(access=AccessLevel.PRIVATE, force=true)
+```
+Notes:
+In addition to the JPA-specific annotations, you’ll also note that you’ve added a @NoArgsConstructor annotation at the class level. JPA requires that entities have a noarguments
+constructor, so Lombok’s @NoArgsConstructor does that for you. You don’t want to be able to use it, though, so you make it private by setting the access attribute to AccessLevel.PRIVATE. And because there are final properties that must be set, you also set the force attribute to true, which results in the Lombok-generated constructor setting them to null.
