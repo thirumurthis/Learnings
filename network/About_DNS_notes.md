@@ -25,6 +25,7 @@
 
   - If the records are not cached, then resolving name server will ask the root name server for the TLD for that domain, which will point you to the provider authoritative for hosting the records.
 
+##### Request flow from the browser to client server:
 ```
 
  [Request] ---> { ISP       } ----> {Root      } ---> { TLD        } ---> { Authoritative } ----> { DNS    } -----> { web server } ----> { request served }
@@ -34,6 +35,19 @@
 
 ```
 
+#### What is traceroute?
+  -  How many network hops took to resolve the domain.
+  -  How this system connected to internet.
+  -  we can use traceroute to identify the source of latency.
+
+###### what is taceroute used for?
+   - Traceroute is used to track transit delays of packets accross network. 
+   - Ping tells the RTT (round trip time), between a user and the system.
+    - traceroute will fail, if two or three packets sent are lost. (means faulty configuration somewhere)
+
+#### What is CDN (content delivery network)?
+  - A CDN is a wide network of web server that are configured to deliver contetn to clients from the geogrpahically closest server (or server with the fastest connection) to the client thereby optimizing the transfer speed.
 
 
+  
 [.](https://support.constellix.com/support/solutions/articles/47000862695-how-dns-works)
