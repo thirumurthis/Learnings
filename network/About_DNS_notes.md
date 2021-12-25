@@ -75,13 +75,13 @@
    - `telnet` command can be used to test if the port is available over TCP.
    - `$ telnet <ip-address> <port-number>`
 
-#### DNS Record types
-  - A  => basic form, we will specify an FQDN to point to an IP address
+#### DNS Record types (A, AAAA, CNAME, ANAME, SOA)
+  - *A*  => basic form, we will specify an FQDN to point to an IP address
        => for example, for www.example.com, the root of domain is example.com. The root can aslo be called as "naked domain", and usually represented by an `@`.
        
-  - AAAA (quad A) => This is similar to the A records, instead of pointing to the IPV4 address, in this case the domain will point to IPV6 address.
+  - *AAAA (quad A)* => This is similar to the A records, instead of pointing to the IPV4 address, in this case the domain will point to IPV6 address.
 
-  - CNAME (also know as Alias Records) => points to hostname to another hostname or FQDN
+  - *CNAME* (also know as Alias Records) => points to hostname to another hostname or FQDN
           => These records ponits multiple hosts to a single location. (without having specifically assgin A records to each hostname)
           => For example: if we move a blog from news.example.com to blog.example.com, then we would use a CNAME record. 
           => CNAME records can also be used to point a hostname to another domain or external hostname. 
@@ -91,10 +91,33 @@
           => considiration:
               - 1. only use CNAME record if there are no other records for that hostname
               - 2. CNAME records cannot be used for root record
-  - ANAME 
+  - *ANAME* 
         => We needed a record that could point a hostname to another hostname or FQDN but could also represent the root record.
         => ANAME records allow you to point the root of your domain to a hostname or FQDN. 
-        => ANAME records work seamlessly with CDN's because they allow for multiple dynamically updated IP addresses to be authoritative for a domain in many different locations
+        => ANAME records work seamlessly with CDN's because they allow for multiple dynamically updated IP addresses to be authoritative for a domain in many different locations.
         
-        
+   - *SOA* (Start of Authority)
+        => The SOA record is a special resource record that contains administrative details for a particular DNS zone such as the domain name administrator's contact information and synchronization parameters for other DNS servers
+#### Finding Authoritative response in `nslookup`
+
+ - Typically most of the response to our nslookup queries are going to be non-authoritative, this is because the response from a cached copy from third-party and not from the primary DNS server holding the master copy.
+ - +> To get an authoritative answer, we need to specify the authoritative name served as part of the request. include `-type=soa` switch in `nslookup`
+```
+  > nslookup -type=soa yahoo.com
+  Server:   ------
+  Address:  -------
+
+  Non-authoritative answer:
+   yahoo.com
+        primary name server = ns1.yahoo.com
+        responsible mail addr = hostmaster.yahoo-inc.com
+        serial  = 2021122401
+        refresh = 3600 (1 hour)
+        retry   = 300 (5 mins)
+        expire  = 1814400 (21 days)
+        default TTL = 600 (10 mins)
+```
+   - The name server for yahoo.com is ns1.yahoo.com (primary name server value)
+
+
 [.](https://support.constellix.com/support/solutions/articles/47000862695-how-dns-works)
