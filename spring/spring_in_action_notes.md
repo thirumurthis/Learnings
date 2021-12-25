@@ -1,3 +1,5 @@
+#### `.html` file `<form>` element without `action` to redirect, will reload the same page.
+
 #### Below is to perform property validation using Java Bean API Validation and hibernate validation.
 
 - `@CreditCardNumber` annotation uses **Luhn algorithm**.
