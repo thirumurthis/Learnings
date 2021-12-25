@@ -51,3 +51,14 @@ In addition to the JPA-specific annotations, you’ll also note that you’ve ad
 constructor, so Lombok’s @NoArgsConstructor does that for you. You don’t want to be able to use it, though, so you make it private by setting the access attribute to AccessLevel.PRIVATE. And because there are final properties that must be set, you also set the force attribute to true, which results in the Lombok-generated constructor setting them to null.
 
 The `@RequiredArgsConstructor` is needed since the `@Data` implicitly adds a required arguments constructor, but when a `@NoArgsConstructor` is used, that constructor gets removed. An explicit `@RequiredArgsConstructor` ensures that you’ll still have a required arguments constructor in addition to the private no-arguments constructor.
+
+#### Entity annotation for spring Data
+
+```
+@PrePersist
+void createdAt() {
+this.createdAt = new Date();
+}
+```
+
+`@PrePersist` 
