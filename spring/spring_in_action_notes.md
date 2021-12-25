@@ -19,3 +19,23 @@ private String ccExpiration;
 private String ccCVV;
 
 ```
+
+#### In order to disable the default `Hibernate` dependency, we can exclude the hibernate dependency from pom.xml and and include the necessary provider, below uses ExclipseLink instead of Hibernate.
+
+```xml
+<dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-data-jpa</artifactId>
+     <exclusions>
+         <exclusion>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <groupId>org.hibernate</groupId>
+         </exclusion>
+     </exclusions>
+</dependency>
+<dependency>
+       <groupId>org.eclipse.persistence</groupId>
+       <artifactId>eclipselink</artifactId>
+       <version>2.5.2</version>
+</dependency>
+```
