@@ -66,4 +66,35 @@
    - The reason to use the hostname of CDN is the IP address of the edge server will change depending on the location of the user making the query.
    - Each time a user request content from a CDN the DNS gives the user the IP of CDN server, using DNS load balancing.
   
+#### DNS Lookup
+  - DNS lookup lets us to check that the DNS record changes have propagated by checking the configuration from multiple public resolving nameservers (from different location).
+  - The DNS Lookup is run against the `authoritative nameserver` for that domain, which is usually the DNS management provider. The changes to record will refelect in DNS lookup, but resolving nameserver will hold old record in its cache.
+
+#### TCP checks:
+   - Attempts to open TCP connection on specific port.
+   - `telnet` command can be used to test if the port is available over TCP.
+   - `$ telnet <ip-address> <port-number>`
+
+#### DNS Record types
+  - A  => basic form, we will specify an FQDN to point to an IP address
+       => for example, for www.example.com, the root of domain is example.com. The root can aslo be called as "naked domain", and usually represented by an `@`.
+       
+  - AAAA (quad A) => This is similar to the A records, instead of pointing to the IPV4 address, in this case the domain will point to IPV6 address.
+
+  - CNAME (also know as Alias Records) => points to hostname to another hostname or FQDN
+          => These records ponits multiple hosts to a single location. (without having specifically assgin A records to each hostname)
+          => For example: if we move a blog from news.example.com to blog.example.com, then we would use a CNAME record. 
+          => CNAME records can also be used to point a hostname to another domain or external hostname. 
+          => To resolve a CNAME record, the `name server` must behave slightly different than it would with a normal query of another record type. 
+          => When a name server looks up a name and finds it is a CNAME record, it replaces the name with the canonical name (the target of the CNAME) and looks up the new name.
+          => CNAME lookup performs two queries to reach the final resolution.
+          => considiration:
+              - 1. only use CNAME record if there are no other records for that hostname
+              - 2. CNAME records cannot be used for root record
+  - ANAME 
+        => We needed a record that could point a hostname to another hostname or FQDN but could also represent the root record.
+        => ANAME records allow you to point the root of your domain to a hostname or FQDN. 
+        => ANAME records work seamlessly with CDN's because they allow for multiple dynamically updated IP addresses to be authoritative for a domain in many different locations
+        
+        
 [.](https://support.constellix.com/support/solutions/articles/47000862695-how-dns-works)
