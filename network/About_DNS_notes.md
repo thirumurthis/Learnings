@@ -48,6 +48,22 @@
 #### What is CDN (content delivery network)?
   - A CDN is a wide network of web server that are configured to deliver contetn to clients from the geogrpahically closest server (or server with the fastest connection) to the client thereby optimizing the transfer speed.
 
+##### CDN Redundancy & Reliability
+   - CDN's have built-in redundancy, which makes outage resistant (every server has a backup).
+   - CDN's are optimized to automatically route traffic to the nearest available server or point of presence (POP). i.e. if any node is down, the request are forwarded to closest server.
+   - This also takes load off from the origin server. (The origin server holds the original content and data for your webpage).
+   - Since contents are distributed, this is more resistant to slowdowns and outage mitigating issues like traffic spikes and DDoS attacks.
+   - These `edge servers` can either push or pull content from the origin server.
 
+##### CDN benefits:
+  - provides search engine optimization (SEO) ranking.
+ 
+#### CDN and DNS 
+ - CDN service 
+   - The DNS holds the web together by pointing a domain name to an IP address or hostname.
+   - The CDN provider will provide a hostname that you will point to with a DNS record.
+   - For Example, to point for www.mynewsite.com to CDN service, create a `CNAME` record for `www` and point it to myCDNHostname.com.
+   - The reason to use the hostname of CDN is the IP address of the edge server will change depending on the location of the user making the query.
+   - Each time a user request content from a CDN the DNS gives the user the IP of CDN server, using DNS load balancing.
   
 [.](https://support.constellix.com/support/solutions/articles/47000862695-how-dns-works)
