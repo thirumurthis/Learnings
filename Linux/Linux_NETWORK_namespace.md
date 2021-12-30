@@ -354,13 +354,24 @@ NOTE:
 ```
 $ ip addr add 192.168.15.5/24 dev v-net-0
 ```
+
+```
+#### Below is the route table after, adding the up address to the network virtual switch (executing above command)
+
+root@thiru-HP:~# route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         thiru-HP. 0.0.0.0         UG    0      0        0 eth0
+172.x.x.x       0.0.0.0         255.255.240.0   U     0      0        0 eth0
+192.168.15.0    0.0.0.0         255.255.255.0   U     0      0        0 v-net-0
+```
 - Still the network namespace are private, _cannot_ be connected from internet.
 
 ##### Since we have added a new ip address to the v-net-0, we will be able to access the red, blue namespace as well
 ```
 ### below is from the host machine
 
-root@thirumurthi-HP:~# ping 192.168.15.1
+root@thiru-HP:~# ping 192.168.15.1
 PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 64 bytes from 192.168.15.1: icmp_seq=1 ttl=64 time=0.262 ms
 64 bytes from 192.168.15.1: icmp_seq=2 ttl=64 time=0.094 ms
@@ -393,7 +404,7 @@ $ ip netns exec blue ping www.google.com
 ## route table of the blue namespace
 $ ip netns exec blue route
 
-root@thirumurthi-HP:~# ip netns exec blue route
+root@thiru-HP:~# ip netns exec blue route
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 192.168.15.0    0.0.0.0         255.255.255.0   U     0      0        0 veth-blue
@@ -413,14 +424,14 @@ $ ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5
  - Though the gateway is added, from the blue namespace we can use ping but NO response will be received. (refer the last command output below)
  
  ```
-root@thirumurthi-HP:~# ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5
-root@thirumurthi-HP:~# ip netns exec blue route
+root@thiru-HP:~# ip netns exec blue ip route add 192.168.1.0/24 via 192.168.15.5
+root@thiru-HP:~# ip netns exec blue route
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 192.168.1.0     192.168.15.5    255.255.255.0   UG    0      0        0 veth-blue
 192.168.15.0    0.0.0.0         255.255.255.0   U     0      0        0 veth-blue
-root@thirumurthi-HP:~#
-root@thirumurthi-HP:~# ip netns exec blue ping 192.168.1.3
+root@thiru-HP:~#
+root@thiru-HP:~# ip netns exec blue ping 192.168.1.3
 PING 192.168.1.3 (192.168.1.3) 56(84) bytes of data.
 ^C
 --- 192.168.1.3 ping statistics ---
@@ -446,9 +457,9 @@ $ iptables -t nat -A POSTROUTNG -s 192.168.15.0/24 -j MASQUERADE
 ```
 $ ip netns exec blue ip route add default via 192.168.15.5
 
-root@thirumurthi-HP:~# ip netns exec blue ip route add default via 192.168.15.5
-root@thirumurthi-HP:~#
-root@thirumurthi-HP:~# ip netns exec blue route
+root@thiru-HP:~# ip netns exec blue ip route add default via 192.168.15.5
+root@thiru-HP:~#
+root@thiru-HP:~# ip netns exec blue route
 Kernel IP routing table
 Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
 default         192.168.15.5    0.0.0.0         UG    0      0        0 veth-blue
@@ -457,7 +468,7 @@ default         192.168.15.5    0.0.0.0         UG    0      0        0 veth-blu
 ```
 - Now after adding the default gateway we can access the external network
 ```
-root@thirumurthi-HP:~# ip netns exec blue ping www.google.com
+root@thiru-HP:~# ip netns exec blue ping www.google.com
 PING www.google.com (172.217.14.228) 56(84) bytes of data.
 64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=1 ttl=114 time=23.4 ms
 64 bytes from sea30s02-in-f4.1e100.net (172.217.14.228): icmp_seq=2 ttl=114 time=14.6 ms
