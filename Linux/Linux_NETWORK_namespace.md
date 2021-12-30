@@ -445,7 +445,7 @@ PING 192.168.1.3 (192.168.1.3) 56(84) bytes of data.
  - How to enable NAT, add a new rule in the `iptables`
 
 ```
-$ iptables -t nat -A POSTROUTNG -s 192.168.15.0/24 -j MASQUERADE
+$ iptables -t nat -A POSTROUTING -s 192.168.15.0/24 -j MASQUERADE
 
 ### Add a new rule in NAT iptable to the POSTROUTING chain to masquerade or replace  the from address of all packets coming from the source network 192.168.15.0 with its own ip address. Thus when any one recieving the packets from this network will think this is coming from the host not from the namespace.
 ```
