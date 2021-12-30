@@ -58,14 +58,14 @@ $ ip netns exec blue route
   - This something like a virtual cable with two interface at the end.
   - 2 steps are involved in creating and attaching the interface to network namespace
  
- - **Step 1:** Create the link for each namespace that needs to pair.
+ ### **Step 1:** Create the link for each namespace that needs to pair.
   - with the below command the red (with name veth-red) and blue (with name veth-blue) namespace are linked
 ```
 $ ip link add veth-red type veth peer name veth-blue
 
 ### where veth-red and veth-blue are interface connecting the namespace
 ```
- - **Step 2:** Attach the interface to the namespace using below command:
+### **Step 2:** Attach the interface to the namespace using below command:
 ```
 $ ip link set veth-red netns red
 $ ip link set veth-blue netns blue
@@ -96,7 +96,7 @@ root@thirumurthi-HP:~# ip netns exec blue ip link
 7: veth-blue@if8: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/ether ba:ba:9f:65:9f:99 brd ff:ff:ff:ff:ff:ff link-netns red
 ```
- - **Step 3:** Assign the ip address using `ip addr` command,  within each namespace for communication.
+ ### **Step 3:** Assign the ip address using `ip addr` command,  within each namespace for communication.
  
 ##### Add ip address to the namespace, using 
 ```
@@ -108,7 +108,7 @@ dev - is device
 also, only using network mask /24, the ping command will work
 when connection is established
 ```
- - **Step 4:** Start the interface in the namespace, so both namespace can communicate with each other
+### **Step 4:** Start the interface in the namespace, so both namespace can communicate with each other
 
 ##### Start the interface so we can connect to it
 ```
@@ -190,7 +190,8 @@ root@thirumurthi-HP:~# ip netns exec blue arp
 Address                  HWtype  HWaddress           Flags Mask            Iface
 192.168.15.1             ether   3e:9d:e0:b6:c9:25   C                     veth-blue
 ```
-- **Step 5:** Clean up the namespace created
+### **Step 5:** Clean up the namespace created
+
 ##### To cleanup or delete all the networknamespace
 ```
 $ ip netns delete red
@@ -224,7 +225,7 @@ $ ip netns delete blue
  - Simple representation
  ![image](https://user-images.githubusercontent.com/6425536/147783293-79907ab4-fbb1-4ef5-b466-87931ceac214.png)
 
-
+### **Step : 1** - creating bridge interface
 ##### Below details the above steps:
 - To `create an internal bridge network on the host`, we add a new interface to the host using below command
 ```
@@ -247,6 +248,7 @@ root@thirumurthi-HP:~# ip link
 ```
   - Note: The created interface is DOWN. This needs to be started up. Use below command,
 
+### **Step 1.1:** - Start the virtual bridge network interface.
 ```
 $ ip link set dev v-net-0 up
 ```
@@ -262,6 +264,8 @@ $ ip -n blue link del veth-blue
 $ ip -n red link
 ```
 
+### **STEP 3:** - For the namespace create a interface or cable.
+
 #### Create a new virtual pipe/wire (cable), to connect the namespace with the virtual swtich
 
 ```
@@ -271,7 +275,7 @@ $ ip link add veth-red type veth peer name veth-red-br
 $ ip link add veth-blue type veth peer name veth-blue-br
 [ veth-blue ----------------- veth-blue-br]
 ```
-
+### **STEP 4:** - Attach the interface at the virtual switch and the net namespace itself
 #### Now, the links (virtual pipe/wire) needs to be attached to the namespace 
 ```
 ## attaching the veth-red to the namespace
@@ -285,6 +289,7 @@ $ ip link set veth-blue netns blue
 $ ip link set veth-blue-br master v-net-0
 ```
 
+### **STEP 5:** - Add ip address to the netnamespace.
 #### Since we deleted the namespace created earlier, now lets add ip address (same in above section) here as well.
 
 - To add ip address to the namespace
@@ -292,6 +297,8 @@ $ ip link set veth-blue-br master v-net-0
 $ ip -n red addr add 192.168.15.1/24 dev veth-red
 $ ip -n blue addr add 192.168.15.2/24 dev veth-blue
 ```
+
+### **STEP 5.1:** - Start up the service
 
 #### Now, lets start the interface.
 ```
@@ -332,7 +339,14 @@ PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.096/0.112/0.122/0.009 ms
 ```
 
-#### Since the `v-net-0` interface is another dev in the host, in order to connect to this network from the host, we need to add an ip address to this host.
+NOTE:
+  - The created network namespace and the virtual switch created is not accessible by host network. But when pining from the netns red, blue, etc. each can communicate.
+  - The host is one network and the namespace in the another network. So can't communicate.
+  - Actually the virtual switch bridge is another `network interface` on the host with an ip address 192.168.15.0 pointing to the net namespace.
+  - In order to make this network bridge interface to communicate to the host machine/laptop, add an ip address to it. Refer below info for details.
+
+
+#### Since the `v-net-0` interface is another device (dev) in the host, in order to connect to this network from the host, we need to add an ip address to this host.
 
 ```
 $ ip addr add 192.168.15.5/24 dev v-net-0
