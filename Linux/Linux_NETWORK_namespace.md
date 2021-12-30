@@ -17,7 +17,15 @@ or
 $ ip netns list
 ```
 
+#### In order to `list the network interface` on the host machine
+```
+$ ip link
+# loopback interface - is the localhost
+# eth0 interface will also be displayed
+```
+
 #### To execute any ip command in the network namespace
+  - below `ip link list` command when executed using `ip netns exec <name-space>` will execute within that network namespace
 ```
 $ ip netns exec red ip link list
 ### ip netns exec <namespace-name> <command>
@@ -29,14 +37,15 @@ $ ip netns exec red ping
 ##### To execute any ip command, in short form
 ```
 $ ip -n red link
-## this is similar to the command (above) referened below
+## the above command is similar to the command (above) referened below (-n is namespace switch)
 $ ip netns exec red ip link
 
 ## other commands that work this approach are 
 $ ip -n red ip add
 ```
 
-#### To create a virutal link/ pipe to the two namespace
+#### To create a virutal link/ pipe to the two namespace. Creating interface.
+  - with the below command the red (with name veth-red) and blue (with name veth-blue) namespace are linked
 ```
 $ ip link add veth-red type veth peer name veth-blue
 
