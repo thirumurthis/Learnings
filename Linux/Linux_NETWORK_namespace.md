@@ -425,11 +425,12 @@ PING 192.168.1.3 (192.168.1.3) 56(84) bytes of data.
 4 packets transmitted, 0 received, 100% packet loss, time 3158ms
  ```
 
- - The blue namespace is not able to recive response back, this is because similar to a situation where from home network when we reach the internet using router, the home network has a private ip address which is not resolved by the internet this is where the NAT comes into play.
+ - The blue namespace is not able to recive response back, this is because similar to a situation where from home network when we reach the internet using router. 
+ - The home network has a private ip address which is not resolved by the internet this is where the NAT comes into play.
  
  - How to make the blue namespace access the external network, we need a NAT enabled on the host acting as a gateway. So it can send message using own name and own address.
  - How to enable NAT, add a new rule in the `iptables`
- - 
+
 ```
 $ iptables -t nat -A POSTROUTNG -s 192.168.15.0/24 -j MASQUERADE
 
@@ -437,9 +438,9 @@ $ iptables -t nat -A POSTROUTNG -s 192.168.15.0/24 -j MASQUERADE
 ```
 - After performing the above step , we should be able to access the external network.
 
-#### If the namespace need to access the internet. This will not be accessed since the routing table there is no routes to the network 192.168.1.0 not to any thing else.
+#### If the net namespace need to access the internet. It cannot be accessed, since the routing table doesn't have routes to the network 192.168.1.0 to connect to any thing else.
 
-#### To reach external network, talk to host by adding the default gateway
+#### To reach external network, connect to internet talk to host by adding the default gateway
 ```
 $ ip netns exec blue ip route add default via 192.168.15.5
 
@@ -480,7 +481,7 @@ rtt min/avg/max/mdev = 14.605/18.517/23.415/3.663 ms
 <details>
     <summary> reference </summary>
     
-Reference [1](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
+Reference [.](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
 </details>
 
 
