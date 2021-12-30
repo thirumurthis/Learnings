@@ -261,6 +261,8 @@ $ ip link set dev v-net-0 up
 $ ip -n red link del veth-red
 $ ip -n blue link del veth-blue
 
+## Note: Executing anyone of the above command will delete the other interface.
+
 ### check if the link is delete using below  (should not display veth-red)
 $ ip -n red link
 ```
