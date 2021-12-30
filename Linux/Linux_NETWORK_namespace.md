@@ -44,40 +44,73 @@ $ ip netns exec red ip link
 $ ip -n red ip add
 ```
 
-#### To create a virutal link/ pipe to the two namespace. Creating interface.
+##### With the network namespace created, we can check within that namespace for existence of `arp` and `route` table.
+```
+$ ip netns exec blue arp
+$ ip netns exec blue route
+
+## in above both case  there shouldn't be any results
+```
+
+#### To establish network connection 
+##### Create a virutal link/ pipe to the two namespace. Creating interface.
+  - In case of connecting two machine, we require a cable, in this case connection two namespace we require `virtual ethernet peer` (often called as `pipe`).
+  - This something like a virtual cable with two interface at the end.
+  - 2 steps are involved in creating and attaching the interface to network namespace
+ 
+ - **Step 1:** Create the link for each namespace that needs to pair.
   - with the below command the red (with name veth-red) and blue (with name veth-blue) namespace are linked
 ```
 $ ip link add veth-red type veth peer name veth-blue
 
 ### where veth-red and veth-blue are interface connecting the namespace
 ```
+ - **Step 2:** Attach the interface to the namespace using below command:
+```
+$ ip link set veth-red netns red
+$ ip link set veth-blue netns blue
+```
 
-#### Now check the status of the interface created with each namespace, both should be down
+##### Now check the status of the interface created with each namespace, both should be down
 ```
 $ ip netns exec red ip link
 $ ip netns exec blue ip link
 
-root@thirumurthi-HP:~# ip netns exec red ip link
+root@thiru-HP:~# ip netns exec red ip link
 1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-2: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+2: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+3: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
     link/sit 0.0.0.0 brd 0.0.0.0
-9: veth-red@if8: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
-    link/ether 3e:9d:e0:b6:c9:25 brd ff:ff:ff:ff:ff:ff link-netns blue
+8: veth-red@if7: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether f2:6b:bf:d7:77:e3 brd ff:ff:ff:ff:ff:ff link-netns blue
+    
+root@thirumurthi-HP:~# ip netns exec blue ip link
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+3: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+7: veth-blue@if8: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ba:ba:9f:65:9f:99 brd ff:ff:ff:ff:ff:ff link-netns red
 ```
-
-#### Add ip address to the namespace
+ - **Step 3:** Assign the ip address using `ip addr` command,  within each namespace for communication.
+ 
+##### Add ip address to the namespace, using 
 ```
 $ ip -n red addr add 192.168.15.1/24 dev veth-red
 $ ip -n blue addr add 192.168.15.2/24 dev veth-blue
 
-###
+### Note
 dev - is device
-also, only using network mask /24, the ping command is worked
+also, only using network mask /24, the ping command will work
 when connection is established
 ```
+ - **Step 4:** Start the interface in the namespace, so both namespace can communicate with each other
 
-#### Start the interface so we can connect to it
+##### Start the interface so we can connect to it
 ```
 $ ip -n red link set veth-red up
 $ ip -n blue link set veth-blue up
@@ -86,8 +119,30 @@ $ ip -n blue link set veth-blue up
 $ ip -n red link
 $ ip -n blue link
 ```
+  - Output, after starting the interface in specific namespace. State of veth-red/blue are UP.
+```
+root@thiru-HP:~# ip netns exec red ip link
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+3: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+8: veth-red@if7: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether f2:6b:bf:d7:77:e3 brd ff:ff:ff:ff:ff:ff link-netns blue
+    
+root@thiru-HP:~# ip netns exec blue ip link
+1: lo: <LOOPBACK> mtu 65536 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: tunl0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ipip 0.0.0.0 brd 0.0.0.0
+3: sit0@NONE: <NOARP> mtu 1480 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/sit 0.0.0.0 brd 0.0.0.0
+7: veth-blue@if8: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+    link/ether ba:ba:9f:65:9f:99 brd ff:ff:ff:ff:ff:ff link-netns red
+```
 
-#### To connect to the namespace and ping for connection
+##### To connect to the namespace and ping for connection
 ```
 $ ip netns exec red ping 192.168.15.2
 $ ip netns exec blue ping 192.168.15.1
@@ -98,8 +153,30 @@ PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 64 bytes from 192.168.15.1: icmp_seq=2 ttl=64 time=0.054 ms
 64 bytes from 192.168.15.1: icmp_seq=3 ttl=64 time=0.065 ms
 ```
+- Simple check to see the IP address on that namespace
+```
+root@thiru-HP:~# ip netns exec blue ifconfig
+veth-blue: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.15.2  netmask 255.255.255.0  broadcast 0.0.0.0
+        inet6 fe80::b8ba:9fff:fe65:9f99  prefixlen 64  scopeid 0x20<link>
+        ether ba:ba:9f:65:9f:99  txqueuelen 1000  (Ethernet)
+        RX packets 23  bytes 1930 (1.9 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 23  bytes 1930 (1.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
 
-#### Check the `arp` table for each command. if the tool is not available install using `apt install net-tools`
+root@thiru-HP:~# ip netns exec red ifconfig
+veth-red: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.15.1  netmask 255.255.255.0  broadcast 0.0.0.0
+        inet6 fe80::f06b:bfff:fed7:77e3  prefixlen 64  scopeid 0x20<link>
+        ether f2:6b:bf:d7:77:e3  txqueuelen 1000  (Ethernet)
+        RX packets 23  bytes 1930 (1.9 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 23  bytes 1930 (1.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
+##### Check the `arp` table for each command. if the tool is not available install using `apt install net-tools`
 ```
 $ ip netns exec red arp
 $ ip netns exec blue arp
@@ -113,8 +190,8 @@ root@thirumurthi-HP:~# ip netns exec blue arp
 Address                  HWtype  HWaddress           Flags Mask            Iface
 192.168.15.1             ether   3e:9d:e0:b6:c9:25   C                     veth-blue
 ```
-
-#### To cleanup or delete all the networknamespace
+- **Step 5:** Clean up the namespace created
+##### To cleanup or delete all the networknamespace
 ```
 $ ip netns delete red
 $ ip netns delete blue
