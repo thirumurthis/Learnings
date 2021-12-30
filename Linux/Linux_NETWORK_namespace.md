@@ -215,11 +215,17 @@ $ ip netns delete blue
 ##### Similar step as above will follow here as well
   - Step 1: Create a link or interface of type `bridge`. (use, `ip link add v-net-o type bridge`) and start it up.
   - Step 2: Create network namespace like red, blue, orange, purple, etc. (use `ip netns add red`)
-  - Step 3: For each namespace create link or interface to corresponding netnamespace to connect to the `bridge`. (use `ip -n red link del veth-red`)
+  - Step 3: For each namespace create link or interface to corresponding netnamespace to connect to the `bridge`. (use `ip link add veth-red type veth peer name veth-red-br`)
             - `bridge` are like cables with interface at the end.
-  - Step 4: Attach the interface to the bridge (cable to be attached to bridge). (use `ip link add veth-red type veth peer name veth-red-br`)
+  - Step 4: Attach the interface to the bridge (cable to be attached to bridge). (use `ip link set veth-red netns red` and `ip link set veth-red-br master v-net-0`)
+            - since we are creating a bridge type, we need to connect both the interfaces one to the netns and another in virtual switch (v-net-0).
   - Step 5: Add `ip address` for each net namespace. (use `ip -n red addr add 192.168.15.1/24 dev veth-red`)
 
+ - Simple representation
+ ![image](https://user-images.githubusercontent.com/6425536/147783293-79907ab4-fbb1-4ef5-b466-87931ceac214.png)
+
+
+##### Below details the above steps:
 - To `create an internal bridge network on the host`, we add a new interface to the host using below command
 ```
 $ ip link add v-net-0 type bridge
@@ -246,7 +252,8 @@ $ ip link set dev v-net-0 up
 ```
 ![image](https://user-images.githubusercontent.com/6425536/108674776-a8c1f080-749a-11eb-9002-3eeb9ba32173.png)
 
- - In the first section, we created a _veth-blue_ and _veth-red_ interface, which needs to be delete using below command. Deleting one will delete the other interface.
+ - In the first section, we created a _veth-blue_ and _veth-red_ interface, which needs to be delete using below command. 
+ - Deleting one will delete the other interface.
 ```
 $ ip -n red link del veth-red
 $ ip -n blue link del veth-blue
@@ -302,7 +309,7 @@ $ ip link set veth-blue-br up
 - if we use `ping 192.168.15.1` from the host will not connect to the namespace.
 
 ```
-root@thirumurthi-HP:~# ip netns exec red ping 192.168.15.2
+root@thiru-HP:~# ip netns exec red ping 192.168.15.2
 PING 192.168.15.2 (192.168.15.2) 56(84) bytes of data.
 64 bytes from 192.168.15.2: icmp_seq=1 ttl=64 time=0.871 ms
 64 bytes from 192.168.15.2: icmp_seq=2 ttl=64 time=0.131 ms
@@ -313,7 +320,7 @@ PING 192.168.15.2 (192.168.15.2) 56(84) bytes of data.
 rtt min/avg/max/mdev = 0.107/0.369/0.871/0.354 ms
 
 --------------
-root@thirumurthi-HP:~# ip netns exec blue ping 192.168.15.1
+root@thiru-HP:~# ip netns exec blue ping 192.168.15.1
 PING 192.168.15.1 (192.168.15.1) 56(84) bytes of data.
 64 bytes from 192.168.15.1: icmp_seq=1 ttl=64 time=0.122 ms
 64 bytes from 192.168.15.1: icmp_seq=2 ttl=64 time=0.115 ms
