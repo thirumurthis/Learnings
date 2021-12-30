@@ -2,7 +2,8 @@
 
 #### Lets start with two namespace and try to connect.
 
-`Pre-requisites:` - Ubunutu or Centos box. I had a Windows 10, WSL2 where installed Ubuntu 20.04
+`Pre-requisites:` 
+   - Ubunutu or Centos box. I had a Windows 10, WSL2 where installed Ubuntu 20.04
 
 #### To create a new network namespace (netns)
 ```
