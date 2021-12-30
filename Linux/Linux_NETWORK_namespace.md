@@ -206,11 +206,19 @@ $ ip netns delete blue
 
 ------------
 
-#### How to create virtual switch, so namespaces can connect to each other. _When there are more number of network namespace to connect_
+#### How to create `virtual switch`, so namespaces can connect to each other. _When there are more number of network namespace to connect_
   - Create a network switch within a host, which will allow to connect when there are more than two namespace.
   - There are different options for virtual switch
     - `Linux Bridge` (this is native to linux, we will see how to use this)
     - `Open vSwitch (OvS)`
+
+##### Similar step as above will follow here as well
+  - Step 1: Create a link or interface of type `bridge`. (use, `ip link add v-net-o type bridge`) and start it up.
+  - Step 2: Create network namespace like red, blue, orange, purple, etc. (use `ip netns add red`)
+  - Step 3: For each namespace create link or interface to corresponding netnamespace to connect to the `bridge`. (use `ip -n red link del veth-red`)
+            - `bridge` are like cables with interface at the end.
+  - Step 4: Attach the interface to the bridge (cable to be attached to bridge). (use `ip link add veth-red type veth peer name veth-red-br`)
+  - Step 5: Add `ip address` for each net namespace. (use `ip -n red addr add 192.168.15.1/24 dev veth-red`)
 
 - To `create an internal bridge network on the host`, we add a new interface to the host using below command
 ```
@@ -247,7 +255,7 @@ $ ip -n blue link del veth-blue
 $ ip -n red link
 ```
 
-#### Create a new virtual pipe/wire, to connect the namespace with the virtual swtich
+#### Create a new virtual pipe/wire (cable), to connect the namespace with the virtual swtich
 
 ```
 $ ip link add veth-red type veth peer name veth-red-br
@@ -322,7 +330,7 @@ rtt min/avg/max/mdev = 0.096/0.112/0.122/0.009 ms
 ```
 $ ip addr add 192.168.15.5/24 dev v-net-0
 ```
-- Still the network namespace are private, cannot be connected from internet.
+- Still the network namespace are private, _cannot_ be connected from internet.
 
 ##### Since we have added a new ip address to the v-net-0, we will be able to access the red, blue namespace as well
 ```
