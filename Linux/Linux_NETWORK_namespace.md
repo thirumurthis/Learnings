@@ -488,9 +488,17 @@ rtt min/avg/max/mdev = 14.605/18.517/23.415/3.663 ms
      ```
      $ iptables -t nat -A PREROUTING --dport 80 --to-destination 192.168.15.2:80 -j DNAT
      
-     ### above iptables command tells any traffic comming to port 80 on localhost, is to be forwarded to port 80 on the ip assinged to the blue namespace
+     ### above iptables command tells any traffic comming to port 80 on localhost, is to be forwarded 
+     ### to port 80 on the ip assinged to the blue namespace
      ```
-     
+Miscellaneous:
+ 
+ To create Open VSwitch, we can use below command
+ 
+```
+$ ovs-vsctl add-br <name-of-openswitch>
+```
+
 <details>
     <summary> reference </summary>
     
