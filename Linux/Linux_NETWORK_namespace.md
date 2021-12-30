@@ -198,11 +198,15 @@ $ ip netns delete blue
 ```
 
 ### Points:
- - Both the namespace is isolated from the host.
+ - Both the namespace is isolated from the host, so the ip route and arp table are also isolated the host now doesn't have any idea of it.
  - In the above case, we only had two namespace, if we need to connect to many namespaces, we need to create a virtual switch.
+ - Simple Representation
+
+![image](https://user-images.githubusercontent.com/6425536/147781115-9897ea4c-78cb-4789-ae94-6962854abea8.png)
+
 ------------
 
-#### How to create virtual switch, so namespaces can connect to each other.
+#### How to create virtual switch, so namespaces can connect to each other. _When there are more number of network namespace to connect_
   - Create a network switch within a host, which will allow to connect when there are more than two namespace.
   - There are different options for virtual switch
     - `Linux Bridge` (this is native to linux, we will see how to use this)
