@@ -503,9 +503,6 @@ $ ovs-vsctl add-br <name-of-openswitch>
     <summary> reference </summary>
     
 Reference [.](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
+          [1](https://www.youtube.com/watch?v=_WgUwUf1d34)
 </details>
-
-
-
-
 
