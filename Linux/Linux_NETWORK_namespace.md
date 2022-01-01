@@ -59,12 +59,12 @@ $ ip netns exec red ping
   - This something like a virtual cable with two interface at the end.
   - 2 steps are involved in creating and attaching the interface to network namespace
  
- ### **Step 1:** Create the link for each namespace that needs to pair.
+ ### **Step 1:** Create veth pair (virtual ethernet) pipe with interface name to connect to namespace that needs to pair.
   - with the below command the red (with name veth-red) and blue (with name veth-blue) namespace are linked
 ```
  ip link add veth-red type veth peer name veth-blue
 
-### where veth-red and veth-blue are interface connecting the namespace
+### where veth-red and veth-blue are interface that will be connecting the namespace red and blue
 ```
 ### **Step 2:** Attach the interface to the namespace using below command:
 ```
@@ -232,7 +232,7 @@ ip netns delete blue
  - Simple representation
  ![image](https://user-images.githubusercontent.com/6425536/147783293-79907ab4-fbb1-4ef5-b466-87931ceac214.png)
 
-### **Step : 1** - creating bridge interface
+### **Step : 1** - Creating the bridge interface
 ##### Below details the above steps:
 - To `create an internal bridge network on the host`, we add a new interface to the host using below command
 ```
