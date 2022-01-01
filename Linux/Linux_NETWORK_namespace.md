@@ -505,16 +505,55 @@ rtt min/avg/max/mdev = 14.605/18.517/23.415/3.663 ms
      ```
 Miscellaneous:
  
+ 
+- Once adding to the NAT, in order to forward the packets to the port, use below command (refer #2 link below)
+```
+sysctl -w net.ipv4.ip_forwarding=1
+```
+ - Sample representation of the link
+![image](https://user-images.githubusercontent.com/6425536/147844245-73411e0e-b128-450d-8602-05a2ffab8fc2.png)
+
+ Below is using the Reference #2 link below which has more details
+ ```
+ root@thirumurthi-HP:~# brctl show br1
+bridge name     bridge id               STP enabled     interfaces
+br1             8000.5228cb26f6f5       no              br-veth1
+                                                        br-veth2
+root@thiru-HP:~# arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+thiru-HP.mshome.n  ether   00:15:5d:27:d2:eb   C                     eth0
+192.168.1.11             ether   72:a5:61:b9:dc:ea   C                     br1
+192.168.1.12             ether   1e:b6:75:99:6a:0f   C                     br1
+root@thiru-HP:~# ip netns exec namespace1 arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+192.168.1.12             ether   1e:b6:75:99:6a:0f   C                     veth1
+192.168.1.10             ether   52:28:cb:26:f6:f5   C                     veth1
+root@thiru-HP:~# ip netns exec namespace2 arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+192.168.1.10             ether   52:28:cb:26:f6:f5   C                     veth2
+192.168.1.11             ether   72:a5:61:b9:dc:ea   C                     veth2
+root@thiru-HP:~# brctl show br1
+bridge name     bridge id               STP enabled     interfaces
+br1             8000.5228cb26f6f5       no              br-veth1
+                                                        br-veth2
+root@thiru-HP:~# ip netns exec namespace1 route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         192.168.1.10    0.0.0.0         UG    0      0        0 veth1
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 veth1
+root@thiru-HP:~# ip netns exec namespace2 route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         192.168.1.10    0.0.0.0         UG    0      0        0 veth2
+192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 veth2
+ ```
+ 
  To create Open VSwitch, we can use below command
  
 ```
 $ ovs-vsctl add-br <name-of-openswitch>
 ```
 
-- Once adding to the NAT, in order to forward the packets to the port, use below command (refer #2 link below)
-```
-sysctl -w net.ipv4.ip_forwarding=1
-```
 
 <details>
     <summary> reference </summary>
