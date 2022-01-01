@@ -511,10 +511,16 @@ Miscellaneous:
 $ ovs-vsctl add-br <name-of-openswitch>
 ```
 
+- Once adding to the NAT, in order to forward the packets to the port, use below command (refer #2 link below)
+```
+sysctl -w net.ipv4.ip_forwarding=1
+```
+
 <details>
     <summary> reference </summary>
     
-Reference [.](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
+Reference [0](https://www.youtube.com/watch?v=j_UUnlVC2Ss)
           [1](https://www.youtube.com/watch?v=_WgUwUf1d34)
+          [2](https://ops.tips/blog/using-network-namespaces-and-bridge-to-isolate-servers/)    
 </details>
 
