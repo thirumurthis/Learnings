@@ -116,29 +116,28 @@ public class LinkedListDS {
 	  10 | addr0 , 11 | null
 	  10 | addr0 , 11 | addr1 , 9 | null;
 	  
-	  To create a linked list we need to keep track of the previous node,
-	  the newly created nodes address needs to be set to previous node
+	  To create a linked list just use a temp node, and traverse to 
+	  identify the last node, and create a new one associate the address to it
 	 */
 	public Node createLinkedList(Node root, int data) {
-		
-		if(root == null) {
+		// When the root node is null create a new one
+        	if(root == null) {
 		  return new Node(data,null);
 		}else{
+			// assing the root to temp,
+			// this is used for traversing
 			Node nextNode = root;
-			Node previousNode = null;
-			while(nextNode != null) {
-				// holds the previous node
-				 previousNode = nextNode;
-				// fetch the next node
+			// the while loop traverse to the last node,
+			while(nextNode.getNext() != null) {
 				nextNode = nextNode.getNext();
-				// if the next node is null, that is where we 
-				// need to update the last data
-				if(nextNode == null) {
-					Node newNode = new Node(data,null);
-					previousNode.setNext(newNode);
-				}
+		        }
+			// below will create an new node and associate it
+			// to the root node reference
+			if(nextNode.getNext() == null) {
+				Node newNode = new Node(data,null);
+				nextNode.setNext(newNode);
 			}
-			return root;
+		  return root;
 		}
 	}
 	
@@ -156,7 +155,8 @@ public class LinkedListDS {
 
 }
 
-
+/* Linked list data structure to store data and next node address
+*/
 class Node {
 	
 	private int data;
