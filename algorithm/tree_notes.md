@@ -194,6 +194,9 @@ Usage of Tree traversal:
    - What is the height of the node? - the number of edges between that node to the leaf node.
    - Height of the leaf node is 0.
    - The root node will have the max height.
+
+![image](https://user-images.githubusercontent.com/6425536/148889440-8ca8c51a-1368-4dce-a0a8-20af83d41235.png)
+
 ```
 Height of node 9  - is 2 (# edges from that SPECIFIC NODE to LEAF ) (that point to down)
            8
@@ -219,7 +222,8 @@ Depth of node 9  - is 1 (# of edges from ROOT to that SPECIFIC NODE ) - (top to 
                    \ 
                     12 
 ```
-  
+  ![image](https://user-images.githubusercontent.com/6425536/148889496-5d6d984b-5cc0-44dc-a279-ba3fa7258ea4.png)
+
   Note: 
     - The max depth = height of the tree. 
     - Node connected by edges is called vertices.
