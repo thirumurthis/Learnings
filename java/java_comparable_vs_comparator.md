@@ -46,7 +46,7 @@ class Employee implements Comparable<Employee> {
    }
 }
 ```
-** Comparator **
+**Comparator**
   - In this case we can create a separate class for each id's.
 ```java
 class Employee implements Comparable<Employee> {
