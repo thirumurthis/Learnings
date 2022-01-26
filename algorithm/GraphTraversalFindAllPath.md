@@ -1,13 +1,13 @@
 #### Finding path from source to destination
 
-##BFS
+## BFS
  - BFS (uses Queue), Iterative
  - The time complexity is `O(N^2 * 2^N)`
  - Space complexity is `O(N^2)`
  
 ```java
 
-	public static List<List<Integer>> bfsPaths(List<List<Integer>> graph, int src, int target ){
+public static List<List<Integer>> bfsPathsIterative(List<List<Integer>> graph, int src, int target ){
 		
     // define a queue which holds a list of vertex
 		Queue<List<Integer>> queue = new LinkedList<>();
@@ -47,7 +47,7 @@
  - Below code uses Iterative approach to calcuate the paths
 
 ```java
-	public static List<List<Integer>> dfsIterativePath(List<List<Integer>> graph, Integer src, Integer dest){
+	public static List<List<Integer>> dfsPathsIterative(List<List<Integer>> graph, Integer src, Integer dest){
 		Stack<List<Integer>> stack = new Stack<>();
 		List<List<Integer>> result = new ArrayList<>();
 		stack.push(Arrays.asList(src));
@@ -95,17 +95,25 @@
 - Main program and utilities for using the BFS
 ```java
   
+  Class GraphTraversal{
+  
   	public static void main(String[] args) {
 		int [][] edges =  {{1,2},{3},{3},{}}; //output:[[0,1,3],[0,2,3]]
 		//int [][] edges = {{4,3,1},{3,2,4},{3},{4},{}};  //Output: [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]
 				
 		List<List<Integer>> graph = buildGraph(edges);
 		printGraph(graph);
-    
-    List<List<Integer>> bfsPathTraverse = new ArrayList<>();
-		bfsPathTraverse= bfsPaths(graph, 0, graph.size()-1);
+		
+		List<List<Integer>> dfsPathTraverse = new ArrayList<>();
+       		System.out.println("DFS Iterative: ");
+		dfsPathTraverse = dfsPathsIterative(graph, 0, graph.size()-1);
+		System.out.println(dfspathTraverse);
+	
+	        System.out.println("BFS iterative ");
+		List<List<Integer>> bfsPathsTraverse = new ArrayList<>();
+		bfsPathTraverse= bfsPathsIterative(graph, 0, graph.size()-1);
 		System.out.println(bfsPathTraverse);   
-  }
+        }
 
 	public static List<List<Integer>> buildGraph(int[][] edges){
 		List<List<Integer>> graph = new ArrayList<>();
@@ -125,4 +133,5 @@
 			System.out.println(i+" -> "+graph.get(i));
 		}
 	}
+}
 ```
