@@ -57,14 +57,15 @@ public int sumBySlidingWindow(int input[], int k) {
 
 - Another approach with the single approach
 
-```
-	public int maxWithSlideWindowWithSummingItself(int[] input, int k) {
+```java
+public int maxWithSlideWindowWithSummingItself(int[] input, int k) {
 		
-		int currentRunningSum =0;
-		int max =Integer.MIN_VALUE;
-    
-		for(int i=0;i<input.length;i++) {
-			currentRunningSum += input[i];
+	int currentRunningSum =0;
+	int max =Integer.MIN_VALUE;
+   
+	for(int i=0;i<input.length;i++) {
+	    // Sum the last element 
+	    currentRunningSum += input[i];
       
       // 1st iteration 0>= (3-1); currentRunningSum = A[0]
       // 2nd iteration 1>= (3-1); currentRunningSum = A[0] + A[1]
@@ -75,14 +76,16 @@ public int sumBySlidingWindow(int input[], int k) {
       //                          loop will be true; check max;  max = currentRunningSum
       //                          currentRunningSum = A[1] + A[2] + A[3] - A[1] ; // subract first element
       // goes on
-      
-			if(i>=k-1) { // since array starts from 0th index, we perform k-1; 
-        //determine the max first
-				max = Math.max(max,currentRunningSum);
-        // then decretment the very first element
-				currentRunningSum -= input[i-(k-1)]; // when i =2
-			}
-		}
-		return max;
+     
+	if(i>=k-1) { // since array starts from 0th index, we perform k-1; 
+
+             //determine the max first
+	     max = Math.max(max,currentRunningSum);
+	 
+             // then decretment the very first element
+	      currentRunningSum -= input[i-(k-1)]; // when i =2
+	   }
 	}
+	return max;
+}
 ```
