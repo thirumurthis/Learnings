@@ -97,7 +97,18 @@ class XmlStringConverter {
     }
 }
 ```
+- my-articles.xml
+```
+<note>
+<to>X</to>
+<from>Y</from>
+<heading>Reminder</heading>
+<body>Message to X from Y!</body>
+</note>
+```
 - Now in the browser if we use `https://localhost:8080/content` the xml content should be rendered.
+![image](https://user-images.githubusercontent.com/6425536/151495625-893bd593-62c0-4489-8022-a53ede8e14b9.png)
+
 
 - In below camel context (using 2.23.0+) version, start the Aretmis broker service to be running.
 - The camel will hit the http endpoint to download the content and push it to queue
@@ -133,20 +144,26 @@ class XmlStringConverter {
 
     -->
   
- <!-- use below when using Qpid client -->
-   <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
-    <property name="remoteURI" value="amqp://localhost:5672" /> <!-- broker.xml of artmies should enable the amqp port-->
-    <!--  <property name="remoteURI" value="tcp://localhost:61616" /> -->
-  </bean>
 
   <!-- below bean configuration is used when we include aretmis jms client dependecies since this uses JMS client -->
   <!--
     <bean id="jmsConnectionFactory" class="org.apache.activemq.artemis.jms.client.ActiveMQJMSConnectionFactory">
          <constructor-arg index="0" value="tcp://localhost:61616?wireFormat.maxInactivityDuration=500000"/>
     </bean>
+  --> 
+  <!-- When using the artemis-jms client then instead of AMQPComponent, we need to use JmsComponent -->
+   <!--   
+    <bean id="jms" class="org.apache.camel.component.jms.JmsComponent">
+      <property name="configuration" ref="jmsConfig" />
+    </bean> 
    -->
-  
-
+	
+     <!-- use below when using Qpid client -->
+     <bean id="jmsConnectionFactory" class="org.apache.qpid.jms.JmsConnectionFactory">
+        <property name="remoteURI" value="amqp://localhost:5672" /> <!-- broker.xml of artmies should enable the amqp port-->
+        <!--  <property name="remoteURI" value="tcp://localhost:61616" /> -->
+    </bean>
+	
     <bean id="jmsPooledConnectionFactory" class="org.messaginghub.pooled.jms.JmsPoolConnectionFactory" init-method="start" destroy-method="stop">
       <property name="maxConnections" value="5" />
       <property name="connectionFactory" ref="jmsConnectionFactory" />
@@ -186,8 +203,6 @@ class XmlStringConverter {
               <camel:from uri="timer://foo?fixedRate=true&amp;period=60000"/> 
                 <camel:to uri="http4://localhost:8080/content"/> <!--  we need to include the camel-http4 dependency -->
                                                                  <!-- For https,we can use SSLparameters within the context-->
-               <!--  <camel:from uri="direct:sendXMlTo"/> -->
-                <!-- <camel:to uri="file:/home/tsanthanakrishnan@DAA.LOCAL/tim/camel_for_ftd"/> -->
                 <camel:setHeader headerName="Endpoint1XMLContent">
 	                <camel:constant>ENDPOINT1</camel:constant>
                 </camel:setHeader>
@@ -392,3 +407,189 @@ rootLogger.appenderRefs = stdout
 rootLogger.appenderRef.stdout.ref = STDOUT
 ```
 
+![image](https://user-images.githubusercontent.com/6425536/151497916-fae32e15-c19a-43fe-9d10-1091907831a4.png)
+
+![image](https://user-images.githubusercontent.com/6425536/151498093-164952f2-f862-4059-8aad-a03a8239d088.png)
+
+Note:
+I was using Artemis 2.14.0 version, to note the queue info was not displayed in the Queue tab. Only after having client.
+
+Sample Aretmis java based jms client:
+```java
+package com.demo.artemis.clients;
+
+import java.util.Properties;
+
+import javax.jms.BytesMessage;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.naming.InitialContext;
+
+//import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
+//import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
+
+public class ArtemisClient_broker2 
+{
+
+
+	   public static void main(final String[] args) throws Exception {
+		   
+		   //new ArtemisClient_broker2().runProducer(true, false);
+		   new ArtemisClient_broker2().runProducer(false, true);
+	   }
+	   
+	   public boolean runProducer(boolean produceMesage, boolean consumeMessage) throws Exception{
+
+		      Connection connection = null;
+		      InitialContext initalContext = null;
+		         int i = 20000;
+		         try {
+
+		        	 Properties jndiProp = new Properties();
+
+	        		 i=0;
+		        	 jndiProp.put("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory");
+		        	 jndiProp.put("connectionFactory.ConnectionFactory", "tcp://localhost:61616?producerMaxRate=50");
+		        	
+		        	 // for checking ampq ftd added below, else use the above commented one
+		        	 jndiProp.put("queue.queue/content_queue","content_queue");
+
+		        	 initalContext = new InitialContext(jndiProp);
+		        	 // Step 2. Perfom a lookup on the queue
+		        	 //Queue queue = ActiveMQJMSClient.createQueue("exampleQueue");
+		        	 Queue queue = (Queue) initalContext.lookup("queue/content_queue");
+				 
+		        	 // Step 3. Perform a lookup on the Connection Factory
+		        	 ConnectionFactory cf = (ConnectionFactory)initalContext.lookup("ConnectionFactory");
+
+		        	 // Step 4. Create a JMS Connection
+		        	 connection = cf.createConnection("admin","admin");
+
+		        	 // Step 5. Create a JMS Session
+		        	 Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+		        	 if(produceMesage) {
+		        		 // Step 6. Create a JMS Message Producer
+		        		 MessageProducer producer = session.createProducer(queue);
+
+		        		 System.out.println("Will now send as many messages as we can in few seconds...");
+
+		        		 // Step 7. Send as many messages as we can in 10 seconds
+
+		        		 final long duration = 60000;
+
+
+		        		 long start = System.currentTimeMillis();
+
+		        		 while (System.currentTimeMillis() - start <= duration) {
+		        			 TextMessage message = session.createTextMessage("This is text message BROKER 61617: " + i++);
+
+		        			 Thread.sleep(1500);
+		        			 producer.send(message);
+		        		 }
+
+		        		 long end = System.currentTimeMillis();
+
+		        		 double rate = 1000 * (double) i / (end - start);
+
+		        		 System.out.println("We sent " + i + " messages in " + (end - start) + " milliseconds");
+
+		        		 System.out.println("Actual send rate was " + rate + " messages per second");
+
+		        		 // Step 8. For good measure we consumer the messages we produced.
+		        	 }
+
+		        	 if(consumeMessage) {
+		        		 MessageConsumer messageConsumer = session.createConsumer(queue);
+
+		        		 connection.start();
+
+		        		 System.out.println("Now consuming the messages...");
+
+		        		 i = 0;
+		        		 int count= 0;
+		        		 while (true && count <= 100) {
+		        			 BytesMessage messageReceived = (BytesMessage)messageConsumer.receive(5000);
+		        			 System.out.println("inside consuming counting part");
+		        			 if(messageReceived!=null)
+		        			 System.out.println(messageReceived.getBodyLength());
+		        			 if (messageReceived == null) {
+		        				 break;
+		        			 }
+
+		        			 i++;
+		        			 count++;
+		        			 Thread.sleep(1500);
+		        		 }
+
+		        		 System.out.println("Received " + i + " messages");
+		        	 }
+		        	 return true;
+		         } finally {
+		         // Step 9. Be sure to close our resources!
+		         if (connection != null) {
+		            connection.close();
+		         }
+		      }
+	   }
+}
+
+```
+- Artemis broker.xml
+```xml
+
+
+      <connectors>
+         <connector name="netty-connector">tcp://localhost:61616</connector>
+         <connector name="broker2-connector"> tcp://localhost:61617</connector>
+      </connectors>
+
+     <!-- how often we are looking for how many bytes are being used on the disk in ms -->
+      <disk-scan-period>5000</disk-scan-period>
+
+      <!-- once the disk hits this limit the system will block, or close the connection in certain protocols
+           that won't support flow control. -->
+      <max-disk-usage>90</max-disk-usage>
+
+      <!-- should the broker detect dead locks and other issues -->
+      <critical-analyzer>true</critical-analyzer>
+
+      <critical-analyzer-timeout>120000</critical-analyzer-timeout>
+
+      <critical-analyzer-check-period>60000</critical-analyzer-check-period>
+
+      <critical-analyzer-policy>HALT</critical-analyzer-policy>
+
+      
+      <page-sync-timeout>4076000</page-sync-timeout>
+  <acceptors>
+           <acceptor name="artemis">tcp://0.0.0.0:61616?tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576;amqpMinLargeMessageSize=102400;protocols=CORE,AMQP,STOMP,HORNETQ,MQTT,OPENWIRE;useEpoll=true;amqpCredits=1000;amqpLowCredits=300;amqpDuplicateDetection=true;supportAdvisory=false</acceptor>
+
+            <!-- AMQP Acceptor.  Listens on default AMQP port for AMQP traffic.-->
+            <acceptor name="amqp">tcp://0.0.0.0:5672?tcpSendBufferSize=1048576;tcpReceiveBufferSize=1048576;protocols=AMQP;useEpoll=true;amqpCredits=1000;amqpLowCredits=300;amqpMinLargeMessageSize=102400;amqpDuplicateDetection=true</acceptor>
+
+      </acceptors>
+      <address-settings>
+         <!-- if you define auto-create on certain queues, management has to be auto-create -->
+         <address-setting match="activemq.management#">
+            <dead-letter-address>DLQ</dead-letter-address>
+            <expiry-address>ExpiryQueue</expiry-address>
+            <redelivery-delay>0</redelivery-delay>
+            <!-- with -1 only the global-max-size is in use for limiting -->
+            <max-size-bytes>-1</max-size-bytes>
+            <message-counter-history-day-limit>10</message-counter-history-day-limit>
+            <address-full-policy>PAGE</address-full-policy>
+            <auto-create-queues>true</auto-create-queues>
+            <auto-create-addresses>true</auto-create-addresses>
+            <auto-create-jms-queues>true</auto-create-jms-queues>
+            <auto-create-jms-topics>true</auto-create-jms-topics>
+         </address-setting>
+
+...
+```
