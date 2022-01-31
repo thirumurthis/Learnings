@@ -13,3 +13,16 @@ function func1(callback){
 func1(print); // this will be as callback.
 ```
 
+```js
+firstUnique = (a) => {
+    let item = a.pop(); 
+       if(a.indexOf(item) != -1) { 
+           a = a.filter(_ => _ != item);  // use of _ is passing a 1 argument;
+                                           // _ usage is considered to be inconsistent with other lambda code, better usage is (a) =>
+                                           // _ means it can be a single argument lambda and either not used in the function
+            return firstUnique(a); 
+            } 
+       return item; 
+     };
+
+```
