@@ -110,7 +110,7 @@ class XmlStringConverter {
 ![image](https://user-images.githubusercontent.com/6425536/151495625-893bd593-62c0-4489-8022-a53ede8e14b9.png)
 
 
-- In below camel context (using 2.23.0+) version, start the Aretmis broker service to be running.
+- In below camel context (using 2.23.0+) version, start the Artemis broker service to be running.
 - The camel will hit the http endpoint to download the content and push it to queue
 
 ```xml
