@@ -12,7 +12,7 @@ function func1(callback){
 
 func1(print); // this will be as callback.
 ```
-
+##### Tips: Use of _ in javascript lambda
 ```js
 firstUnique = (a) => {
     let item = a.pop(); 
@@ -24,5 +24,6 @@ firstUnique = (a) => {
             } 
        return item; 
      };
-
+// in Go and Drat _ is used to indicate the parameter is ignored
 ```
+Reference [link](https://stackoverflow.com/questions/41085189/using-underscore-variable-with-arrow-functions-in-es6-typescript)
