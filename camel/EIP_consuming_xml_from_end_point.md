@@ -198,7 +198,7 @@ class XmlStringConverter {
                
                 <!-- If the proess needs quartz2 schdeuler below is an example of using it. -->
                <!-- 
-                  <camel:from uri="quartz2://wsFTDTimer717?cron=0+0/5+*+*+*+?"/> 
+                  <camel:from uri="quartz2://demoQuartzSche?cron=0+0/5+*+*+*+?"/> 
               -->
               <camel:from uri="timer://foo?fixedRate=true&amp;period=60000"/> 
                 <camel:to uri="http4://localhost:8080/content"/> <!--  we need to include the camel-http4 dependency -->
