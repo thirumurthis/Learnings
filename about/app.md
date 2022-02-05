@@ -26,3 +26,7 @@ Access the endpoint:
       - Currently this is not a full fledge app, at this point the Stocks need to be added from Postman.
       
 The [Git code](https://github.com/thirumurthis/stock-api#readme) for the application.
+
+#### Swagger Snapshot of the application
+
+![image](https://user-images.githubusercontent.com/6425536/152632205-78700a1a-dd1f-4599-8240-9413214a3144.png)
