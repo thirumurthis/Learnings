@@ -4,8 +4,8 @@ Building a simple app for personal use and deploying in Heroku.
 
    - The application will be down if it is inactive for 30 minutes. 
        - For example, if I didn't access the backend or frontend API it will not be active. 
-       - Once I hit the endpoint, it will startup automatically.
-   - Postgres Database on free tier support only 10,000 rows, which is sufficient for my case.
+       - Eventually once I access the endpoint, it will startup automatically.
+   - Postgres Database on free tier support only 10,000 rows, which is sufficient for my use case.
    
 ** About the app **
 Now lets look at the application that I built. This application will take the stock symbol, number of stock and average price of the stock invested. 
