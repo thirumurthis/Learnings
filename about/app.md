@@ -28,13 +28,13 @@ The backend Spring Boot APP uses Java Yahoo Finance API, to compute lasted price
  - The POST end-point `stock-app/apiKey`, can be used to get the API key in case user forgets it, this requires the user name and password.
  - The POST end-point `/stock/v1/add` is used to add single stock,the format of the input in request body will be explained latter.
  - The application also has end-point to add list of Stocks, delete stock, update stocks.
- - The SWAGGER endpoint will provide available end-point details `http://<domain>/swagger-ui/index.html` and providing application name.
+ - The SWAGGER endpoint will provide available end-point which can be accessed  `http://<domain>/swagger-ui.html`, the snapshot below provides the list of end-points. 
 
 **Tools to access the endpoint:**
 
   - The Stock App can be accessed using Postman or equivalent tool.
-  - I also built an NodeJS and Express based app, just with login page.
-      - Currently this is not a full fledge app, at this point the Stocks need to be added from Postman.
+  - I also built an frontend app using NodeJS and Express  just to login page and view the data in presentable format.
+   - This is not a full fledged usable app. Like in order to add the stock and sign up only way is to access the API via Postman.
 
 ** Input format **
 ```json
@@ -55,7 +55,9 @@ The backend Spring Boot APP uses Java Yahoo Finance API, to compute lasted price
 }]
 ```
 
-The [Git code](https://github.com/thirumurthis/stock-api#readme) for the application.
+**Code link**
+  - [Spring Boot Application in Github](https://github.com/thirumurthis/stock-api#readme) and 
+  - [NodeJS Application in Github](https://github.com/thirumurthis/stock-app#readme).
 
 **Swagger Snapshot of the application**
 
