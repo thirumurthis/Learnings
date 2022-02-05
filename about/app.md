@@ -30,3 +30,17 @@ The [Git code](https://github.com/thirumurthis/stock-api#readme) for the applica
 #### Swagger Snapshot of the application
 
 ![image](https://user-images.githubusercontent.com/6425536/152632205-78700a1a-dd1f-4599-8240-9413214a3144.png)
+
+#### Sample Sign-Up form repsone using Postman
+![image](https://user-images.githubusercontent.com/6425536/152632464-7f732bb1-9a46-444c-9182-9f4453e9a579.png)
+
+#### Postman to post a list of stock using API. Note the API key was used as Bearer token in this case
+![image](https://user-images.githubusercontent.com/6425536/152632636-cc15c316-9c56-4ca0-8710-ff018a646e7c.png)
+
+#### Sample NodeJS input login page
+![image](https://user-images.githubusercontent.com/6425536/152632657-a1d1d140-dca8-4bcf-941c-417c497581f4.png)
+
+### Sample UI Accessing the backend and displaying the data
+![image](https://user-images.githubusercontent.com/6425536/152632703-3195fd63-22e3-4c69-b8b5-f7f6b89dc2f7.png)
+
+
