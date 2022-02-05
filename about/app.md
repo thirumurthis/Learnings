@@ -8,17 +8,24 @@ Building a simple app for personal use and deploying in Heroku.
    - Postgres Database on free tier support only 10,000 rows, which is sufficient for my use case.
    
 ** About the app **
-Now lets look at the application that I built. This application will take the stock symbol, number of stock and average price of the stock invested. 
 
-The backend Spring Boot APP uses Java Yahoo Finance API, to compute lasted price of the Stock. Since I am using for personal purpose, I don't worry about real time update on stock price.
+Now lets look at the application, the backend will provide set of REST end-point API's which takes stock symbols, number of stocks invested and average price of the stock invested in JSON format and computes below against the latest stock price.
+   - Profit or Loss for the Stock symbol
+   - Total invested amount, today's gain, etc. (refer the snapshot at the bottom)
+
+The backend Spring Boot app uses Java Yahoo Finance API to compute the above out put. This app is used for personal use, there is no concerns for me to worry about real time price update of each stock.
  
 **Thinking of design **
  
-  - Being a personal use application, I wanted the application to be secure, so the decision there is Spring Security and JWT tokens.
-  - Since the application is hosted in public domain, I also don't want my personal details if input to be available to public. This is where simple Sign Up end-point with User Name and Password originated.
-  - Next, I don't want the user or myself to use Password for every transaction, the next idea was to provide a Random generated API key as a response of `SignUp` process. This is the first end-point to the application, where the user name, encoded password and API Key are stored in database.
-  - Now, what if user or myself forget the API key, for that I expose another end-point which will provide the API key. This is a POST end-point which require user name and password in request body.
-     - This app right now doesn't have forget password. This is another idea, yet to be built where I can have send a link and request user to provide a new password.
+ - Though this is application is for personal use, I wanted it to be secure, the choice her ewas to use `Spring Security` and `JWT`.
+ - Next I wanted an free Cloud platform to host the application that is where `Heroku` came into picture with little search.
+- Hosting and displaying the personal finance information publicly is a hard hitter, I had to think about this a lot. This is where `Sign Up` end-point came into play which requires User Name and Password to register to access the application.
+- Next, to access the application I don't want myself or user to supply the password for every transaction, this gave the idea of generating API key a unique and randomly generated key which will be the response of Sign Up` process. The user name, password and API key are stored in the Postgres database.
+- What if user or myself forget the API key, in order to fetch the API Key exposed another end-point which requires user name and password to fetch the API key. 
+- The next part is to generate JWT token which expires every hour, for this another end-point is exposed which requires API key and user name.
+- Finally in order to Add, Delete, Update stocks using the API end-point the JWT Bearer token should be passed in Authorization header.
+
+-  This app right now doesn't have most of the features like forget password,etc.
   
 
 ** Few of the end-points at high level:**
@@ -63,17 +70,16 @@ The backend Spring Boot APP uses Java Yahoo Finance API, to compute lasted price
 
 ![image](https://user-images.githubusercontent.com/6425536/152632205-78700a1a-dd1f-4599-8240-9413214a3144.png)
 
-**Sample Sign-Up form respone using Postman**
+**Sign-Up form response using Postman**
 ![image](https://user-images.githubusercontent.com/6425536/152632464-7f732bb1-9a46-444c-9182-9f4453e9a579.png)
 
-**Postman to post a list of stock using API. Note the API key used as Bearer token in this case**
+**Postman used to store list of stocks using API end-point**
+  - Note the generated Bearer token was used.
 ![image](https://user-images.githubusercontent.com/6425536/152632936-f735d592-45a4-4fb6-8473-2c030a10eb01.png)
 
 
-**Sample NodeJS input login page **
+**NodeJS application input login page **
 ![image](https://user-images.githubusercontent.com/6425536/152633066-88336748-442f-4837-8dab-c9229abc14a3.png)
 
-**Sample UI Accessing the backend and displaying the data**
+**The stock info in presentable format with profit/loss and investment summary**
 ![image](https://user-images.githubusercontent.com/6425536/152632992-d388d183-ee29-4430-a055-e2c415b00378.png)
-
-
