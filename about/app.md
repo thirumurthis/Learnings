@@ -1,12 +1,12 @@
 Building a simple app for personal use and deploying in Heroku.
 
- - Heroku provides hosting Java, NodeJS applicaton for free, with limitation and advantages.
+ - Heroku provides hosting Java, NodeJS application for free, with limitation and advantages.
    - The application will be down if not active for 30 minutes.
    - Postgres Database add-on's with almost 10,000 rows. 
    
  Coming to the application that I built is a simple Stock application using Yahoo Finance API. This a personal project always there is scope for improvements.
  
- Design considernation for the app:
+ Design consideration for the app:
  
   - The first point in my consideration while desinging the app is security and not to display any of the personal information if any one using this app.
   - This is where I used Spring Boot security and JWT token.
@@ -24,23 +24,43 @@ Access the endpoint:
   - The Stock App can be accessed using Postman or equivalent tool.
   - I also built an NodeJS and Express based app, just with login page.
       - Currently this is not a full fledge app, at this point the Stocks need to be added from Postman.
-      
+
+** Input format **
+```json
+[{
+		"symbol": "MSFT",
+		"stockCount": "5.00",
+		"avgStockPrice": "12"
+	},
+	{
+		"symbol": "INFY",
+		"stockCount": "100.796152",
+		"avgStockPrice": "12.55"
+	},
+	{
+		"symbol": "INTC",
+		"stockCount": "65.428345",
+		"avgStockPrice": "52.43"
+}]
+```
+
 The [Git code](https://github.com/thirumurthis/stock-api#readme) for the application.
 
-#### Swagger Snapshot of the application
+**Swagger Snapshot of the application**
 
 ![image](https://user-images.githubusercontent.com/6425536/152632205-78700a1a-dd1f-4599-8240-9413214a3144.png)
 
-#### Sample Sign-Up form repsone using Postman
+**Sample Sign-Up form respone using Postman**
 ![image](https://user-images.githubusercontent.com/6425536/152632464-7f732bb1-9a46-444c-9182-9f4453e9a579.png)
 
-#### Postman to post a list of stock using API. Note the API key was used as Bearer token in this case
-![image](https://user-images.githubusercontent.com/6425536/152632636-cc15c316-9c56-4ca0-8710-ff018a646e7c.png)
+**Postman to post a list of stock using API. Note the API key used as Bearer token in this case**
+![image](https://user-images.githubusercontent.com/6425536/152632936-f735d592-45a4-4fb6-8473-2c030a10eb01.png)
 
-#### Sample NodeJS input login page
-![image](https://user-images.githubusercontent.com/6425536/152632657-a1d1d140-dca8-4bcf-941c-417c497581f4.png)
 
-### Sample UI Accessing the backend and displaying the data
-![image](https://user-images.githubusercontent.com/6425536/152632703-3195fd63-22e3-4c69-b8b5-f7f6b89dc2f7.png)
+**Sample NodeJS input login page **
+![image](https://user-images.githubusercontent.com/6425536/152633066-88336748-442f-4837-8dab-c9229abc14a3.png)
+
+**Sample UI Accessing the backend and displaying the data**
+![image](https://user-images.githubusercontent.com/6425536/152632992-d388d183-ee29-4430-a055-e2c415b00378.png)
 
 
