@@ -1,17 +1,27 @@
 Building a simple app for personal use and deploying in Heroku.
 
- - Heroku provides hosting Java, NodeJS application for free, with limitation and advantages.
-   - The application will be down if not active for 30 minutes.
-   - Postgres Database add-on's with almost 10,000 rows. 
-   
- Coming to the application that I built is a simple Stock application using Yahoo Finance API. This a personal project always there is scope for improvements.
- 
- Design consideration for the app:
- 
-  - The first point in my consideration while desinging the app is security and not to display any of the personal information if any one using this app.
-  - This is where I used Spring Boot security and JWT token.
+ - Heroku provides hosting Java, NodeJS application for free. Free tier has some limitation as well.
 
-End points at high level:
+   - The application will be down if it is inactive for 30 minutes. 
+       - For example, if I didn't access the backend or frontend API it will not be active. 
+       - Once I hit the endpoint, it will startup automatically.
+   - Postgres Database on free tier support only 10,000 rows, which is sufficient for my case.
+   
+** About the app **
+Now lets look at the application that I built. This application will take the stock symbol, number of stock and average price of the stock invested. 
+
+The backend Spring Boot APP uses Java Yahoo Finance API, to compute lasted price of the Stock. Since I am using for personal purpose, I don't worry about real time update on stock price.
+ 
+**Thinking of design **
+ 
+  - Being a personal use application, I wanted the application to be secure, so the decision there is Spring Security and JWT tokens.
+  - Since the application is hosted in public domain, I also don't want my personal details if input to be available to public. This is where simple Sign Up end-point with User Name and Password originated.
+  - Next, I don't want the user or myself to use Password for every transaction, the next idea was to provide a Random generated API key as a response of `SignUp` process. This is the first end-point to the application, where the user name, encoded password and API Key are stored in database.
+  - Now, what if user or myself forget the API key, for that I expose another end-point which will provide the API key. This is a POST end-point which require user name and password in request body.
+     - This app right now doesn't have forget password. This is another idea, yet to be built where I can have send a link and request user to provide a new password.
+  
+
+** Few of the end-points at high level:**
 
  - The POST end-point `/stock-app/signup` can be used for creating a API token, it requires to pass user name and password in the request body.
  - Using the User Name and Api key, the POST end-point `/stock-app/token` provides the JwtToken when invoked with User Name and API key in the request body.
@@ -20,7 +30,8 @@ End points at high level:
  - The application also has end-point to add list of Stocks, delete stock, update stocks.
  - The SWAGGER endpoint will provide available end-point details `http://<domain>/swagger-ui/index.html` and providing application name.
 
-Access the endpoint:
+**Tools to access the endpoint:**
+
   - The Stock App can be accessed using Postman or equivalent tool.
   - I also built an NodeJS and Express based app, just with login page.
       - Currently this is not a full fledge app, at this point the Stocks need to be added from Postman.
