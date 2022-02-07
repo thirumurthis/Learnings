@@ -10,29 +10,24 @@ Terminology:
   - Consumer group
   
 
-The producer push the message to Topic, Consumer reads the message from the Kafka broker/Server.
+- The `producer` push the message to Topic, Consumer reads the message from the Kafka broker/Server.
 
-Kafka provides capability to partition he large message, like sharding. But partition needs to be configured its not out of the box
+- Kafka provides capability to partition he large message, like sharding. But partition needs to be configured its not out of the box
+- When consuming a partitioned message the consumer must need to know the topic, partition and the position/offset of the message.
+- Partition is used for distirbuted events.
 
-When consuming a partitioned message the consumer must need to know the topic, partition and the position/offset of the message.
+- `Consumer Group`: Used for process message in parallel on partitions. This mask the need for developer to know the parition details to access the message by the consumer.
+   - Consumer group - removes the awareness of the partition from the consumer.
+   - Create a consmer group and add consumer to that group. 
+   - If there is only one consumer in the consumer group that one consumer is responsible for consumring message from all the partition. 
+   - That is, that one consumer in consumre group subscribes to the topic and if that topic has multiple partition. This consumer recives message from all partitions.
+- Best practice is one consumer consuming messages from one partition.
+- So if the topic has 2 parition and two consumer are present in the consumer group each parition will be consumed by two consumer from consumer group, if the third consumer wanted to join the consumer group what happens?- research?
 
-Partition is used for distirbuted events.
-
-Consumer Group: Used for process message in parallel on partitions. This mask the need for developer to know the parition details to access the message by the consumer.
-
-Consumer group - removes the awareness of the partition from the consumer.
-
-Create a consmer group and add consumer to that group. If there is only one consumer in the consumer group that one consumer is responsible for all the partitio. Now this consumer subscribes to the topic and if that topic has multiple partition. This consumer recives message from all partitions.
-
-Best practice is one consumer consuming messages from one partition.
-
-So if the topic has 2 parition and two consumer are present in the consumer group, when the third consumer can't join the group.
-
-By default, with two partition in topic and two consumer in consumer group, one consumer consuming messages from one partition will read messages like queue, from position 0,1,2,3,.. etc. by default.
-The consumer in consumer group can be modified to read the position again. 
-The second consumer in the consumer group will be responsible for parition 2 and cannot read partition1.
-
-This is how the Queue option is achived in Kafka using consumer group
+- By default, with two partition in topic and two consumer in consumer group, one consumer consuming messages from one partition will read messages like queue, from position 0,1,2,3,.. etc. by default.
+- The consumer in consumer group can be modified to read the position again. 
+- The second consumer in the consumer group will be responsible for parition 2 and cannot read partition1.
+- This is how the Queue option is achived in Kafka using consumer group
 
 For Kafka to execute as pub/sub model create different consumer group and add consumer in each unique group.
 The same parition can be accessed by different consumer in different consumer group.
@@ -74,7 +69,7 @@ docker run -n -n kafka-server -p 9092:9092 -e KAFKA_ZOOKEEPER_CONNECT=thiru:8181
 npm install kafkajs
 ```
 - Admin connection 
-```
+```js
 const {Kafka} = require("kafkajs")
 // note {} is the unpacking the package and setting to variable. This is equivalent to 
 //const kafka = require('kafkajs').Kafka
@@ -111,7 +106,7 @@ async function execute(){
 
 - producer
 
-```
+```js
 const {Kafka} = require("kafkajs")
 // note {} is the unpacking the package and setting to variable. This is equivalent to 
 //const kafka = require('kafkajs').Kafka
@@ -122,7 +117,6 @@ const userInput = process.argv[2];
 // argv[0] - node; argv[1]- filename; argv[2] - input value 
 
 execute();
-
 
 async function execute(){
    try {
@@ -170,7 +164,7 @@ Store the file in input.js, then in this case to run the app use `node input.js 
 - Consumer:
   - we had to specify which group it should belong.
 
-```
+```js
 const {Kafka} = require("kafkajs")
 // note {} is the unpacking the package and setting to variable. This is equivalent to 
 //const kafka = require('kafkajs').Kafka
