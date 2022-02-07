@@ -62,6 +62,41 @@ The backend Spring Boot app uses Java Yahoo Finance API to compute the above out
 }]
 ```
 
+** Development and deployment process **
+
+ - First we need to create an account in Heroku platform.
+ - Download and install Heroku CLI in local laptop.
+ - The developed code needs to be pushed to GitHub main branch (or any development branch).
+ 
+ - When we make changes to the code, we need to push the changes first to GitHub.
+ - In laptop we can use git-bash, navigate to the local project folder, use below command
+   ```
+   ## Below command will open up the browser for user to login to Heroku platform
+    heroku login
+
+    ## Below command will create an app, this will create an app with random name
+    ## The below command will also update the git remote for Heroku
+    heroku create 
+
+    ## To rename the app name created in Heroku platform, use below command
+    heroku apps:rename --app <existing-app-random-generated-name> <new-name-for-app>
+
+    ## List the Git remote to see if the Heroku remote is created using below command
+    heroku remote -v
+
+    ## Finally push the changes to heroku git, below command also deploy the app
+    ## Below command will prompt for git.heroku user name and password. 
+    ## Username is not required, password is the API Key (refer below notes for generating keys)
+    git push heroku main
+
+   ```
+ ** Generating API Keys **
+   To get the API key of git.heroku.com
+  ```
+   ## Below command will generate a API token 
+   heroku auth:token
+  ``` 
+
 **Code link**
   - [Spring Boot Application in Github](https://github.com/thirumurthis/stock-api#readme) and 
   - [NodeJS Application in Github](https://github.com/thirumurthis/stock-app#readme).
