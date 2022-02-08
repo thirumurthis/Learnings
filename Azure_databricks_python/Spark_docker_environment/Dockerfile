@@ -67,15 +67,13 @@ ENV SPARK_HOME=/opt/spark
 ENV PATH="$PATH:${SPARK_HOME}/bin"
 ENV PYTHONPATH="${SPARK_HOME}/python:${SPARK_HOME}/python/lib/py4j-0.10.7-src.zip:${SPARK_HOME}/python/lib/pyspark.zip"
 
-
 #
 # Install jq to process parsing json results 
 #
 RUN yum -y install jq
 
-
 #
-# Install python modules needed for building AHM analytics libraries
+# Install python modules needed 
 #
 RUN pip install pytest findspark azure-storage-blob azure-storage-queue
 
@@ -93,7 +91,6 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
   yumdownloader azure-cli && \
   rpm -ivh --nodeps azure-cli-*.rpm && \
   ln -s /usr/local/bin/python3.9 /usr/bin/python3
-
 
 #
 # Fire up a bash shell to run an builds
