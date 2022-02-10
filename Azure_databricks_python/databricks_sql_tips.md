@@ -14,3 +14,16 @@ display(df002)
 ```
 Check for my inputs with detailed output:
   - Answer [stackoverflow](https://stackoverflow.com/questions/49971903/converting-epoch-to-datetime-in-pyspark-data-frame-using-udf/70356729#70356729)
+
+
+#### Display the table names under the db
+```
+%sql use demo_db
+show tables
+```
+
+#### Using sysdate equivalent in databrick spark
+```
+%sql select to_date(insertdate, 'yyyy-MM-dd') dt, count(*) from demo_db.my-app-table where insertdate > current_date -30
+group by to_date(insertdate, 'yyyy-MM-dd') order by dt
+```
