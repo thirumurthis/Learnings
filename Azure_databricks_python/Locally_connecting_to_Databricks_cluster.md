@@ -129,8 +129,8 @@ print("TEST - ",spark.range(100).count())
  - Use `databricks --help` to configure the cli locally. command `databricks configure --token`
  - Pass in the Cluster name, URL, Generated token, in my case created a profile to connect to dev Databricks cluster.
 
-#### To push the schema to databricks for local development
-  - Created the `table1_raw.json` schema definition file locally and use below command to push to Databricks.
+#### To push the Files from local development to Databricks filesystem
+  - Create the `table1_raw.json` definition file locally and use below command to push to Databricks.
   - Below command will copy the file from the local to Databricks
 ```
 $ databricks fs cp ./schemas/table1.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
@@ -145,7 +145,7 @@ $ databricks fs rm dbfs:/FileStore/custom-datalake-schema/table1_raw.json --prof
 $ databricks fs cp ./schemas/table1_raw.json dbfs:/FileStore/custom-datalake-schema/ --profile dev
 ```
 
-If the token is expired, create a new token and set it using 
+### Renew the token if it is expired create a new token in Databricks workspace and set it using below command
 ```
 $ databricks configure --token --profile dev
 
