@@ -52,7 +52,7 @@
  ```
  
  ### Install Databricks connect 
- - Followed this (link)[ https://docs.databricks.com/dev-tools/databricks-connect.html]
+ - Followed this [link](https://docs.databricks.com/dev-tools/databricks-connect.html)
  ```
  $ pip3.8 uninstall pyspark
  $ pip3.8 install -U "databricks-connect=9.1.*"
