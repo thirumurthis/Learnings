@@ -42,7 +42,7 @@ data1_df = spark.createDataFrame(data1).toDF(*column)
 ```
 
 ### Convert JSON to a Dataframe applying schema, example. This can latter beconverted to temp table
-```
+```py
 from pyspark.sql import SparkSession, functions as F, types as T
 from datetime import datetime
 import json as json
