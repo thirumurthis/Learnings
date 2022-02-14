@@ -4,7 +4,7 @@ Steps:
 
 2. Navigate to the create scope page in databricks by appending "#secrets/createScope" to the URL address.
 
-3. 
+3. Input fields
   1. In "Scope Name", fill in the name example  “app-us-west-<env>-scope”. 
      1.1  (open the Key-vault that needs to be connected in sperate browser, copy the DNS name and Resource id) 
   2. In "DNS Name" fill the key vault DNS name
@@ -14,7 +14,8 @@ Steps:
 
 Reference [Link](https://docs.microsoft.com/en-us/azure/databricks/security/secrets/secret-scopes)
 
---
+----
+  
 Later in order to view the scope info and associated key vault.
   - Install databricks-cli, and use the appropriate command.
   ```
