@@ -1,4 +1,4 @@
- ### How to create a simple data frame in databrick
+ ## Create a simple data frame in databrick
  
  ```py
  data = [{"Employee": 'A', "ID": 1, "Salary": 121.44, "Trainee": True},
@@ -31,7 +31,7 @@
   ## python type to view the data type of data
   type(data)
  ```
-#### Dataframe with data and column seperately
+## Dataframe with data and column seperately
 
 ```py 
 column = ['Employee','ID','Salary']
@@ -41,7 +41,7 @@ data1 = [('A','1',100.0),('B','2',200.0)]
 data1_df = spark.createDataFrame(data1).toDF(*column)
 ```
 
-### Convert JSON to a Dataframe applying schema, example. This can latter beconverted to temp table
+## Convert JSON String to a Dataframe applying schema, example. This can be converted to temp table and queried.
 ```py
 from pyspark.sql import SparkSession, functions as F, types as T
 from datetime import datetime
@@ -121,6 +121,23 @@ inputDF = spark.createDataFrame([convertJsonToDataFrameRow()],inputSchema);
 display(inputDF)
 ```
 
-Output from the community edition: 
+- Output from the community edition: 
 ![image](https://user-images.githubusercontent.com/6425536/153781921-06e64713-afc1-4f26-b83a-5e04a3a2bf9b.png)
 
+## Create a temp table view using the dataframe in Databricks and drop it
+```py
+# converting the Dataframe to a temp table 
+TABLENAME="employee"
+try:
+  inputDF.createGlobalTempView(TABLENAME)
+  tableDF = spark.sql(f"SELECT * FROM global_temp.{TABLENAME}")
+  display(tableDF)
+except Exception as e:
+  print (f"Exception occurred: {e}")
+  raise e
+finally:
+  spark.catalog.dropGlobalTempView(TABLENAME)
+ ```
+
+ - Output from community edition:
+![image](https://user-images.githubusercontent.com/6425536/153782515-e6270d01-0d98-4bf0-891c-16f1b1ed7be5.png)
