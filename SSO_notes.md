@@ -1,5 +1,29 @@
- - Implementing SSO in tomcat 8 below update to server.xml
- - 
+Experience on handling SSO in one of the project.
+
+- Create a proxy url, this url will be used by the user in the browser. 
+    - This url will thi the SSO proxy server.
+    - The proxy server, will prompt the user with login/certificate based authentication.
+    - After successful authentication, the user is routed to the registered application (backend url) with the organization.
+    - The application server, then gets the logon user information from the request header or certifcate from proxy.
+
+Note: In my application, i had to expose an REST endpoint build using Apache CXF which is consumed by another system, for this the policy needs to be updated in the proxy saying to allow URLs with specifi pattern or wild chards without redirecting to SSO login page.
+
+- Since tomcat may use more port, not all the port is not opened in the IP table, request the sys admin to enable ports to be accessed in the server.
+ 
+ - To setup certificate based locking.
+   - In the application server generate the certificate using java keytool. use below command.
+    ```
+     $ kyetool -certreq -keyalg RSA -alias <alias-name> -keystore <keystorename>
+    ```
+   - Use the generated content in the Centralized certitifate management system to create the generalized token.
+   - For any other additional certificate chain, to generate the keystore and truststore import using below keytool command
+   ```
+   # provided with the certiticate chain
+   $ keytool importcert -alias my-app-1 -keystore keystorefilename -trustcerts -file provided-file-chain-cert
+   ```
+
+ - Implementing SSO in tomcat 8 to use SSO Proxy below update to server.xml
+ 
 ```xml
 <!--
 Global Naming Resources
@@ -22,7 +46,6 @@ The default configuration defines a JNDI name called UserDatabase via the elemen
                connectionTimeout="20000"
                redirectPort="8999" />
 			   
-
     <!--  Add ip address of the current server, for hardening sercuity -->
     <Connector address="<ip-address-of-curren-server>" SSLEnabled="true" clientAuth="true"
                keystoreFile="<keystore-file-path-.jks.extension>"
@@ -34,15 +57,14 @@ The default configuration defines a JNDI name called UserDatabase via the elemen
 	<!-- request to the 8030 port is also redriected to 8999 https -->
     <Connector port="8030" protocol="AJP/1.3" redirectPort="8999" />
 
-
 <!-- A Realm is a database of user, password, and role for authentication (i.e., access control). You can define Realm for any container, such as Engine, Host, and Context, and Cluster. -->
   <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
                resourceName="UserDatabase"/>
-      </Realm>
-	  
+</Realm>
+<!--... -->
 ```
 
-- tomcat-user.xml
+Update the tomcat-user.xml with specific roles
 ```xml
 
 <tomcat-users>
@@ -81,7 +103,6 @@ The default configuration defines a JNDI name called UserDatabase via the elemen
     </description>
     <role-name>proxy-user-role</role-name>
   </security-role>
-
 ```
 
 What is Web Single Sign On  (SSO) - is the standard enterprise web access solution for all applications.
