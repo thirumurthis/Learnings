@@ -25,19 +25,19 @@
    - content (optional) This is the content that we want to post. (Example: Message From server)
 - The server gets the request, it will recognize the request or rejects it. It sends response if it recognizes it.
 - The request and response are individual calls, tehre is no connection between the client and server, these are short lived connection.
-   - The response is like a text document,that contains
-     - Status (did the request succeed, failed)
-     - Header (tells the body of the content type : text)
-     - Content (response text from server)
+  - The response is like a text document,that contains
+   - Status (did the request succeed, failed)
+   - Header (tells the body of the content type : text)
+   - Content (response text from server)
 
 #### HTTP Reqeuest and response is stateless, short lived.
 Request:
- Verbs:
-    - GET
-    - POST
-    - PUT
-    - PATCH - used to update partial resource
-    - DELETE
+- Verbs:
+   - GET
+   - POST
+   - PUT
+   - PATCH - used to update partial resource
+   - DELETE
 
  Headers - are set of name - value pair, the metadata about the request. Like what type of data is the content.
     - Content Type - the type of content data
@@ -116,11 +116,11 @@ To view the request content:
  The result in this case can wrap the result with next and privious as below
 ```json
 {
-  totalResults : 100,
-  nextPage: "/api/sites?page=5"
-  prevPage: "/api/sites?page=3"
-  result : [
-   "key1" : "value1:,
+  "totalResults" : 100,
+  "nextPage": "/api/sites?page=5",
+  "prevPage": "/api/sites?page=3",
+  "result" : [
+     "key1" : "value1"
    ]
 }
 ```
@@ -149,6 +149,7 @@ To view the request content:
  Strong caching 
  Weak Caching
  ```
+ 
  -  The Etag is set in header of the response with a unique identifier. 
  -  To indicate if the caching is weak Caching, we can add Etag with W/<unique identifier> in response.
 
@@ -260,6 +261,7 @@ To view the request content:
     Access-Control-Request-Method: POST
     Host: localhost:8080
     ```
+  
 #### Authorization and Authentication:
   - Authentication => the person, information to determine identity, credentials/claims
   - Authorization => what can you do, Rules about rights (roles, etc)
