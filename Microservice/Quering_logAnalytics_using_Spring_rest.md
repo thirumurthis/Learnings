@@ -21,7 +21,7 @@
   ## above command will return the query result
   ```
   
-  In order to implement the same, we can use the Spring boot rest template.
+  In order to implement the same, we can use the Spring boot `RestTemplate`.
   
   ```java
   // setting httpheader 
@@ -30,7 +30,7 @@
   
   bodyoftheRequest = "grant_type=client_credentials&client_id"+logAnaytlicsAppid + "&client_secret="+logAnalyticsecert+"&respurces=https://management.azure.com/"
 
-  HttpEntity<strig> tokenEntity = new HttpEntity<>(body,headers);
+  HttpEntity<String> tokenEntity = new HttpEntity<>(body,headers);
   try{
      ResponseEntity<String> bearerTokenresp = restTemplate.exchange("https://login.microsoftonline.com/<tenantID>/ouath2/token", headers);
      // parse the response for earer toekn
@@ -43,7 +43,7 @@
   ```
 -------
 
-### Using jayway Jackson jsonpath to parse the response like XML xpath way.
+### Using jayway Jackson jsonpath to parse the response like `XML xpath` way.
  - check the [link](https://www.baeldung.com/guide-to-jayway-jsonpath)
 
 ```
