@@ -544,3 +544,157 @@ imputer.fit(result_df).transform(result_df).show()
 +----------+----+----------+-------+--------------+
 ```
 
+
+#### Filter Operation in dataframe in pyspark
+
+```
+# find the students who scored above 80 in science
+# approach 1 to write the query directly in the fitler function
+df_data.filter("Subject = 'science' and Mark >= 80").show()
+```
+- Output
+```
+# dataframe values 
++---------+----+--------+----+
+|StudentId|Name| Subject|Mark|
++---------+----+--------+----+
+|        1| Ram| science|  80|
+|        1| Ram|   maths|  90|
+|        1| Ram|language|  85|
+|        2| Tom| science|  72|
+|        2| Tom|   maths|  75|
+|        2| Tom| science|  79|
+|        3| Kim| science|  81|
+|        3| Kim|   maths|  92|
+|        3| Kim|language|  89|
++---------+----+--------+----+
+
+# Filtered output 
++---------+----+-------+----+
+|StudentId|Name|Subject|Mark|
++---------+----+-------+----+
+|        1| Ram|science|  80|
+|        3| Kim|science|  81|
++---------+----+-------+----+
+```
+##### Performing selection over the fiter conditions
+ - using the query in filter fuction, and using `&` operators
+ 
+ - Note: the values returned are inline, make sure to store to different variable
+```
+df_data.filter("Subject = 'science' and Mark >= 80").select(['Name','Mark']).show()
+
+# Same query as above but using operator & 
+df_data.filter((df_data["Subject"] == 'science') &  
+               (df_data["Mark"] >= 80)).select(['Name','Mark']).show()
+```
+- Output:
+```
+# for the same dataframe df_data value as above, below is the filtered value
++----+----+
+|Name|Mark|
++----+----+
+| Ram|  80|
+| Kim|  81|
++----+----+
+```
+ - using `|` (or) operator
+```
+df_data.filter((df_data["Subject"] == 'science') | 
+               (df_data["Mark"] >= 80)).select(['Name','Mark']).show()
+```
+
+- using `~` (NOT) condition or inverse opreation
+
+```
+df_data.filter(~(df_data["Subject"] == 'science')).select(['Name','Subject','Mark']).show()
+```
+- output 
+```
++----+--------+----+
+|Name| Subject|Mark|
++----+--------+----+
+| Ram|   maths|  90|
+| Ram|language|  85|
+| Tom|   maths|  75|
+| Kim|   maths|  92|
+| Kim|language|  89|
++----+--------+----+
+```
+
+#### `GroupBy` and `Aggregate` in dataframe
+##### GroupBy
+
+ - groupBy name and find the total score for each student
+```
+# note if the the column name is not PASSED to the sum, the integer/double 
+# will automatically aggergate all these fields
+
+df_data.groupBy('Name').sum("Mark").show()
+```
+- output
+```
++----+---------+
+|Name|sum(Mark)|
++----+---------+
+| Tom|      226|
+| Ram|      255|
+| Kim|      262|
++----+---------+
+```
+ - groupBy and find the max score on each subject
+```
+df_data.groupBy('Subject').max("Mark").show()
+```
+- Output
+```
++--------+---------+
+| Subject|max(Mark)|
++--------+---------+
+|   maths|       92|
+| science|       81|
+|language|       89|
++--------+---------+
+```
+- Groupby without any column in sum
+```
+df_data.groupBy('Name').sum().show()
+```
+- output 
+```
++----+--------------+---------+
+|Name|sum(StudentId)|sum(Mark)|
++----+--------------+---------+
+| Tom|             6|      226|
+| Ram|             3|      255|
+| Kim|             9|      262|
++----+--------------+---------+
+```
+- Groupby and find the mean
+```
+df_data.groupBy('Name').mean().show()
+```
+- Output
+```
++--------+--------------+-----------------+
+| Subject|avg(StudentId)|        avg(Mark)|
++--------+--------------+-----------------+
+|   maths|           2.0|85.66666666666667|
+| science|           2.0|             78.0|
+|language|           2.0|             87.0|
++--------+--------------+-----------------+
+```
+
+##### Using the `aggregate` function directly passing key
+```
+df_data.agg({'Mark':'sum'}).show()
+```
+- Output
+```
++---------+
+|sum(Mark)|
++---------+
+|      743|
++---------+
+```
+
