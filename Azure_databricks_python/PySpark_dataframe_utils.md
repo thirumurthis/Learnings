@@ -1,4 +1,4 @@
-Working with PySpark Dataframes in Databricks
+### Working with PySpark Dataframes in Databricks
 
 Dataframes are datastructure used within pyspark for storing data in array format with rows and columns.
 
@@ -439,4 +439,108 @@ result_df.na.drop(how="any",subset=['Department']).show();
 +----------+----+----------+-------+
 ```
 
+##### Filling the null values in the dataframe with `fill`
+```
+# using the above dataframe created by union operation of csv and program
+result_df.na.fill('Filling demo').show()
+```
+- output 
+```
++----------+------------+------------+-------+
+|EmployeeId|        Name|  Department| Salary|
++----------+------------+------------+-------+
+|         1|         Tim|    Accounts|10000.0|
+|         2|         Tom|       Sales|12000.0|
+|         3|         Bob|          IT|15000.0|
+|         4|         Rob|Filling demo|  100.0|
+|         5|Filling demo|    Security| 3000.0|
+|         6|Filling demo|Filling demo|    0.0|
+|         7|Filling demo|Filling demo|    0.0|
++----------+------------+------------+-------+
+```
+
+- Filling the null with some value for specific column
+```
+# below fills the department column along with the filling demo string when null found
+result_df.na.fill('Filling demo',['Department']).show()
+```
+- output
+```
++----------+----+------------+-------+
+|EmployeeId|Name|  Department| Salary|
++----------+----+------------+-------+
+|         1| Tim|    Accounts|10000.0|
+|         2| Tom|       Sales|12000.0|
+|         3| Bob|          IT|15000.0|
+|         4| Rob|Filling demo|  100.0|
+|         5|null|    Security| 3000.0|
+|         6|null|Filling demo|    0.0|
+|         7|null|Filling demo|    0.0|
++----------+----+------------+-------+
+```
+- Using `Imputer` function to fill the null on a Integer column with mean, median, mode
+  - In below creating a new dataframe with null data for integer data type  
+```
+from pyspark.sql.functions import lit,col,when
+# Define columns to add additional data set directly to the existing data frame
+# Note, i don't wan't to update the CSV file, using spark function to update the null
+# it is not directly easy to add a null to the data frame, i am using '' and converting those 
+# values to None/null
+columns = ['EmployeeId','Name','Department','Salary']
+
+#Note: Need to use only one None, if we use schema enforced, we can use multiple none which is null
+# for now setting one row for Salary as null. (this will be filled by the imputer funtcion)
+data = [(6,'','',None), (7,'','',20.0)]
  
+
+newEmployeeRow_df = spark.createDataFrame(data, columns)
+newEmployeeRow_df=newEmployeeRow_df.select([when(col(c)=="",None).otherwise(col(c)).alias(c) for c in newEmployeeRow_df.columns])
+result_df = employee_df.union(newEmployeeRow_df)
+result_df.show()
+```
+- Output of the dataframe
+```
++----------+----+----------+-------+
+|EmployeeId|Name|Department| Salary|
++----------+----+----------+-------+
+|         1| Tim|  Accounts|10000.0|
+|         2| Tom|     Sales|12000.0|
+|         3| Bob|        IT|15000.0|
+|         4| Rob|      null|  100.0|
+|         5|null|  Security| 3000.0|
+|         6|null|      null|   null|
+|         7|null|      null|   20.0|
++----------+----+----------+-------+
+```
+- Defining the imputer function for Salary column (we can use mulitple columns with integer/double as well)
+```
+from pyspark.ml.feature import Imputer
+
+imputer = Imputer(
+    inputCols=['Salary'],
+    outputCols=['Salary_imputed']
+ ).setStrategy("median")
+ 
+ # in strategy we can use mean, median, mode.
+ # for multiple columns in the output to conactenate we can use 
+ # [ f'{cols}_imputed for cols in ['col1','col2']]
+```
+```
+imputer.fit(result_df).transform(result_df).show()
+```
+- output
+```
+# row 6th filled with 3000 instead of null
++----------+----+----------+-------+--------------+
+|EmployeeId|Name|Department| Salary|Salary_imputed|
++----------+----+----------+-------+--------------+
+|         1| Tim|  Accounts|10000.0|       10000.0|
+|         2| Tom|     Sales|12000.0|       12000.0|
+|         3| Bob|        IT|15000.0|       15000.0|
+|         4| Rob|      null|  100.0|         100.0|
+|         5|null|  Security| 3000.0|        3000.0|
+|         6|null|      null|   null|        3000.0|
+|         7|null|      null|    0.0|           0.0|
++----------+----+----------+-------+--------------+
+```
+
