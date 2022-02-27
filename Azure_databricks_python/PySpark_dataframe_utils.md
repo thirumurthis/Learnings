@@ -102,6 +102,10 @@ df_data.select("StudentId","Name").show()
 
 # below is example passing a list of columns
 df_data.select(["Name","Mark").show()
+
+# below is example of using sql col() function
+from pyspark.sql.functions import col
+df_data.select(col("Name"),col("Mark")).show()
 ```
 - Output
 ```
