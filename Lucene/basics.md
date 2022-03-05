@@ -128,26 +128,23 @@ for(int i=0;i<hits.length;++i) {
 reader.close();
 ```
 - There are mulitple options to query the index, refer the documents for FuzzyQuery, wildcart, etc.
+----- 
+##### Additional info about the index
 
-Each segement index maintains below :
+- Each segment index maintains below :
 
-`Field names`. This contains the set of field names used in the index.
+| Element | Description |
+|---|----|
+|`Field names`.| This contains the set of field names used in the index.|
+|`Stored Field values`. | For each document, this contains a list of attribute-value pairs, where the attributes are field names. These are used to store auxiliary information about the document, such as its title, url, or an identifier to access a database. The set of stored fields are what is returned for each hit when searching. This is keyed by document number.|
+|`Term dictionary`. | A dictionary containing all of the terms used in all of the indexed fields of all of the documents. The dictionary also contains the number of documents which contain the term, and pointers to the term's frequency and proximity data.|
+|`Term Frequency data`. | For each term in the dictionary, the numbers of all the documents that contain that term, and the frequency of the term in that document if omitTf is false.|
+|`Term Proximity data`.| For each term in the dictionary, the positions that the term occurs in each document. Note that this will not exist if all fields in all documents set omitTf to true.|
+|`Normalization factors`.| For each field in each document, a value is stored that is multiplied into the score for hits on that field.|
+|`Term Vectors`.| For each field in each document, the term vector (sometimes called document vector) may be stored. A term vector consists of term text and term frequency. To add Term Vectors to your index see the Field constructors|
+|`Deleted documents`.| An optional file indicating which documents are deleted.|
 
-`Stored Field values.` This contains, for each document, a list of attribute-value pairs, where the attributes are field names. These are used to store auxiliary information about the document, such as its title, url, or an identifier to access a database. The set of stored fields are what is returned for each hit when searching. This is keyed by document number.
-
-`Term dictionary.` A dictionary containing all of the terms used in all of the indexed fields of all of the documents. The dictionary also contains the number of documents which contain the term, and pointers to the term's frequency and proximity data.
-
-`Term Frequency data`. For each term in the dictionary, the numbers of all the documents that contain that term, and the frequency of the term in that document if omitTf is false.
-
-`Term Proximity data`. For each term in the dictionary, the positions that the term occurs in each document. Note that this will not exist if all fields in all documents set omitTf to true.
-
-`Normalization factors`. For each field in each document, a value is stored that is multiplied into the score for hits on that field.
-
-`Term Vectors`. For each field in each document, the term vector (sometimes called document vector) may be stored. A term vector consists of term text and term frequency. To add Term Vectors to your index see the Field constructors
-
-`Deleted documents`. An optional file indicating which documents are deleted.
-
-Below details the extension of lucene files
+- Below details the extension of Lucene files
 
 | Name | 	Extension	| Brief Description | 
 | -- | --- | ------|
