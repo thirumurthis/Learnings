@@ -31,6 +31,8 @@ Lucene can efficiently index the data that needs to be searched. This is being u
 #### Segment:
   - An Index is composed of one or more sub-indexes called segments.
 
+![image](https://user-images.githubusercontent.com/6425536/156897177-1ab0ab7f-0562-4842-9398-ec3bbf828212.png)
+
 #### Lucene internal: 
    - When Lucene writes data to an in-memory buffer. 
    - When memory buffer reaches a threshold (certain amount), it will be flushed to become a Segment. 
