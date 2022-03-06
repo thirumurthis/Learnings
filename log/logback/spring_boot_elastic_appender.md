@@ -228,5 +228,8 @@ When set
 
 #### Now, when we hit the url endpoint, `http://localhost:8080/info`, the log message gets shipped to Elastic search.
 - Refer below snapshot
+
+![image](https://user-images.githubusercontent.com/6425536/156911691-da07ff95-fc02-40f2-9248-2325494eefdf.png)
+
 ![image](https://user-images.githubusercontent.com/6425536/156911499-8d1d7309-bf19-476a-b7da-61e0bdb4435c.png)
 
