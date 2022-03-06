@@ -83,7 +83,7 @@
 
 <configuration debug="true" scan="true">
 
-<springProfile name="!local | !default">  <!-- when the profile is not local and default, this appender will be applied -->
+<springProfile name="!local">  <!-- when the profile is not local and default, this appender will be applied -->
    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <!-- encoders are assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
@@ -233,3 +233,12 @@ When set
 
 ![image](https://user-images.githubusercontent.com/6425536/156911499-8d1d7309-bf19-476a-b7da-61e0bdb4435c.png)
 
+#### when the active profile is set to local, below message will be displayed
+```
+22:21:06.587 [main] INFO com.example.logdemo.LogdemoApplication - Application started 
+22:21:10,387 |-INFO in ch.qos.logback.classic.joran.action.ConfigurationAction - End of configuration.
+22:21:10,390 |-INFO in org.springframework.boot.logging.logback.SpringBootJoranConfigurator@50d13246 - Registering current configuration as safe fallback point
+...
+22:21:10,788 |-WARN in Logger[com.example.logdemo.LogdemoApplication] - No appenders present in context [default] for logger [com.example.logdemo.LogdemoApplication].
+
+```
