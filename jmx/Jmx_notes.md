@@ -11,8 +11,9 @@ Below is an example of how to configure an applicaiton using JMX.
  - The Monitor bean, will return the duration from the start of the process in seconds.
 ![image](https://user-images.githubusercontent.com/6425536/158005143-c0cdfaf3-d160-41c9-9765-8b14732c94da.png)
 
- - We update a counter varliable, below snapshot 
-![image](https://user-images.githubusercontent.com/6425536/158005163-536d1ec3-39ac-4117-9ade-93b6efe3f090.png)
+- We can update the counter variable using operations like in below snapshot and clicking the method name will update the variable in runtime.
+![image](https://user-images.githubusercontent.com/6425536/158005504-0cf2c02e-aa61-478c-94fa-095d9f872e09.png)
+
 - After updating the counter attribute is set with user provided value. In this case 12.
 ![image](https://user-images.githubusercontent.com/6425536/158005177-ca8e5729-b1a7-4bac-a75b-2c9ae9c9357b.png)
 
