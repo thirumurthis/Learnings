@@ -4,10 +4,10 @@
  - Using JMX MBean server we can update the variable during runtime.
 
 Applications like Apache Cassandra, Apache Artemis provides JMX service to monitor the process using JMX.
-Refer my Stackoverflow for a implemention to monitor the queue count from Apache Artemis using [JMX
-](https://stackoverflow.com/questions/63162424/activemq-artemis-and-logstash-jmx-input)
 
-Below is an example of how to configure an applicaiton using JMX.
+Refer my [Stackoverflow link](https://stackoverflow.com/questions/63162424/activemq-artemis-and-logstash-jmx-input) for a implementing monitor logic for queue count from Apache Artemis using JMX and Elastic Serach.
+
+Below is an example of how to configure an application using JMX.
  - The Monitor bean, will return the duration from the start of the process in seconds.
 
 ![image](https://user-images.githubusercontent.com/6425536/158005143-c0cdfaf3-d160-41c9-9765-8b14732c94da.png)
@@ -35,9 +35,10 @@ Upon invoking the externalStopFlag with true, the while loop will be stopped.
 
 ![image](https://user-images.githubusercontent.com/6425536/158005344-6ada0383-ceeb-4c4c-aa16-2cbcea0c6588.png)
 
-If we want to connect using JMX client code below is how the same code for client looks
+If we want to connect using JMX client code below is how the sample code for client looks, but here I demonstrated using JConsole.
 
 ```java
+ MBeanServer mbs = MBeanServerFactory.createMBeanServer(); 
 JMXServiceURL url = 
   new JMXServiceURL("service:jmx:rmi:///jndi/rmi://localhost:9999/server"); 
 JMXConnectorServer cs = 
@@ -53,8 +54,12 @@ package jmxdemo.jmxdemo;
 
 public interface MonitorMBean {
 
+   //Attribute will display the time in second from when the process started
 	String getProcessDuration();
+   //Flag used to stop the process when updated to true form Jconsole
 	void exteralStopFlag(boolean stopFlag);
+
+   // stored the counter value when input provided from Jconsole
 	void externalCounter(int i);
 	int getCounter();
 	boolean getStopFlag();
@@ -141,15 +146,6 @@ public class Helper {
 ```java
 package jmxdemo.jmxdemo;
 
-import java.lang.management.ManagementFactory;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
-
 public class App {
 
 	public static void main(String[] args) {
@@ -178,4 +174,3 @@ public class App {
 	}
 }
 ```
-
