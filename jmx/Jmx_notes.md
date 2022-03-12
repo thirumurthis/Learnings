@@ -4,8 +4,8 @@
  - Using JMX MBean server we can update the variable during runtime.
 
 Applications like Apache Cassandra, Apache Artemis provides JMX service to monitor the process using JMX.
-Refer my Stackoverflow for a implemention to monitor the queue count from Apache Artemis using JMX
-https://stackoverflow.com/questions/63162424/activemq-artemis-and-logstash-jmx-input
+Refer my Stackoverflow for a implemention to monitor the queue count from Apache Artemis using [JMX
+](https://stackoverflow.com/questions/63162424/activemq-artemis-and-logstash-jmx-input)
 
 Below is an example of how to configure an applicaiton using JMX.
  - The Monitor bean, will return the duration from the start of the process in seconds.
