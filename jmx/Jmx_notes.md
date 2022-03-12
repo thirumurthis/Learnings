@@ -9,7 +9,7 @@
 The Java code at the bottom will demonstrate how to update the variable during runtime, using JConsole with help of JMX MBean server.
 
 ### Use Case of JMX
-Applications like Apache Cassandra, Apache Artemis provides JMX service to monitor the process using JMX.
+Applications like Apache Cassandra, Apache Artemis provides JMX service for management and monitoring the process.
 
 Refer my [Stackoverflow link](https://stackoverflow.com/questions/63162424/activemq-artemis-and-logstash-jmx-input) for a implementing monitor logic for queue count from Apache Artemis using JMX and Elastic Search.
 
@@ -34,12 +34,14 @@ Upon invoking the `externalStopFlag` with value of true, the while loop will be 
 ![image](https://user-images.githubusercontent.com/6425536/158005237-117b93a9-c7a4-4668-8e68-09617402064e.png)
 
 - In order to enable the JMX, we have to start the Java application with below JVM arguments
+
 ```
 -Dcom.sun.management.jmxremote \
 -Dcom.sun.management.jmxremote.port=9999 \
 -Dcom.sun.management.jmxremote.authenticate=false \
 -Dcom.sun.management.jmxremote.ssl=false
 ```
+
 Note:
   - When using `-Dcom.sun.management.jmxremote.port=0`, per openjdk documentation it is an undocumented feature which will cause the jvm to ask the OS to assign an ephemeral port. This will guarantee an unused port.
 
@@ -56,8 +58,8 @@ Additional tip:
   org.apache.cassandra.net
   - FailureDetector
      - Attributes
-        - SimpleStates   <to display the current status  (UP/DOWN) of the node connected> 
-  
+        - SimpleStates   
+        <to display the current status  (UP/DOWN) of the node connected> 
 ```
 
 ![image](https://user-images.githubusercontent.com/6425536/158005344-6ada0383-ceeb-4c4c-aa16-2cbcea0c6588.png)
@@ -95,6 +97,7 @@ public interface MonitorMBean {
 	boolean getStopFlag();
 }
 ```
+
 - Implement the MBean which will can be updated remotely.
 
 ```java
@@ -142,8 +145,10 @@ public class Monitor implements MonitorMBean{
 }
 ```
 
-- Helper class to register the bean to MBserver
+- Helper class to register the bean to MBean server
+
 ```java
+
 package jmxdemo.jmxdemo;
 
 import java.lang.management.ManagementFactory;
