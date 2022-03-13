@@ -29,8 +29,8 @@ broker_1
 
 - To start the broker, we need to navigate to the broker_1 directory, under bin/ folder should see the executable.
   Note: 
-    - In Windows/Linux the broker can be started as service, running in the background.
-    - In Linux, in order auto start the service when VM/machine boots up a script needs to be manually created to call the executable.
+   - In Windows/Linux the broker can be started as service, running in the background.
+   - In Linux, in order auto start the service when VM/machine boots up a script needs to be manually created to call the executable.
     
 - Execute below command to run the Artemis broker, from the broker_1 folder
 ```
@@ -47,28 +47,30 @@ The timeout cofiguration of `hawtio` can be configured by updating the JAVA_ARGS
 - With the UI console displayed, basic configuration is complete.
 
 ### To enable the JMX RMI
-- We need to uncomment the `connector tag` from the `management.xml` under the etc folder.
-- By default the JMX is not enabled, to enable the JMX RMI option we need uncommenting connectors.
+- We need to uncomment the `connector` tag from the `management.xml` under the etc folder.
+- By default the JMX is not enabled, first we need to uncomment connectors tag.
 ```
 ### uncomment the line
  <connector connector-port="1099"/>`
 ```
- - Also in order to enable the JConsole to connect to the JMX service remoted we need to pass argument `-Djava.rmi.server.hostname=localhost` in JAVA_ARGS so update the file `artemis.profile.cmd` like below
+ - In order to enable the JConsole to connect to the JMX service remotely, we need to add `-Djava.rmi.server.hostname=localhost` to JAVA_ARGS.
+ - Update the `artemis.profile.cmd` (in windows) like below along with the other arguments
 ```
 JAVA_ARGS=..... -Djava.rmi.server.hostname=localhost ...
 ```
 
-- With the above steps Restart the artemis broker.
-- Stopping the existing broker process and starting it again using `bin/artemis run`.
-- Now, we can use `curl` command to check if we are able to access the JMX service, we will be checking the Artemis version below.  
+- Noe restart broker, stop the existing broker process and start it again using `bin/artemis run`.
+- In order to successfully access the JMX service we need to updated `jolokia-access.xml` else we will recieve below message.
 ```
 $ curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.activemq.artemis:broker=\"0.0.0.0\"/Version'
 
 ## If we see the below response, then we need to update the jolokia-access.xml
 {"error_type":"java.lang.Exception","error":"java.lang.Exception : Origin null is not allowed to call this agent","status":403}
 ```
- Note: 
-  - The JMX url can be fetched from the Atermis Hawtio console, by clicking the JMX option, and selecting the Borker info. Refer snapshot.
+
+Note: 
+  - The JMX url can also be fetched direclty from the Atermis Hawtio console.
+    -  clicking the JMX option in console and select the Borker info. For more details refer below snapshot.
  
 ![image](https://user-images.githubusercontent.com/6425536/158078034-eab807f0-bfab-4f33-9ed3-fe2ddabafd05.png)
 
@@ -76,63 +78,82 @@ $ curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.act
 
 ![image](https://user-images.githubusercontent.com/6425536/158078084-eb403466-94e1-4b50-971d-c145fe28346d.png)
 
- 
- - Comment the `<cor>` tags in `jolokia-access.xml`. The tags info under the `<restrict>` should be commented out. 
- - This is for demonstration purpose, if we need to harden the security, check the documentation of jolokia for more info.
+- In order to successfully access the JMX service, the last change is commenting out the `<cors>` tag in `jolokia-access.xml` under etc folder.
+ - For demonstration purpose I simply commented the content, but check Jolokia documentation for hardening the security access.
 
-- Stop the broker process ad restart the broker. Now, the above curl command should provide a responsee like below.
+- Now restart the the broker and we should be able to access the JMX service. We should get a response like below.
 ```
 curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.activemq.artemis:broker=\"0.0.0.0\"/Version'
 {"request":{"mbean":"org.apache.activemq.artemis:broker=\"0.0.0.0\"","attribute":"Version","type":"read"},"value":"2.20.0","timestamp":1647191397,"status":200}
 ```
 
+The Artemis configuration is completed now.
+
 ## Installing ELK 8.1.0
-Installing ELK latest version (8.1.0) at the time of writting.
 
-- Download all three zip, I am using Windows machine. 
-- First start the Elastic Search, by navigating to bin/elasticsearch. Once started, hit `http://localhost:9200`, by default the security is enabled and prompt for username and password will be displayed.
-- Navigate to the bin folder in the Elastic serach extracted directory, we need to add a user using the utilities
+In order to installing ELK latest version (8.1.0) at the time of writting, download Elastic, Kibana and logstash from elasticsearch website.
+- I am using the Windows machine, so extracted the Zip locally. 
+#### Start the Elastic serach 
+- Navigating to extracted elastic search folder issue the comamnd `$ bin/elasticsearch`. 
+- Once Elastic Search is successfully started, from browser use `http://localhost:9200` to check if Eleastic node is up.
+   - By default the latest version has security enabled, so you will be prompted with username and password.
+##### Adding user and roles
+ - Navigate to the extracted elastic search directory bin/ folder, use `elasticserach-users` executable script to add users.
 
-- Creating and user with role. Below command will create a user0 with roles 
+- To create user below is the command. Check the documentation for more details. 
 ```
 elasticsearch-users useradd user0 -p password -r superuser,kibana_system,kibana_user,logstash_system,logstas_admin
 ```
-- The know roles with the default configuration are listed by the same command.
+- The known roles that will be displayed part of the userdd command.
 ```
 Known roles: [apm_system, watcher_admin, viewer, rollup_user, logstash_system, kibana_user, beats_admin, remote_monitori_admin, editor, data_frame_transforms_user, machine_learning_user, machine_learning_admin, watcher_user, apm_user, beats_system, transform_user, reporting_user, kibana_system, transform_admin, remote_monitoring_collector, transport_client, superuser, ingest_admin]
 ```
-- To add a role after user is added, we can use below command
+- We can add a role to  existing user with below comamnd.
 ```
 .\elasticsearch-users roles thiru -a kibana_admin
 ```
--To remove the role on an user 
+- We can remove a role from existing user using below command.
 ```
 .\elasticsearch-users roles thiru -r kibana_admin
 ```
+### Setting up the Kibana
 
-- For kibana to be connect with the Elastic search, we need to update the user name and password of the user created above to `kibana.yml` file.
-- Search for username
+- For kibana to be connect to Elastic search, we need to update the `kibana.yml` with user name and password.
+- From the extractd kibana file, navigate to config directory and update the `kibana.yml` file with below info.
 
 ```
 elasticsearch.username: "user01"
 elasticsearch.password: "password"
 ```
 
-After updating the kibana.yml, start the kibana process by navigating to kibana extracted folder
+- Start the kibana using the executable under bin folder of extracted kibana file.
 ```
 $ bin/kibana
 ```
+- By default the 7.0+ version, when the index is added using the Dev Tools -> Stack Management, we used to see the index info under discover.
+- But in the 8.1+ I had to follow below steps.
+  - After clicking the Discover option, i need to setup the Spaces -> create a new data view. Refer below snapshot.
 
-- Configuring the Logstash to push message.
+![image](https://user-images.githubusercontent.com/6425536/158080039-06dd74d5-6042-466b-82f9-4340136eb2ff.png)
+
+Dataview creation, click "Create Data veiw" and add the index.
+
+![image](https://user-images.githubusercontent.com/6425536/158080003-dddee158-1b8e-4473-b108-7b0cac8c1178.png)
+
+#### Setting up the Logstash
+- We need to create a configuration for logstash to push messages to Elastic search.
 - Since we are using JMX service, we need to install the jmx plugin, using  below command
-- Once the logstash zip is extracted, navigate to the bin directory, and issue below command
 ```
+# navigate to the bin folder under the logstash extracted directory
+
 bin/logstash-plugin install logstash-input-jmx
 ```
-Refer the [elasticsearch documentation](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jmx.html) 
+Refer the [elasticsearch documentation](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jmx.html) for more info.
 
-- In order to configure the jmx configuration, under the logstash extracted folder, navigate to config and create a file with below content. Note we are not going to use data_stream.
-- Name the file as `local-jmx.config`. This file name will be passed as input to logstash executable.
+- Below is the logstash configuration file for using JMX pluging.
+- We are going to place this configuration under the logstash extracted file, under config directory.
+    - Note: We are not using data_stream.
+- Create a file named `local-jmx.config` with below content. This file name will be passed as input to logstash executable.
 ```
 input {
   jmx {
@@ -151,9 +172,10 @@ output {
     }
 }
 ```
-Note in above configuration we are specifying the directory path where the jmx configuration is created.
+Note: 
+  - In above configuration we are specifying the directory path where the jmx configuration is created.
 
-- In the path `"C://thiru//learn//elk//8_1_0//config//"` create the jmx query configuration 
+- In the path `"C://thiru//learn//elk//8_1_0//config//"` I created the jmx query configuration 
 ```
 {
   "host" : "127.0.0.1",
@@ -173,7 +195,8 @@ Note in above configuration we are specifying the directory path where the jmx c
  ]
 }
 ```
-- Start the logstash, by navigating to the extracted logstash location, and issue below command 
+
+- Start the logstash service, by navigating to the extracted logstash location bin directory and issue below command 
 ```
 # bin/logstash <config-file-path-extracted-logstash-config-folder>
 
