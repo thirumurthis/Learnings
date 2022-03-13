@@ -106,6 +106,16 @@ curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.activ
 
 The Artemis configuration is completed now.
 
+#### Connecting to JMX service using JConsole
+
+- Use the `service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi` and approirate broker username and password to connect.
+
+![image](https://user-images.githubusercontent.com/6425536/158084695-70a60524-1263-46a4-8389-e202e2ccc133.png)
+
+![image](https://user-images.githubusercontent.com/6425536/158084643-a2d1193a-ebcc-43d7-9b50-77870002a2b5.png)
+
+
+
 ### Installing ELK 8.1.0
 
 In order to installing ELK latest version (8.1.0) at the time of writting, download Elastic, Kibana and logstash from elastic search website.
@@ -185,7 +195,7 @@ bin/logstash-plugin install logstash-input-jmx
 
 Refer the [Elastic Search documentation](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jmx.html) for more info.
 
-- Below is the logstash configuration file for using JMX pluging.
+- Below is the logstash configuration file for using JMX plugging.
 - Place below configuration file under the conf directory under unzipped logstash file.
 - Create a file named `local-jmx.config` and copy below content. 
   - Note: The file name will be passed as input to logstash executable. We are not using data_stream.
