@@ -172,10 +172,10 @@ output {
     }
 }
 ```
-Note: 
-  - In above configuration we are specifying the directory path where the jmx configuration is created.
+Note: In above configuration we are specifying the directory path where the jmx configuration is created.
 
-- In the path `"C://thiru//learn//elk//8_1_0//config//"` I created the jmx query configuration 
+- Create a file with below content under the path specified in above configuration.
+- In here the path `"C://thiru//learn//elk//8_1_0//config//"`, I created the jmx query configuration.
 ```
 {
   "host" : "127.0.0.1",
@@ -202,7 +202,7 @@ Note:
 
 $bin/logstash C://thiru//learn//elk//8_1_0//config//local-jmx.config
 ```
-- Once started you should be able to see below in the logstash console
+- Once started you should be able to see below in the logstash console, on successful setup.
 ```
 [2022-03-13T12:34:23,991][INFO ][logstash.agent           ] Successfully started Logstash API endpoint {:port=>9600, :ssl_enabled=>false}
 [2022-03-13T12:34:27,862][INFO ][org.reflections.Reflections] Reflections took 358 ms to scan 1 urls, producing 120 keys and 417 values
@@ -224,11 +224,217 @@ $bin/logstash C://thiru//learn//elk//8_1_0//config//local-jmx.config
 [2022-03-13T12:34:35,121][INFO ][logstash.inputs.jmx      ][main][6f6e2863248f814723878dd763c828e7917fe8560054cfa2dd7382ab88016533] Initialize 5 threads for JMX metrics collection
 ```
 
-Note: 
- If the logstash When starting the logstash if you see below exception, cross check the configuration of local-jmx.config file
+If in case there are exception like belo, during logstash startup, check the configuration files in this case `local-jmx.config` file.
 ```
 [2022-03-13T11:29:10,179][ERROR][logstash.agent           ] Failed to execute action {:action=>LogStash::PipelineAction::Create/pipeline_id:main, :exception=>"LogStash::ConfigurationError", :message=>"Expected one of [A-Za-z0-9_-], [ \\t\\r\\n], \"#\", \"=>\" at line 4, column 13 (byte 100) after input {\r\n  jmx {\r\n    path => \"C://thiru//learn//elk//8_0_1//config//jmxquery.config\"\r\n    jmxquery", :backtrace=>["C:/thiru/learn/elk/8_0_1/logstash-8.1.0/logstash-core/lib/logstash/compiler.rb:32:in `compile_imperative'", "org/logstash/execution/AbstractPipelineExt.java:189:in `initialize'", "org/logstash/execution/JavaBasePipelineExt.java:72:in `initialize'", "C:/thiru/learn/elk/8_0_1/logstash-8.1.0/logstash-core/lib/logstash/java_pipeline.rb:47:in `initialize'", "C:/thiru/learn/elk/8_0_1/logstash-8.1.0/logstash-core/lib/logstash/pipeline_action/create.rb:50:in `execute'", "C:/thiru/learn/elk/8_0_1/logstash-8.1.0/logstash-core/lib/logstash/agent.rb:376:in `block in converge_state'"]}
 [2022-03-13T11:29:10,407][INFO ][logstash.runner          ] Logstash shut down.
 [2022-03-13T11:29:10,432][FATAL][org.logstash.Logstash    ] Logstash stopped processing because of an error: (SystemExit) exit
 org.jruby.exceptions.SystemExit: (SystemExit) exit
+```
+-----
+### Kibana sample output with the JMX service response
+
+Once the logstash starts successfully the kibana should start displaying the message. In this case the version number.
+ - From the below snapshot check the `metric_value_string` which contains the version of the Artemis we are using.
+
+![image](https://user-images.githubusercontent.com/6425536/158081109-a764d0e8-0cf5-42a0-b236-553f879e5dec.png)
+
+- Refer the Spring Boot code, below and if we create the poject and issue the curl command with message as below
+```
+curl -X POST http://localhost:8085/artemis/sendMessage?message=test01
+```
+- The we would be able to see the metric_value_string as number of messages in the queue.
+-  In this case there are 2 messages in the queue (all the queue combined). refer the queue `test.rest.qeue` has 2 message others 0.
+
+![image](https://user-images.githubusercontent.com/6425536/158081213-77942621-0448-463c-a185-a8c6deab64e8.png)
+
+Kibana displaying both the information
+
+![image](https://user-images.githubusercontent.com/6425536/158081238-f9388e8c-4406-4710-99f0-ce4c58b00d94.png)
+
+
+
+
+
+
+---------
+## Produce message to Artemis Queue using Spring Boot Rest api and Proton Qpid client.
+ - Create an RestController
+```java
+package com.artemis.demo.monitorqueue;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@Component
+public class ArtemisProducer {
+
+    @Autowired
+    JmsTemplate jmsTemplate;
+
+    @PostMapping(value = "/artemis/sendMessage")
+    public void sendMessage(
+        @RequestParam(name = "message", required = true) final String[] message){
+            jmsTemplate.convertAndSend("test.rest.queue", message);
+    }
+}
+```
+- Create JMS Connection factory configuration for Qpid client
+```java
+package com.artemis.demo.monitorqueue;
+
+import org.apache.camel.component.jms.JmsConfiguration;
+import org.apache.qpid.jms.JmsConnectionFactory;
+import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ArtemisQueueConfiguration {
+
+
+    @Value("${artemisUser}")
+    private String userName;
+
+    @Value("${artemisPassword}")
+    private String password;
+
+    @Value("${brokerUrl}")
+    private String brokerUrl;
+
+    @Value("${connectionCount}")
+    private int connectionCount;
+
+    @Bean
+    public JmsConnectionFactory jmsConnectionFactory() {
+        JmsConnectionFactory jmsConnectionFactory = new JmsConnectionFactory(userName, password, brokerUrl);
+        return jmsConnectionFactory;
+    }
+
+    @Bean(initMethod="start",destroyMethod="stop")
+    public JmsPoolConnectionFactory jmsPoolConnectionFactory() {
+        JmsPoolConnectionFactory jmsPoolConnectionFactory = new JmsPoolConnectionFactory();
+        jmsPoolConnectionFactory.setMaxConnections(connectionCount);
+jmsPoolConnectionFactory.setConnectionFactory(jmsConnectionFactory());
+            return jmsPoolConnectionFactory;
+        }
+
+    @Bean
+    public JmsConfiguration jmsConfiguration(@Value("${connectionCount}") int connectionCount){
+        JmsConfiguration jmsConfiguration = new JmsConfiguration();
+        jmsConfiguration.setConcurrentConsumers(connectionCount);        jmsConfiguration.setConnectionFactory(jmsPoolConnectionFactory());
+        return jmsConfiguration;
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplate() {
+        return new JmsTemplate(jmsConnectionFactory());
+    }
+}
+```
+ - application.properties with the configuration details
+```properties
+
+brokerUrl = amqp://localhost:5672
+artemisUser = admin
+artemisPassword = admin
+
+connectionCount=3
+
+server.port=8085
+```
+
+- pom.xml with the depencies
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.6.4</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.artemis.demo</groupId>
+	<artifactId>monitorqueue</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>monitorqueue</name>
+	<description>Project to create and push message </description>
+	<properties>
+		<java.version>11</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-artemis</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel.springboot</groupId>
+			<artifactId>camel-spring-boot-starter</artifactId>
+			<version>3.15.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- For AMQP protocol support queue -->
+		<dependency>
+		    <groupId>org.apache.qpid</groupId>
+		    <artifactId>qpid-jms-client</artifactId>
+		    <version>1.5.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.messaginghub</groupId>
+		    <artifactId>pooled-jms</artifactId>
+		    <version>2.0.4</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.camel</groupId>
+		    <artifactId>camel-jms</artifactId>
+		    <version>3.15.0</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
 ```
