@@ -59,7 +59,7 @@ Tip:-
 
 ```
 ### uncomment the line
- <connector connector-port="1099"/>`
+ <connector connector-port="1099"/>
 ```
  - In order to enable the JConsole to connect to the JMX service remotely, we need to add `-Djava.rmi.server.hostname=localhost` to JAVA_ARGS.
  - Update the `artemis.profile.cmd` (in windows) like below along with the other arguments
@@ -114,13 +114,11 @@ The Artemis configuration is completed now.
 
 ![image](https://user-images.githubusercontent.com/6425536/158084643-a2d1193a-ebcc-43d7-9b50-77870002a2b5.png)
 
+## Installing ELK 8.1.0
 
+In order to installing ELK latest version (8.1.0) at the time of writting, download Elastic, Kibana and Logstash from elastic search website.
 
-### Installing ELK 8.1.0
-
-In order to installing ELK latest version (8.1.0) at the time of writting, download Elastic, Kibana and logstash from elastic search website.
-
-#### Setting up Elastic Search
+### Setting up Elastic Search
 
 - Use the executable from the extracted elastic search zip and use the command `$ bin/elasticsearch`. 
 - From browser use `http://localhost:9200` to check if Elastic node is up.
