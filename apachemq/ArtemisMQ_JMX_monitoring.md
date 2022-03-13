@@ -1,72 +1,93 @@
 
-In order to setup Apache Artemis in local
- - Download the latest version (stable) and extract the zip/tar file.
+## Monitoring the Apache Artemis Queue using ELK stack
 
-First we need to create a broker, for that we can use below command.
+### Installing Apache Artemis
+
+  - Download the latest stable version and extract the zip/tar file.
+  - Once the compressed file is extracted navigate to the bin directory, to create a broker. use below command
+
 ```
 # navigate to the extracted folder and find the bin from there use below command
-# artemis create <directory-path-where-the-broker-to-be-created>
+# COMMAND format: artemis create <directory-path-where-the-broker-to-be-created>
 
 $ artemis create /brokers/broker_1
 
 ## above command will prompt for user name and password, we can use --user --password as options
 ## enter to be as an anonymous user
 ```
-
-Once the above command executed successfully, the folder will be created which has a set of standard folder
+- Once broker created successfully, a bunch of folders will be created, like below
 ```
 broker_1
   |_ bin
   |_ data
   |_ etc
   ...
+
+# bin - contains executable to run the broker
+# etc - configruation files present here
 ```
 
-- To start the broker, we need to navigage to the broker_1 directory
-- The bin/ directory has the executable to start the process.
+- To start the broker, we need to navigate to the broker_1 directory, under bin/ folder should see the executable.
   Note: 
     - In Windows/Linux the broker can be started as service, running in the background.
-    - In Linux, in order auto start the service when VM/machine boots up this needs to be set as a service manually.
+    - In Linux, in order auto start the service when VM/machine boots up a script needs to be manually created to call the executable.
     
-Below command runs the Artemis broker
+- Execute below command to run the Artemis broker, from the broker_1 folder
 ```
 /bin/artemis run
 ```
- - Now navigating to the `http://localhost:8161/console` should prompt for user name and passowrd. Use the same info used during broker creation, to login.
+- From browser use `http://localhost:8161/console` to view the UI. The UI consle should prompt for user name and password. 
+- Use the same info used during broker creation to login, once successfully logged in should see screen like in the snapshot.
+ Note: Select the Queue tab (under the More drop down option if not visible)
 
- - Now if you see the screens loaded, then everything seems to work as expected.
- 
-Enabling the JMX RMI option
-By default the JMX is not enabled, to enable the JMX RMI option we need to enable the port by uncommenting connectors.
+![image](https://user-images.githubusercontent.com/6425536/158077709-ff6af17f-3d53-46ae-b08e-446e96a79f02.png)
 
-- In `manangement.xml` uncomment the `<connector connector-port="1099"/>`
+The timeout cofiguration of `hawtio` can be configured by updating the JAVA_ARGS jvm arguments.
 
-Also in order to enable the JConsole to connect to the JMX service we need to pass the JAVA_ARGS `-Djava.rmi.server.hostname=localhost` for which we need to updae  `artemis.profile.cmd` in the JAVA_ARGS
+- With the UI console displayed, basic configuration is complete.
+
+### To enable the JMX RMI
+- We need to uncomment the `connector tag` from the `management.xml` under the etc folder.
+- By default the JMX is not enabled, to enable the JMX RMI option we need uncommenting connectors.
+```
+### uncomment the line
+ <connector connector-port="1099"/>`
+```
+ - Also in order to enable the JConsole to connect to the JMX service remoted we need to pass argument `-Djava.rmi.server.hostname=localhost` in JAVA_ARGS so update the file `artemis.profile.cmd` like below
 ```
 JAVA_ARGS=..... -Djava.rmi.server.hostname=localhost ...
 ```
 
-- Restart the artemis broker, just by stopping the existing broker process and starting it again.
-
-- Now, we can use `curl` command to check if we are able to access the JMX service
-- Below we will check the version of the Apache artemis
+- With the above steps Restart the artemis broker.
+- Stopping the existing broker process and starting it again using `bin/artemis run`.
+- Now, we can use `curl` command to check if we are able to access the JMX service, we will be checking the Artemis version below.  
 ```
- curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.activemq.artemis:broker=\"0.0.0.0\"/Version'
+$ curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.activemq.artemis:broker=\"0.0.0.0\"/Version'
+
+## If we see the below response, then we need to update the jolokia-access.xml
 {"error_type":"java.lang.Exception","error":"java.lang.Exception : Origin null is not allowed to call this agent","status":403}
 ```
- Note: The JMX url can be fetched from the Atermis Hawtio console, by clicking the JMX option, and selecting the Borker info.
+ Note: 
+  - The JMX url can be fetched from the Atermis Hawtio console, by clicking the JMX option, and selecting the Borker info. Refer snapshot.
  
- <<snpshot>>
- 
- - If we didn't update the `jolokia-access.xml` for cors configuration, we will not be able to access the JMX. For enabling it simply coment out the cor tags under the restrict tag. 
- For demonstration purpose, I have commented out all the cors information under the `<restrict>` tag, but check the jolokia documentation for hardening the security further.
+![image](https://user-images.githubusercontent.com/6425536/158078034-eab807f0-bfab-4f33-9ed3-fe2ddabafd05.png)
 
-- Once commented out, restart the broker. The above curl command should responded with reponse message like below.
+   - Click the Version link under the attribute, the Jolokia URL is what we will be using in curl command
+
+![image](https://user-images.githubusercontent.com/6425536/158078084-eb403466-94e1-4b50-971d-c145fe28346d.png)
+
+ 
+ - Comment the `<cor>` tags in `jolokia-access.xml`. The tags info under the `<restrict>` should be commented out. 
+ - This is for demonstration purpose, if we need to harden the security, check the documentation of jolokia for more info.
+
+- Stop the broker process ad restart the broker. Now, the above curl command should provide a responsee like below.
 ```
 curl -u admin:admin 'http://localhost:8161/console/jolokia/read/org.apache.activemq.artemis:broker=\"0.0.0.0\"/Version'
 {"request":{"mbean":"org.apache.activemq.artemis:broker=\"0.0.0.0\"","attribute":"Version","type":"read"},"value":"2.20.0","timestamp":1647191397,"status":200}
 ```
-Installing ELK latest version (8.0.1) at the time of writting.
+
+## Installing ELK 8.1.0
+Installing ELK latest version (8.1.0) at the time of writting.
 
 - Download all three zip, I am using Windows machine. 
 - First start the Elastic Search, by navigating to bin/elasticsearch. Once started, hit `http://localhost:9200`, by default the security is enabled and prompt for username and password will be displayed.
