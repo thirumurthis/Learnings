@@ -133,12 +133,12 @@ $ bin/kibana
 - By default the 7.0+ version, when the index is added using the Dev Tools -> Stack Management, we used to see the index info under discover.
 - But in the 8.1+ I had to follow below steps.
   - After clicking the Discover option, i need to setup the Spaces -> create a new data view. Refer below snapshot.
-
-![image](https://user-images.githubusercontent.com/6425536/158080039-06dd74d5-6042-466b-82f9-4340136eb2ff.png)
+  - 
+![image](https://user-images.githubusercontent.com/6425536/158080003-dddee158-1b8e-4473-b108-7b0cac8c1178.png)
 
 Dataview creation, click "Create Data veiw" and add the index.
 
-![image](https://user-images.githubusercontent.com/6425536/158080003-dddee158-1b8e-4473-b108-7b0cac8c1178.png)
+![image](https://user-images.githubusercontent.com/6425536/158080039-06dd74d5-6042-466b-82f9-4340136eb2ff.png)
 
 #### Setting up the Logstash
 - We need to create a configuration for logstash to push messages to Elastic search.
@@ -251,11 +251,6 @@ curl -X POST http://localhost:8085/artemis/sendMessage?message=test01
 Kibana displaying both the information
 
 ![image](https://user-images.githubusercontent.com/6425536/158081238-f9388e8c-4406-4710-99f0-ce4c58b00d94.png)
-
-
-
-
-
 
 ---------
 ## Produce message to Artemis Queue using Spring Boot Rest api and Proton Qpid client.
