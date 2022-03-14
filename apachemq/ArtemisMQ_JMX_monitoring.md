@@ -1,7 +1,7 @@
 
 ## Monitoring the Apache Artemis Queue using ELK stack
 
-### Installing Apache Artemis
+### Install Apache Artemis
 
   - Download the latest stable version and extract the zip/tar file.
   - Once the compressed file is extracted navigate to the bin directory, to create a broker. use below command
@@ -26,7 +26,7 @@ broker_1
   ...
 
 # bin - contains executable to run the broker
-# etc - configruation files present here
+# etc - configuration files present here
 ```
 
 - To start the broker, we need to navigate to the broker_1 directory, under bin/ folder should see the executable.
@@ -174,11 +174,14 @@ $ bin/kibana
 
 ![image](https://user-images.githubusercontent.com/6425536/158080003-dddee158-1b8e-4473-b108-7b0cac8c1178.png)
 
-- Click "Create Data view" and add the index.
+- Click "Create Data view".
+
+![image](https://user-images.githubusercontent.com/6425536/158080039-06dd74d5-6042-466b-82f9-4340136eb2ff.png)
+
+- Add the index
 
 ![image](https://user-images.githubusercontent.com/6425536/158083816-ebb6e763-3ea9-4441-8a40-9bb1650b207d.png)
 
-![image](https://user-images.githubusercontent.com/6425536/158080039-06dd74d5-6042-466b-82f9-4340136eb2ff.png)
 
 ### Setting up Logstash
 
