@@ -196,8 +196,7 @@ bin/logstash-plugin install logstash-input-jmx
 
 Refer the [Elastic Search documentation](https://www.elastic.co/guide/en/logstash/current/plugins-inputs-jmx.html) for more info.
 
-- Below is the logstash configuration file for using JMX plugging.
-- Place below configuration file under the conf directory under unzipped logstash file.
+- Place the logstash configuration file uses JMX plugin, place the config file under the conf directory.
 - Create a file named `local-jmx.config` and copy below content. 
   - Note: The file name will be passed as input to logstash executable. We are not using data_stream.
 
