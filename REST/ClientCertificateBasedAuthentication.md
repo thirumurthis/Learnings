@@ -7,6 +7,10 @@
 Client Authentication:
  - Instead of using username password, we can use certifcate based authentication.
 
+- To Debug the flow we can use below jvm arguments
+```
+-Djavax.net.debug=ssl:handshake:verbose:keymanager:trustmanager -Djava.security.debug=access:stack
+```
 
 - Accesing from RestTemplate code with SSLContext.
 
