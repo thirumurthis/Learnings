@@ -70,7 +70,7 @@ class Node{
 int findMin(Node rootNode){
   if (rootNode == null) return -1; // error 
   
-  while( rootNode !=null && rootNode.left != null){
+  while(rootNode.left != null){
      rootNode = rootNode.left;
   }
   return rootNode.data;
@@ -82,7 +82,7 @@ int findMin(Node rootNode){
 int findMax(Node rootNode){
   if (rootNode == null) return -1; // error 
   
-  while( rootNode !=null && rootNode.right != null){
+  while(rootNode.right != null){
      rootNode = rootNode.right; // right is the only change
   }
   return rootNode.data;
