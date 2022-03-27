@@ -1,10 +1,10 @@
-## Below is the code demonstration for generting PDF with the XSL file using `Apache FO` project.
+##3 Below is the code demonstration for generting PDF with the XSL file using `Apache FO` project.
 
 - The code below generates, pdf using the XML content from a String variable.
  - This demonstrates the fact that we can fetch the data from Database, construct the XML using the data
  - The XML content can be fetched from file as well.
 
-#### Sample XML content
+##### Sample XML content
 ```
 <Report>
 <Title>.. </Title>
