@@ -25,92 +25,122 @@
   
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                              xmlns:fo="http://www.w3.org/1999/XSL/Format">
-                              
+<xsl:stylesheet version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	xmlns:fo="http://www.w3.org/1999/XSL/Format">
 
-    <xsl:variable name="topic" select="/Report/Title"/>
-    <xsl:output method="xml"/>
-                              
+
+	<xsl:variable name="topic" select="/Report/Title" />
+	<xsl:output method="xml" />
+
 	<xsl:template match="/">
 		<fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
 			<fo:layout-master-set>
-				<fo:simple-page-master margin-right="2.0cm" margin-left="2.0cm" 
-				                       margin-bottom="2.0cm" margin-top="2.0cm"
-				                       page-height="29.7cm" page-width="21cm"
-				                       master-name="test">
-				<fo:region-body margin-top="2.5cm" margin-bottom="1.0cm"/>
-				<fo:region-before extent="5cm"/>
-				<fo:region-after extent="1cm"/>
+				<fo:simple-page-master margin-right="2.0cm"
+					margin-left="2.0cm" margin-bottom="2.0cm" margin-top="2.0cm"
+					page-height="29.7cm" page-width="21cm" master-name="test">
+					<fo:region-body margin-top="2.5cm"
+						margin-bottom="1.0cm" />
+					<fo:region-before extent="5cm" />
+					<fo:region-after extent="1cm" />
 				</fo:simple-page-master>
 			</fo:layout-master-set>
-		<!-- master-nme should match the master-name in the simple-page-master -->
-		<fo:page-sequence master-reference="test"><xsl:text>&#10;</xsl:text>
-		
-		<fo:static-content flow-name="xsl-region-before"><xsl:text>&#10;</xsl:text>
-		  <fo:table table-layout="fixed" width="100%" border-collapse="separate">
-		    <fo:table-column column-width="7.5cm"/><xsl:text>&#10;</xsl:text>
-		    <fo:table-column column-width="8.5cm"/><xsl:text>&#10;</xsl:text>
-		    <fo:table-body><xsl:text>&#10;</xsl:text>
-		       <fo:table-row><xsl:text>&#10;</xsl:text>
-		          <fo:table-cell  border="0.5pt solid white"> <!-- No border is needed so white -->
-		             <fo:block line-height="15pt" font-size="12pt" font-weight="bold" text-align="center" space-after="5mm">
-		                <xsl:text>Report Name: </xsl:text><xsl:value-of select="/Report/Title"/>
-		             </fo:block><xsl:text>&#10;</xsl:text>
-		          </fo:table-cell><xsl:text>&#10;</xsl:text>
-		          <fo:table-cell  border="0.5pt solid white"> <!-- No border is needed so white -->
-		             <fo:block line-height="15pt" font-size="12pt" font-weight="bold" text-align="center" space-after="5mm">
-		                <xsl:text>USED For: </xsl:text><xsl:value-of select="/Report/For"/>
-		             </fo:block><xsl:text>&#10;</xsl:text>
-		          </fo:table-cell>
-		       </fo:table-row>
-		    </fo:table-body>
-		  </fo:table>
-		  </fo:static-content>
-		  <!--  Flow name is required part of the validation -->
-		  <fo:flow flow-name="xsl-region-body"><xsl:text>&#10;</xsl:text>
-		    <fo:table table-layout="fixed" width="100%" border-collapse="separate">
-		   <!-- <fo:table> --> 
-		    <fo:table-column column-width="7.5cm"/><xsl:text>&#10;</xsl:text>
-   		    <fo:table-column column-width="7.5cm"/><xsl:text>&#10;</xsl:text>
-		    <!-- <xsl:call-template name=""></xsl:call-template> -->
-		      <fo:table-body><xsl:text>&#10;</xsl:text>
-		          <fo:table-row><xsl:text>&#10;</xsl:text>
-		          <fo:table-cell border="0.5pt solid black" height="15pt">
-		             <fo:block line-height="10pt" font-size="12pt" font-weight="bold" text-align="center" vertical-align="middle" space-after="5mm" space-before="5mm">
-		             <!-- <xsl:value-of select="/Report/For"/> -->
-		                <xsl:text>Employee Name</xsl:text>
-		             </fo:block><xsl:text>&#10;</xsl:text>
-		          </fo:table-cell><xsl:text>&#10;</xsl:text>
-		          <fo:table-cell border="0.5pt solid black" height="15pt">
-		             <fo:block line-height="10pt" font-size="12pt" font-weight="bold" text-align="center" vertical-align="middle" space-after="5mm" space-before="5mm">
-		              <!--   <xsl:value-of select="/Report/For"/> -->
-		                <xsl:text> Department </xsl:text>
-		             </fo:block><xsl:text>&#10;</xsl:text>
-		          </fo:table-cell><xsl:text>&#10;</xsl:text>
-		       </fo:table-row>
-		       <xsl:apply-templates select="Report/Employees"/>
-		     </fo:table-body>
- 		    </fo:table>
-		    </fo:flow>
-       </fo:page-sequence>
-     </fo:root>
+			<!-- master-nme should match the master-name in the simple-page-master -->
+			<fo:page-sequence master-reference="test">
+				<xsl:text>&#10;</xsl:text>
+
+				<fo:static-content flow-name="xsl-region-before">
+					<xsl:text>&#10;</xsl:text>
+					<!-- <fo:table><xsl:text>&#10;</xsl:text> -->
+					<fo:table table-layout="fixed" width="100%"
+						border-collapse="separate">
+						<fo:table-column column-width="7.5cm" />
+						<xsl:text>&#10;</xsl:text>
+						<fo:table-column column-width="8.5cm" />
+						<xsl:text>&#10;</xsl:text>
+						<fo:table-body>
+							<xsl:text>&#10;</xsl:text>
+							<fo:table-row>
+								<xsl:text>&#10;</xsl:text>
+								<fo:table-cell border="0.5pt solid white"> <!-- No border is needed so white -->
+									<fo:block line-height="15pt" font-size="10pt"
+										font-weight="bold" text-align="center" space-after="5mm">
+										<xsl:text>Report Name: </xsl:text><xsl:value-of select="/Report/Title" />
+									</fo:block>
+									<xsl:text>&#10;</xsl:text>
+								</fo:table-cell>
+								<xsl:text>&#10;</xsl:text>
+								<fo:table-cell border="0.5pt solid white"> <!-- No border is needed so white -->
+									<fo:block line-height="15pt" font-size="10pt"
+										font-weight="bold" text-align="center" space-after="5mm">
+										<xsl:text>Used For: </xsl:text><xsl:value-of select="/Report/For" />
+									</fo:block>
+									<xsl:text>&#10;</xsl:text>
+								</fo:table-cell>
+								<xsl:text>&#10;</xsl:text>
+
+							</fo:table-row>
+						</fo:table-body>
+					</fo:table>
+				</fo:static-content>
+				<!-- Flow name is required part of the validation -->
+				<fo:flow flow-name="xsl-region-body">
+					<xsl:text>&#10;</xsl:text>
+					<fo:table table-layout="fixed" width="100%"
+						border-collapse="separate">
+						<!-- <fo:table> -->
+						<fo:table-column column-width="7.5cm" />
+						<xsl:text>&#10;</xsl:text>
+						<fo:table-column column-width="7.5cm" />
+						<xsl:text>&#10;</xsl:text>
+						<!-- <xsl:call-template name="">
+						</xsl:call-template> -->
+						<fo:table-body>
+							<xsl:text>&#10;</xsl:text>
+							<fo:table-row>
+								<xsl:text>&#10;</xsl:text>
+								<fo:table-cell border="0.5pt solid black" height="15pt">
+									<fo:block line-height="10pt" font-size="10pt"
+										font-weight="bold" text-align="center" vertical-align="middle"
+										space-after="5mm" space-before="5mm">
+										<xsl:text>Employee Name</xsl:text>
+									</fo:block>
+									<xsl:text>&#10;</xsl:text>
+								</fo:table-cell>
+								<xsl:text>&#10;</xsl:text>
+								<fo:table-cell border="0.5pt solid black" height="15pt">
+									<fo:block line-height="10pt" font-size="10pt"
+										font-weight="bold" text-align="center" vertical-align="middle"
+										space-after="5mm" space-before="5mm">
+
+										<xsl:text> Department </xsl:text>
+									</fo:block>
+									<xsl:text>&#10;</xsl:text>
+								</fo:table-cell>
+								<xsl:text>&#10;</xsl:text>
+							</fo:table-row>
+							<xsl:apply-templates select="Report/Employees" />
+						</fo:table-body>
+					</fo:table>
+				</fo:flow>
+			</fo:page-sequence>
+		</fo:root>
 	</xsl:template>
 	<xsl:template match="/Report/Employees">
-	  <xsl:for-each select="./Employee">
-	  <fo:table-row>
-	    <fo:table-cell border="0.5pt solid black" >
-	       <fo:block font-size="8pt" text-align="center" vertical-align="middle">
-	       <xsl:value-of select="Name"/>
-	       </fo:block>
-	    </fo:table-cell>
-	    <fo:table-cell border="0.5pt solid black">
-	       <fo:block font-size="8pt" text-align="center" vertical-align="middle">
-	       <xsl:value-of select="Department"/>
-	       </fo:block>
-	    </fo:table-cell>
-	  </fo:table-row>
-	  </xsl:for-each>
+		<xsl:for-each select="./Employee">
+			<fo:table-row>
+				<fo:table-cell border="0.5pt solid black">
+					<fo:block font-size="8pt" text-align="center" vertical-align="middle">
+						<xsl:value-of select="Name" />
+					</fo:block>
+				</fo:table-cell>
+				<fo:table-cell border="0.5pt solid black">
+					<fo:block font-size="8pt" text-align="center" vertical-align="middle">
+						<xsl:value-of select="Department" />
+					</fo:block>
+				</fo:table-cell>
+			</fo:table-row>
+		</xsl:for-each>
 	</xsl:template>
 </xsl:stylesheet>
 ```
