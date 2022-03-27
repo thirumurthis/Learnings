@@ -1,4 +1,4 @@
-##3 Below is the code demonstration for generting PDF with the XSL file using `Apache FO` project.
+### Below is the code demonstration for generting PDF with the XSL file using `Apache FO` project.
 
 - The code below generates, pdf using the XML content from a String variable.
  - This demonstrates the fact that we can fetch the data from Database, construct the XML using the data
@@ -392,3 +392,6 @@ public class App {
     </build>
 </project>
 ```
+#### Output:
+
+![image](https://user-images.githubusercontent.com/6425536/160304791-18a0b6c2-5efd-4cc1-a0f2-e56f56e94a5a.png)
