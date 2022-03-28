@@ -58,6 +58,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class APIHttpsEndPoint {
 
+/*
+BELOW CODE IS AN EXAMPLE WHERE AN ***HTTPS*** REST ENDPOINT IS EXPOSED, WHERE WE CAN FIRE A QUERY
+GET THE LINK TO DOWNLOAD THE FILE IN THE FIRST URL RESPSONE
+
+USING THE RESPONSE RECEIVED WE DOWNLOAD THE SPECIFIC FILE
+*/
    
     public static void main(String[] args) throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, Exception {
     	APIHttpsEndPoint apiendpoint=new APIHttpsEndPoint();
