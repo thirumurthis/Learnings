@@ -15,6 +15,10 @@ Client Authentication:
 - Accesing from RestTemplate code with SSLContext.
 
   -Pre-requsites: Add the private key to the keystore using keytool.
+  - in this case the file name ends with jks.
+
+Below code flow is, first hit an https endpoint to fetch the URL to download the file.
+If the response is 200 OK, then use the url from the response and download the link, thorough out the process the ssl is used.
 
 ```java
 package com.demo.sslrest;
