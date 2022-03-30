@@ -7,6 +7,12 @@
 Client Authentication:
  - Instead of using username password, we can use certifcate based authentication.
 
+The public key `.cer` should enabled the Enhanced Key Usage with `Client Authentication` and `Server Authentication`. As displayed below in the snapshot.
+
+![image](https://user-images.githubusercontent.com/6425536/160763303-d11840a5-d9ce-4f24-91e5-1d9316c9bcbb.png)
+
+Refer the [link](https://www.ssl2buy.com/wiki/what-is-the-difference-between-client-and-server-certificates)
+
 - To Debug the flow we can use below jvm arguments
 ```
 -Djavax.net.debug=ssl:handshake:verbose:keymanager:trustmanager -Djava.security.debug=access:stack
@@ -15,7 +21,10 @@ Client Authentication:
 - Accesing from RestTemplate code with SSLContext.
 
   -Pre-requsites: Add the private key to the keystore using keytool.
-  - in this case the file name ends with jks.
+  - in this case the file name ends with jks. There are alias
+
+Note: I faced an exception stating the `401 Client certificate out of date!`.
+  the reason for this is, there where few alias which where expired in the jks file. After deleting those alias using keytool delete .. that issue resolved.
 
 Below code flow is, first hit an https endpoint to fetch the URL to download the file.
 If the response is 200 OK, then use the url from the response and download the link, thorough out the process the ssl is used.
@@ -68,7 +77,9 @@ GET THE LINK TO DOWNLOAD THE FILE IN THE FIRST URL RESPSONE
 
 USING THE RESPONSE RECEIVED WE DOWNLOAD THE SPECIFIC FILE
 */
-   
+ 
+  public final String PASSWORD = "password to access jks";
+  
     public static void main(String[] args) throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, Exception {
     	APIHttpsEndPoint apiendpoint=new APIHttpsEndPoint();
     	
@@ -125,12 +136,20 @@ USING THE RESPONSE RECEIVED WE DOWNLOAD THE SPECIFIC FILE
     
     public RestTemplate getRestTemplate() throws KeyManagementException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, Exception {
 
-        char[] password = "<keystorepassword>".toCharArray(); //should flow from applicaton.properties
+        char[] password = PASSWORD.toCharArray(); //should flow from applicaton.properties
         
         TrustStrategy trustStrategy= (X509Certificate[] chain,String authType)->true;
 
         javax.net.ssl.SSLContext sslContext = SSLContextBuilder.create()
-    	         .loadKeyMaterial(keyStore("/my/path/to/keystore-cert.jks", password,"JKS"), password) //PCKS12 is the latest keystore format
+    	         .loadKeyMaterial(keyStore("/my/path/to/keystore-cert.jks", password,"JKS"), password,
+		 // below code is used in case if we are having multiple certificate and need specific alias to be used. (expired cert as well)
+		    new PrivateKeyStartegy(){
+		      @Override
+		      public String chooseAlias(Map<String, PrivateKeyDetails> aliases, Socket socket){
+		        return "alias-name-of-private-cert-stored-within-jks";
+		      }
+		    }
+		 ) //PCKS12 is the latest keystore format
     	         //.loadTrustMaterial(null, new TrustSelfSignedStrategy()).build();  //use this for self-signed certificate
     		  .loadTrustMaterial(null, trustStrategy).build();
 
