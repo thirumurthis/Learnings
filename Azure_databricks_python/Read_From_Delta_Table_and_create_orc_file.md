@@ -13,7 +13,7 @@ data_delta_readstream = (
 ```
 
 ### Batch to perform orc file writer
-```
+```py
 def batchLoader(df, batch_id):
   (
     df
