@@ -28,8 +28,8 @@
     - It sometimes lead to `uneven traffic` since this doesn't have access to the data within the request.
     
   Note: 
-    - Layer 4 load balancer can be setup at the edge of the datacenter or network, since it can look into the request IP address and prevent DoS attack. Rather passing these request to server.
-    - So in all the data center, will first transmit the incoming traffic to the Layer 4 load balancer, before allowing it to application server.
+  - Layer 4 load balancer can be setup at the edge of the datacenter or network, since it can look into the request IP address and prevent DoS attack. Rather passing these request to server.
+  - So in all the data center, will first transmit the incoming traffic to the Layer 4 load balancer, before allowing it to application server.
     
   - Layer 7
     - It has full access to HTTP protocol and data of the request.
