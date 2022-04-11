@@ -3,8 +3,8 @@
 #### Load Balancer ( fault tolerance)
 
 ##### Type of Load Balancer :
- - Layer 4 LB
- - Layer 7 LB
+ - `Layer 4` LB  - Transport Layer (TCP) - transferring data with reliable quality
+ - `Layer 7` LB  - Application layer (HTTP) - application-enabling functionality
  
 ---------------------
 
