@@ -34,7 +34,7 @@
   - Layer 7
     - It has full access to HTTP protocol and data of the request.
     - SSL termination - it can decrypt the traffic.
-    - check for authentication - Say if the use send request without logged in to access certain page instead of sending the request to the application server, we can redirect to authenication page.
+    - check for authentication => Say if the use send request without logged in to access certain page instead of sending the request to the application server, we can redirect to authenication page.
     - lots of smarter routing options since we have access to the request data
   
   Note: 
