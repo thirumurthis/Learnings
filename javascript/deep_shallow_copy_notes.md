@@ -46,7 +46,8 @@ There are different ways to achieve this, but each has little side effect.
  - Limitation 
    - 1. The function within the object will not be copied
    - 2. The Date() function, will be string not as corresponding object after parse.
-```
+
+```js
 let student1 = {
 fName : "fn",
 lName : "ln"
