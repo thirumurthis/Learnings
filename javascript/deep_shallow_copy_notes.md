@@ -43,6 +43,9 @@ There are different ways to achieve this, but each has little side effect.
   - using sperator operator `...` => Limitation : we need to perform code in order to copy the nested object with another sperator operator.
 
 #### Using `JSON.parse()` and `JSON.Strignify()` to clone
+ - Limitation 
+   - 1. The function within the object will not be copied
+   - 2. The Date() function, will be string not as corresponding object after parse.
 ```
 let student1 = {
 fName : "fn",
