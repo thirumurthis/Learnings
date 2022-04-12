@@ -223,4 +223,27 @@ console.log(student1); // prints {details: {course: "English", year: 2020}, fNam
 console.log(student2); // prints {details: {course: "English", year: 2020}, fName: "fn2", getName: function (){ return `$this.fn,$this.ln`;}, lName: "ln"}
 ```
 
+#### using lodash to clone 
+ - with the node.js install `npm install lodash.clone` and `npm install lodash.clonedeep`
+```js
+const clone = require('lodash.clone')
+const cloneDeep = require('lodash.clonedeep')
 
+let student1 = {
+fName : "fn",
+lName : "ln",
+details : {
+  course : "Science",
+  year : 2020
+  } ,
+  getName:function (){
+  return `$this.fn,$this.ln`;
+  }
+}
+
+//shallow copy 
+const student2 = clone(originalObject)
+
+//deepcopy
+const student3 = clonedeep(originalObject)
+```
