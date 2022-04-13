@@ -2,6 +2,8 @@ package com.algo.sort.ll;
 
 public class LinkedListDS {
 	
+	// Find the MIDDLE with 1 pass
+	// Reverse the Linked List with 1 pass
 	public static void main(String[] args) {
 		
 		int[] input = {10,11,9,1,4};
@@ -55,7 +57,6 @@ public class LinkedListDS {
 		}
 		//slow pointer will return the mid value
 		return slowPtr.getData();
-
 	}
 	
 	/*
@@ -96,22 +97,19 @@ public class LinkedListDS {
 	 */
 	
 	public Node findMidAddr(Node root) {
-		
-		Node slowPtr = root.getNext();
-		Node fastPtr = root.getNext();
-		
-		while (fastPtr.getNext() != null && fastPtr.getNext().getNext() != null) {
-			if(fastPtr.getNext().getNext() == null) {
-				return slowPtr;
-			}
-			if(fastPtr.getNext()==null) {
-				return slowPtr;
-			}
+        // Let both the slow and fast pointer start from root that is head 
+		Node slowPtr = root;
+		Node fastPtr = root;
+		// if fast ptr is null then we need to stip 
+		while (fastPtr != null && fastPtr.getNext() != null) {
 			slowPtr = slowPtr.getNext();
-			fastPtr = fastPtr.getNext().getNext();
+			fastPtr = fastPtr.getNext();
+			if(fastPtr!= null) {
+				fastPtr = fastPtr.getNext();
+			}
 		}
-		
-		return slowPtr;
+		//slow pointer will return the mid value
+        	return slowPtr;
 	}
 	/*
 	  10 | null
@@ -153,6 +151,24 @@ public class LinkedListDS {
 			printLinkedList(root.getNext());
 
 		}
+	}
+	
+		// 10,11,9,1,4
+	// 1. c = 10, temp = 11,c.n = null,c =11 -> 11,
+	public Node reverseLinkedList (Node root) {
+		Node prev = null;
+		Node current = root;
+		Node temp4Next = null;
+		
+	                                        //10,11,9,1,4
+		while(current!=null){               // Iteration1             // Iteration2       // Iteration3    //Iteration4
+			temp4Next = current.getNext();  // 1. temp = 11|a(9)      temp= 9|a(1)        temp=1|a(4)      temp=4|NULL
+			current.setNext(prev);          // 2. curr.next=NULL      curr.next=a(10)     curr.next=a(9)   curr.next=a(1)
+			prev=current;                   // 3. prev = 10| NULL     prev = 11|a(9)      prev = 9|a(1)    prev=1|a(4)
+			current=temp4Next;              // 4. curr = 11| a(9)     curr = 9|a(1)       curr = 1|a(4)    curr=4|NULL
+		}
+		root = prev;                 
+		return root;
 	}
 
 }
