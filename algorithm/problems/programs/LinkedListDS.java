@@ -42,18 +42,20 @@ public class LinkedListDS {
 	 */
 	public int findMid(Node root) {
 		
-		Node slowPtr = root.getNext();
-		Node fastPtr = root.getNext();
-		
-		while (fastPtr.getNext() != null && fastPtr.getNext().getNext() != null) {
-			if(fastPtr.getNext().getNext() == null) {
-				return slowPtr.getData();
-			}
+        // Let both the slow and fast pointer start from root that is head 
+		Node slowPtr = root;
+		Node fastPtr = root;
+		// if fast ptr is null then we need to stip 
+		while (fastPtr != null && fastPtr.getNext() != null) {
 			slowPtr = slowPtr.getNext();
-			fastPtr = fastPtr.getNext().getNext();
+			fastPtr = fastPtr.getNext();
+			if(fastPtr!= null) {
+				fastPtr = fastPtr.getNext();
+			}
 		}
-		
+		//slow pointer will return the mid value
 		return slowPtr.getData();
+
 	}
 	
 	/*
