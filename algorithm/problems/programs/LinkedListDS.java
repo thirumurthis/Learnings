@@ -120,25 +120,25 @@ public class LinkedListDS {
 	  identify the last node, and create a new one associate the address to it
 	 */
 	public Node createLinkedList(Node root, int data) {
-		// When the root node is null create a new one
+	    // When the root node is null create a new one
         	if(root == null) {
 		  return new Node(data,null);
 		}else{
-			// assing the root to temp,
-			// this is used for traversing
-			Node nextNode = root;
-			// the while loop traverse to the last node,
-			while(nextNode.getNext() != null) {
-				nextNode = nextNode.getNext();
-		        }
-			// below will create an new node and associate it
-			// to the root node reference
-			if(nextNode.getNext() == null) {
-				Node newNode = new Node(data,null);
-				nextNode.setNext(newNode);
-			}
+		   // assing the root to temp,
+		   // this is used for traversing
+		   Node nextNode = root;
+		   // the while loop traverse to the last node,
+		   while(nextNode.getNext() != null) {
+		 	nextNode = nextNode.getNext();
+		   }
+		  // below will create an new node and associate it
+		  // to the root node reference
+		   if(nextNode.getNext() == null) {
+		 	Node newNode = new Node(data,null);
+			nextNode.setNext(newNode);
+		   }
 		  return root;
-		}
+	     }
 	}
 	
 	public void printLinkedList(Node root) {
@@ -153,15 +153,14 @@ public class LinkedListDS {
 		}
 	}
 	
-		// 10,11,9,1,4
+	// 10,11,9,1,4
 	// 1. c = 10, temp = 11,c.n = null,c =11 -> 11,
 	public Node reverseLinkedList (Node root) {
 		Node prev = null;
 		Node current = root;
 		Node temp4Next = null;
-		
-	                                        //10,11,9,1,4
-		while(current!=null){               // Iteration1             // Iteration2       // Iteration3    //Iteration4
+	                                                //10,11,9,1,4
+		while(current!=null){                   // Iteration1             // Iteration2       // Iteration3    //Iteration4
 			temp4Next = current.getNext();  // 1. temp = 11|a(9)      temp= 9|a(1)        temp=1|a(4)      temp=4|NULL
 			current.setNext(prev);          // 2. curr.next=NULL      curr.next=a(10)     curr.next=a(9)   curr.next=a(1)
 			prev=current;                   // 3. prev = 10| NULL     prev = 11|a(9)      prev = 9|a(1)    prev=1|a(4)
@@ -176,30 +175,28 @@ public class LinkedListDS {
 /* Linked list data structure to store data and next node address
 */
 class Node {
-	
-	private int data;
-	private Node next;
 
-	public Node (int data, Node next) {
-		this.data= data;
-		this.next = next;
-	}
+   private int data;
+   private Node next;
 
-	public int getData() {
-		return data;
-	}
+   public Node (int data, Node next) {
+	this.data= data;
+	this.next = next;
+   }
 
-	public void setData(int data) {
-		this.data = data;
-	}
+   public int getData() {
+	return data;
+   }
 
-	public Node getNext() {
-		return next;
-	}
+   public void setData(int data) {
+	this.data = data;
+   }
 
-	public void setNext(Node next) {
-		this.next = next;
-	}
-	
-	
+   public Node getNext() {
+	return next;
+   }
+
+   public void setNext(Node next) {
+	this.next = next;
+   }
 }
