@@ -1,6 +1,49 @@
 
 ### Read stream 
- - Pre-requsites - the mount is already set for the specific ADLS storage account
+ - Pre-requsites - the mount is already set for the specific ADLS storage account (note the path /mnt/my-content/data/.. is ADLS path)
+
+sample data 
+```csv
+StudentId,Name,Subject,Mark
+1,Ram,science,80
+1,Ram,maths,90
+1,Ram,language,85
+2,Tom,science,72
+2,Tom,maths,75
+2,Tom,science,79
+3,Kim,science,81
+3,Kim,maths,92
+3,Kim,language,89
+
+```
+
+Note:
+  - if using community edition, we can create a sample csv file and upload it to a location in this case 
+```py
+dataframe = spark.read.options(header='True',inferSchema='True').csv('dbfs:/FileStore/sample_data/sampleStudent.csv')
+# ways to convert the dataframe into json schema file.
+schemaJson = dataframe.schema.json()
+print(schemaJson)
+```
+  - We are going to create a simple delta table, after reading the csv content as in above, we can execute below code.
+```py
+tableName='demo_db.student'
+# Note: If this file or directory already exists delete using %fs rm -r '/tmp/'
+savePath='/tmp/delta'
+sourceType='delta'
+
+dataframe.write \
+  .format(sourceType) \
+  .save(savePath)
+
+# Create the table.
+spark.sql("CREATE TABLE " + table_name + " USING DELTA LOCATION '" + save_path + "'")  
+display(spark.sql("SELECT * FROM " + tableName))
+```
+![image](https://user-images.githubusercontent.com/6425536/163699058-9417190b-a5ab-468e-b134-bcd83acaf626.png)
+ 
+### Actual code to read the above Deta table.
+ - If using the community edition with the above table then change `load('/tmp/delta')`
 ```py
 data_delta_readstream = ( 
     spark.readStream
@@ -28,7 +71,7 @@ def batchLoader(df, batch_id):
 ### write content to orc using write stream
 ```py
 data_delta_writestream = ( 
-    fde_readstream
+    data_delta_readstream
    # .drop('column')
     .repartition(1)
     .writeStream
@@ -38,6 +81,7 @@ data_delta_writestream = (
     .start()
 )
 ```
+![image](https://user-images.githubusercontent.com/6425536/163699173-cdd53fbd-3bea-46ed-a135-11a46eb2b31c.png)
 
 -----
 ## Read from ORC file and write to Delta table Example
