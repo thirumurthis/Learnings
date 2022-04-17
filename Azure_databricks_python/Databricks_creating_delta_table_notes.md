@@ -1,6 +1,14 @@
 1. In databricks workspace create a python notebook.
 2. We can use the magic %sql for executing queries.
 
+Note: 
+ - To create a schema json for the data file, saw we have a csv file, first we can read the data and create the dataframe
+ - Once the data is read we can use the `dataframe.schema.json()` to print the json file.
+ ```py 
+  dataframe = spark.read.option("header",True).csv('dbfs:/FileStore/sample_data/sampleStudent.csv')
+  #display(dataframe)
+  print(dataframe.schema.json())
+ ```
 
 #### Create database
 ```
