@@ -1,6 +1,7 @@
 ### Create the database
 
-```
+```py
+%sql create database if not exists demo_db
 ```
 
 ### The sample CSV content is as follows
