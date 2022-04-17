@@ -9,6 +9,10 @@ Note:
   #display(dataframe)
   print(dataframe.schema.json())
  ```
+ - sample data and in here the representation
+ ```json
+ {"fields":[{"metadata":{},"name":"StudentId","nullable":true,"type":"string"},{"metadata":{},"name":"Name","nullable":true,"type":"string"},{"metadata":{},"name":"Subject","nullable":true,"type":"string"},{"metadata":{},"name":"Mark","nullable":true,"type":"string"}],"type":"struct"}
+ ```
 
 #### Create database
 ```
