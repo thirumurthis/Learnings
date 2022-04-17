@@ -1,5 +1,8 @@
 
-### Read stream 
+### Use `readStream` and `writeStream` for loading data to orc and delta.
+
+Refer [my blog](https://thirumurthi.hashnode.dev/databricks-pyspark-read-data-from-delta-table-and-create-orc-using-readstream-and-writestream)
+
  - Pre-requsites - the mount is already set for the specific ADLS storage account (note the path /mnt/my-content/data/.. is ADLS path)
 
 sample data 
