@@ -81,6 +81,9 @@ data_delta_writestream = (
     .start()
 )
 ```
+![image](https://user-images.githubusercontent.com/6425536/163701192-8cfa132a-afaa-4fb0-b575-56e0fe3feab1.png)
+
+
 ![image](https://user-images.githubusercontent.com/6425536/163699173-cdd53fbd-3bea-46ed-a135-11a46eb2b31c.png)
 
 -----
