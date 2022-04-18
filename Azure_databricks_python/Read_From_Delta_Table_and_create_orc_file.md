@@ -28,6 +28,33 @@ dataframe = spark.read.options(header='True',inferSchema='True').csv('dbfs:/File
 schemaJson = dataframe.schema.json()
 print(schemaJson)
 ```
+- Sample schema
+```json
+{"fields":[
+    {
+      "metadata":{},
+      "name":"StudentId",
+      "nullable":true,
+      "type":"integer"
+    },{ 
+      "metadata":{},
+       "name":"Name",
+       "nullable":true,
+       "type":"string"
+    },{
+       "metadata":{},
+       "name":"Subject",
+       "nullable":true,
+       "type":"string"
+    },{
+       "metadata":{},
+       "name":"Mark",
+       "nullable":true,
+       "type":"integer"
+     }
+   ]
+   ,"type":"struct"}
+```
   - We are going to create a simple delta table, after reading the csv content as in above, we can execute below code.
 ```py
 tableName='demo_db.student'
