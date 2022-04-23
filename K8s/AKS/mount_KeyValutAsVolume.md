@@ -1,5 +1,6 @@
 - Define the secret provider
-
+  - In below example we mount the azure blob storage as volume and read the key from it and udpate a properties file.
+  - This can be achived using helm chart for azure as well. but below is a simple example with different approach.
 ```yaml
 # This is a SecretProviderClass example using aad-pod-identity to access the key vault
 apiVersion: secrets-store.csi.x-k8s.io/v1
@@ -38,12 +39,21 @@ spec:
   containers:
     - name: busybox
       image: k8s.gcr.io/e2e-test-images/busybox:1.29-1
-      command:
-        - "/bin/sleep"
-        - "10000"
+      imagePullPolicy: Always
+      lifecycle:
+            postStart:
+              exec:
+                command:  # incase if we need to do something after pod created and udates something
+                  - "sh"
+                  - "-c"
+                  - >
+                    mkdir /path/log;
+                    cp /temp/conf-app.properties /etc/conf/myapp/properties/my-app.properties;
+                    token=`head -n 1 /mnt/key-vaut/secrets-store/<put-the-key-of-the-token` && sed -ci s/<place-holder-property-name>/${token//\//\\/}/ etc/conf/myapp/properties/my-app.properties;
+
       volumeMounts:
-      - name: secrets-store01-inline
-        mountPath: "/mnt/secrets-store"
+      - name: secrets-store01-inline    #name to match the volumes name
+        mountPath: "/mnt/key-vaut/secrets-store"
         readOnly: true
   volumes:
     - name: secrets-store01-inline
