@@ -55,7 +55,7 @@ public int sumBySlidingWindow(int input[], int k) {
 	}
 ```
 
-- Another approach with the single approach
+- Another approach with the single iteration approach
 
 ```java
 public int maxWithSlideWindowWithSummingItself(int[] input, int k) {
@@ -88,4 +88,40 @@ public int maxWithSlideWindowWithSummingItself(int[] input, int k) {
 	}
 	return max;
 }
+```
+
+
+### Find the minumum subrray with sum `greater than equal to` K.
+- For example, for intput = {4,2,1,8,5,7}, find the max subarray length to get the sum K >= 9
+   - in this case, 1,8 gives sum 9, so the min size is 2.
+- For example, for same input {4,2,1,8,5,7}, find the max subarray length to get the sum k>= 7 will be 1
+   - in this case, element 8 is greater than the 7 and its one subarray so should return 1
+
+Logic:
+  - When the sum K is reached we will shrink the window by using another pointer.
+
+```java
+	/*
+	 * In this case 
+	 * first when we reach the targetsum, 
+	 * we need to dynamically shrink the windows size from the start 
+	 * to check if we can do get some smallest sum
+	 */
+	public static int findSmallestSubarraySum(int[] input, int targetSum) {
+		
+		int windowLazyStart = 0;
+		int currentWindowSum = 0;
+		int minWindowSize = Integer.MAX_VALUE;
+		for(int windowEnd =0; windowEnd < input.length; windowEnd++) {
+			
+			currentWindowSum +=input[windowEnd]; //add the element to get the sum
+			
+			while(currentWindowSum >= targetSum) {
+				minWindowSize = Math.min(minWindowSize, windowEnd - windowLazyStart +1);
+				currentWindowSum -= input[windowLazyStart];  //substract the value
+				windowLazyStart++;
+			}
+		}
+		return minWindowSize;
+	}
 ```
