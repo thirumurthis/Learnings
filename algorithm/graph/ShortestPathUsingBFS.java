@@ -7,17 +7,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+/*
+  Output: 
+Graph representation:
+1 - [2, 3]
+2 - [5]
+4 - [3, 1]
+5 - [4]
+Result:
+// path from 2, 3
+Map :- {1=4, 2=null, 3=4, 4=5, 5=2}
+[2, 5, 4, 3]
+// path from 5,3
+Map :- {1=4, 3=4, 4=5, 5=null}
+[5, 4, 3]
+// path from 1,3
+Map :- {1=null, 2=1, 3=1, 5=2}
+[1, 3]
+
+
+*/
+
 public class ShortestPathUsingBFS {
 	
 	/*
 	 Below is the graph path from 2 to 3 -> 2,5,4 
-		1 ---->2 
+            1 --->2 
 	   /^     |
 	  v |     |
   	 3  |     |
   	 ^  |     |
 	  \ |     v
-		4 <-- 5
+	    4 <-- 5
 		
 		 Shortest path from 1 to 3 is 1,3
 		 Shrotest path from 2 to 3 is 2,5,4,3
