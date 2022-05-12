@@ -24,14 +24,11 @@ Map :- {1=4, 3=4, 4=5, 5=null}
 // path from 1,3
 Map :- {1=null, 2=1, 3=1, 5=2}
 [1, 3]
-
-
 */
 
 public class ShortestPathUsingBFS {
-	
-	/*
-	 Below is the graph path from 2 to 3 -> 2,5,4 
+
+/* Below is the graph path from 2 to 3 -> 2,5,4 
             1 --->2 
 	   /^     |
 	  v |     |
@@ -40,9 +37,9 @@ public class ShortestPathUsingBFS {
 	  \ |     v
 	    4 <-- 5
 		
-		 Shortest path from 1 to 3 is 1,3
-		 Shrotest path from 2 to 3 is 2,5,4,3
-	 */
+ Shortest path from 1 to 3 is 1,3
+ Shortest path from 2 to 3 is 2,5,4,3
+*/
 	
 	//Create a Map for constructing the graph
 	// Adjacency List representation
