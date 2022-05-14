@@ -184,7 +184,11 @@ $ kubectl get pods -l "version in (1.0,2.0)"
 ```
 $ kubectl get pods -l "version notin (1.0,2.0)"
 ```
+##### Delete force fully with grace period
 
+```
+kubectl delete pods <pod> --grace-period=0 --force
+```
 ##### Delete pods using label selector 
 ```
 ## below will delete all the pods that has the matchin label env=demo
