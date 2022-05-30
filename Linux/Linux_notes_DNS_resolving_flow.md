@@ -55,3 +55,4 @@ $ dig +trace linkedin.com
 - DNS can also be used for discovering services. For example the hostname serviceb.internal.example.com could list instances which run service b internally in example.com company. Cloud providers provide options to enable DNS discovery.
 - DNS can also be used to make clients get IP addresses closer to their location so that their HTTP calls can be responded faster if the company has a presence geographically distributed.
 - DNS Loadbalancing and service discovery also has to understand TTL and the servers can be removed from the pool only after waiting till TTL post the changes are made to DNS records. If this is not done, a certain portion of the traffic will fail as the server is removed before the TTL.
+- Since there is no verification in DNS infrastructure, these responses can be spoofed. This is safeguarded by other protocols like HTTPS. DNSSEC protects from forged or manipulated DNS responses.
