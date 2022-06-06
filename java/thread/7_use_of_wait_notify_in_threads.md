@@ -92,10 +92,6 @@ public class MainApp(){
 Below example, note issuing novity will not awake/start the waiting thread immediately
 
 ```java
-package com.artemis.demo;
-
-import java.util.Scanner;
-
 public class ThreadCheckWaitNotify {
 
 	  public static void main(String args[]){
@@ -172,7 +168,10 @@ class Processor{
         //System.out.println("enter pressed");
     	 
     	 //instead of scanner, sleeping for 10 seconds
-    	 Thread.sleep(10000);
+    	 for(int i=0;i<=15;i++) {
+    		 System.out.println(i);
+    	   Thread.sleep(1000);
+    	 }
         // Since the same processor object used in the synchronized block and is in wait state in the produce ()
         //method calling the notify() in this thread will notify and wake up the other thread
 
