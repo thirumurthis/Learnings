@@ -12,8 +12,10 @@ pulic class Processor{
        wait(); // every object in java has a wait method it is method of Object parent itself
        //use the timeout without any timeout the thread will wait indefintiely 
        // wait only called within the synchronized block.
-       //wait will wait without consuming lots of resources, we can use in while loop that wanted to check change of the flag we can to wait and check for change of any flag.
-       //wait() actually hands over the control of the lock that synchronize block locked on, this block will lose the locks, this thread will not resume until below two things
+       //wait will wait without consuming lots of resources, we can use in while loop that wanted 
+       //to check change of the flag we can to wait and check for change of any flag.
+       //wait() actually hands over the control of the lock that synchronize block locked on, 
+       //this block will lose the locks, this thread will not resume until below two things
        // 1. it must be possible for this thread to regain the control of the lock in order to resume.
        // 2. i can span another thread that locked on the same object and call the method notify();
      
@@ -32,7 +34,8 @@ pulic class Processor{
         System.out.println("press return");
         scanner.nextLine(); // wait for user input
         System.out.println("enter pressed");
-        // Since the same processor object used in the synchronized block and is in wait state in the produce () method calling the notify() in this thread will notify and wake up the other thread
+        // Since the same processor object used in the synchronized block and is in wait state in the produce ()
+        //method calling the notify() in this thread will notify and wake up the other thread
 
         notify();
         // notifyAll(); // notifies all the wait thread
