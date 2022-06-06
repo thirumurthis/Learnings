@@ -60,7 +60,7 @@ public class MainApp(){
      }
   });
   
-    Thread t1 = new Thread(new Runnable(){
+    Thread t2 = new Thread(new Runnable(){
      @Override
      public void run(){
        try{
