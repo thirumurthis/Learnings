@@ -64,7 +64,7 @@ public class MainApp(){
      @Override
      public void run(){
        try{
-          processor.produce();
+          processor.consume();  ///consumer part
        }catch(InterruptedException e){
          e.printStackTrace();
        }
