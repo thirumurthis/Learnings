@@ -2,7 +2,7 @@
 
 ```java
 
-pulic class Processor{
+public class Processor{
 
   public void produce() throws InterruptedException{
 
