@@ -1,5 +1,5 @@
-Pre-requesites:
-  - Basic undestanding of Zookeeper.
+Pre-requisites:
+  - Basic understanding of Zookeeper and its Data model.
   
 In this blog, we create  we will be using single node Zookeeper running in Docker Desktop.
 
@@ -15,19 +15,19 @@ Lets now create a Zookeeper CLI using Docker instance, we can use the below comm
 $ docker run -it --rm --link zookeeper-srv1:zookeeper zookeeper zkCli.sh -server zookeeper
 ```
 
-## Below client code is used to perform distirbuted lock based processing.
- - We will be mocking the business logic using `Thread.sleep()`.
- - We will use lock() using the getChildrens() method of java client.
-    - The lock() method will use dobule synchronized block and use Watch events to lock until the lock is released.
+### Client code is example of how to we can perform distributed synchronized lock based processing.
+ - The business logic is mocked using `Thread.sleep()`.
+ - The method `DistributedLock.java` class lock() method using the `getChildrens()` method of Zookeeper java client.
+    - The lock() method will use double synchronized block and use `Watch` events to lock until the lock is released.
  
- 
+Below diagram depicts the flow:
+
  ![image](https://user-images.githubusercontent.com/6425536/172683653-e66ec7e0-04eb-4497-8b04-3ef16af22336.png)
 
-
-Few other usecases can be found in [Zookeeper documentation](https://zookeeper.apache.org/doc/current/recipes.html)
+Few other use cases refer [Zookeeper documentation](https://zookeeper.apache.org/doc/current/recipes.html)
 
  ```java
- package com.artemis.demo;
+ package com.demo;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -95,7 +95,7 @@ public class DistributedLock {
 ```
 
 ```java
-package com.artemis.demo;
+package com.demo;
 
 import java.io.IOException;
 
@@ -124,9 +124,7 @@ public class ZKLockingUsage {
 					System.out.printf("\nEvent Received: %s", event.toString());
 				}				
 			}
-
 		});
-
 
 		DistributedLock dLock = new DistributedLock(zk,zLockpath,client );
 		dLock.lock();
@@ -140,15 +138,27 @@ public class ZKLockingUsage {
 		dLock.unlock();
 	}
 
-
 	public ZooKeeper connect(String hostPort,int timeout, Watcher watchEvent) throws IOException {
-
 		ZooKeeper zk = new ZooKeeper(hostPort, timeout, watchEvent);
 		return zk;
 	}
 }
 ```
-  - The client code can be executed as two process, and we can notice when the first process creates a znode the other process will be in wait state until the Watch event is triggering the event from the Zookeeper server.
+  - In this case, executed the Java code as two process
+     - The process-1 creates the znode path, Zookeeper will add a sequential string to the znode path ending with 001.
+     - The process-2 creates the znode path, in this case Zookeeper will create the znode path ending with 002.
+      - Both process-1 and process-2 creates the znode, since the Zookeeper server includes sequential number to the znode path (as we used EPHMERAL_SQUENTIAL option to create the znode).
+      - In the client code we use the synchronized block, the `getChildren()` method gives list of children's  under the /locknode path. 
+      - Sort the znode name children's list, if the very first znode name matches to that of znode created by that the process then perform the business logic. 
+     - Once the business process is completed the znode is deleted.
+     - When the znode is deleted this triggers the Watch event, and the process-2 will perfrom the above logic and start process further.
   
  
-This article is also inspried by the blog https://dzone.com/articles/distributed-lock-using
+This article is also inspired by the [blog](https://dzone.com/articles/distributed-lock-using)
+
+Few Notes:
+
+- The node created is EPHEMERAL which means if our process dies for some reason, its lock or request for the lock with automatically disappear thanks to ZooKeeper's node management, so we do not have worry about timing out nodes or cleaning up stale nodes.
+- The nested synchronization structure is used to ensure that the DistributedLock is able to process every update it gets from ZooKeeper and does not "lose" an update if two or more updates come from ZooKeeper in quick succession.
+-  Since the Watcher callback is in a synchronized block keyed to the same Java lock object as the outer synchronized block, it means that the update from ZooKeeper cannot be processed until the contents of the outer synchronized block is finished.
+    - When an update comes in from ZooKeeper, it fires a notifyAll() which wakes up the loop in the lock() method. That lock method gets the updated children and sets a new Watcher. 
