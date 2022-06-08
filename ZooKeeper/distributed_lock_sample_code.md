@@ -20,6 +20,12 @@ $ docker run -it --rm --link zookeeper-srv1:zookeeper zookeeper zkCli.sh -server
  - We will use lock() using the getChildrens() method of java client.
     - The lock() method will use dobule synchronized block and use Watch events to lock until the lock is released.
  
+ 
+ ![image](https://user-images.githubusercontent.com/6425536/172683653-e66ec7e0-04eb-4497-8b04-3ef16af22336.png)
+
+
+Few other usecases can be found in [Zookeeper documentation](https://zookeeper.apache.org/doc/current/recipes.html)
+
  ```java
  package com.artemis.demo;
 
