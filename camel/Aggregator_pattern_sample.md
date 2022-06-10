@@ -82,6 +82,13 @@ public class CustomRouteBuider extends RouteBuilder{
                 .simple("${body.getStatus()")
                 .aggregationStrategy(new CustomAggregate())
                 .log("${header[CamelFileName]}")
+             .choice()
+                .when()
+                    .simple("${header[OrderStatus.status]} =~ 'SUCCESS'")
+                    .to("file:{{order.location}}/success")  //order.location -> is set in the application.properties of the spring boot application
+                .otherwise()
+                   .to("file:{{order.location}}/failed")
+                .end()
            .end();   
    }
 }
