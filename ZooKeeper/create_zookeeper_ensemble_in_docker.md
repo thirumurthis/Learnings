@@ -4,8 +4,11 @@ Pre-requisites:
    - Docker desktop installed
   
 #### Create Configuration for each Zookeeper server
+
 1. Create the zookeeper configuration for three Zookeeper server.
-  - Note: this can be a .conf file, but in our case we are passing the configuration as envrionment variable to the  docker container.
+
+  - Note: 
+   This configuration usually can be updated as zk.conf file, check the documentation in here we will use the configuration file as environment variable to the  docker container.
   
   - Create a folder named zookeeper
   - Save the below content in `zk1.env` file, similarly we do the same for other servers as well.
@@ -59,7 +62,7 @@ $ docker network create --driver bridge zk-cluster
 $ docker network ls 
 ```
 
-#### Run the container exposing port
+#### Run Zookeeper container exposing ports
 
 3. Using the `docker run` command we will start three Zookeeper ensemble server
   - Below are the command to run the zookeeper image and expose the ports so host can connect to it.
@@ -106,12 +109,16 @@ c561495d7d49   zookeeper:latest   "/docker-entrypoint.…"   39 seconds ago   Up
 $ docker run -it --rm --network zk-cluster --link zookeeper1:zookeeper1 zookeeper zkCli.sh -server "zookeeper1:2181,zookeeper2:2181,zookeeper3:2181"
 ```
 
+- Snapshot of client connecting to the servers
+
+![image](https://user-images.githubusercontent.com/6425536/173098787-9c4b8f02-d928-4930-a868-320f7a80e9fd.png)
+
 
 #### Access the admin API from host to check the leader amongst the server ensemble
 
 - Use `http://localhost:8880/commands/leader` to check which is the leader node, output should be  something like below
  
-```json
+```
    {
     is_leader: false,
     leader_id: 2,
@@ -123,7 +130,7 @@ $ docker run -it --rm --network zk-cluster --link zookeeper1:zookeeper1 zookeepe
 
 - Zookeeper2 url `http:///loclahost:8881/commands/leader` current this one is elected as leader
 
-```json 
+```
   {
     is_leader: true,
     leader_id: 2,
@@ -135,7 +142,7 @@ $ docker run -it --rm --network zk-cluster --link zookeeper1:zookeeper1 zookeepe
 
 - Zookeeper3 url `http://localhost:8882/commands/leader`
 
-```json
+```
    {
       is_leader: false,
       leader_id: 2,
@@ -146,9 +153,9 @@ $ docker run -it --rm --network zk-cluster --link zookeeper1:zookeeper1 zookeepe
 ```
 
 Notes:
-   - The above is not production ready, in cae we need to persist the data,logs, etc. for whihc we need to mount volumes.
-   - we can create the volumes for data and logs using `docker volume` and attach during `docker run` command
-   - Below is sample command to create volume and attach to run command
+   - The above is not production ready, in case we need to persist the data, logs, etc. for which we need to mount volumes.
+   - We can create the volumes for data and logs using `docker volume` and attach during `docker run` command
+   - Sample command of how to create volume and attach to run command
 
    ```
    $ docker volume create --driver local --opt type=none --opt device=/c/thiru/zookeeper/data/zk1 --opt o=bind --name zk1-dataDir
