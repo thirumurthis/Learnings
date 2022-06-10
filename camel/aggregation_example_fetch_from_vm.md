@@ -1,4 +1,6 @@
-Below is just the part of the route where the message is fetched from the vm endpoing
+Below is just the part of the route where the message is fetched from the vm endpoint
+
+- So when the aggrgation size  is reached 100 the data will be send to consumer.
 
 
 ```xml
@@ -6,7 +8,7 @@ Below is just the part of the route where the message is fetched from the vm end
 <route>
    <from uri="vm:inputep" />
     <aggregate strategyRef="ListAggerator" forceCompletionOnStop="true" completeAllonStop="true"
-                 completionSize="400" completionTimeout="100" >
+                 completionSize="100" completionTimeout="100" >
         <correlationExpression>
           <simple>all</simple>
       </correlationExpression>
