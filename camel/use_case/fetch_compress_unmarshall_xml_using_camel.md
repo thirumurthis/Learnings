@@ -2,12 +2,11 @@
 
  - Basics of Apache Camel is required to fully appreciate the use of it in EIP pattern. This blog is developed using Apache Camel 3.17.0 version.
    - Understanding of Camel Components, Routes, Exchange, etc. is required for this blog.
-   - I have used File, AMPQ, JAXB, Marshall, Zip, Unmarshall, etc components here.
+   - I have used File, AMPQ, JAXB, Marshall, Zip, Unmarshall, etc. components here.
 
-- Below code will demonstrate the Publish Consumer use Case as dipicted in the below image.
+- Below code will demonstrate the Publisher, Consumer using MOM (Message oriented Middleware) for communication, the below image depicts the usecase .
 
 ![image](https://user-images.githubusercontent.com/6425536/174726571-5ee625d7-ab61-4453-8c73-b31391aec90c.png)
-
 
 - Publisher will read a xml file from folder/directory, compress and ship the message to Apache Artemis queue.
 - Consumer will read the message from the queue, uncompress, unmarshal it and prints the message in the console.
@@ -15,17 +14,20 @@
 - The project was created in Intellij Idea (Community Edition) as a maven project by choosing `Camel Java Archetype`. This generates the skeleton of the project.
 
 Camel supports Java DSL, XML DSL and YAML DSL (Camel community recently started this support). 
-In this demonstration I will be using Spring XML DSL for definting routes and components
+In this demonstration I will be using Spring XML DSL for defining routes and components.
 
-Camel 3+ is modularized and in thsi case we will be using `camel-spring-main` and `camel-spring`, so the context file will be read by the Main.java of spring main package.
+Camel 3+ is modularized and in this case we will be using `camel-spring-main` and `camel-spring`, so the context file will be read by the Main.java of spring main package.
+
 For this we need to create the spring context xml under `resources/META-INF/spring/*.xml`. Refer my [stack-overflow question](https://stackoverflow.com/questions/72655050/apache-camel-to-use-the-classic-xml-configuration-directly-in-camel-main-to-run).
 
 
 To start with setup the Apache AretmisMQ broker in localhost, below route configuration uses AMPQ protocol.
+
 Note: AretmisCloud.io, provide a docker image for Artemis I was able to setup and connect, but the Hawtio console is not accessible since the `jolokia-access.xml` is not editable.
+
 Refer my [stack-overflow question](https://stackoverflow.com/questions/72672565/activemq-artemis-not-displaying-the-web-console-when-run-in-docker)
 
-#### Publisher Code
+#### Publisher
 
 - Camel route XML DSL defined in spring within spring context, this can be defined as java DSL as well (demonstrating this using XML DSL)
 
@@ -539,6 +541,7 @@ public class Demo {
 ```
 
 #### Output
+
  - I created the publisher and consumer as separate project, once both the project are started in IDE.
  - Use the simpleOrder.xml (input.xml) file, place it under Publisher project `data/input` directory
  - The consumer should print the info read from the input xml like below in the `message value 12 customernumber01`
@@ -557,15 +560,15 @@ message value 12 customernumber01
 
 ##### Generate `jaxb` classes using `cxf-xjc` maven plugin.
 
- - To autmatically **unmarshalling** the xml we need to create JAXB classes, below are the steps I followed:
+ - To automatically **unmarshall** the xml we need to create JAXB classes and add it to the pacakge. Below are the steps I followed:
  
- 1. we need to create the schem file for the input xml, for that I used the Intellij Idea Community edition Tools -> Generate Schema for Xml. Then renamed the xs:schema to xsd:schema (the `cfx-xjc` maven plugin requires the schema to be starting with xsd)
+ 1. we need to create the schema file for the input xml, for that I used the Intellij Idea Community edition Tools -> Generate Schema for Xml. Then renamed the `xs:schema` to `xsd:schema` (the `cfx-xjc` maven plugin requires the schema to be starting with xsd)
  
  2. Add the `cfx-xjc` maven plugin changes to the pom.xml (refer the above pom.xml of consumer section)
  
  3. Place the xsd, in this case the simpleOrder.xsd under the project base dir `schema/simpleOrder.xsd`
  
-   - simpleOreder.xsd content 
+   - `simpleOreder.xsd` content 
 
  ```xml
  <?xml version="1.0" encoding="UTF-8"?>
@@ -583,6 +586,7 @@ message value 12 customernumber01
 </xsd:schema>
  ```
  4. Once maven project is update, issue `mvn:install` to generate java source
+
     - This will fail in some cases, just check if the source file generated. When I tried, it threw compilation error but the source file got generated under `target/generated/src/main/java`
  
  5. Copy paste the generated `MessageType.java` and `ObjectFactory.java` under `org.example.dataformatof.` package.
@@ -682,11 +686,12 @@ public class ObjectFactory {
 }
 ```
 
-In case if we need to fetch the file from SFTP linux based operating system we can use below endpoint within the camel context, and enable the endpoint to start based on the cron set using the quartz2 camel component.
+**Bonus**
+
+Camel SFTP conmponent, can be defined as an endpoint and used to fetch the input file, below is an example demonstration where the configuration starts based on the quartz2 cron duration. This route will start at the time defined in the `scheduler.cron`. This will be referred in the route as `from`.
 
 ```xml
-<!--Below can be used to connect to SFTP if we need to fetch the info from there. -->
-<!--
+<!--Below is SFTP component usage  -->
     <endpoint id="inputSFTP" uri="sftp://SFTP_SERVER_COM">
         <property key="username" value="<username"/>
         <property key="privateKetFile" value="path/to/.ssh/id_rsa"/>
@@ -695,5 +700,4 @@ In case if we need to fetch the file from SFTP linux based operating system we c
         <property key="scheduler" value="quartz2"/> <!-- inculde the quartz2 component -->
         <property key="scheduler.cron" value="*+*+1/3+?+*+*"/>
     </endpoint>
--->
 ```
