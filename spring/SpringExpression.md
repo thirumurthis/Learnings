@@ -91,62 +91,67 @@ public class TestSpringExpression {
 		Object expressionResult3 = exp3.getValue(context);
 		System.out.println(expressionResult3);
 			
-
 	}
 
 	
 	public static SampleModel populateValues(){
-		Map<String, List<ParameterValue>> allValues = new HashMap<>();
+		Map<String, List<DataValue>> allValues = new HashMap<>();
 		// Example 1 : For ACMS DATA
-		ParameterValue pValue = new ParameterValue();
-		pValue.setParameterDate(new Date());
-		pValue.setValue(100);
-		List temp =  new ArrayList<ParameterValue>();
+		DataValue pValue = new DataValue();
+		pValue.setdataDate(new Date());
+		pValue.setdataValue(100);
+		List temp =  new ArrayList<DataValue>();
 		temp.add(pValue);
 		allValues.put("IOT_sensor_1", temp);
 		
-		ParameterValue pValue1 = new ParameterValue();
-		pValue1.setParameterDate(new Date());
+		DataValue pValue1 = new DataValue();
+		pValue1.setDataDate(new Date());
 		pValue1.setValue(200);
-		List temp1 =  new ArrayList<ParameterValue>();
+		List temp1 =  new ArrayList<DataValue>();
 		temp1.add(pValue1);
 		allValues.put("IOT_sensor_2", temp1);
+			
 		
-		
-		
-		
-		
-		// Example 1 : For ACMS DATA
-		List temp3 =  new ArrayList<ParameterValue>();
-		ParameterValue pValue3 = new ParameterValue();
+		// Example 1 : 
+		List temp3 =  new ArrayList<DataValue>();
+		DataValue pValue3 = new DataValue();
 		pValue3.setParameterDate(new Date());
 		pValue3.setValue(100);
 		pValue3.setParameterDate(new Date());
 		pValue3.setValue(110);
-		pValue3.setParameterDate(new Date());
+		pValue3.setDataDate(new Date());
 		pValue3.setValue(120);
 		
 		temp3.add(pValue3);
 		allValues.put("LEFT-Device1", temp3);
 		
 		temp3 =  new ArrayList<ParameterValue>();
-		ParameterValue pValue4 = new ParameterValue();
-		pValue4.setParameterDate(new Date());
+		DataValue pValue4 = new DataValue();
+		pValue4.setDataDate(new Date());
 		pValue4.setValue(120);
 		pValue4.setValue(150);
-		pValue4.setParameterDate(new Date());
+		pValue4.setDataDate(new Date());
 		
 		temp3.add(pValue4);
 		allValues.put("LEFT-Device2", temp3);
-		
-		
+				
 		SampleModel mesgObj=new SampleModel();
 		 mesgObj.setAllValues(allValues);
 		 
 		 return mesgObj;
 		
-		
 	}
 }
+
+```
+
+
+- in order to validate if the expression is executed as expected.
+we can use below approach
+
+```
+Expression spelExpression = new SpelExpressionParser("#data.input =='hello'"); // the expression always evaluate to true or false not any in this case.
+
+Boolean output = spelExpression.getValue(evaulationContext, Boolean.class); //returns true or falise 
 
 ```
