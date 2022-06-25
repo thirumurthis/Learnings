@@ -17,9 +17,9 @@ In this blog will walkthrough,
 
 Refer my [stack-overflow link](https://stackoverflow.com/questions/72672565/activemq-artemis-not-displaying-the-web-console-when-run-in-docker) for more details 
 
-Lets dive in to the details.
+Lets dive in to the details, this is **not** a production ready instance.
 
-### Running Artemis Docker instanse
+### Running Artemis Docker instance
 
 - We can use below docker command to create the Docker instance.
 
@@ -48,23 +48,26 @@ Refer below snapshot.
 > docker run -d --name nginx-proxy -p 80:80 nginx
 ```
 
-###### Copy the default.conf file from the conatiner to our local Desktop. I created a temp directory and `cd` to that folder.
+##### Copy the `default.conf` file from container to our local Desktop. 
+
+ - Created a temp directory and `cd` to that folder, before issuing below command
 
 ```
 > docker cp nginx-proxy:/etc/nginx/conf.d/default.conf .
 ```
 
-###### Get Aretmis docker conatiner hostname/ipaddress.
-  - We will use this to updated in the `Origin` header in the default.conf file.
+##### Get Artemis docker container IP Address.
+
+  - We will use this to updated in the `Origin` header in the `default.conf` file.
 
 ```
 > docker exec nginx-proxy hostname -i
 ```
 
-###### Content of the default.conf file
+#####`default.conf` content to proxy and set headers
 
-- In this `default.conf` I am enabling the CORS by setting the headers for different HTTP methods
-- Also, included the header `Origin` with the Artemis docker container ipaddress (in my case it was 172.17.0.2).
+- In this `default.conf` enabled the CORS by setting the headers for different HTTP methods
+- Also, included the header `Origin` with the Artemis docker container IP Address (in my case it was 172.17.0.2).
 
 ```
 server {
@@ -110,7 +113,7 @@ server {
 
     #error_page  404              /404.html;
     # redirect server error pages to the static page /50x.html
-    #
+    
      error_page   500 502 503 504  /50x.html;
      location = /50x.html {
         root   /usr/share/nginx/html;
@@ -147,4 +150,4 @@ Note:
 
 Reference Link:
 
-  - [How to setup nginx reverse-proxy](https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/Docker-Nginx-reverse-proxy-setup-example)
+  - [How to setup Nginx reverse-proxy](https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/Docker-Nginx-reverse-proxy-setup-example)
