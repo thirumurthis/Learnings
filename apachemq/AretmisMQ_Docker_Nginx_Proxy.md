@@ -2,7 +2,7 @@
 
 In this blog will walkthrough,
   - How to run Apache Artemis broker instance in Docker Desktop.
-  - How to configure Nginx server as reverse proxy to access the Aretmis Management UI console (Hawtio).
+  - How to configure Nginx server as reverse proxy to access the Artemis Management UI console (Hawtio).
 
 - It is easy to spin up the Docker Artemis instance with the `artemiscloud.io` image. Thanks to [Redhat community](https://artemiscloud.io/community/), they have created an Apache Artemis image. In this blog I am using that image which is available in [quay.io repository](https://quay.io).
 
