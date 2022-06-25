@@ -4,7 +4,7 @@ In this blog will walkthrough,
   - How to run Apache Artemis broker instance in Docker Desktop.
   - How to configure Nginx server as reverse proxy to access the Aretmis Management UI console (Hawtio).
 
-- It is easy to spin up the Docker Artemis instance with the `artemiscloud.io` image. Thanks to [Redhat community](https://artemiscloud.io/community/) they have created an Apache Artemis image, and I am using that image here. The image is availabe in  [quay.io repository](https://quay.io)
+- It is easy to spin up the Docker Artemis instance with the `artemiscloud.io` image. Thanks to [Redhat community](https://artemiscloud.io/community/), they have created an Apache Artemis image. In this blog I am using that image which is available in [quay.io repository](https://quay.io).
 
 #### Why we need reverse proxy? 
 
@@ -124,14 +124,16 @@ server {
 ```
 
 Note: 
+
   - Modified configuration can be updated when the Nginx server is running, we can issue a reload singal to inform Nginx to use the updated server config while running.
   
-1. Lets validate the update default.conf file is valid with below command
+- Lets validate the update default.conf file is valid with below command
 
 ```
 > docker exec nginx-proxy nginx -t
 ```
-2.  We send reload singnal to inform Nginx to use the updated config with below command.
+
+- We send reload singnal to inform Nginx to use the updated config with below command.
 
 ```
 > docker exec nginx-proxy nginx -r reload
@@ -139,7 +141,7 @@ Note:
 
 #### Output:
 
-- Once updated, form the browser in host machine use the link `http://localhost:80/console` to veiw the queues, consumer, etc. details. Refer below snapshot 
+- Once updated, form the browser in host machine use the link `http://localhost:80/console` to view the queues, consumer, etc. details. Refer below snapshot 
 
 ![image](https://user-images.githubusercontent.com/6425536/175756631-acf007e5-08e4-44e8-8a2e-632935b1a161.png)
 
