@@ -307,7 +307,7 @@ class ExampleApplicationTests {
 }
 ```
 
-#### Issues 
+#### Issues faced during testing
 
 - Timeout exception while running the test case initally threw below exception
 
@@ -318,17 +318,20 @@ class ExampleApplicationTests {
 Solution:
   - Add timeout of 30 seconds like `@AutoConfigureWebTestClient(timeout = "PT30S")` to resolve it.
 
-#### To run the Library service in local, we can use the PostgreSql docker instance and Curl command to Post message.
+#### How to run the PostgreSql instance in Docker?
 
-- Below command will start an PostgreSql as a docker isntance and the application can connect to it.
+- To check the SpringBoot service, from local we need to start the application and run the Docker PostgreSql Instance running.
+
+- Below command will start an PostgreSql as a docker instance, we are exposing the port 5432.
 
 ```
 docker run -it --rm --name postgres-dev -p 5432:5432 -e POSTGRES_PASSWORD=password -e POSTGRES_USER=user -e POSTGRES_DB=book_catalog postgres
 ```
 
-- Once started should be able to see message like below.
+- Output of the docker command
 
 ```
+...
 PostgreSQL init process complete; ready for start up.
 
 2022-06-26 16:49:07.200 UTC [1] LOG:  starting PostgreSQL 14.4 (Debian 14.4-1.pgdg110+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
@@ -339,7 +342,7 @@ PostgreSQL init process complete; ready for start up.
 2022-06-26 16:49:07.274 UTC [1] LOG:  database system is ready to accept connections
 ```
 
-- Start the Library service from IDE and using executable jar `java -jar <executable.jar>`, use below Curl command to POST a Book message. Use git bash terminal
+- Start the SpringBoot service from IDE and using executable jar `java -jar <executable.jar>`, use below Curl command to POST a Book message. In this case I use git bash terminal.
 
 ```
 $ curl -X POST http://localhost:8080/books -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{"title" : "from curl command"}'
@@ -352,4 +355,43 @@ $ curl -X POST http://localhost:8080/books -H 'Content-Type: application/json' -
 ```
 
 #### Output
+
+- Test case output which starts the container and performs test
+
+```
+2022-06-26 10:57:02.539  INFO 11804 --- [           main] org.testcontainers.DockerClientFactory   : Connected to docker: 
+  Server Version: 20.10.16
+  API Version: 1.41
+  Operating System: Docker Desktop
+  Total Memory: 6175 MB
+2022-06-26 10:57:03.310  INFO 11804 --- [           main] 🐳 [testcontainers/ryuk:0.3.3]           : Creating container for image: testcontainers/ryuk:0.3.3
+2022-06-26 10:57:07.650  INFO 11804 --- [           main] 🐳 [testcontainers/ryuk:0.3.3]           : Container testcontainers/ryuk:0.3.3 is starting: 3b6fe78b89b13d76904e75de06aab6ef7ae1e91ee65b86051e43e9ea64d129fd
+2022-06-26 10:57:12.637  INFO 11804 --- [           main] 🐳 [testcontainers/ryuk:0.3.3]           : Container testcontainers/ryuk:0.3.3 started in PT10.0372819S
+2022-06-26 10:57:12.736  INFO 11804 --- [           main] o.t.utility.RyukResourceReaper           : Ryuk started - will monitor and terminate Testcontainers containers on JVM exit
+2022-06-26 10:57:12.737  INFO 11804 --- [           main] org.testcontainers.DockerClientFactory   : Checking the system...
+2022-06-26 10:57:12.739  INFO 11804 --- [           main] org.testcontainers.DockerClientFactory   : ✔︎ Docker server version should be at least 1.6.0
+2022-06-26 10:57:12.742  INFO 11804 --- [           main] 🐳 [postgres:13]                         : Creating container for image: postgres:13
+2022-06-26 10:57:13.386  INFO 11804 --- [           main] 🐳 [postgres:13]                         : Container postgres:13 is starting: 42a8e5d74a3a8f9d2b631b75153bf7b7414ab1561f7529a61a2cb0a2eae01af8
+2022-06-26 10:57:53.269  INFO 11804 --- [           main] 🐳 [postgres:13]                         : Container postgres:13 started in PT40.5272774S
+2022-06-26 10:57:54.255  INFO 11804 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2022-06-26 10:57:54.358  INFO 11804 --- [           main] o.f.c.i.database.base.BaseDatabaseType   : Database: jdbc:postgresql://localhost:50819/test (PostgreSQL 13.7)
+2022-06-26 10:57:54.758  INFO 11804 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 1 migration (execution time 00:00.151s)
+2022-06-26 10:57:55.131  INFO 11804 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2022-06-26 10:57:55.374  INFO 11804 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2022-06-26 10:57:55.424  INFO 11804 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - init schema"
+2022-06-26 10:57:55.625  INFO 11804 --- [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 1 migration to schema "public", now at version v1 (execution time 00:00.307s)
+2022-06-26 10:57:58.316  INFO 11804 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 50827 (http) with context path ''
+2022-06-26 10:57:59.308  INFO 11804 --- [           main] c.l.example.ExampleApplicationTests      : Started ExampleApplicationTests in 105.885 seconds (JVM running for 116.971)
+2022-06-26 10:58:07.836  INFO 11804 --- [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-06-26 10:58:07.845  INFO 11804 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-06-26 10:58:12.499  INFO 11804 --- [o-auto-1-exec-1] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 14 endpoint(s) beneath base path '/actuator'
+2022-06-26 10:58:14.691  INFO 11804 --- [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6845 ms
+2022-06-26 10:58:17.327  INFO 11804 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2022-06-26 10:58:19.097  INFO 11804 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+
+Process finished with exit code 0
+```
+
+- Library service output, after using the Curl command mentioned above
+
 ![image](https://user-images.githubusercontent.com/6425536/175827507-9a8c82af-86c9-4f32-b85b-ebdf1eec5c74.png)
