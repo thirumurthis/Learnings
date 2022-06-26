@@ -6,25 +6,42 @@ In this blog will demonstrate how to use TestContainers at basic level to perfor
 - Heroku provided  PostgreSql option, so I decided to use it, i need to switch between H2 and PostgreSql between development and deployment.
 - Recently came accross the TestContainer, which can be used for such situations.
 
-- Here i will be creating an SpringBoot Library service and use Postgresql to persist the data.
-- In the test case we will use WebTestClient to access the service
-- Additionally, in `application.properties` have demonstrated how to enable all actuator endpoint. Not suitable for production.
-- I am using Java JDK 17.0.1 and SpringBoot v2.7.1.
+#### What to expect?
+
+- Will be creating a SpringBoot service and use PostgreSql to persist the data.
+- In the test case we will use WebTestClient to access the service for testing.
+- Additionally, in `application.properties` have enabled all actuator endpoint. This is **not** suitable for production.
+- Will beusing Java JDK 17.0.1 and SpringBoot v2.7.1.
 
 #### Create the SpringBoot Maven project with dependencies
 
-  - Use [start.spring.io](https://start.spring.io) to create the maven based project with below dependencies
-     - spring-boot-starter-web
-     - spring-boot-starter-data-jdbc
-     - spring-boot-starter-actuator
-     - spring-boot-starter-webflux (WebTestClient uses this Reactive client library)
-     - spring-boot-starter-test
-     - flyway-core
-     - testcontainers (this will be added as testcontainers-bom in pom.xml)
+  - Use [start.spring.io](https://start.spring.io) to create the maven based project with below dependencies> - spring-boot-starter-web
+>      - spring-boot-starter-data-jdbc
+>      - spring-boot-starter-actuator
+>      - spring-boot-starter-webflux (WebTestClient uses this Reactive client library)
+>      - spring-boot-starter-test
+>      - flyway-core (Flyway is used to mange the Database version automatically) 
+>      - testcontainers (This will be added as testcontainers-bom in pom.xml)
 
-  - The maven pom.xml file looks like below.
+Note:
+  - Flyway will create dependent tables within the PostgreSql, to manage history.
+  - The fly script file name should follow the standard like `V1__init_schema.sql`, `V2__load_table.sql`, etc. which need to be placed under resources/db/migration
 
-```pom.xml
+```sql
+-- Flyway will create its own version control
+CREATE TABLE book(
+  id bigserial PRIMARY KEY,
+  title VARCHAR(25)
+)
+```
+
+The structure of the project looks like below
+
+  ![image](https://user-images.githubusercontent.com/6425536/175827877-fb26a159-d75c-413a-8c0d-07d80ca7b1b0.png)
+
+  - The maven `pom.xml` file looks like below
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -161,6 +178,8 @@ import org.springframework.stereotype.Repository;
 public interface BookRepository extends CrudRepository<Book, Long>{}
 ```
 
+- Book record immutable object
+
 ```java
 package com.library.example;
 
@@ -188,9 +207,10 @@ public class ExampleApplication {
 ```
 
 Step 3: Update the `application.properties` with Database and Acutator configuration
+
    - Note i am exposing all the actuator endpoint using `*`, but in production this should be restricted.
    
-```
+```properties
 spring.datasource.url = jdbc:postgresql://localhost:5432/book_catalog
 spring.datasource.username = user
 spring.datasource.password = password
@@ -213,7 +233,7 @@ management.endpoint.health.show-details=always
 management.endpoint.health.probes.enabled=true
 ```
 
-Step 4: Create Integration test case
+#### Integration test case code
 
 - We need to specify the spring to use random port for testing, by using `WebEnvironment` passed to `@SpringBootTest` annotation.
 
@@ -222,13 +242,15 @@ Step 4: Create Integration test case
 ```
 
 - We also override the PostgreSql database url specified in `application.properties` using `@TestPropertySource` annotation like below. 
+     
+         - Already the TestContainer dependency is included in pom.xml, so by specifying the jdbc url in TestContainer specific format `jdbc:tc:`, executing this integration test, spring will autoamtically download, start and perform test using the docker image.
 
 ```
   @TestPropertySource(properties = "spring.datasource.url = jdbc:tc:postgresql:15:///")
 ```
-  - Already the TestContainer dependency is included in pom.xml, so by specifying the jdbc url in TestContainer specific format `jdbc:tc:`, executing this integration test, spring will autoamtically download, start and perform test using the docker image.
- 
+  
 Note:
+
   - When running below test case, make sure to run the Docker Desktop if it is not already running.
  
 ```java
