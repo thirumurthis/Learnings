@@ -13,7 +13,7 @@ In this blog will demonstrate how to use TestContainers at basic level to perfor
 - Additionally, in `application.properties` have enabled all actuator endpoint. This is **not** suitable for production.
 - Will beusing Java JDK 17.0.1 and SpringBoot v2.7.1.
 
-#### Create the SpringBoot Maven project with dependencies
+#### Create SpringBoot Maven project with dependencies
 
   - Use [start.spring.io](https://start.spring.io) to create the maven based project with below dependencies> - spring-boot-starter-web
 >      - spring-boot-starter-data-jdbc
@@ -127,9 +127,9 @@ The structure of the project looks like below
 </project>
 ```
 
-#### Create the service with RestController and Repository annotation
+#### Create simple REST service 
 
-  - Below are self explinatory class, created under the same package (com.library.example)
+  - Below are self explanatory class, created under the same package (com.library.example)
   - The `record` class is a feature included after Java 14+, this is an immutable class
   
 - Controller class
