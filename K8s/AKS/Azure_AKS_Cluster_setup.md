@@ -33,11 +33,13 @@ Create new subnet named 'myproject-aks-subnet' make sure it is big enough IP Add
  - if a VNET already exists create within that vnet or virtual network
 a. We can use portal to create in a myproject-aks-vnet virtual network
 with below property:
+``` 
 NSG: NONE
 Route table : NONE
 Service endpoints: Microsoft.AzureActiveDirectory
 Delegate subnet to a service: NONE
-
+```
+ 
 Create new Service principal to access the AKS.
 ```
 $  az ad sp create-for-rbac --skip-assingment --name myproject-aks-local-sp
