@@ -27,6 +27,7 @@ az network nsg rule create -g <resource-group-name> --nsg-name <project-nsg-name
 az network nsg rule create -g <resource-group-name> --nsg-name <project-nsg-name> -n <name-for-the-nsb-outbound-rule> --priority <priorty-number-ex-3905> --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges <port-number-ex-5601> --direction Outbound --access Allow --protocol '*' --description "Outbound rule for access."
 ```
  
+Mostly below will be the prestep, since we need the VNETs in place
 Additionally if we need to extend the VNET
 
 Create new subnet named 'myproject-aks-subnet' make sure it is big enough IP Address/24
@@ -65,3 +66,20 @@ az aks nodepool update --resource-group <resource-group> --cluster-name <cluster
  ```
  
  
+Below is the representation diagram:
+ 
+ ![image](https://user-images.githubusercontent.com/6425536/176097414-d7d6056f-5d73-46b8-bb71-5f2abdba39bd.png)
+ 
+ Note:
+  - The resource mostly protected witihin private virtual network.
+  - The cluster will not have any pulbic IP associated to be exposed.
+  - Use KeyValut to inject the application runtime secrets.
+  - AKS deployed to private network doesn't deploy default method of ingress traffic to the cluster, we need to use service resources to expose it.
+ - This Cluster instance is deployed with advanced network plugin (Azure-CNI) as virtual network.
+ - We can use NSG rules for additional network rules for AKS to properly work within the subnet.
+ 
+ Create set of inbound and outbound rules.
+  - Inbound: Allow * from <subnet>
+  - Inbound: Allow tcp8001 and tcp9000 from <VNET/private network>
+  - Outbound: Allow * to <subnet>
+  - Outbound: Allow tcp8001 and tcp9000 to *
