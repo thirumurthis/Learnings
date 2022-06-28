@@ -16,11 +16,11 @@ Before hand we need subnet id
 $az network vnet subnet show -n myproject-aks-subnet -g <resource-group-name> --vnet-name <name-of-the-vnet>
 
 To create the cluster with the template and parameter 
+``` 
 az group deployment create --name deploy-k8s --resource-group myproject-aks-local-rg --template-file mytemplate.json --parameters parameters/mydeploy.parameters.json
+```
 
-
-
--- IN case if we need to enable ports in the NSG we can use below cli
+-- To enable ports in the NSG we can use below cli inbound and outbound
 ```
 az network nsg rule create -g <resource-group-name> --nsg-name <project-nsg-name> -n <name-for-inbound-rule> --priority <priority-number-ex-3090> --source-address-prefixes 'VirtualNetwork' --source-port-ranges '*' --destination-address-prefixes 'VirtualNetwork' --destination-port-ranges <port-range-ex-8081-8099> --direction Inbound --access Allow --protocol Tcp --description "Inbound rule for application"
 
@@ -49,10 +49,9 @@ $ az ad sp show --id "http://myproject-aks-local-sp"
 ```
 Add below info as well to the AKS
 
-k8sSpObjectID : <object-id> 
-k8sSpAppId : <appId>
-K8sSpSecret : <password>
-  
+ObjectID : <object-id> 
+AppId : <appId>
+Secret : <password>  
 ```  
 ## we can use below are the autoscaler 
 az aks nodepool update --resource-group <resource-group> --cluster-name <cluster-name> --name <name-for-pool> --enable-cluster-autoscaler --min-count 1 --max-count 10
