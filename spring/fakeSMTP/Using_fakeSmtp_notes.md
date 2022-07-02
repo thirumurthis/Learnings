@@ -1,4 +1,4 @@
-## Local SMTP mail development using FakeSMTP 
+## Use FakeSMTP library for developing mail functionality in local
 
 In this blog will demonstrate how we can use FakeSMTP library to develop mail functionality like sending mail to server.
 
@@ -20,7 +20,7 @@ In order to demonstrate the functionality
   > **Note**
   > - I am using the default configuration, check the documentation for customization like port, host, etc.
   
-  - FakeSMTP UI will look as in below snapshot
+  - FakeSMTP UI will look like in below snapshot
 
 ![image](https://user-images.githubusercontent.com/6425536/177018447-6c2d3fb6-074a-4c32-915c-c317458f3121.png)
 
