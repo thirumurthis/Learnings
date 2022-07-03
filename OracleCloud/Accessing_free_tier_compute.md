@@ -13,3 +13,7 @@ To deploy and python code,
 https://docs.oracle.com/en/cloud/paas/app-container-cloud/tutorial-deploy-python-app/
 
 Also refer the repo, under python, simple web scrapper code.
+
+Documentation for cloud internals:
+
+https://docs.oracle.com/en-us/iaas/developer-tutorials/tutorials/helidon-k8s/01oci-helidon-k8s-summary.htm
