@@ -11,8 +11,10 @@ pip install requests-html
 ```py
 import os
 from requests_html import HTML, HTMLSession
-from datetime import date 
+from datetime import date
+from datetime import datetime 
 import calendar
+import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 PORT_NUMBER = int(os.environ.get('PORT', 8084))
 
@@ -67,6 +69,33 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         return tmptxt
 
   @staticmethod
+  def parseToJson(resultList, debug = False) : 
+       key = ''
+       value=''
+       iter=0
+       temp = {}
+       result = {}
+       for item in resultList:
+         temp = {}
+         codedItem = item.split("##")
+         if debug:
+           print (codedItem)
+         for item in codedItem :
+           if len(item) > 0 :
+            codedKey = item.split(":-")[0]
+            value = item.split(":-")[1]
+            if debug:
+               print(f"value = {value}")
+            if '@' in codedKey:
+               iter= codedKey.split('@')[0]
+               key= codedKey.split('@')[1].strip()
+               if debug:
+                  print(f"key = {key}")
+               temp[key]=value.strip()
+         result[iter] = temp
+       return result
+
+  @staticmethod
   def getWebContent():
     session = HTMLSession()
     toDate = date.today()
@@ -107,12 +136,12 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
          tblCnt +=1
          if tblCnt == employTitleACnt:
             ret = testHTTPServer_RequestHandler.toFetchTitleA(response)
-            requiredInfo = requiredInfo + ret + ' :- '
+            requiredInfo = str(tblCnt)+'@title :- ' + requiredInfo + ret + ' ## '
             if toDebug :
               print (requiredInfo)
          if tblCnt == employTitleBCnt:
             ret = testHTTPServer_RequestHandler.toFetchTitleB(response)
-            requiredInfo = requiredInfo + ret +' :- '
+            requiredInfo = str(tblCnt)+'@title :- ' + requiredInfo + ret + ' ## '
             if toDebug :
               print (requiredInfo)
             
@@ -129,7 +158,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
               tmp = str(head.text).replace('\n',' ')
               output += tmp+ " | "
               if colCnt == CategoryCheckCol and rowCnt <= checkRow:
-                 requiredInfo += tmp + ' - '
+                 requiredInfo += str(tblCnt)+'@'+tmp + ' :- '
               if colCnt == IndCheckCol and rowCnt <= checkRow :
                  requiredInfo += tmp + ' ## '
       
@@ -144,6 +173,39 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
          outputList.append(requiredInfo)
     return outputList
 
+  @staticmethod
+  def parseToJson(resultList, debug = False) : 
+       key = ''
+       value=''
+       iter=0
+       temp = {}
+       result = {}
+       if debug:
+          print(f"resultList input := {resultList}")
+       for item in resultList:
+         print(f"processing ... {item}")
+         temp = {}
+         codedItem = item.split("##")
+         if debug:
+           print (codedItem)
+         for item in codedItem :
+           if len(item) > 0 and len(item.split(":-")) > 1 :
+            if debug:
+               print (f"item = {item} && length = {len(item)}")
+            codedKey = item.split(":-")[0]
+            value = item.split(":-")[1]
+            if debug:
+               print(f"value = {value}")
+               print(f"codedKey = {codedKey}")
+               if '@' in codedKey:
+                   iter= codedKey.split('@')[0]
+                   key= codedKey.split('@')[1].strip()
+                   if debug:
+                      print(f"key = {key}")
+                   temp[key]=value.strip()
+         result[iter] = temp
+       result['timestamp']= str(datetime.now())
+       return result
  
   # GET
   def do_HEAD(self):
@@ -159,7 +221,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
  
         # Send headers
-        self.send_header('Content-type','text/html')
+        self.send_header('Content-type','text/json')
         self.end_headers()
  
         # Send message back to client
@@ -167,9 +229,12 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         #print(type(outMessage))
         #print (outMessage)
         message = ''
-        for item in outMessage:
-          message += item + ';'
-
+        json_data = testHTTPServer_RequestHandler.parseToJson(outMessage, False)
+        #print(json_data)
+        #Python pretty print JSON
+        message = json.dumps(json_data, indent=4)
+        message = str(message)
+        #print(f"message :- {message}")
         #message = "Hello world!"
         # Write content as utf-8 data
         self.wfile.write(bytes(message, "utf8"))
@@ -186,4 +251,26 @@ def run():
   httpd.serve_forever()
   
 run()
+```
+
+- output is 
+
+```json
+{
+ 1: {
+title: "A. FINAL ACTION DATES FOR EMPLOYMENT-BASED PREFERENCE CASES",
+Employment- based: "INDIA",
+1st: "C",
+2nd: "01DEC14",
+3rd: "15JAN12"
+},
+ 2: {
+title: "B. DATES FOR FILING OF EMPLOYMENT-BASED VISA APPLICATIONS",
+Employment- based: "INDIA",
+1st: "C",
+2nd: "01JAN15",
+3rd: "22JAN12"
+},
+timestamp: "2022-07-03 12:41:11.604659"
+}
 ```
