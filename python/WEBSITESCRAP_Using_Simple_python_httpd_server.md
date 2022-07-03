@@ -195,14 +195,13 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             codedKey = item.split(":-")[0]
             value = item.split(":-")[1]
             if debug:
-               print(f"value = {value}")
-               print(f"codedKey = {codedKey}")
-               if '@' in codedKey:
-                   iter= codedKey.split('@')[0]
-                   key= codedKey.split('@')[1].strip()
-                   if debug:
-                      print(f"key = {key}")
-                   temp[key]=value.strip()
+               print(f"value = {value} && codedKey = {codedKey}")
+            if '@' in codedKey:
+                iter= codedKey.split('@')[0]
+                key= codedKey.split('@')[1].strip()
+                if debug:
+                   print(f"key = {key}")
+                temp[key]=value.strip()
          result[iter] = temp
        result['timestamp']= str(datetime.now())
        return result
