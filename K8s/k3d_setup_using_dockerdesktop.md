@@ -75,7 +75,9 @@ k3s version v1.23.6-k3s1 (default)
 ```
 
 >  **Note**
+>  
 > In case the kubectl command didn't connect to the cluster use 
+> 
 > `k3d kubeconfig merge my-cluster-01 --kubeconfig-switch-context`
 
 
@@ -104,8 +106,11 @@ k3d-mycluster-server-1   Ready    control-plane,etcd,master   53s   v1.23.6+k3s1
 ```
 
 > **NOTE**
-> -p, --port [HOST:][HOSTPORT:]CONTAINERPORT[/PROTOCOL][@NODEFILTER]  
+> 
+> -p, --port [HOST:][HOSTPORT:]CONTAINERPORT[/PROTOCOL][@NODEFILTER]
+> 
 >        => Map ports from the node containers (via the serverlb) to the host 
 >        (Format: [HOST:][HOSTPORT:]CONTAINERPORT[/PROTOCOL][@NODEFILTER])
->   - Example: `k3d cluster create --agents 2 -p 8080:80@agent:0 -p 8081@agent:1`
+>
+> - Example: `k3d cluster create --agents 2 -p 8080:80@agent:0 -p 8081@agent:1`
 
