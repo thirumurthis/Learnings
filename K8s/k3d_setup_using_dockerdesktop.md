@@ -25,6 +25,9 @@ Pre-requisites:
 > **Note**
 >
 > How K3D is different from Minikube, K3D runs in Docker as container, Minikube requires VM.
+> 
+> This can be used in Dev and Test environment, not intended for production. K3s can be used for production on Linux based systems.
+> 
 
 #### Install K3d in local machine
 
