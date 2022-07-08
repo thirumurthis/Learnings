@@ -2,7 +2,7 @@
 
 - In this blog will be creating a workable environment in Docker Desktop.
 
-What is [K3s](https://k3s.io)
+What is [K3s](https://k3s.io)?
   - K3S is a lightweight kubernetes distribution that can run on production, and certified by CNCF.
   - K3S has memory footprint since the etcd, alpha features are removed in this distribution.
   - K3S uses SQLLite as default storage, for persisted storage we can use MySql or PostGres.
@@ -14,7 +14,7 @@ Terminology used in K3s:
 
 On a single node K3s runs the server and agent as a single process.
 
-What is [K3d](https://k3d.io)
+What is [K3d](https://k3d.io)?
  - K3d is a lightweight wrapper to run K3S (Rancher Lab's) in docker.
  - K3d makes it very easy to create single or multi node K3s cluster in docker, for local development.
 
