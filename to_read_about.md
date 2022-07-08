@@ -102,3 +102,14 @@ Redhat containerized developer tooling for openshift (eco system)
 - Service Mesh
 - Enterprise Kubernetes
 - Redhat openshift
+
+### Azure SignalR 
+##### When exposing application from the Azure DMZ, to internet which is built with WebSocket protocol.
+ - In order to set the keepalive configuration continuously in Azure we can use Azure SignalR service.
+
+ The user is authorized to access the web application via internal proxy, then the function client calls are authenticated using JWT token , which negotiates the connection with SignalR and produces signal specific token that the client then uses to connect directly to SingalR to open the websocket connections.
+ SignalR is managed websocket orgchestration tool.
+ if the internal proxy perimeter doesn't has the support for websocket type connection.
+ 
+ 
+ 
