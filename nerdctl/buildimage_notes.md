@@ -54,6 +54,7 @@ FATA[0000] unrecognized image format
 ```
 
 - Build process using `nerdctl`
+   - below is in case of compilation erro
 
 ```
 nerdctl build -t go-main-1 .
@@ -98,4 +99,34 @@ Dockerfile:3
 --------------------
 error: failed to solve: process "/bin/sh -c go build -o /app main.go" did not complete successfully: exit code: 2
 FATA[0039] unrecognized image format
+```
+
+- Complete code
+
+```
+>nerdctl build -t go-main-1 .
+[+] Building 4.1s (13/13) FINISHED
+ => [internal] load .dockerignore                                                                                                                         0.0s
+ => => transferring context: 2B                                                                                                                           0.0s
+ => [internal] load build definition from Dockerfile                                                                                                      0.0s
+ => => transferring dockerfile: 189B                                                                                                                      0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.16                                                                                            1.4s
+ => [internal] load metadata for docker.io/library/golang:1.19-rc-alpine                                                                                  1.4s
+ => [auth] library/alpine:pull token for registry-1.docker.io                                                                                             0.0s
+ => [auth] library/golang:pull token for registry-1.docker.io                                                                                             0.0s
+ => [internal] load build context                                                                                                                         0.0s
+ => => transferring context: 201B                                                                                                                         0.0s
+ => CACHED [stage-1 1/2] FROM docker.io/library/alpine:3.16@sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c                       0.1s
+ => => resolve docker.io/library/alpine:3.16@sha256:686d8c9dfa6f3ccfc8230bc3178d23f84eeaf7e457f36f271ab1acc53015037c                                      0.1s
+ => CACHED [builder 1/3] FROM docker.io/library/golang:1.19-rc-alpine@sha256:ee6074afda6d870c67201d3a2d26b39cd8ad787ca374f7f4271f54bf40848696             0.1s
+ => => resolve docker.io/library/golang:1.19-rc-alpine@sha256:ee6074afda6d870c67201d3a2d26b39cd8ad787ca374f7f4271f54bf40848696                            0.1s
+ => [builder 2/3] COPY main.go .                                                                                                                          0.0s
+ => [builder 3/3] RUN go build -o /app main.go                                                                                                            0.9s
+ => [stage-1 2/2] COPY --from=builder /app .                                                                                                              0.1s
+ => exporting to oci image format                                                                                                                         0.9s
+ => => exporting layers                                                                                                                                   0.4s
+ => => exporting manifest sha256:ab83037c81606dd648de95cddf6cd101179d7ae5f5ee163176d6a197af68efd9                                                         0.0s
+ => => exporting config sha256:acd416cc5361011fbd32a67dc0749bc0f029a031427735b283db1bc0a1c7e831                                                           0.0s
+ => => sending tarball                                                                                                                                    0.5s
+unpacking docker.io/library/go-main-1:latest (sha256:ab83037c81606dd648de95cddf6cd101179d7ae5f5ee163176d6a197af68efd9)...done
 ```
