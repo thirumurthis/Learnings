@@ -1,5 +1,7 @@
-### install `nerdctl` CLI by downloading the windows binary from github page.
+### Install `nerdctl` CLI by downloading the windows binary from github page.
  - this is compatible with the Docker CLI.
+
+[Reference](https://docs.rancherdesktop.io/tutorials/working-with-images/)
 
 For buidling an simple app and creating images follow below command.
 
