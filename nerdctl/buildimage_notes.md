@@ -22,7 +22,7 @@ func main() {
 ```
 - store below content as `Dockerfile`
 ```docker
-FROM golang.19-rc-alpine as builder
+FROM golang:1.19-rc-alpine as builder
 COPY main.go .
 RUN go build -o /app main.go
 
