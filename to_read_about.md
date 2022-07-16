@@ -55,9 +55,7 @@ Openshift service mesh/ISTIO
   - Prometheus
   - Graphana
 
-
 FUSE - Redhat suppported version of Apache camel.
-
 
 - Fuse and Spring boot in containers:
  
@@ -110,6 +108,10 @@ Redhat containerized developer tooling for openshift (eco system)
  The user is authorized to access the web application via internal proxy, then the function client calls are authenticated using JWT token , which negotiates the connection with SignalR and produces signal specific token that the client then uses to connect directly to SingalR to open the websocket connections.
  SignalR is managed websocket orgchestration tool.
  if the internal proxy perimeter doesn't has the support for websocket type connection.
+ 
+ -------
+ 
+ JPA `@DiscriminatorColumn()` Read [Link](https://vladmihalcea.com/the-best-way-to-map-the-discriminatorcolumn-with-jpa-and-hibernate/)
  
  
  
