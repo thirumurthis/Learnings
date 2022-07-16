@@ -58,7 +58,7 @@ Service mesh at a very high level,
   Server version: stable-2.11.3
   ```
   
-#### Install Linkerd service mesh in RancherDesktop cluster.
+#### Install Linkerd service mesh in RancherDesktop cluster
   
    - Using the linkerd cli, we can generate the deployment yaml, and use kubectl command to install it in the cluster.
    - Details and steps are documented in the linkerd website, refer this [link refence](https://linkerd.io/2.11/getting-started/#step-5-explore-linkerd) for more details.
@@ -113,18 +113,7 @@ Service mesh at a very high level,
 > kubectl apply -f deploymentwithproxy.yml
 ```
 
-#### Monitoring the Linkderd proxy using Linkerd dashboard
- 
- - We need to install the linkerd viz to the cluster using below command
-
-```
-> linkerd viz install | kubectl apply -f -
-
-# use below command to check if everything is setup correctly
->linkerd check
-```
-
-#### Installing the emojivoto demo app to the cluster
+#### Install linkerd emojivoto demo app
 
  - Download the deployment descriptor yaml, using below command
 
@@ -157,23 +146,34 @@ Service mesh at a very high level,
 ![image](https://user-images.githubusercontent.com/6425536/179360285-4d3c1c55-1f72-47ed-884f-1002ba96a0d2.png)
 
 
-#### Linkerd viz dashboard
+#### Install Linkerd dashboard
+ 
+ - We need to install the linkerd viz to the cluster using below command
 
+```
+> linkerd viz install | kubectl apply -f -
 
-##### Start the linkerd dashboard viz
+# use below command to check if everything is setup correctly
+>linkerd check
+```
 
-  - With the below command we can start proxying the dashboard to the local desktop to view the traffic
+##### Monitor traffic in linkerd dashboard
+
+  - With the below command we can start the linkerd dashboard
 
 ```
 > linkerd viz dashboard
 ```
 
-  - Issuing the `linkerd viz dashboard` command, the dashboard will open up in the browser automatically
-  - Below image depicts the list of namespace and pods, etc.
+  - Issuing above command, will open up the the dashboard in the browser automatically
+  - Below image depicts the list of namespace and pods, etc displayed in the daskboard.
 
 ![image](https://user-images.githubusercontent.com/6425536/179360562-90970d34-1e40-4be0-ac3b-f544e75196bf.png)
 
-  - The `Graphana` dashboard provides visualization of the traffic and other metrics for _Observability_
+![image](https://user-images.githubusercontent.com/6425536/179362409-0e5e0a59-a300-469b-91b0-d6108d215830.png)
+
+
+  - Clicking the `Grafana` icon near the pod will bring up the `Grafana` dashboard with visualization of pod  traffic and other _Observability_ metrics.
 
 ![image](https://user-images.githubusercontent.com/6425536/179360674-697eae76-d1b8-46a9-b473-830389f29fb7.png)
 
