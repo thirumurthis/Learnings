@@ -15,6 +15,9 @@ Once the binary is extraced and set in the Environment variables path, we can us
 # we can use different namespace, say demo which is created alread
 > kubectl annotate namespace demo linkerd.io/inject=enabled
 ```
+> **NOTE**
+> With the above annotation enabled, if we create any pod then there will be two containers running
+
 
 ## if we need to manually inject the proxy as a side car then we need use the linkerd cli
  - use below command, with the deployment yaml or descrptor file
