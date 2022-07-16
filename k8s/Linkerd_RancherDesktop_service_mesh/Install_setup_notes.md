@@ -111,10 +111,58 @@ Pre-requsities:
 #### Monitoring the Linkderd proxy using Linkerd viz dashboard
  
  - We need to install the linkerd viz to the cluster using below command
- - 
+
 ```
+> linkerd viz install | kubectl apply -f -
+
+# use below command to check if everything is setup correctly
+>linkerd check
 ```
 
+##### Start the linkerd dashboard viz
 
-- linkerd check
+  - With the below command we can start proxying the dashboard to the local desktop to view the traffic
 
+```
+> linkerd viz dashboard
+```
+
+#### Installing the emojivoto demo app to the cluster
+
+ - Download the deployment descriptor yaml, using below command
+
+```
+> curl --proto '=https' --tlsv1.2 -sSfL https://run.linkerd.io/emojivoto.yml > emojoapp.yml
+```
+
+ - Use `kubectl apply` command to install the resources to cluster
+
+```
+> kubectl apply -f emojoapp.yml
+```
+
+ - Use `kubectl -n emojivoto get pods` to view the deployed resources
+
+![image](https://user-images.githubusercontent.com/6425536/179360017-2ff75ebb-dee1-4b74-b8e0-95c1e3dcfaf1.png)
+
+
+##### Accessing the application from localhost
+
+- Open up the RancherDesktop, enable the port forwarding for the service created by the linkerd demo app.
+
+- In the below image, port forwarding is enabled for all the service created by the demo app.
+
+![image](https://user-images.githubusercontent.com/6425536/179360071-3bbc92ff-6497-4124-8aa6-13de468dae04.png)
+
+- Now we can use the port displayed for the accessing the application, the `web-svc` service is where we need to start.
+- In my case `http://localhost:62173`.
+
+![image](https://user-images.githubusercontent.com/6425536/179360285-4d3c1c55-1f72-47ed-884f-1002ba96a0d2.png)
+
+
+#### Let look at the Linkerd viz dashboard
+ 
+  - Once issuing the `linkerd viz dashboard` command, the dashboard will be open up in the browser automatically
+
+
+ 
