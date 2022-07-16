@@ -1,11 +1,11 @@
 
 ### Install Linkerd in RancherDesktop cluster
 
-In this blog will demonstrate setting up Linkerd service mesh in RancherDesktop. Will be only focusing on how we can manually and automatically inject linkerd-proxy to each container.
+In this blog will demonstrate setting up `Linkerd` service mesh in `RancherDesktop`. Will be only focusing on how we can manually and automatically inject `linkerd-proxy` to each container as sidecar.
 
 Pre-requsities:
   - Understanding on Kubernetes, Service Mesh bascis is required.
-  - `kubectl` installed from kubernetes.io.
+  - `kubectl` installed from [kubernetes website](https://kubernetes.io/docs/tasks/tools/).
   - optionally, `helm CLI` but not necessary.
 
 Service mesh at a very high level,
@@ -19,26 +19,28 @@ Service mesh at a very high level,
  
 ![image](https://user-images.githubusercontent.com/6425536/179358899-22bfc282-b9af-4d12-b4f5-221c35575027.png)
 
-> RancherDesktop uses k3s Kubernetes distribution, developed and maintained by SUSE/Rancher.
-> RancherDesktop provides a single node cluster. Currently, multi-node support is not available.
-> RancherDesktop also has a Dashboard to view namespace, containers, etc.
 
-##### Validate the RancherDesktop created cluster
+> - RancherDesktop uses k3s Kubernetes distribution, developed and maintained by SUSE/Rancher.
+> - RancherDesktop provides a single node cluster. Currently, multi-node support is not available.
+> - RancherDesktop also has a Dashboard to view namespace, containers, etc.
+
+##### Verify the RancherDesktop cluster
   
-  - Launch the RancherDesktop by clicking the icon.
-  - It will take few minutes to start the cluster, progress can be seen in the GUI.
+  - Launch the RancherDesktop cluster by clicking the icon.
+  - It will take few minutes for the the cluster to be up and running, progress can be tracked in the GUI.
 
 > **Note**
-> The RancherDesktop will use the `rancher-desktop` context. 
-> In case if you where using DockerDesktop, switch context to `rancher-desktop` using kubectl.
+>
+> - The RancherDesktop will use the `rancher-desktop` context. 
+> - In case if you where using DockerDesktop, switch context to `rancher-desktop` using kubectl.
 
-  - Create the first Pod in the cluster,
+- Create the first Pod in the cluster,
      - Open a command prompt and issue `kubectl run pod1 --image=nginx`
      - verify the status using `kubectl get pods`, the status of `pod1` should be running.
 
 > **Note**
-> - RancherDesktop GUI provides port forwarding option, if we create a service we can easy forward traffic from host laptop. 
-> - I will be using the Linkerd Demo application to install and demonstrate how to access the application using port forward option later.
+> - RancherDesktop GUI provides port forwarding option, if we create a service its easy to forward traffic to and from  host laptop. 
+> - When setting up the  Linkerd demo app will demonstrate port forwarding and how to access the application using port forward from local host laptop.
 
 ![image](https://user-images.githubusercontent.com/6425536/179358930-c7528fe7-3f01-44cf-8150-a54bb3c2a2bf.png)
 
@@ -49,7 +51,7 @@ Service mesh at a very high level,
 
 ##### Validate Linkerd CLI 
 
-  - If Linkerd CLI is installed correctlly, open command prompt and issue `linkerd version` command this should display the version like in below snippet. 
+  - If Linkerd CLI is installed correctly, open command prompt and issue `linkerd version` command this should display the version like in below snippet. 
   
   ```
   Client version: stable-2.11.3
@@ -61,7 +63,8 @@ Service mesh at a very high level,
    - Using the linkerd cli, we can generate the deployment yaml, and use kubectl command to install it in the cluster.
    - Details and steps are documented in the linkerd website, refer this [link refence](https://linkerd.io/2.11/getting-started/#step-5-explore-linkerd) for more details.
    
-   - We can use below command to install linkerd service mesh, piping the linkerd install output to kubectl directly.
+  - We can use below command to install linkerd service mesh.
+  -  In this case we are piping the `linkerd install` output to kubectl directly.
    
    ```
    > linkerd install | kubectl apply -f - 
@@ -76,12 +79,11 @@ Service mesh at a very high level,
 
 ![image](https://user-images.githubusercontent.com/6425536/179358871-fd4e64b8-fadb-445b-9cbf-3c5ca9159fe8.png)   
 
-#### Inject Linkderd proxy - automatically
+#### Inject Linkderd proxy - Automatic
 
-  - To inject linkerd proxy automatically we need to create a specific `annotation` in the namespace.
-  - If hte annotation is available, creating any container on the containers will automaatically inject the proxy.
-
-- To verify, create a namepsace and create an annoation like below
+  - By creating specific annotation at the namespace, we can configure linkerd control pane to manager the proxy injection automatic.
+  
+- create a `namepsace` in the cluster and create an `annotation` **linkerd.io/inject=enabled**, shown below 
 
 ```
 # Creating an emojivoto namespace used for linkerd demo application as well
@@ -91,8 +93,8 @@ Service mesh at a very high level,
 > kubectl annotation namespace emojivoto linkerd.io/inject=enabled
 ```
 
-- With the above configuration, if we issue `kubectl run pod1 --image=nginx`, it will create a container and we can notice the proxy injected automicatlly.
-- Use `kubectl -n emojivoto get pods`, notice the Pod Ready state indicating `2/2`. We can describe the pod and see the porxy injected
+- With the above configuration, if we issue `kubectl run pod1 --image=nginx`, it will create a container and we can notice the proxy injected automatically.
+- Use `kubectl -n emojivoto get pods`, notice the Pod Ready state indicating `2/2`. We can describe the pod and see the proxy injected
 
 ![image](https://user-images.githubusercontent.com/6425536/179359481-29773ca8-277e-425e-93db-eb35a88c752f.png)
 
@@ -100,7 +102,7 @@ Service mesh at a very high level,
 
 #### Inject Linkerd proxy - manually
   
-  - In order to maunally inject, we need to use linkerd cli command.
+  - In order to manually inject, we need to use linkerd cli command.
   - Once we build the deployment descriptor yaml file, we need to pass the file to `linkerd inject` command
 
 ```
@@ -197,5 +199,3 @@ thiru/mygoapp            v1.0         ab83037c8160    57 seconds ago    linux/am
 C:\go_k8s>kubectl run goapp --image thiru/mygoapp:v1.0
 pod/goapp created
 ```
-
- 
