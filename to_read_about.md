@@ -114,4 +114,7 @@ Redhat containerized developer tooling for openshift (eco system)
  JPA `@DiscriminatorColumn()` Read [Link](https://vladmihalcea.com/the-best-way-to-map-the-discriminatorcolumn-with-jpa-and-hibernate/)
  
  
- 
+ Anguar - .prettierignore, add a pre- commit hook in the .git/hook
+ Spring java -  prettier-java maven plugin (check google java style guide) this also can be set as precommit git hook
+             - Editorconfig (.editorconfig) check the specfic website for usng this plugin in favourite browsers.
+             
