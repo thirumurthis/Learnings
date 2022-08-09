@@ -24,3 +24,5 @@ sudo pip3 install pymemecache
 
 ![image](https://user-images.githubusercontent.com/6425536/183715412-88995960-48df-489f-ad0d-85daff160cb6.png)
 
+Refer [Oracle documentation for installing memchaced on Oracle Linux](https://docs.oracle.com/cd/E17952_01/mysql-5.6-en/ha-memcached-install.html)
+
