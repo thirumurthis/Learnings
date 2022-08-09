@@ -17,3 +17,8 @@ Also refer the repo, under python, simple web scrapper code.
 Documentation for cloud internals:
 
 https://docs.oracle.com/en-us/iaas/developer-tutorials/tutorials/helidon-k8s/01oci-helidon-k8s-summary.htm
+
+Documentation:
+ - Once we create the oracle instance, we need to use the key to connect form windows putty.
+ - convert the key in specfic format. 
+check this link for more info [Oracle documenation}(https://docs.oracle.com/en/cloud/paas/event-hub-cloud/admin-guide/connecting-node-using-putty-windows.html)
