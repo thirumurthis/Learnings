@@ -45,7 +45,8 @@ sudo pip3 install pymemecache
 ![image](https://user-images.githubusercontent.com/6425536/183715412-88995960-48df-489f-ad0d-85daff160cb6.png)
 
 
-> ** NOTE:- **
+> NOTE:-
+> 
 >  - 1. Refer [Oracle documentation for installing memchaced on Oracle Linux](https://docs.oracle.com/cd/E17952_01/mysql-5.6-en/ha-memcached-install.html)
 >  
 >  - 2. In case if need to flush all the values that where cached from the memcache server, we can use below command
@@ -61,20 +62,21 @@ sudo pip3 install pymemecache
   - The code will use `request-html` module to scrap the  `https://travel.state.gov` to extract the Immigartion data for EB2 and EB3 for India category.
   - The code will dynamically create the url template `https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/{YEAR}/visa-bulletin-for-{NAME-OF-MONTH}-{YEAR}.html`
  
-> ** INFO **
+> INFO
+> 
 > - To install the pyton request-html package use below command. For more details refer [PYPI documenation](https://pypi.org/project/requests-html/)
 > 
 >    ```
 >    pip install request-html
 >    ```
 
+#### About Code
+  - The python code uses HTTP Server to handle GET requests. This code is to demonstrate the use of cache and scarpping website.
+  - The `memcached` server should be started and running during the execution of the below python app.
+  - When GET request is recevied, the code checks the memcache for the key `YYYY-MM`, if value exits it is served as response.
+  - The code scraps the website for specific data set, and stores it in cache with TTL (expiration seconds) for 1 day.
 
-- The Python code uses HTTP Server to handle GET requests.
-- This is not production ready code, used for demonstration purpose only.
-
-#### About the code
-  - 
-
+- Create a file app.y with the below content.
 ```py
 import os
 from requests_html import HTML, HTMLSession
@@ -84,6 +86,7 @@ import calendar
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pymemcache.client.base import Client
+import ast
 
 PORT_NUMBER = int(os.environ.get('PORT', 8084))
 
@@ -249,13 +252,13 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
        currentMonth = toDate.month
        currentYear = toDate.year
        monthName = calendar.month_name
-       cacheClient = Client('localshot')
+       cacheClient = Client('localhost')
 
        isCacheResult = cacheClient.get(f'{currentYear}-{currentMonth}')
 
        if isCacheResult :
            # we need to decode since the returned value is byte type
-           return str(isCacheResult,"utf-8")
+           return isCacheResult
 
        key = ''
        value=''
@@ -312,11 +315,22 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
         outMessage = testHTTPServer_RequestHandler.getWebContent()
         #print(type(outMessage))
         #print (outMessage)
-        message = ''
+        message = ""
         json_data = testHTTPServer_RequestHandler.parseToJson(outMessage, False)
         #print(json_data)
-        #Python pretty print JSON
-        message = json.dumps(json_data, indent=4)
+        if json_data and not isinstance(json_data,bytes):
+            #Python pretty print JSON
+            message = json.dumps(json_data, indent=4)
+        
+        # below condition to convert the bytes type since cache value is of this type
+        if json_data and  isinstance(json_data,bytes):
+           # convert the string type of dictionary value to dictonary type
+           dict_str = json_data.decode("utf-8").replace("'",'"')
+           # String converted to dict type, using ast 
+           dict_type_val = ast.literal_eval(dict_str)
+           # pretty the json value back
+           message = json.dumps(dict_type_val, indent=4)
+
         message = str(message)
         #print(f"message :- {message}")
         #message = "Hello world!"
@@ -336,4 +350,45 @@ def run():
   
 run()
 ```
+
+> Note:
+>  To setup the memcache as Windows refer to [the memcache documentation](https://docs.kony.com/konylibrary/konyfabric/kony_fabric_manual_install_guide/Content/Install_Memcached_Server.htm).
+>  Reference to execute specific port [1](https://www.coretechnologies.com/products/AlwaysUp/Apps/RunMemcachedAsAService.html)
+>  In Windows 10, edited the registry using `regedit` and pass the additional argument `-m` for memory and `-p` for port.
+
+
+### Output 
+
+#### Executing the python code
+
+- The Oracle Linux instance installed with python, we can use below command to run the process in background 
+
+```
+$ nohup python app.py &
+```
+
+- Since the Oracle instance is accessible from the internet, with the IP address we can access the Instance to serve the response
+- The url in this case is `http://192.9.244.94:8084/`, the response will be a JSON pay load looks like below
+```
+{
+    " 1": {
+        "title": "A. FINAL ACTION DATES FOR\u00a0EMPLOYMENT-BASED\u00a0PREFERENCE CASES",
+        "Employment- based": "INDIA",
+        "1st": "C",
+        "2nd": "01DEC14",
+        "3rd": "15FEB12"
+    },
+    " 2": {
+        "title": "B. DATES FOR FILING OF EMPLOYMENT-BASED\u00a0VISA\u00a0APPLICATIONS",
+        "Employment- based": "INDIA",
+        "1st": "C",
+        "2nd": "01JAN15",
+        "3rd": "22FEB12"
+    },
+    "timestamp": "2022-08-09 19:17:47.274246"
+}
+```
+#### Snapshot
+![image](https://user-images.githubusercontent.com/6425536/183776111-968ed252-483d-4296-9664-70c04b9cb3d2.png)
+
 
