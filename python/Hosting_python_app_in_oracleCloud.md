@@ -1,8 +1,8 @@
-In this blog will demonstrate web scrapping using **Python** and **memcache** to cache specific data for specific duration.
+In this blog will demonstrate web scraping using **Python**. Also used **memcache** to cache specific data for a duration of 1 day.
 
-Here I have used Oracle Cloud to deploy the Python and access the instance from internet. This steps can be done in the local system as well.
+I used Oracle Cloud to deploy the application and the instance is accessible from internet. This steps can be done in the local machine as well.
 
-Refer the documentation for creating the Oracle instance at the [Oracle Documentation](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/launchinginstance.htm)
+The Oracle Cloud setup is not detailed here, for setting up the Oracle instance refer [Oracle Documentation](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/launchinginstance.htm).
 - Briefly once the instance is created from the Oracle Web UI interface
   - To access the key using Putty we need to setup the SSH key.
   - Enable the firewall to access the instance from the Internet.
@@ -10,7 +10,7 @@ Refer the documentation for creating the Oracle instance at the [Oracle Document
 
 ### Install memcache service in Oracle Linux 
 
-Use below command to install the `memcached` server
+- To install the `memcached` server in the Linux machine use below command
 
 ```
 sudo dnf install memcached
@@ -19,7 +19,7 @@ sudo dnf install memcached
 ![image](https://user-images.githubusercontent.com/6425536/183714745-ff5aed09-6399-4537-b7dc-b16f70da806b.png)
 
 
-- Now we need to start the memcache service, intially the service will be disabled, this can be checked with below command
+- Now we need to start the memcache service, initially the service will be disabled, this can be checked with below command
 
 ```
 sudo systemctl status memcached
@@ -72,7 +72,7 @@ sudo pip3 install pymemecache
 >    pip install request-html
 >    ```
 
-#### About Code
+#### Info about the code
 
   - The Python code uses HTTP Server to handle GET requests. This code is to demonstrate the use of cache and scarping website.
   - The `memcached` server should be started and running during the execution of the below Python app.
@@ -80,7 +80,6 @@ sudo pip3 install pymemecache
   - The code scraps the website for specific data set, and stores it in cache with TTL (expiration seconds) for 1 day.
 
 - Create a file app.y with the below content.
-
 
 ```py
 import os
@@ -96,7 +95,7 @@ import ast
 PORT_NUMBER = int(os.environ.get('PORT', 8084))
 
 ##########
-#### POC to scrap the WEBsite and get info (visabulletin)
+#### POC to scrap the Website and get info (visabulletin)
 #### This is not a perfect code, requires improvement, possibly tunning.
 #### challenges, calling a funtion within a function where i had to use @staticmethod
 #### The web link http://localhost:8084 - renders the raw html non formatted string
@@ -223,8 +222,6 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
               print (requiredInfo)
             
          tmp = str(firstTd.text).replace('\n',' ')
-         if toDebug :
-           print (f">>>>> Found Employment - {tmp}")
          for tr in trs:
             # we use only till rowcount 3
             rowCnt = rowCnt+1 
@@ -243,10 +240,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
             if printTableInfo == True :
               print (output)
             output= ''
-            #print(">>>>>>>>>>>>>>>> tr end <<<<<<<<<<<")
-            #print(tr.text, end="|")
 
-         #print(f">>> {requiredInfo}")
          outputList.append(requiredInfo)
     return outputList
 
