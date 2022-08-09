@@ -1,6 +1,4 @@
-
-
-In this blog will demonstrate web scrapping using python and memcache to cache specific data for specific duration.
+In this blog will demonstrate web scrapping using **Python** and **memcache** to cache specific data for specific duration.
 
 Here I have used Oracle Cloud to deploy the Python and access the instance from internet. This steps can be done in the local system as well.
 
@@ -10,7 +8,7 @@ Refer the documentation for creating the Oracle instance at the [Oracle Document
   - Enable the firewall to access the instance from the Internet.
 
 
-### Install memcache in Oracle Linux 
+### Install memcache service in Oracle Linux 
 
 Use below command to install the `memcached` server
 
@@ -29,14 +27,18 @@ sudo systemctl status memcached
 
 ![image](https://user-images.githubusercontent.com/6425536/183717131-ed2287c1-ae62-4b7c-afaa-fdcb104c86cc.png)
 
-- Start the service using `sudo systemctl start memcached` and check the status once again using above command. Refer the snapshot
+- Start the service using below command and check the status once again using above command. Refer the snapshot
+
+```
+sudo systemctl start memcached
+```
 
 ![image](https://user-images.githubusercontent.com/6425536/183717819-2b69acb7-8ec9-4db3-a47a-0eddce1ea34b.png)
 
 
-### Install the python memcached client package using pip
+### Install the memcache client in Python
 
-- Install the python package `pymemcache` using below command. This will enables us to use the client to access the memcache
+- To install the python package `pymemcache` using below command. This will package enables us to use the client to access the memcache
 
 ```
 sudo pip3 install pymemecache
@@ -57,7 +59,7 @@ sudo pip3 install pymemecache
 >    ![image](https://user-images.githubusercontent.com/6425536/183742561-e63516db-5f1d-4871-b3ff-29f392b27b12.png)
 
 
-### Python code that will scrap the web site
+### Python code to scrap a website
 
   - The code will use `request-html` module to scrap the  `https://travel.state.gov` to extract the Immigartion data for EB2 and EB3 for India category.
   - The code will dynamically create the url template `https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/{YEAR}/visa-bulletin-for-{NAME-OF-MONTH}-{YEAR}.html`
@@ -71,12 +73,15 @@ sudo pip3 install pymemecache
 >    ```
 
 #### About Code
-  - The python code uses HTTP Server to handle GET requests. This code is to demonstrate the use of cache and scarpping website.
-  - The `memcached` server should be started and running during the execution of the below python app.
-  - When GET request is recevied, the code checks the memcache for the key `YYYY-MM`, if value exits it is served as response.
+
+  - The Python code uses HTTP Server to handle GET requests. This code is to demonstrate the use of cache and scarping website.
+  - The `memcached` server should be started and running during the execution of the below Python app.
+  - When GET request is received, the code checks the memcache for the key `YYYY-MM`, if value exits it is served as response.
   - The code scraps the website for specific data set, and stores it in cache with TTL (expiration seconds) for 1 day.
 
 - Create a file app.y with the below content.
+
+
 ```py
 import os
 from requests_html import HTML, HTMLSession
@@ -349,17 +354,19 @@ def run():
   httpd.serve_forever()
   
 run()
+
 ```
 
 > Note:
+>
 >  To setup the memcache as Windows refer to [the memcache documentation](https://docs.kony.com/konylibrary/konyfabric/kony_fabric_manual_install_guide/Content/Install_Memcached_Server.htm).
+>
 >  Reference to execute specific port [1](https://www.coretechnologies.com/products/AlwaysUp/Apps/RunMemcachedAsAService.html)
->  In Windows 10, edited the registry using `regedit` and pass the additional argument `-m` for memory and `-p` for port.
+>
+>  In Windows 10, edited the registry for memcache using `regedit` and included the additional argument `-m` for memory and `-p` for port.
 
 
-### Output 
-
-#### Executing the python code
+### Executing the Python code
 
 - The Oracle Linux instance installed with python, we can use below command to run the process in background 
 
@@ -367,8 +374,11 @@ run()
 $ nohup python app.py &
 ```
 
-- Since the Oracle instance is accessible from the internet, with the IP address we can access the Instance to serve the response
-- The url in this case is `http://192.9.244.94:8084/`, the response will be a JSON pay load looks like below
+### Output 
+
+- Since the Oracle instance is accessible via internet, with the IP address I can access the instance to serve the response
+- The URL in this case is `http://192.9.244.94:8084/`, the response is JSON pay load looks like below
+
 ```
 {
     " 1": {
@@ -388,7 +398,10 @@ $ nohup python app.py &
     "timestamp": "2022-08-09 19:17:47.274246"
 }
 ```
+
 #### Snapshot
 ![image](https://user-images.githubusercontent.com/6425536/183776111-968ed252-483d-4296-9664-70c04b9cb3d2.png)
 
+#### Points to note
 
+ - The web scrap in the python code is mostly hard coded, the code is not more generic.
