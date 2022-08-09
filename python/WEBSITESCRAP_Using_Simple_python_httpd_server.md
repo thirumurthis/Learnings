@@ -3,6 +3,8 @@ Store below content in to app.py
 
 exeucting the `python app.py`, connect to the localhost.
 
+configure memcache refer this [link](https://github.com/thirumurthis/Learnings/blob/master/OracleCloud/Oracle_python_memchache.md)
+
 use for package
 ```
 pip install requests-html
@@ -16,6 +18,8 @@ from datetime import datetime
 import calendar
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pymemcache.client.base import Client
+
 PORT_NUMBER = int(os.environ.get('PORT', 8084))
 
 ##########
@@ -44,7 +48,7 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
            cntr = 0;
            for ptag in ptags:
               cntr = cntr +1
-              if cntr ==13 :
+              if cntr ==14 :
                  tmptxt = str(ptag.text).replace('\n',' ')
                  #print(tmptxt)
         return tmptxt
@@ -175,6 +179,19 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
 
   @staticmethod
   def parseToJson(resultList, debug = False) : 
+
+       toDate = date.today()
+       currentMonth = toDate.month
+       currentYear = toDate.year
+       monthName = calendar.month_name
+       cacheClient = Client('localshot')
+
+       isCacheResult = cacheClient.get(f'{currentYear}-{currentMonth}')
+
+       if isCacheResult :
+           # we need to decode since the returned value is byte type
+           return str(isCacheResult,"utf-8")
+
        key = ''
        value=''
        iter=0
@@ -183,7 +200,8 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
        if debug:
           print(f"resultList input := {resultList}")
        for item in resultList:
-         print(f"processing ... {item}")
+         if debug :
+            print(f"processing ... {item}")
          temp = {}
          codedItem = item.split("##")
          if debug:
@@ -204,6 +222,8 @@ class testHTTPServer_RequestHandler(BaseHTTPRequestHandler):
                 temp[key]=value.strip()
          result[iter] = temp
        result['timestamp']= str(datetime.now())
+       # cache only for 1 day
+       cacheClient.set(f'{currentYear}-{currentMonth}',result,86400)
        return result
  
   # GET
@@ -256,20 +276,20 @@ run()
 
 ```json
 {
- 1: {
-    "title": "A. FINAL ACTION DATES FOR EMPLOYMENT-BASED PREFERENCE CASES",
-    "Employment- based": "INDIA",
-    "1st": "C",
-    "2nd": "01DEC14",
-    "3rd": "15JAN12"
+ '1': {
+title: "A. FINAL ACTION DATES FOR EMPLOYMENT-BASED PREFERENCE CASES",
+Employment- based: "INDIA",
+1st: "C",
+2nd: "01DEC14",
+3rd: "15FEB12"
 },
- 2: {
-    "title": "B. DATES FOR FILING OF EMPLOYMENT-BASED VISA APPLICATIONS",
-    "Employment- based": "INDIA",
-    "1st": "C",
-    "2nd": "01JAN15",
-    "3rd": "22JAN12"
+ '2': {
+title: "B. DATES FOR FILING OF EMPLOYMENT-BASED VISA APPLICATIONS",
+Employment- based: "INDIA",
+1st: "C",
+2nd: "01JAN15",
+3rd: "22FEB12"
 },
-  "timestamp": "2022-07-03 12:41:11.604659"
+timestamp: "2022-08-09 19:17:47.274246"
 }
 ```
