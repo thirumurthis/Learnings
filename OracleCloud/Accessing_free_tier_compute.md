@@ -21,5 +21,5 @@ https://docs.oracle.com/en-us/iaas/developer-tutorials/tutorials/helidon-k8s/01o
 Documentation:
  - Once we create the oracle instance, we need to use the key to connect form windows putty.
  - convert the key in specfic format. 
- - default user name is ocp
+ - default user name is `opc`
  - check this link for more info [Oracle documenation}(https://docs.oracle.com/en/cloud/paas/event-hub-cloud/admin-guide/connecting-node-using-putty-windows.html)
