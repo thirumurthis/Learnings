@@ -38,3 +38,11 @@ sudo systemctl status memcached
 
 ![image](https://user-images.githubusercontent.com/6425536/183717819-2b69acb7-8ec9-4db3-a47a-0eddce1ea34b.png)
 
+
+### if we wanted to flush all the values from the cache, we can use below command
+
+```
+$ echo "flush_all" > nc localhost 11211
+```
+
+![image](https://user-images.githubusercontent.com/6425536/183742561-e63516db-5f1d-4871-b3ff-29f392b27b12.png)
