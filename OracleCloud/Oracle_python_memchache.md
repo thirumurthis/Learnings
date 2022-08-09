@@ -26,3 +26,15 @@ sudo pip3 install pymemecache
 
 Refer [Oracle documentation for installing memchaced on Oracle Linux](https://docs.oracle.com/cd/E17952_01/mysql-5.6-en/ha-memcached-install.html)
 
+- Now we need to start the memcache service, intially the service will be disabled, this can be checked with below command
+
+```
+sudo systemctl status memcached
+```
+
+![image](https://user-images.githubusercontent.com/6425536/183717131-ed2287c1-ae62-4b7c-afaa-fdcb104c86cc.png)
+
+- Start the service using `sudo systemctl start memcached` and check the status once again using above command. Refer the snapshot
+
+![image](https://user-images.githubusercontent.com/6425536/183717819-2b69acb7-8ec9-4db3-a47a-0eddce1ea34b.png)
+
