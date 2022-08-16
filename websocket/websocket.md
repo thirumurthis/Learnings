@@ -78,7 +78,16 @@ Reference for below [IETF](https://tools.ietf.org/id/draft-ietf-hybi-thewebsocke
   $ websocketd --port 8080 --devconsole ./count.sh
   -- where count.sh contains simple script.
  ```
- 
+ - count.sh file
+ ```sh
+ #!/bin/bash
+
+for COUNT in $(seq 1 20); do
+   echo $COUNT
+   sleep 1 
+done
+```
+
  check the tutorial at, [gitlab.com](https://github.com/joewalnes/websocketd/wiki/Ten-second-tutorial)
  
  #### Spring boot web-socket chat application can also be created.
