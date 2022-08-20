@@ -1,6 +1,6 @@
-## Connecting to WebSocket endoint created using websocketd
+## Connecting to WebSocket endpoint created using websocketd
 
-In this blog will demonstrate to expose Websocket endpoint using Websocketd. 
+In this blog will provide a brief overview of Websocket and how to create Websocket endpoint using Websocketd.
 
 ### What is Websocket?
 
@@ -16,29 +16,31 @@ In this blog will demonstrate to expose Websocket endpoint using Websocketd.
     - To establish a WebSocket connection, the client sends a WebSocket handshake request, for which the server returns a WebSocket handshake response
     - The handshake starts with an HTTP request/response, allowing servers to handle HTTP connections as well as WebSocket connections on the same port. Once the connection is established, communication switches to a bidirectional binary protocol which does not conform to the HTTP protocol. 
 
+Recommend to understand the Websocket communication protocol by referring to the (wiki)[https://en.wikipedia.org/wiki/WebSocket] and other sources.
+
 ### What is websocketd?
 
  - Websocketd is websocket daemon service with which we can run Websocket server to create WebSocket endpoint.
  - Any program that can be executed from command line, we can expose the output as a WebSocket endpoint.
  - If a program/process prints the message contents with new line char to STDOUT, the output can be sent as a WebSocket message to browser using `websocketd`.
  
-#### Installation:
+#### Installing websocketd
 
  - Download the executable from the link http://websocketd.com/
 
 In below demonstration, the `websocketd` is used to run the shell script `command.sh`.
-  - The `command.sh` script access the API (https://www.randomnumberapi.com/) using cURL command. This API generates a radom number. 
+  - The `command.sh` script access the API (https://www.randomnumberapi.com/) using cURL command. This API generates a random number. 
   - This script executes the cURL command in while loop and pause for a second. 
   - The API response is enclosed with `[]`, inorder to remove these brackets `sed` command is used.
 
-#### smoothie.js library
+#### smoothie.js library for time-series chart
 
  - The `smoothie.js` library placed under js, this is a Javascript library used to plot time series plot, which will look like real-time chart.
  - The `smoothie.js` script needs to be included as a script in the `index.html`, so we can plot the time-series chart. 
 
 #### websocketd exposes both websocket endpoint and http endpoint
 
- - When we execute the `websocketd` command the server will be able to serve the  `index.html` file with the http url endpoint.
+ - When we execute the `websocketd` command the server will be able to serve the `index.html` file with the http url endpoint.
 
 > Note:
 >
@@ -88,7 +90,6 @@ done
   </head>
   <body>
 
-    <!-- <div id="randNum"></div> -->
     <canvas id="mycanvas" width="400" height="100"></canvas>
     <script type="text/javascript" src="js/smoothie.js"></script>
 
@@ -117,13 +118,12 @@ done
         document.body.style.backgroundColor = null;
       };
       ws.onmessage = function(event) {
-        //document.getElementById('randNum').textContent = event.data;
         setInterval(function() {
         line1.append(new Date().getTime(), event.data);
         }, 1000);
         smoothie.addTimeSeries(line1);
-        //Below adds color to the smoothie chart
-        //smoothie.addTimeSeries(line1,{ strokeStyle:'rgb(0, 255, 0)', fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:2 });
+       //Below adds color to the smoothie chart
+       //smoothie.addTimeSeries(line1,{ strokeStyle:'rgb(0, 255, 0)', fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:2 });
       };
     </script>
     
@@ -131,7 +131,7 @@ done
 </html>
 ```
 
-### Executing the command.sh script in websocketd
+### Output of websocketd process
 
 - Make sure to navigate to the directory where the `index.html` and `command.sh` file exists.
 - Issue below command.
@@ -140,7 +140,7 @@ done
 $ websocketd --port 8084 --staticdir=. sh command.sh
 ```
 
-#### Accessing the exposed HTTP endpoint using the Browser as client
+#### Accessing the exposed HTTP endpoint using Browser
 
 Below is the `websocketd` output, which displays the endpoint url that can be used from browser to access
 
@@ -148,15 +148,15 @@ Below is the `websocketd` output, which displays the endpoint url that can be us
 
 Now we should be able to connect to index.html using `http://localhost:8084/index.html`
 
-- Below is how the output looks when connected using browser
+- Output when connected to http URL using browser
 
 ![image](https://user-images.githubusercontent.com/6425536/185733066-15e082e7-fb43-47e9-a777-d1a1336d877b.png)
 
-#### Accessign the Websocket (WS) endpoing using Nodejs websocket client
+#### Accessing the Websocket (WS) endpoing using Nodejs websocket client
 
 ##### Connecting using Nodejs websocket client
 
-Pre-requsites:
+Prerequisites:
    - NodeJs already installed and able to use `npm install` command in the system.
    
 - Use below command to install websocket library
