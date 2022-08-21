@@ -152,6 +152,10 @@ Now we should be able to connect to index.html using `http://localhost:8084/inde
 
 ![image](https://user-images.githubusercontent.com/6425536/185733066-15e082e7-fb43-47e9-a777-d1a1336d877b.png)
 
+
+![browser-output](https://user-images.githubusercontent.com/6425536/185775648-8b338270-9b30-4abb-aa4c-9d3286d8513e.gif)
+
+
 #### Accessing the Websocket (WS) endpoing using Nodejs websocket client
 
 ##### Connecting using Nodejs websocket client
