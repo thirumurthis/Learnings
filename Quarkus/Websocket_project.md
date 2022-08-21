@@ -207,6 +207,7 @@ After creating the user, then sending mesage will be broadcast when message rece
 ![image](https://user-images.githubusercontent.com/6425536/185776285-bc207a06-ec97-458b-8d2e-1450c977f6b3.png)
 
 - Using the browser Dev Console we can use below command in the Console
+  - Open the browser, type the `about:blank` in the address bar, and then use the Dev Console
 
 ```
 let ws = new WebSocket("ws://localhost:8080/start-websocket/user03
