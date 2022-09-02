@@ -1,4 +1,9 @@
-### Below is the way to create websocket using the `Quarkus`.
+### What is Quarkus?
+  - Quarkus is kubernetes native java famework. This framework helps optimizing java for containers.
+  - Quarkus supports many framework like Spring Boot, RestEasy, etc.
+  - The project structure can be created using maven plugin, CLI or code.quarkus.io. The documentation explains the structure of each example program.
+
+### Steps to create websocket project using the `Quarkus`.
 
 1. Select websocket platform from the `https://code.quarkus.io`. This is similar to start.spring.io
 2. Download the project.
@@ -192,6 +197,9 @@ public class StartWebSocket {
 </html>
 ```
 
+### Information about the docker folder
+  - This folder has different Dockerfile, which are optimized to support container. Based on requirement we can use the specific Dockerfile for image creation.
+
 ### Output on how to connect to the WebSocket connection
 
 - Connect using the browser
@@ -203,10 +211,12 @@ Using the command `quarkus dev`
 Opened two browser and add the user01 and user02 
 ![image](https://user-images.githubusercontent.com/6425536/185776254-83cb1ee2-56db-4da0-8773-eb3fc11feb6e.png)
 
-After creating the user, then sending mesage will be broadcast when message received.
+After creating the user, then sending message will be broadcast when message received.
 ![image](https://user-images.githubusercontent.com/6425536/185776285-bc207a06-ec97-458b-8d2e-1450c977f6b3.png)
 
-- Using the browser Dev Console we can use below command in the Console
+#### Accessing websocket from browser
+
+- Using the browser Dev console we can use below command in the Console
   - Open the browser, type the `about:blank` in the address bar, and then use the Dev Console
 
 ```
