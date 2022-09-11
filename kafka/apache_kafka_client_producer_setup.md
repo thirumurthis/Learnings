@@ -1,3 +1,14 @@
+### Topic:
+  - Kafka client dependencies
+  - Kafka simple producer usage 
+  - Kafka simple producer with `CallBack` usage
+
+#### StickyParition from the producer
+  - In the below kafka simple producer, if we use for loop to send message all the messages ends up in the same partition.
+  - This is because the producer has the performance mechanism called stickyparition which when messages sent by producer with short window of time, all message ends up in the same parition, when the key is null in the producer record. 
+  - If we introduce a delay `Thread.sleep()` in the loop, we would see the messages are sent to different partitions.
+  - The configuration printed in the log will display the partition.class which lists the `DefaultParitioner`, the code itself a `StickyParitioner` in the code.
+
 - The pom.xml that requires dependency
   - If we are setting up the multi-module maven project check the https://github.com/thirumurthis/learnings/maven/ path for instructions.
  
