@@ -1,4 +1,4 @@
-###Apache kafka
+### Apache kafka
 
 - What is kafka
 - Producer/consumer
@@ -193,7 +193,7 @@ $ kafka-storage.sh random-uuid >> ./clusterId.txt
 $ kafka-storage.sh format -t $(cat clusterId.txt) -c ~/kafka_2.13-3.2.1/config/kraft/server.properties
 
 # starting the cluster
-kafka-server-start.sh ~/kafka_2.13-3.0.0/config/kraft/server.properties
+kafka-server-start.sh ~/kafka_2.13-3.2.1/config/kraft/server.properties
 ```
 
 ### Using Kafka CLI for topic management
