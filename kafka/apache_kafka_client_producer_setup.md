@@ -37,6 +37,21 @@
    - When the WSL2 Kafka cluster is setup, the Windows might not be able to access the Kafka cluster running in WSL2
    - We need to identify the ip address and execute the command
 
+
+- Creating topic using below command, using kafka CLI (refer the [link](github.com/thirumurthis/kafka/) notes for setting up cluster in WSL2)
+
+```
+kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --create --topic first-demo-topic --partitions 3 --replication-factor 1
+```
+
+- Creating a console consumer
+
+```
+kafka-console-consumer.sh --bootstrap.server 127.0.0.1:9092 --topic first-demo-topic`
+```
+
+- command to associate the port to the Ip address of the WSL2
+
 ```
 > netsh interface portproxy add v4tov4 listenport=9092 listenaddress=0.0.0.0 connectport=9092 connectaddress=172.25.191.70
 ```
