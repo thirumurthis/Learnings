@@ -2,6 +2,7 @@
   - Kafka client dependencies
   - Kafka simple producer usage 
   - Kafka simple producer with `CallBack` usage
+  - Kafaka producer to set key to the producer, the ProducerRecord Object has override method with key which needs to be set for hte key.
 
 #### StickyPartition from the producer
   - In the below kafka simple producer, if we use for loop to send message all the messages ends up in the same partition.
