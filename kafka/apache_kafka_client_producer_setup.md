@@ -10,7 +10,7 @@
   - The configuration printed in the log will display the partition.class which lists the `DefaultParitioner`, the code itself a `StickyParitioner` in the code.
 
 - The pom.xml that requires dependency
-  - If we are setting up the multi-module maven project check the https://github.com/thirumurthis/learnings/maven/ path for instructions.
+  - If we are setting up the multi-module maven project check the [link](https://github.com/thirumurthis/learnings/maven/) path for instructions.
  
 ```xml
   <dependencies>
