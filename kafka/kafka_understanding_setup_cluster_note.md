@@ -183,18 +183,26 @@ $ tar xzvf kafka_2.13-3.2.1.tgz
 ```
 - Before starting the kafka server in Kraft mode (without Zookeeper) we need to create the cluster and format the storage
 
-Refer: https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-windows-without-zookeeper-kraft-mode
+Refer: [Conduktor documenataion](https://www.conduktor.io/kafka/how-to-install-apache-kafka-on-windows-without-zookeeper-kraft-mode)
 
+- Create cluster
 ```
 # below command creates the cluster with randmon id
 $ kafka-storage.sh random-uuid >> ./clusterId.txt
-
+```
+ - Format the logs
+```
 # format the storage before starting the cluster
 $ kafka-storage.sh format -t $(cat clusterId.txt) -c ~/kafka_2.13-3.2.1/config/kraft/server.properties
-
-# starting the cluster
-kafka-server-start.sh ~/kafka_2.13-3.2.1/config/kraft/server.properties
 ```
+
+- Start the cluster using KRAFT mode
+```
+# starting the cluster
+$ kafka-server-start.sh ~/kafka_2.13-3.2.1/config/kraft/server.properties
+```
+- Default logs in the WSL2 for kraft is specified in the `log.dir` properties in the `conf/kraft/server.properties` file, in this case /tmp/kraft-combined-logs
+  - To identify the cluster and broker id, we can use the meta.properties under the `log.dir` path. This file will contain the broker id and cluster id.
 
 ### Using Kafka CLI for topic management
 
