@@ -31,8 +31,8 @@
     - Installation steps:
        - We can install `Windows Terminal` directly from the Microsoft Store, just search and install it.
        - To install it manually, download the bundle `WindowsTerminal*.msixbundle` from the GitHub release page. Refer the [GitHub terminal project link](https://github.com/microsoft/terminal)
-           - Issue the command `Add-AppxPackage <downloaded-msixbundle>` 
-       - Windows Terminal installation requires `VC++ v14 Desktop Framework Package`, install that separately.
+          - Issue the command `Add-AppxPackage <downloaded-msixbundle>` 
+          - Manual installation requires `VC++ v14 Desktop Framework Package` to be installed separately
 
 ### Create a profile for Git Bash in Windows Terminal
   
@@ -46,9 +46,9 @@
 - Below snapshot displays the values I used to create the profile.
    - We need to provide the path of the Git Bash.exe
    - We can add the path to the windows icon if needed
-   - I unchecked the source path, which was selected by default. I wanted the git bash to point to userprofile path
-   - Leave the title as blank, if needed you can add a value
-   - Click Save to save the profile
+   - I unchecked the source path, which was selected by default. In my case I wanted the git bash to point to userprofile path when opened in Windows Terminal
+   - I left the title blank, other options also blank
+   - Click Save
 
 ![image](https://user-images.githubusercontent.com/6425536/192128107-7b652bb4-dc1c-44b1-a5d5-dcec3d50eb34.png)
 
@@ -56,14 +56,15 @@
 
 ![image](https://user-images.githubusercontent.com/6425536/192128283-3cbe7897-a182-4f74-a0e8-8cee2df1f4d8.png)
 
- - Now with the Git Bash opened in Windows terminal lets try to see which context is set to default in `kubeconfig`.
-- To list the context use `$ kubectl config get-contexts`, in my case I had multiple context. Refer snapshot below
+ - Once the Git Bash is opened in Windows terminal, lets try `kubectl` command to list the context from `kubeconfig`.
+- Command to list the context is `kubectl config get-contexts`, I had multiple context, refer snapshot below
 
 ![image](https://user-images.githubusercontent.com/6425536/192130241-0b84b744-8407-4080-8299-dba2ce4a0a17.png)
 
 
 ### Instruction to set Kubectl alias and auto completion feature 
 
+- I am setting up the kubectl alias as k
  - Navigate to `C:\Program Files\Git\etc\profile.d` in windows
  - Open the `alias.sh` file and update the below contents to the bottom of the file
 
@@ -75,7 +76,7 @@ complete -o default -F __start_kubectl k
 
 - Alternatively we can create a `.bashrc` file under the `C:/Users/<user-name>/` (open cmd prompt and use the command `echo %USERPROFILE%` to display the current user path this where we need to create the .bashrc file and copy paste the content if the file doesn't exists) 
 
-### To validate if the alias and auto completion works
+### Validate kubectl alias and auto completion works
 
  - Open up Windows Terminal, click `+` near the tabs on top, select the GitBash Profile
  - Type `k -n kube-s` and hit tab, you should see the namespace getting auto-filled in this case `kube-system`.
