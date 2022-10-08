@@ -1,4 +1,4 @@
-## Parsing part of the JSON using java without mapping to any POJO
+## Parsing part of the JSON using java without mapping to POJO 
 
 - When working with JSON objects in Java, there where scenarios where I need only a part of the JSON. Also don't create dedicated POJO's to map without deserializing.
 - For example, say if we are using third party API's which returns JSON repsonse and if our requirement is to only use part of that JSON.
@@ -12,18 +12,22 @@
           "version" : "1.0",
           "description" : "simple app demo"
           },
-   "request" : [
+   "request" : {
+        "status" : "ACCEPTED"
+     },   
+   "details" : [
           {"endpoint" : "http://domain.com/api/v1/user"},
           {"trackId" : "1234554321" },
-          {"status" : "ACCEPTED"}
-   ]
+   ]   
 }
 ```
-
+  - To fetch the status we can represent the Json path like `request.status`. 
+     -  In JsonPath library, the path can be represented `$.request.status`
+     -  In Fasterxml library, the path can be represented `/request/status`
 
 - In this blog have demonstrated how to parse part of the JSON using two types java Json parsing library
-   - 1. Jayway Jsonpath
-   - 2. Fasterxml Jackson
+   - 1. Jayway Jsonpath - [Documentation](https://github.com/json-path/JsonPath)
+   - 2. Fasterxml Jackson - [Documentation](https://github.com/FasterXML/jackson)
 
 ### 1. Using `Jayway Jsonpath` library to fetch part of the json value provided the path till the key property
 
