@@ -6,7 +6,7 @@ The package main is a special package that make your code into a compile into an
 
 Since most of the package are inside other package we need to Import it, in the below code we will be import fmt package.
 
-```
+```go
 package main
 
 import (
@@ -77,7 +77,7 @@ Float type in Go:
 
    float32, float64
 
-```
+```go
 package main
 
 import (
@@ -128,7 +128,7 @@ func main() {
 
 if and if-else 
 
-```
+```go
     a := 10
 	if a > 5 {
 		fmt.Println("X is bigger ")
@@ -143,7 +143,7 @@ if and if-else
 
 if can be used to intialize in the condition as well
 
-```
+```go
    a := 10.0
    b := 25.0
    
@@ -154,7 +154,7 @@ if can be used to intialize in the condition as well
 
 #### switch case statement
 
-```
+```go
 n := 2
 
 switch n {
@@ -169,7 +169,7 @@ switch n {
 
 Switch with conditional:
 
-```
+```go
 n := 15
 
 switch{
@@ -185,7 +185,7 @@ switch{
 ```
 #### for loop
 
-```
+```go
 
 for i :=0; i< 3; i++ {
    fmt.Println(i)
@@ -199,7 +199,7 @@ String is immutable in Go as well.
 
 to print the length or byte, we can use len which is like python
 
-```
+```go
 title := "this is book title"
 
 fmt.Println(title)
@@ -216,7 +216,7 @@ title[0] = 116 type uint8
 
 ##### slice in string  
 
-```
+```go
 	fmt.Println(title[:4])
 	fmt.Println(title[4:])
     
@@ -227,7 +227,8 @@ title[0] = 116 type uint8
 
 ##### concatenation
  - using + 
-```
+
+```go
 fmt.Println("TEXT "+ title[4:])
 
 ### output 
@@ -236,7 +237,7 @@ TEXT  is book title
 
 ##### Unicode can work , we can also use raw string using `
 
-```
+```go
 test := `
         This will be for 
         testing the sample
@@ -248,7 +249,7 @@ fmt.Println(test)
 
 #### Slice - this is the List or Array in the Go
 
-```
+```go
 items := []string{"one","two","three"}  //zero indexed like java
 
 fmt.Println(len(items)) // lenght of the array
@@ -288,7 +289,7 @@ for i:= range items {
  
 ### Map
 
-```
+```go
 	vehicle := map[string]int16{
 		"Auto":    3,
 		"Bicycle": 2,
@@ -320,7 +321,7 @@ Not exists
 
  - delete the values 
  
- ```
+ ```go
  
  	vehicle := map[string]int16{
 		"Auto":    3,
@@ -345,7 +346,7 @@ Not exists
 
 - iterating 
 
-```
+```go
 
 for key := range vehicles {
    fmt.Println(key) //prints the index
@@ -359,7 +360,7 @@ for key,value := range vehicles {
 
 ### Define a function
 
-```
+```go
 func main (){
   val := add(1,2)
   fmt.Println(val)
@@ -372,7 +373,7 @@ func add(a int, b int) int {
 
 - returning more than one value in function
 
-```
+```go
 func main () {
    div, mod := divmod(7,2)
    fmt.Printf("div=%d, mod=%d", div, mod)
@@ -398,7 +399,7 @@ func double (values []int , idx int){
 
 - Passing pointer in go like C, but in Go this is much safer
 
-```
+```go
 func main (){
   val := 100
   doublePtr(&val)
@@ -412,7 +413,7 @@ func doublePtr(n *int){
 
 ##### Go function can return more than one values which is used to return errors
 
-```
+```go
 func main (){
 
    s1, err := sqrt(4.0)
@@ -444,7 +445,7 @@ other resources like files, socket, etc needs to be closed
 - in the below example, the defer will executed only when the worker() function exists
   - S othe Workeer will be printed first then B and A.
 
-```
+```go
 
 func main(){
    worker()
@@ -489,7 +490,7 @@ cleaning up A
 
 - Fetch the header Content-Type from URL from response
 
-```
+```go
 
 func main() {
   	ctype, err := contentType("https://linkedin.com")
@@ -526,7 +527,7 @@ text/html; charset=utf-8
  - In most of the case we can use the built-in data type
  - In some case we need custom data type which is where we need struct
  
-```
+```go
 package main
 
 import (
@@ -576,7 +577,7 @@ func main (){
 ### Define a method on the struct
 
 
-```
+```go
 package main
 
 import (
@@ -612,7 +613,7 @@ func main(){
 
 - In Go we write a function usually starting with NewXXXXX which will possibly return the new object value.
 
-```
+```go
 package main
 
 import (
@@ -667,7 +668,7 @@ func main (){
 
 #### About interfaces in Go
 
-```
+```go
 package main
 
 import (
@@ -727,7 +728,7 @@ func main(){
 
 #### GO supports generics as well
 
-```
+```go
 type Ordered interface {
    int | float64 | string
 }
