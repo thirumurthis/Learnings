@@ -1,4 +1,4 @@
-## Parse part of the JSON string using java without mapping to POJO 
+## Given a string in JSON format parse only part of the JSON using Java library without mapping to POJO's
 
 - When working with JSON objects, there are possible scenarios where we only need a part of the JSON. 
 - Mostly in this scenario, we also don't want to create dedicated POJO's to map the properties.
