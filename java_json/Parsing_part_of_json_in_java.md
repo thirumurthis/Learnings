@@ -1,9 +1,11 @@
-## Parsing part of the JSON using java without mapping to POJO 
+## Parse part of the JSON string using java without mapping to POJO 
 
-- When working with JSON objects in Java, there where scenarios where I need only a part of the JSON. Also don't create dedicated POJO's to map without deserializing.
-- For example, say if we are using third party API's which returns JSON repsonse and if our requirement is to only use part of that JSON.
+- When working with JSON objects, there are possible scenarios where we only need a part of the JSON. 
+- Mostly in this scenario, we also don't want to create dedicated POJO's to map the properties.
 
-- Say, below is the sample Json from the third-party API, and we only need to check the status value.
+- For example, 
+   - In a case when working with third party API's returning JSON repsonse, and if our requirement is to only use part of that JSON.
+   - Say, below is the sample JSON from the third-party API, and we need to check only the status property.
 
 ```json
 {
@@ -26,8 +28,8 @@
      -  In Fasterxml library, the path can be represented `/request/status`
 
 - In this blog have demonstrated how to parse part of the JSON using two types java Json parsing library
-   - 1. Jayway Jsonpath - [Documentation](https://github.com/json-path/JsonPath)
-   - 2. Fasterxml Jackson - [Documentation](https://github.com/FasterXML/jackson)
+   - 1. [Jayway Jsonpath](https://github.com/json-path/JsonPath)
+   - 2. [Fasterxml Jackson](https://github.com/FasterXML/jackson)
 
 ### 1. Using `Jayway Jsonpath` library to fetch part of the json value provided the path till the key property
 
@@ -57,7 +59,7 @@
 
  - We specify the path part of the command, JsonPath.compile(<path/to/specific/key/in/json>).
  - Using the  JsonPath.compile().read(<input json as string>), will return the value of the json specified in the path.
- - Additionally, have used BiFunction<> Lambda functions as example usage for using above two points.
+ - Additionally, have used BiFunction<> Lambda functions as example usage of above two points.
 
 ```java
 package org.example;
