@@ -1,4 +1,6 @@
-gRPC - gRPC Remote Procedure Call 
+## Simple Introduction of gRPC
+
+gRPC is called as `gRPC Remote Procedure Call`
 
 - Its strictly typed 
 - highly performant, scalable and interopable 
@@ -16,6 +18,9 @@ gRPC -is efficient per cpu compared to the text based on protocol.
 Simple: grpc-server
  - To create the server we need to define the IDL.
  - In gRPC the IDL supported is protobuf 3
+
+
+## Creating a simple gRPC server, work flow by creating the IDL (proto file) and generating stub code and defining the server by implenting the service.
 
 Step 1: create the IDL define it in a proto file
 
