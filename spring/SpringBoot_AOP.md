@@ -1,13 +1,15 @@
-## SpringBoot AOP to validate input JSON Payload
+## Validate input JSON payload with SpringBoot AOP
 
- - In this blog will demostrate an usecase where we can use SpringBoot AOP to perform input validation in the `@Controller` or `@Service` layer level.
+ - In this blog will demonstrate an use case where we can use SpringBoot AOP to perform input validation in the `@Controller` or `@Service` layer level.
 
- - When building REST based application at circumstence we might need to perform customized validation on the JSON payload before passing request to the repository layer or consecutive layer.
+### Scenario where this use case can be used 
 
- - There are option to validate the payload using the `hibernate-validator`,  using built-in annotation `@NotNull`, `@NotEmpty`, etc. and custom annotation in the data entity class.
+ - When building REST based application at circumstance we might need to perform customized validation on the JSON payload before passing request to the repository layer or further next layer.
 
-- Creating the spring boot porject, using `start.spring.io` with `spring web` and `lombok`.
-- Then add the Spring starter AOP dependencies in the `pom.xml`, like below
+ - The validation can be performed using the `hibernate-validator`, with built-in annotation `@NotNull`, `@NotEmpty`, etc. defined in the entity class.
+
+- Create SpringBoot project using `start.spring.io` with `spring web` and `lombok` dependencies.
+- Add the Spring starter AOP dependencies in the `pom.xml`, like below
 
 ```xml
         <dependency>
@@ -16,12 +18,14 @@
         </dependency>
 ```
 
-- Along with Spring Boot application,
-  - Lombok project on the data using `@Builder` to create builder pattern
-  - Custom exception extending RuntimeException, to handle Input validation exception
-  - Custom Spring annotation and register it on the AOP `@Around` advice to intercept the method calls.
-  - `java.utils.Objects` to validate null. Objects contiains few other methods.
-  - Java feature which can perform `instanceof` and directly stores the converted data to variable directly.
+
+- In this blog have included few additional points,
+
+  - How to easily create builder pattern on POJO using `@Build` annotation from Lombok project 
+  - Extending RuntimeException to create custom exception used to handle Input validation in this case
+  - Custom Spring annotation creation and registering it in AOP `@Around` advice which will be invoked and used to intercept the method calls
+  - `java.utils.Objects` to validate null. Objects contains few other methods which is not detailed here
+  - Java feature to perform `instanceof` check and directly store the converted data to variable
     ```java
      // Code where the Object instanceof Customer and the converted data stored in customers
      if ( requestObject.length >0  && requestObject[0] instanceof Customer customers ){
@@ -33,11 +37,12 @@
     ```
 
 > **Info:-**
->  SpringBoot AOP only performs to intercepting the method. 
->  For advanced we can use AspectJ in the application, where we need to check if fields have changed.
+>  SpringBoot AOP only used to intercept methods. 
+>  For advanced feature we need to use AspectJ, for example to check if fields have changed.
 
-### Explanation of the code:
+### Code
 
+#### Create Spring Annotation
 - Create Spring Annotation, which will be configured in the Aspect `@Around` advice class.
 
 ```java
@@ -53,6 +58,8 @@ import java.lang.annotation.Target;
 public @interface ValidateInputRequest {
 }
 ```
+
+#### Create Aspect to intercept the method calls
 
 - Below code defines the Aspect using `@Aspect` annotation (note, this aspect needs to be regiestered as a bean using `@Component`).
 - The custom annotation `@ValidateInputRequest` in the previous code snippet is registered in the `@Around` advice.
@@ -111,6 +118,8 @@ public class ValidationAspectConfig {
 }
 ```
 
+#### Custom validation logic to validate input JSON payload
+
 - Class where we perform the basic validation, to demonstrate basic validation
    - Where we check if the input Customer JSON payload received contains name attribute and should NOT be empty.
    - Also checking if the address attributes should be available.
@@ -141,6 +150,8 @@ public class ValidateInput {
     }
 }
 ```
+
+#### Customer and Address POJO class
 
 - Simple Pojo class, where we define Customer related info
 
@@ -190,6 +201,8 @@ public class Customer {
 }
 ```
 
+#### Controller class
+
 - A simple controller object
 
 ```java
@@ -227,7 +240,10 @@ public class CustomerController {
 }
 ```
 
+#### Service class
+
 - Service layer where we have included the custom annotation `@ValidateInputRequest`
+- Have used List of items to load when the application is successfully started
 
 ```java
 package com.app.demo.service;
@@ -288,6 +304,8 @@ public class CustomerService {
 }
 ```
 
+#### Custom Exception 
+
 - Creating custom Exception extending RuntimeException, used to throw this exception when validating the input JSON payload.
 
 ```java
@@ -319,11 +337,16 @@ public class DemoApplication {
 }
 ```
 
-### The project structure looks like below,
+### The project structure snapshot
 
 ![image](https://user-images.githubusercontent.com/6425536/197376393-af8db8c9-d9e8-4aa5-8598-c66cba5b8320.png)
 
-- The output with the below response will trigger an exception output
+
+### Output 
+
+#### Curl command to send an JSON payload with empty name.
+
+- The output with the below response will trigger an exception in output
 - 
 ```
 curl -X POST -H "Content-Type:application/json" http://localhost:8080/api/customer -d '{"name":"","id":0,"department":null,"addresses":[{"addressLine1":"work adddress of customer3","addressLine2":null,"aptNo":null,"city":"city1","state":null,"zipcode":0}]}'
