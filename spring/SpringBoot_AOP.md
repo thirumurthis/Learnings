@@ -2,11 +2,12 @@
 
 In this blog will demonstrate an use case to use SpringBoot AOP to perform input validation in the `@Controller` or `@Service` layer level.
 
-### Scenario where this use case can be used 
+### Use case - Validate payload in controller or service layer
 
  - When building REST based application at circumstance we might need to perform customized validation on the JSON payload before passing request to the repository layer or further next layer.
 
- - The validation can be performed using the `hibernate-validator`, with built-in annotation `@NotNull`, `@NotEmpty`, etc. defined in the entity class.
+> **Info:-**
+> The validation can be performed using the `hibernate-validator`, with built-in annotation `@NotNull`, `@NotEmpty`, etc. defined in the entity class.
 
 - Create SpringBoot project using `start.spring.io` with `spring web` and `lombok` dependencies.
 - Add the Spring starter AOP dependencies in the `pom.xml`, like below
