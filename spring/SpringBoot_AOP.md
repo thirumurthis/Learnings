@@ -1,17 +1,13 @@
-## using SpringBoot AOP to validate input
+## SpringBoot AOP to validate input JSON Payload
 
-In this blog will demostrate using SpringBoot AOP to perform input validation. 
+ - In this blog will demostrate an usecase where we can use SpringBoot AOP to perform input validation in the `@Controller` or `@Service` layer level.
 
-When building REST based application in certain circumstence we might need to validate the JSON payload before passing request to the repository layer.
+ - When building REST based application at circumstence we might need to perform customized validation on the JSON payload before passing request to the repository layer or consecutive layer.
 
+ - There are option to validate the payload using the `hibernate-validator`,  using built-in annotation `@NotNull`, `@NotEmpty`, etc. and custom annotation in the data entity class.
 
-To validate the input, we do have other options like using the hibernate-validator,  using the `@NotNull`, `@NotEmpty`, etc. in the data entity object.
-
-
-- Use `start.spring.io` to create the SpringBoot application with 
-   - `spring web` and `lombok`
-
-- Add the AOP dependencies in the pom.xml
+- Creating the spring boot porject, using `start.spring.io` with `spring web` and `lombok`.
+- Then add the Spring starter AOP dependencies in the `pom.xml`, like below
 
 ```xml
         <dependency>
@@ -20,16 +16,29 @@ To validate the input, we do have other options like using the hibernate-validat
         </dependency>
 ```
 
-- Below code also includes
-  - Using Lombok data to use builder pattern using `@Builder`
-  - Creating custom exception extending RuntimeException
-  - Using annotation on the AOP `@Around` advice to intercept the method calls.
-  - Java 17 feature of assigning the variable directly when validating using `instanceof` keyword
-  - Using `java.utils.Objects` to validate null.
+- Along with Spring Boot application,
+  - Lombok project on the data using `@Builder` to create builder pattern
+  - Custom exception extending RuntimeException, to handle Input validation exception
+  - Custom Spring annotation and register it on the AOP `@Around` advice to intercept the method calls.
+  - `java.utils.Objects` to validate null. Objects contiains few other methods.
+  - Java feature which can perform `instanceof` and directly stores the converted data to variable directly.
+    ```java
+     // Code where the Object instanceof Customer and the converted data stored in customers
+     if ( requestObject.length >0  && requestObject[0] instanceof Customer customers ){
+            // first object in the arguments
+            if (Objects.isNull(customers)){
+                throw new InvalidInputException("Input invalid - Cannot be null");
+            }
+      //.....
+    ```
 
-The SpringBoot AOP, can only be used for intercepting the method. For advanced we can use AspectJ in the application.
+> **Info:-**
+>  SpringBoot AOP only performs to intercepting the method. 
+>  For advanced we can use AspectJ in the application, where we need to check if fields have changed.
 
-- Create Spring Annotation, which is configured in the Aspect around advice.
+### Explanation of the code:
+
+- Create Spring Annotation, which will be configured in the Aspect `@Around` advice class.
 
 ```java
 package com.app.demo.config;
@@ -45,8 +54,9 @@ public @interface ValidateInputRequest {
 }
 ```
 
-- Below code defines the Aspect and register the annotation in around advice.
-- Now, using the annotation in `@Controller` or `@Service` layer on any method the `Around` aspect will be invoked and intercepted.
+- Below code defines the Aspect using `@Aspect` annotation (note, this aspect needs to be regiestered as a bean using `@Component`).
+- The custom annotation `@ValidateInputRequest` in the previous code snippet is registered in the `@Around` advice.
+- The Aspect class `validateInput()` method will be invoked if the custom annotation `@ValidateInputRequest` is annotated on the method defined in `@Controller` or `@Service` layer.
 
 ```java 
 package com.app.demo.config;
@@ -69,8 +79,7 @@ import java.util.Optional;
 @Slf4j
 public class ValidationAspectConfig {
 
-    //Using the Around advice, with the Annotation we created
-    //once the annotation is created placing the annotation 
+    //Using the Around advice, with the Annotation created and place the annotation 
     //over the method will invoke this call
     
     @Around("@annotation(ValidateInputRequest)")
@@ -102,8 +111,9 @@ public class ValidationAspectConfig {
 }
 ```
 
-
-- Class to validate the input Pojo, in this case Customer Pojo
+- Class where we perform the basic validation, to demonstrate basic validation
+   - Where we check if the input Customer JSON payload received contains name attribute and should NOT be empty.
+   - Also checking if the address attributes should be available.
 
 ```java
 package com.app.demo.config;
@@ -132,7 +142,7 @@ public class ValidateInput {
 }
 ```
 
-- Pojo class
+- Simple Pojo class, where we define Customer related info
 
 ```java 
 package com.app.demo.dto;
@@ -180,7 +190,7 @@ public class Customer {
 }
 ```
 
-- Controller 
+- A simple controller object
 
 ```java
 package com.app.demo.controller;
@@ -217,7 +227,7 @@ public class CustomerController {
 }
 ```
 
-- Service
+- Service layer where we have included the custom annotation `@ValidateInputRequest`
 
 ```java
 package com.app.demo.service;
@@ -278,7 +288,7 @@ public class CustomerService {
 }
 ```
 
-- Exception 
+- Creating custom Exception extending RuntimeException, used to throw this exception when validating the input JSON payload.
 
 ```java
 package com.app.demo;
@@ -309,7 +319,7 @@ public class DemoApplication {
 }
 ```
 
-The project structure looks like below,
+### The project structure looks like below,
 
 ![image](https://user-images.githubusercontent.com/6425536/197376393-af8db8c9-d9e8-4aa5-8598-c66cba5b8320.png)
 
@@ -322,5 +332,28 @@ curl -X POST -H "Content-Type:application/json" http://localhost:8080/api/custom
 - Exception message
 
 ```
-{"timestamp":"2022-10-23T04:42:35.931+00:00","status":500,"error":"Internal Server Error","trace":"com.app.demo.demo.InvalidInputException: Invalid input - name cannot be null\r\n\tat com.app.demo.demo.config.ValidateInput.validateRequest(ValidateInput.java:19)\r\n\tat com.app.demo.demo.config.ValidationAspectConfig.validateInput(ValidationAspectConfig.java:38)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\r\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\r\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:568)\r\n\tat org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:634)\r\n\tat org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:624)\r\n\tat org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:72)\r\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:175)\r\n\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:763)\r\n\tat org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)\r\n\tat org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)\r\n\tat org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:763)\r\n\tat org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:708)\r\n\tat com.app.demo.demo.service.CustomerService$$EnhancerBySpringCGLIB$$e764f31c.addCustomer(<generated>)\r\n\tat com.app.demo.demo.controller.CustomerController.addCustomer(CustomerController.java:29)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)\r\n\tat java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\r\n\tat java.base/java.lang.reflect.Method.invoke(Method.java:568)\r\n\tat org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)\r\n\tat org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:150)\r\n\tat org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)\r\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)\r\n\tat org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:808)\r\n\tat org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)\r\n\tat org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1071)\r\n\tat org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:964)\r\n\tat org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)\r\n\tat org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:909)\r\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:696)\r\n\tat org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)\r\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:779)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:227)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\r\n\tat org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\r\n\tat org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)\r\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\r\n\tat org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)\r\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\r\n\tat org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)\r\n\tat org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:117)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:189)\r\n\tat org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:162)\r\n\tat org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:197)\r\n\tat org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:97)\r\n\tat org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:541)\r\n\tat org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:135)\r\n\tat org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)\r\n\tat org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:78)\r\n\tat org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:360)\r\n\tat org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:399)\r\n\tat org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:65)\r\n\tat org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:893)\r\n\tat org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1789)\r\n\tat org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)\r\n\tat org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)\r\n\tat org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)\r\n\tat org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)\r\n\tat java.base/java.lang.Thread.run(Thread.java:833)\r\n","message":"Invalid input - name cannot be null","path":"/api/customer"}
+{"timestamp":"2022-10-23T04:42:35.931+00:00","status":500,"error":"Internal Server Error","trace":"com.app.demo.demo.InvalidInputException: Invalid input - name cannot be null\r\n\tat com.app.demo.demo.config.ValidateInput.validateRequest(ValidateInput.java:19)
+com.app.demo.demo.config.ValidationAspectConfig.validateInput(ValidationAspectConfig.java:38)
+java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+java.base/java.lang.reflect.Method.invoke(Method.java:568)
+org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethodWithGivenArgs(AbstractAspectJAdvice.java:634)
+org.springframework.aop.aspectj.AbstractAspectJAdvice.invokeAdviceMethod(AbstractAspectJAdvice.java:624)
+org.springframework.aop.aspectj.AspectJAroundAdvice.invoke(AspectJAroundAdvice.java:72)
+org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:175)
+org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:763)
+org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:97)
+org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:763)
+org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:708)
+com.app.demo.demo.service.CustomerService$$EnhancerBySpringCGLIB$$e764f31c.addCustomer(<generated>)
+com.app.demo.demo.controller.CustomerController.addCustomer(CustomerController.java:29)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\r\n\tat java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+java.base/java.lang.reflect.Method.invoke(Method.java:568) 
+........
+org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1789)
+org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1191)
+org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)\r\n\tat java.base/java.lang.Thread.run(Thread.java:833)\r\n","message":"Invalid input - name cannot be null","path":"/api/customer"}
 ```
