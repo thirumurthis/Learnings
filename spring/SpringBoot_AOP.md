@@ -1,6 +1,6 @@
 ## Validate input JSON payload with SpringBoot AOP
 
- - In this blog will demonstrate an use case where we can use SpringBoot AOP to perform input validation in the `@Controller` or `@Service` layer level.
+In this blog will demonstrate an use case to use SpringBoot AOP to perform input validation in the `@Controller` or `@Service` layer level.
 
 ### Scenario where this use case can be used 
 
@@ -153,7 +153,7 @@ public class ValidateInput {
 
 #### Customer and Address POJO class
 
-- Simple Pojo class, where we define Customer related info
+- Simple POJO class defining Customer related info
 
 ```java 
 package com.app.demo.dto;
@@ -337,14 +337,14 @@ public class DemoApplication {
 }
 ```
 
-### The project structure snapshot
+### Project structure snapshot
 
 ![image](https://user-images.githubusercontent.com/6425536/197376393-af8db8c9-d9e8-4aa5-8598-c66cba5b8320.png)
 
 
 ### Output 
 
-#### Curl command to send an JSON payload with empty name.
+#### Curl command to send an JSON payload with empty Customer name
 
 - The output with the below response will trigger an exception in output
 - 
