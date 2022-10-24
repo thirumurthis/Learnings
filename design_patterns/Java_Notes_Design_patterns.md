@@ -286,4 +286,66 @@ public class Demo{
 
  --------------
  
+## Decorator pattern
+
+ - Functions are composable
+ 
+```
+public class ComposeFunc{
+  
+  public static void print(int number, String message, Function<Integer,Integer> func){
+    System.out.println(number +" "+message + ": " + func.apply(number));
+  }
+  
+  public static void main(String ... args){
+     Function<Integer, Integer> increment = num -> num+1;
+     Function<Integer, Integer> double = num -> num *2;
+     
+     print(10,"increment",increment);
+     print(10,"double",double);
+     
+     //using function composition usage
+     //more like of combining function
+     print(10,"increment and double",increment.andThen(double));
+  }
+}
+```
+
+```
+
+import java.awt.Color;
+class Camera{
+  private Function<Color, Color> filter;
+  
+  public Camera(Function<Color,Color>... filters){
+    //filter = input -> input;
+    //Below is just creating a pipeline for the function and trying to 
+    //reduce multiple function to single function
+    filter = Stream.of(filters)
+             .reduce(Function.identity(), Function::andThen);
+  }
+  
+  public Color snap(Color input){
+     return filter.apply(input);
+  }
+}
+
+public Class Demo{
+
+  public static void print(Camera camera){
+    System.out.println(camera.snap(new Color(125,125,125)));
+  }
+  pubic static void main(String ... args){
+    print(new Camera());
+    print (new Camera(Color::brighter));
+    
+    // combine more function
+    print(new Camera(Color::brighter,Color::darker));
+  }
+}
+```
+
+- Above is helpful in case where we have a flow of data and we need to perform validation, transform and encrypt, etc. This decorator will be helpful. 
+
+---------
  
