@@ -212,4 +212,78 @@ public class Demo{
 - Factory Method uses inheritance as a design tool.
 
 ----------------
+## Lazy evaluation using Functional programming
 
+- short circuiting
+
+```
+public class Demo{
+
+ public static int calculate(int value){
+    System.out.println("calculate method called");
+    return value * 100;
+ }
+ 
+ public static void main(String ... arg){
+   int value = 5;
+   
+   // Since we are using && when the first condition is not 
+   // met, the compiler won't execute the compute() method 
+   // this is called short-circuiting
+   
+   if( value > 5 && compute(value) > 100){ 
+     // if we store the compute to a variable, the compiler will
+     // evaluated egaerly, but using them directly in the if 
+     // it will evaluate lazily
+   
+      System.out.println(" value greater than 5");
+   }else{
+      System.out.println(" value smaller than 5");
+   }
+ }
+}
+```
+- using the Lambda's
+
+```
+class Lazy<T>{
+   private T instance;
+   private Supplier<T> supplier;
+   
+   public Lazy<T>(Supplier<T> supplier){
+     this.supplier = supplier;
+   }
+   
+   public T get(){
+     if(instance == null){ 
+       // with the != you get the null pointer if the condition is matched
+       // so it proves that this method is not invoked by the below lazy code
+        instance = supplier.get();
+     }
+     return instance;
+   }
+}
+
+public class Demo{
+
+    public static void main(String ... args){
+       int value = 5;
+       // Below will still perform an eager evaluation
+       Lazy<Integer> temp = new Lazy(calculate(value));
+       
+       // We can make the evaluation lazy by passing lambda
+       Lazy<Integer> evalLazy = new Lazy(() -> calculate(value));
+       
+       if(value > 5 && evalLazy.get() > 100){
+          System.out.print("if block");
+       }else{
+          System.out.print("else");
+       }
+    }
+}
+```
+- If we need to postponed the evaluation we can pass a functional inteface to a method.
+
+ --------------
+ 
+ 
