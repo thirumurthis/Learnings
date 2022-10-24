@@ -143,5 +143,73 @@ public static void main (String ... args){
  ```
 
  --------------------------
+  ## Factory Method pattern with lambda
+
+- Factory method using default method
+
+- interface vs abstract class:
+   - The golden rule that interface are better than abstract classes.
+   - Interface can have implementation but they can't have non final fields.
+      - i.e. Interface cannot carry state, but abstract class can carry state.
+
+The factory method can help us dealing with the default methods in interfaces
+
+```
+package com.kafka.example.firstapp.dp;
+
+
+interface Department{
+    // we are about to treat this interface as a factory
+    // say defining a private variable in interface is not possible
+    // so below is not going to work
+    // private Accounts account;
+    // and we try to print the value in the default method below
+
+    // in this case we can define a method like
+    // this abstract method
+
+    Accounts getAccounts();
+
+    default void belongsTo(){
+        System.out.println("from department "+getAccounts()); //using abstract method
+    }
+}
+
+interface Accounts{}
+class Banker implements Accounts {}
+class Teller implements Accounts{}
+
+class PublicBank implements Department{
+    private Banker banker = new Banker(); //using the accounts implementation
+
+    public Accounts getAccounts() {
+        return banker;
+    }
+}
+
+class PrivateBank implements Department{
+
+    private Teller teller = new Teller(); //using the accounts implementation
+    public Accounts getAccounts() {
+        return teller;
+    }
+}
+
+public class Demo{
+
+  public static void fromWhere(Department department){
+     department.belongsTo();
+  }
   
+  public static void main(String ... args){
+     fromWhere(new PublicBank()); // prints: from department <package>Banker@76fb509a
+     fromWhere(new PrivateBank());// prints: from department <package>Teller@4d405ef7
+  }
+}
+```
+
+- Abstract Factory is uses delgation as design tool.
+- Factory Method uses inheritance as a design tool.
+
+----------------
 
