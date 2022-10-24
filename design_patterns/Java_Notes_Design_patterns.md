@@ -59,7 +59,8 @@
       ```
   - Optional can be used to field
   
-  ### Notes on the Iteration pattern using lambda
+ ---------------------
+  ## Notes on the Iteration pattern using lambda
  
   - Iteration pattern
    - External Iterator
@@ -98,7 +99,49 @@
       .map(String::toUppercase)
       .toList(); // create a new List of object
      ```
-   
+ ---------------------
  
+ ## Strategy Pattern
+
+- Using lambda as a light weight strategies
+
+```java
+
+public class Demo{
+public static int computeTotal (List<Integer> inputNumbers, Predicate<Integer> selector){
+    int total =0;
+    
+    for(var number : inputNumbers ){
+       if( selector.test(number)){
+          total += number;
+       }
+    }
+    return number;
+}
+
+public static boolean isOddNum(int number){
+  return number%2 != 0;
+}
+
+public static void main (String ... args){
+    var inputNumbers = List.of(1,2,3,4,5,6,7,8,9,10);
+    
+    int totalValue = computeTotal (inputNumbers, ignore -> true);//55
+    totalValue = computeTotal (inputNumbers, even -> even%2 == 0); // even sum
+    totalValue = computeTotal (inputNumbers, odd -> odd%2 !=0); // odd sum
+    // alternate using method reference
+    totalValue = computeTotal (inputNumbers, Demo::isOddNum); //odd sum    
+ }
+}
+```
+ - The `computeTotal()` method can be converted completely to functional style like below
+ 
+ ```
+ public static int computeTotalFunc(List<Integer> numbers, Predicate<Integer> selector){
+    return numbers.stream().filter(selector).mapToInt(item -> item).sum();
+ }
+ ```
+
+ --------------------------
   
 
