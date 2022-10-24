@@ -10,6 +10,8 @@
 
 ## Notes Using Java `Optional`
 
+<details>
+ <summary> Optional </summary>
  - Don't return null, instead of empty object 
   - Say if we are about to return a collection of objects, then return empty list like below
     - We can iterate using empty collection like 
@@ -68,10 +70,14 @@
       }
       ```
   - Optional can be used to field
+ 
+ </details>
   
  ---------------------
   ## Notes on the Iteration pattern using lambda
  
+ <details>
+  <summary> Iteration pattern </summary>
   - Iteration pattern
    - External Iterator
       - like `for (int i= 0; i <= N; i++){...}`
@@ -109,10 +115,15 @@
       .map(String::toUppercase)
       .toList(); // create a new List of object
      ```
+  
+  </details>
+  
  ---------------------
  
  ## Strategy Pattern
 
+ <details>
+  <summary>Strategy pattern </summary>
 - Using lambda as a light weight strategies
 
 ```java
@@ -152,9 +163,14 @@ public static void main (String ... args){
  }
  ```
 
+</details>
+  
  --------------------------
   ## Factory Method pattern with lambda
 
+<details>
+ <summary>Factory method </summary>
+ 
 - Factory method using default method
 
 - interface vs abstract class:
@@ -293,10 +309,15 @@ public class Demo{
 ```
 - If we need to postponed the evaluation we can pass a functional inteface to a method.
 
+</details>
+ 
  --------------
  
 ## Decorator pattern
 
+<details>
+ <summary> Decorator pattern</summary>
+ 
  - Functions are composable
  
 ```java
@@ -355,9 +376,14 @@ public Class Demo{
 
 - Above is helpful in case where we have a flow of data and we need to perform validation, transform and encrypt, etc. This decorator will be helpful. 
 
+ </details>
+ 
 ---------
  ## Fluent Interface (cascade method pattern)
 
+<details>
+ <summary> Fluent Interface </summary>
+ 
 ```java
 class Mailer {
    public void from (String addrs){
@@ -466,9 +492,15 @@ send
 ```
 - Now with cascading method pattern we can take away the object creation from the user or client.
 
+ </details>
+ 
  ----
  
 ## Execute around method pattern (Below is more of the AOP pattern)
+ 
+<details>
+ 
+ <summary> Execute around method pattern </summary>
  
  - removes the overhead of creation and allocation of object from the user
  
@@ -568,3 +600,7 @@ class Resource {
     }
 }
 ```
+ 
+ </details>
+ 
+---------------------
