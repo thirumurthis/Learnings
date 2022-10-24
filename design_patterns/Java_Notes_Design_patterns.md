@@ -1,3 +1,13 @@
+- Notes on using Optional
+- Notes on the Iteration pattern using lambda
+- Strategy Pattern
+- Factory Method pattern with Lambda
+- Lazy evaluation using Functional programming
+- Decorator pattern 
+- Flient Interface (cascade method pattern)
+- Execute around method pattern (AOP pattern)
+
+
 ## Notes Using Java `Optional`
 
  - Don't return null, instead of empty object 
@@ -154,9 +164,8 @@ public static void main (String ... args){
 
 The factory method can help us dealing with the default methods in interfaces
 
-```
-package com.kafka.example.firstapp.dp;
-
+```java
+package com.dp;
 
 interface Department{
     // we are about to treat this interface as a factory
@@ -216,7 +225,7 @@ public class Demo{
 
 - short circuiting
 
-```
+```java
 public class Demo{
 
  public static int calculate(int value){
@@ -245,7 +254,7 @@ public class Demo{
 ```
 - using the Lambda's
 
-```
+```java
 class Lazy<T>{
    private T instance;
    private Supplier<T> supplier;
