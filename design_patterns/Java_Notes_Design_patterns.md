@@ -459,3 +459,103 @@ send
 
  ----
  
+## Execute around method pattern (Below is more of the AOP pattern)
+ 
+ - removes the overhead of creation and allocation of object from the user
+ 
+ 1. we created a close () method to free up the resources, potentially user might forget to use try catch
+ 2. implementing AutoCloseable, but this also has the same issue, if user didn't use the try-with-resource over this object it will not indicate any issue in compile time.
+ 
+ ```java
+ package com.dp;
+
+public class AroundSample {
+    
+    public static void main (String ...args){
+        
+        //for example say we want to release a resource
+        // after the object is used, we can't use the finalize method
+        // sine that doesn't guarantee the execution so as System.gc()
+        // we can use lambda to over come this using "Around method pattern"
+        try(Resource resource = new Resource()) {
+            resource.operation1();
+            resource.operation2();
+        }
+    }
+}
+
+class Resource implements AutoCloseable{
+    public Resource(){
+        System.out.println("Object Created");
+    }
+    public Resource operation1(){
+        System.out.println("operation 1");
+        return this;
+    }
+    public Resource operation2(){
+        System.out.println("operation 2");
+        return this;
+    }
+    
+    // option 1-  With the close() method we ensure the method is called
+    // if the operation throws exception, then we need to wrap
+    // around to use the try and catch.
+    // Option 2:- we can use ARM (Automatic resource management, like try-with-resource
+    // to make the Resource executed with ARM, we need to implement AutoCloseable interface
+    // for the Resources. 
+    
+    public void close(){
+        System.out.println("Resource released");
+    }
+}
+```
+
+ 3. To use lambda
+   - Create private constructor for the Resource object
+   - Also make the close() method private.
+   
+```java
+package com.dp;
+
+import java.util.function.Consumer;
+
+public class AroundSample {
+
+    public static void main (String ...args){
+
+        //for example say we want to release a resource
+        // after the object is used, we can't use the finalize method
+        // sine that doesn't guarantee the execution so as System.gc()
+        // we can use lambda to overcome this using "Around method pattern"
+        
+        Resource.use(resource ->  resource.operation1().operation1()); }
+    }
+}
+
+class Resource {
+    private Resource(){
+        System.out.println("Object Created");
+    }
+    public Resource operation1(){
+        System.out.println("operation 1");
+        return this;
+    }
+    public Resource operation2(){
+        System.out.println("operation 2");
+        return this;
+    }
+
+    private void close(){
+        System.out.println("Resource released");
+    }
+
+    public static void use(Consumer<Resource> block){
+        Resource resource = new Resource(); //before 
+        try{
+            block.accept(resource);
+        }finally{
+            resource.close(); //after 
+        }
+    }
+}
+```
