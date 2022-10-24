@@ -569,7 +569,7 @@ public class AroundSample {
         // sine that doesn't guarantee the execution so as System.gc()
         // we can use lambda to overcome this using "Around method pattern"
         
-        Resource.use(resource ->  resource.operation1().operation1()); }
+        Resource.use(resource ->  resource.operation1().operation1());
     }
 }
 
