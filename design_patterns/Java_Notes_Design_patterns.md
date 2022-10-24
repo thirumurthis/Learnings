@@ -59,6 +59,46 @@
       ```
   - Optional can be used to field
   
-  
+  ### Notes on the Iteration pattern using lambda
+ 
+  - Iteration pattern
+   - External Iterator
+      - like `for (int i= 0; i <= N; i++){...}`
+      - also, `for(var item : items){....}`, then we do use break, etc.
+      
+   In general we do alter the flow.
+   
+   - Internal Iterator
+     - with the streams, we don't alter the flow instead create a pipeline
+     - in functional programming we don't have statements like break, it is mostly expression. 
+     - from Java 9, we use `takeWhile()` with the predicate
+     - from Java 8, we had `limit()` which can be used as break (like in the imperative style)
+     ```
+     items.stream()
+       .filter(name -> name.length() == 5)
+       .map(String::toString)
+       .forEach(System.out::println);
+     ```
+     - when using the functional programming, don't modify or mutate the object that is defined outside.
+     - **Try to keep the function pure and immutable**
+     - **Avoid shared mutable variables**
+     ```
+      var itemsToUpper = new ArrayList<String>();
+      
+      items.stream()
+      .filter(name -> name.length() == 4)
+      .map(String::toUppercase)
+      .forEach(name -> itemsToUpper.add(name)); // don't mutate the object outside
+      
+      // If some other developer change the stream to parallelStream()
+      // it will cause issue unknow side effects
+      
+      items.stream()
+      .filter(name -> name.length() == 4)
+      .map(String::toUppercase)
+      .toList(); // create a new List of object
+     ```
+   
+ 
   
 
