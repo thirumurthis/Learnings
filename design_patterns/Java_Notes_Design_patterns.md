@@ -290,7 +290,7 @@ public class Demo{
 
  - Functions are composable
  
-```
+```java
 public class ComposeFunc{
   
   public static void print(int number, String message, Function<Integer,Integer> func){
@@ -311,8 +311,7 @@ public class ComposeFunc{
 }
 ```
 
-```
-
+```java
 import java.awt.Color;
 class Camera{
   private Function<Color, Color> filter;
@@ -348,4 +347,115 @@ public Class Demo{
 - Above is helpful in case where we have a flow of data and we need to perform validation, transform and encrypt, etc. This decorator will be helpful. 
 
 ---------
+ ## Fluent Interface (cascade method pattern)
+
+```java
+class Mailer {
+   public void from (String addrs){
+      System.out.println("from");
+      return this;
+   }
+   public void to (String addrs){
+      System.out.println("to");
+      return this;
+   }
+   public void subject (String addrs){
+      System.out.println("subject");
+      return this;
+   }
+   public void body(String addrs){
+      System.out.println("body");
+      return this;
+   }
+   public void send(){
+      System.out.println("send");
+   }
+}
+
+public class Simple {
+  public static void main(String ...args){
+    
+    //usage of mailer
+    // we are cascading the method together
+    // below is not the builder, it is cascading pattern
+    
+    // with the below approach we don't know what the object
+    // is being used after it. not clear
+    new Mailer().
+    mail.from("user@domain.com")
+        .to("user2@domain.com")
+        .subject("Sample")
+        .body("content to be typed")
+        .send();
+  }
+}
+```
+
+- With lamda making the above code more easy
+
+```java
+package com.kafka.example.firstapp.dp;
+
+import java.util.function.Consumer;
+
+class Mailer {
+
+    //define  private constructor
+    // so no object can be created any more
+    private Mailer(){}
+
+    public Mailer from (String addrs){
+        System.out.println("from");
+        return this;
+    }
+    public Mailer to (String addrs){
+        System.out.println("to");
+        return this;
+    }
+    public Mailer subject (String addrs){
+        System.out.println("subject");
+        return this;
+    }
+    public Mailer body(String addrs){
+        System.out.println("body");
+        return this;
+    }
+    // define a consumer function
+
+    public static void send(Consumer<Mailer> block){
+        var mailer = new Mailer();
+
+        // pass the mailer to the consumer
+        block.accept(mailer);
+
+        System.out.println("send");
+    }
+}
+
+public class Simple {
+    public static void main(String ...args){
+
+        //usage of mailer
+        // we are cascading the method together
+        // below is not the builder, it is cascading pattern
+
+        // Now since we are using consumer in the send() method we can
+        // change below code
+
+        Mailer.send(mail -> mail.from("user@domain.com")
+                .to("user2@domain.com")
+                .subject("Sample")
+                .body("content to be typed"));
+    }
+}
+ /** output: 
+to
+subject
+body
+send
+ **/
+```
+- Now with cascading method pattern we can take away the object creation from the user or client.
+
+ ----
  
