@@ -110,3 +110,4 @@ public class LoomThread {
 ```
 
 - Note: For virutal threads we don't need any Threadpool to be configured.
+- uses ForkJoinPool
