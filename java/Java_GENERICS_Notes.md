@@ -7,6 +7,10 @@
    - Within the generic class
    - Outside the generic class
  - using extends keyword for setting bound 
+ - different example
+    - type inference (type witness)
+ - type erasure example
+ - Restriction of Generics
 
 Generics allows the same class to be used for multiple reference type.
 
@@ -553,3 +557,403 @@ Pet(petInfo=[Cat(name=Tom, color=white, weight=20.0), Cat(name=Ben, color=brown,
 weight:- 42.4
 */
 ```
+
+ ### Generic Class hierarchies rule
+
+ - Subclass must pass type parameter to superclass
+```
+# if we are extending the ArrayList in the case
+# the <E> is not passed the this will fall under raw List
+public class myList<E> extends ArrayList<E> {}
+```
+
+- Generic subclass can externd a non-generic (raw) superclass/parent class
+  
+```
+# Animal is defined as Raw type since not type parameter included
+public class Dog<T> exteands Animal { }
+```
+- Subclass can also be declared by passing type argument to superclass
+  - Below is how it looks like, though the Comparator is generic already
+```
+public class IntComparator implements Comparator<Integer> {}
+```
+
+- subclass can declare more than one type parameter
+
+```
+## the type parameter <E> of the parent is added to the subclass
+public class myList<E,S> extenads ArrayList<E>{}
+```
+
+- Casting generics is allowed
+
+```
+List<Integer> items;
+ArrayList<Integer> numbers = new ArrayList<>();
+items = numbers; // this is valid
+```
+
+With the example class above
+  - Create a Mammal class extending the Pet class
+```java
+
+package com.generics.ex1;
+
+public class Mammal<T extends Animal> extends Pet<T>{
+// if we don't sepcify the Pet<T> type parameter compiler warns
+// of using raw type.
+
+    @Override
+    public double getTotalWeight() {
+        return super.getTotalWeight();
+    }
+}
+
+package com.generics.ex1;
+
+public class MammalClient {
+
+    public static void main(String[] args) {
+        Mammal<Dog> mammal = new Mammal<>();
+
+        Pet<Dog> dogPet  = new Pet<>();
+
+        dogPet = mammal; // casting is allowed
+
+    }
+}
+
+```
+
+### Type argument hierarchies rule
+ - Type arguments require a strict match
+ - We cannot pass ArrayList<Double> argument to a method with List<Number> parameter.
+ ```
+ public class MyList{
+     public static calculateSum(List<Numbers> items){....}
+ }
+ MyList.calculateSum(new ArrayList<Double>()); // this is not allowed
+ ```
+ - Casting is not allowed
+ ```
+ List<Numbers> numbers;
+ ArrayList<Double> doubles = new ArrayList<Double> ();
+ numbers = doubles; // this is NOT allowed
+ ```
+ - The casting can be relaxed using wild cards
+
+Example of valid type argument
+
+List<Double> can be passed with ArrayList<Double>
+
+```
+
+package com.generics.ex1;
+
+public class Doodle extends Dog{
+    // since we are extending Dog class
+    // we need to create the default constructor else throws exception
+    public Doodle(String name, String owner, double weight) {
+        super(name, owner, weight);
+    }
+}
+
+package com.generics.ex1;
+
+public class DoodleClient {
+
+    public static void main(String[] args) {
+
+        Pet<Dog> dogPet  = new Pet<>();
+        
+        Pet<Doodle> doodlePet = new Pet<>();
+        // if we try to cast the doodlePet with dogPet object
+        // throws compliation error 
+        doodlePet=dogPet;
+
+    }
+}
+```
+
+## Type Erasure
+- The generics is information is removed during compilation process.
+- Generics provides type safety checks only at compile time.
+- The compiled byte code doesn't have any genric type information
+
+Type Erasuser internal working:
+- The java compiler replaces the type parameter with object type for unbounded type parameter.
+- The java compiler replaced type parameter with the corresponding bound type when the type parameter is bounded. 
+
+- Unbound type
+```
+public class Pet<T>{
+   private T name;
+}
+
+# after compiled looks like below 
+
+public class Pet{
+  private Object name;
+}
+```
+- bounded type 
+```
+
+public class Pet< T extends Animal>{
+ private List<T> petInfo;
+}
+
+# after compiled looks like below
+
+public class Pet{
+   private List<Animal> petInfo;
+}
+```
+
+Note: 
+ - The compiled code contains the Generics info as Metadata.
+ - For example, using decompiler like IDE for ArrayList, we still be able to view the Generic defined. This information is stored part of the metadata of compiled class file. i.e, the .class file has the generic info stored as metadata
+ - In case the if the class is being used as library, then user developing using this class the compiler will use this info to infer the generics are used.
+ 
+### Bridge Methods:
+  - Type erasure process generates Bridge methods.
+  - This happens when some subclasses extends generic classes
+  - This are needed since the type erasure process for overriding method is not the same as the type erasure for superclass method. In order to handle this situation java compiler creates bridge methods which is just an implementation detail used internally. (we will not invoke this methods or use it.)
+
+```
+public interface Comparator<T>{
+   int compare(T n1, T n2);
+}
+
+public class IntComparator implements Comparator<Integer>{
+   int compare(Integer n1, Integer n2){...}
+}
+
+# after compilation the type erasure looks like below
+
+public interface Comparater{
+   int compar(Object n1, Object n2); // super class type erasure is Object
+}
+
+public class IntComparator implements Comparator{
+    int compare(Integer n1, Integer n2){  // this is still Integer type
+    ...}
+}
+
+### An bridge methods will be created 
+
+public class IntComparator implements Comparator{
+  int compare(Object n1, Object n2){..} // this is bridge method created by compiler
+                                        // using polymorphism
+  int compare(Integer n1, Integer n2){..}  
+}
+```
+
+### Type Inference
+ - Type witness a way to force compiler to use a type argument
+
+```java
+package com.generics.ex1;
+
+import java.util.Collections;
+
+public class GenericClient {
+
+    public static void main(String[] args) {
+
+        // we are using var to store the emptyList
+        // compiler will infer that the emptyList() returns List<Object>
+        var list = Collections.emptyList();
+
+        //Type witness - we specify a <> bracket with type
+        // like below so compiler infers that it returns List<String>
+        var items = Collections.<String>emptyList(); //Most case we don't do this.
+
+    }
+}
+```
+####  Type inference 
+ - The compiler will infer the type arguments using the method definition and invocation.
+ - Based on the above it picks most specific type that satisfies the argument and return type.
+ 
+```
+package com.generics.ex1;
+
+import java.util.Collections;
+
+public class GenericClient {
+
+    public static void main(String[] args) {
+
+        // if we change the return to an Integer then it will 
+        // throw compilation error
+        Number result = generate(12,14.5);
+        
+        // using the above example 
+        Dog dog = new Dog("B","John",25.0);
+        Doodle doodle = new Doodle("D","Tom",40.0);
+        Dog getPet = generate(dog,doodle);
+        
+        // since we know dog is the parent class to the doodle
+        //Doodle getDoodel = generate(dog,doodle); // compilation error
+        
+        //works 
+        Animal pet1 = generate(dog,doodle);  //works
+    }
+
+    public static <T> T generate(T n1, T n2){
+        if (Math.random() > 0.5){
+            return n1;
+        }
+        return n2;
+    }
+}
+```
+Note: 
+ - Within a Generic class, when using for static method we need to define the generic types
+ 
+ ```java
+ package com.generics.ex1;
+
+import lombok.Getter;
+import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@ToString
+public class Pet <T extends Animal>{
+
+    @Getter
+    private List<T> petInfo;
+
+    public Pet(){
+        petInfo = new ArrayList<>();
+    }
+
+    public void addPet(T t ){
+        petInfo.add(t);
+    }
+
+    public T getLastPetInfo(){
+        if (petInfo.isEmpty()) return null;
+        return petInfo.get(petInfo.size()-1);
+    }
+
+    // this works fine, if we need to expose this method as static 
+  //    public Pet<T> of(T t){
+  
+     // with the static we need to define the type paremeter in the method
+     // though we are already within the generic class
+      public static <T extends Animal> Pet<T> of(T t){
+        Pet<T> pet = new Pet<>();
+        pet.addPet(t);
+        return pet;
+    }
+    public double getTotalWeight(){
+        return this.petInfo.stream().mapToDouble(Animal::getWieght).sum();
+    }
+}
+
+// with the client java code in main we can use
+//   Dog dog = new Dog("B","John",25.0);
+//   var box = Pet.of(dog);  // this infers as Pet<Dog>
+//   Doodle doodle = new Doodle("D","Tom",40.0);
+//   var pet2 = Pet.of(doodle); //this infers as Pet<Doodle>
+```
+
+- Type inference based on target type
+
+```java 
+// define below in the Pet class
+    public static <T extends Animal> Pet<T> emptyPet(){
+        return new Pet<>();
+    }
+    
+// invoking from the client 
+// var pet01 = Pet.emptyPet(); //infers as Pet<Animal> based on target type
+```
+
+- Wild cards
+
+```java
+public class Vet {
+
+   // below is how the generics without wild card
+   // public static <T extends Animal> int getPetsVisited(Pet<T> pet){
+   
+   // with wild cards, we don't need to define the type paramter before 
+   // return type of the method
+   public static int getPetsVisited(Pet<?> pet){
+        // the T is not a return type here
+        return pet.getPetInfo().size();
+    }
+}
+```
+
+``` 
+         Pet
+  ________|_______
+ |                | 
+ Dog             Bird
+ | 
+ Doodle
+ 
+ - with an hierarchy like above
+ 
+ Pet< ? extend Dog>  can only accept type argment as Pet<Dog>,Pet<Doodle>
+```
+
+List<? extends Number> can accept List<Integer>, List<Double>, etc. type the are subclass of Number.
+
+- using `super` with the wild card. Lower Bound wildcards
+
+```
+         Pet
+  ________|_______
+ |                | 
+ Dog             Bird
+ | 
+ Doodle
+ 
+ below accepts any super class of Doodle
+ Pet< ? super Doodle> only accept Pet<Dog>, Pet<Doodle>, Pet<Pet>.
+```
+
+### Restriction
+ - we cannot instantiate type parameter ` T t = new T()` is not allowed.
+ - we cannot have a static type parameter `private static T t;` Pet<Dog>; Pet<Doodle>; is not allowed.
+ - instanceof operator (happens at runtime)
+ ```
+  Pet<Dog> dog = new Pet<>();
+  if( dog instanceof Pet<Dog>).. // this won't work since type erasure removes the generics during compile time.
+ ```
+ - Special case, the instanceof works with unbounded wildcards
+ ```
+  ```
+  Pet<Dog> dog = new Pet<>();
+  if( dog instanceof Pet<?>).. 
+ ```
+ - Arrays of parameterized types are not allowed. ` Pet<Dog>[] dogArray = new Pet<>[2]`
+ - We cannot do method overload with same type erasuer
+ ```
+ private static void add(Pet<Dog> dog)..
+ private static void add(Pet<Cat> cat)...
+ ```
+ - we cannot create generics for any class extends Throwable or its subclass
+ ```
+ class PetException<T> extends Throwable {...}
+ ```
+ - we cannot use catch instance to use type parameter
+ 
+ ```
+ catch (T e){...}
+ ```
+ - we can use throws clause with the type parameter 
+ 
+ ```
+ public class GenericClass<T extends Throwable>{...}
+ 
+ public void process() throws T{...}
+ ```
