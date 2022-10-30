@@ -12,10 +12,11 @@ In this demonstration, created a SpringBoot application which send and consume m
 
 For integration test, we use Kafk Embedded broker where we use ProducerService and ConsumerService to send and consumer message, wait for the message to be consumed using `Awaitility` dependency.
 
-### Code details
+### Code info
+
 - Create SpringBoot application with `start.spring.io`, include the `lombok` and `kafka` dependency.
 
-#### Required dependencies 
+#### Required maven dependencies
 
 - Include `awaitility` dependency in `pom.xml`
 
@@ -36,7 +37,7 @@ For integration test, we use Kafk Embedded broker where we use ProducerService a
     </dependency>
 ```
 
-#### Producer Code used to send message to broker 
+#### Producer Code sends message to broker 
 
 - Simple producer code, where the Kafka broker configuration are defined in `application.properties`, SpringBoot will use it to create the KafkaTemplate
 
@@ -192,7 +193,9 @@ class ConsumerServiceTest {
 }
 ```
 
-#### Alternate options for Integration testing Kafka message consumer using CountDownLatch
+### Integration test using  CountDownLatch
+
+#### ConsumerService code changes to use CountDownLatch
 
 - Alternatively we can use `CountDownLatch` to wait till the consumer listener recieves the message. Only the ConsumerService code will change in this case, the ProducerService remains the same.
 
@@ -239,7 +242,9 @@ public class ConsumerService {
     }
 }
 ```
-#### Test case that utilizes CountDownLatch
+#### Test case utilizing CountDownLatch
+ 
+- The `consumer.getLatch().await()` in test case will wait the thread till  the message is consumed by the ConsumerService class consumerMessageAppTopic() method, since this method invokes `countDown()` after the message is received from the Listener releasing the thread to proceed further.
 
 ```java
 package com.kafka.example.kafkademo.code;
@@ -287,7 +292,8 @@ class ConsumerServiceTest {
     }
 }
 ```
-#### Output:
+
+### Output
 
 - Running the test cases should succeed
 
