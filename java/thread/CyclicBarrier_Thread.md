@@ -76,20 +76,50 @@ class SimpleThread extends Thread{
             Random num = new Random();
             Thread.sleep(num.nextInt(1000,5000));
             // can perform any task before calling await
-
+            System.out.println("current thread "+threadName);
             // The thread will wait till the cyclic barrier parties are reached
             // await will automatically decrement the initial count
             int parties = cyclicBarrier.await();
-            System.out.println("current thread "+threadName+"can process more threads "+parties);
+
             if( parties == 0) {
                 System.out.println("----------------\nWill be able to handle more thread..." + parties);
                 Thread.sleep(10000);
+            }else{
+                System.out.println("still able to process few more threads "+parties);
             }
         }catch(InterruptedException | BrokenBarrierException e){
             e.printStackTrace();
         }
     }
 }
+
+/* OUTPUT - not a consistent output every time this varies
+
+Main thread started .. main
+current thread t2
+current thread t03
+current thread t01
+Main thread completed .. main
+current thread t5
+current thread t3
+----------------
+Will be able to handle more thread...0
+still able to process few more threads 4
+still able to process few more threads 1
+still able to process few more threads 3
+still able to process few more threads 2
+current thread t1
+current thread t05
+current thread t4
+current thread t02
+current thread t04
+----------------
+Will be able to handle more thread...0
+still able to process few more threads 4
+still able to process few more threads 2
+still able to process few more threads 3
+still able to process few more threads 1
+*/
 ```
 
 - using runnable and thread pool executor
