@@ -4,19 +4,19 @@ In this blog will briefly explain how to can use `Awaitility` library to test Ka
 
 ### Why use Awaitility dependency
 
-Awaitility library can be used for testing external services like Kafka, RabbitMQ, etc. mostly this can be used when application handling asynchronized calls and wait for responses.
+- Awaitility library can be used for testing external services like Kafka, RabbitMQ, etc. mostly this can be used when application handling asynchronized calls and wait for responses.
 
-Awaitility has different method to support async response handling, for more detailed information refer the [documentation](https://github.com/awaitility/awaitility)
+- Awaitility has different method to support application built in asynchronized way, for more details about Awaitlity refer the [documentation](https://github.com/awaitility/awaitility)
 
-In the code example below have used SpringBoot application and for testing used Embedded Kafka Broker where the message is sent using the ProducerService, and the ConsumerService. The ConsumerService code uses listener for messages from specific topic.
+- In below have created a simple SpringBoot application with Producer  that sends message to Kafka Broker and Consumer that consumes the message. 
 
-The ConsmerService might receive the message any time after the producer sent the message to the broker. It might be 1, 2 or 5 seconds which is undetermined. In such cases we can use `awaitility` libraries which has different methods to support and making testing more easy. 
+- The Consumer uses Listener to receive message from the broker, usually this message is not received immediately it might also be received after 2 or 3 seconds. In such scenarios we can use the Awaitility library which provides many methods to handle cases like this.
 
-For explanation have used a SpringBoot application where Producer sends message to Broker and Consumer consumes the messages.
+- For integration testing have used the embedded Kafka Broker to test the ConsumerService.
 
 ### Code
 
-- Create SpringBoot application with `start.spring.io`, include the `lombok` and `kafka` dependency.
+- Create SpringBoot application with `lombok` and `kafka` dependency form `start.spring.io` or IDE.
 
 #### Required maven dependencies
 
