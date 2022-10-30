@@ -12,7 +12,7 @@ In this demonstration, created a SpringBoot application which send and consume m
 
 For integration test, we use Kafk Embedded broker where we use ProducerService and ConsumerService to send and consumer message, wait for the message to be consumed using `Awaitility` dependency.
 
-### Code info
+### Code
 
 - Create SpringBoot application with `start.spring.io`, include the `lombok` and `kafka` dependency.
 
@@ -37,7 +37,7 @@ For integration test, we use Kafk Embedded broker where we use ProducerService a
     </dependency>
 ```
 
-#### Producer Code sends message to broker 
+#### ProducerService Code that sends message to broker 
 
 - Simple producer code, where the Kafka broker configuration are defined in `application.properties`, SpringBoot will use it to create the KafkaTemplate
 
@@ -67,7 +67,7 @@ public class ProducerService{
 }
 ```
 
-#### Consumer Code consumes message from broker 
+#### ConsumerService Code that consumes message from broker 
 
 - Simple Consumer code which will use the `@KafakListener` configuration defined in the `application.properties`.
 
@@ -97,7 +97,7 @@ public class ConsumerService {
 }
 ```
 
-#### Configuration of broker
+#### Kafka broker configuration details 
 
 - `application.properties` file with the Kafka broker configuration
   - Using 9094 as Kafka port instead of default 9092.
@@ -119,7 +119,7 @@ spring.kafka.producer.key-serializer= org.apache.kafka.common.serialization.Stri
 spring.kafka.producer.value-serializer= org.apache.kafka.common.serialization.StringSerializer
 ```
 
-#### Integration test case using Awaitality dependency
+#### Integration test case code using Awaitality library
 
   - Below code should be placed in the test folder in the SpringBoot project structure
 
@@ -193,9 +193,11 @@ class ConsumerServiceTest {
 }
 ```
 
-### Integration test using  CountDownLatch
+### Alternate approach to test Kafka
 
-#### ConsumerService code changes to use CountDownLatch
+#### Integration test case using CountDownLatch
+
+##### ConsumerService code changes to use CountDownLatch
 
 - Alternatively we can use `CountDownLatch` to wait till the consumer listener recieves the message. Only the ConsumerService code will change in this case, the ProducerService remains the same.
 
@@ -242,7 +244,7 @@ public class ConsumerService {
     }
 }
 ```
-#### Test case utilizing CountDownLatch
+##### Test case code using CountDownLatch
  
 - The `consumer.getLatch().await()` in test case will wait the thread till  the message is consumed by the ConsumerService class consumerMessageAppTopic() method, since this method invokes `countDown()` after the message is received from the Listener releasing the thread to proceed further.
 
@@ -297,4 +299,5 @@ class ConsumerServiceTest {
 
 - Running the test cases should succeed
 
-![image](https://user-images.githubusercontent.com/6425536/198904572-db399126-69db-4aa0-bbde-b461e1e81553.png)
+![image](https://user-images.githubusercontent.com/6425536/198904572-db399126-69db-4aa0-bbde-b461e1e81553.png
+
