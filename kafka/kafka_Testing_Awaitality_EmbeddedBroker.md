@@ -1,16 +1,18 @@
 ## Using Awaitality in integration test Kafka Broker
 
-In this blog will detail how to create use `Awaitility` library in Integration testing. When we have code that needs to test the code that uses external services like Kafka, RabbitMQ, etc. where the response is Async in nature we can use Awaitality.
+In this blog will briefly explain how to can use `Awaitility` library to test Kafak in integration test. 
 
-### Use case where to use the Awaitality dependency
+### Why use Awaitility dependency
 
-For example, in the below use case have used Embedded Kafak Broker for testing the external system where the message is sent using the ProducerService, and the ConsumerService will listen for any messages to that topic. 
+Awaitility library can be used for testing external services like Kafka, RabbitMQ, etc. mostly this can be used when application handling asynchronized calls and wait for responses.
 
-In the above case the ConsumerService will receive the message any time after the message is sent which might be say within 2 seconds or 5 seconds. In this case we can use awaitility dependency `atmost()` to wait for the response. For more detailed information refer the [documentation](https://github.com/awaitility/awaitility)
+Awaitility has different method to support async response handling, for more detailed information refer the [documentation](https://github.com/awaitility/awaitility)
 
-In this demonstration, created a SpringBoot application which send and consume messages, to and from Kafka broker.
+In the code example below have used SpringBoot application and for testing used Embedded Kafka Broker where the message is sent using the ProducerService, and the ConsumerService. The ConsumerService code uses listener for messages from specific topic.
 
-For integration test, we use Kafk Embedded broker where we use ProducerService and ConsumerService to send and consumer message, wait for the message to be consumed using `Awaitility` dependency.
+The ConsmerService might receive the message any time after the producer sent the message to the broker. It might be 1, 2 or 5 seconds which is undetermined. In such cases we can use `awaitility` libraries which has different methods to support and making testing more easy. 
+
+For explanation have used a SpringBoot application where Producer sends message to Broker and Consumer consumes the messages.
 
 ### Code
 
@@ -300,4 +302,3 @@ class ConsumerServiceTest {
 - Running the test cases should succeed
 
 ![image](https://user-images.githubusercontent.com/6425536/198904572-db399126-69db-4aa0-bbde-b461e1e81553.png)
-
