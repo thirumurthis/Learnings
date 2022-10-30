@@ -1,6 +1,6 @@
 ## Using Awaitality in integration test Kafka Broker
 
-In this blog will briefly explain how to can use `Awaitility` library to test Kafak in integration test. 
+In this blog will briefly explain how to can use `Awaitility` library to test Kafka in integration test. 
 
 ### Why use Awaitility dependency
 
@@ -8,11 +8,13 @@ In this blog will briefly explain how to can use `Awaitility` library to test Ka
 
 - Awaitility has different method to support application built in asynchronized way, for more details about Awaitlity refer the [documentation](https://github.com/awaitility/awaitility)
 
-- In below have created a simple SpringBoot application with Producer  that sends message to Kafka Broker and Consumer that consumes the message. 
+- In below have created a simple SpringBoot application with a Producer to send message to Kafka Broker and Consumer to consumes the message. The Listener in the Consumer, will wait for message s to be received from the topic.
 
-- The Consumer uses Listener to receive message from the broker, usually this message is not received immediately it might also be received after 2 or 3 seconds. In such scenarios we can use the Awaitility library which provides many methods to handle cases like this.
+- The Consumer has to wait till the message is received and this mostly happens in asynchronous application. The application has to wait for a response from external service which might be immediate or delayed after few seconds in such case we can use Awaitility library to perform integration test. 
 
-- For integration testing have used the embedded Kafka Broker to test the ConsumerService.
+- Note, there are cases where we can mock the external service like in this case we use embedded Kafka broker, this might not be always possible since some projects might have dedicated environment. In such scenarios we can use Awaitlity library.
+
+- For integration testing in this example have used the embedded Kafka Broker to test the  ConsumerService.
 
 ### Code
 
