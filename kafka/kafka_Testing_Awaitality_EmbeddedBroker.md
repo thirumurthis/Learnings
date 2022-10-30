@@ -299,5 +299,5 @@ class ConsumerServiceTest {
 
 - Running the test cases should succeed
 
-![image](https://user-images.githubusercontent.com/6425536/198904572-db399126-69db-4aa0-bbde-b461e1e81553.png
+![image](https://user-images.githubusercontent.com/6425536/198904572-db399126-69db-4aa0-bbde-b461e1e81553.png)
 
