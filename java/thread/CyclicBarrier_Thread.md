@@ -2,6 +2,10 @@
 - like countdownlatch, we can use cyclic barrier. Only advantage is the cyclic barrier is we can reuse the barrier.
 - When calling the await(), the thread will wait till the number of parties intializied in the barrier is reached.
 
+Say, if the cyclic barrier with 3 is intiazlied, when the first thread enters it will go into await state, till the three threads are in the await state. 
+When the three threads are arrived, the Barrier is broken and the three threads now can process the task.
+- basically waits for number of parties to reach and then resumes back.
+
 ```java
 package com.parallel;
 
