@@ -1,4 +1,4 @@
-## Using Awaitality in integration test Kafak Broker
+## Using Awaitality in integration test Kafka Broker
 
 In this blog will detail how to create use `Awaitility` library in Integration testing. When we have code that needs to test the code that uses external services like Kafka, RabbitMQ, etc. where the response is Async in nature we can use Awaitality.
 
@@ -6,11 +6,11 @@ In this blog will detail how to create use `Awaitility` library in Integration t
 
 For example, in the below use case have used Embedded Kafak Broker for testing the external system where the message is sent using the ProducerService, and the ConsumerService will listen for any messages to that topic. 
 
-In the above case the ConsumerService will receive the message any time after the message is sent which might be say within 2 seconds or 5 seonds. In this case we can use awaitility dependency `atmost()` to wait for the response. For more detailed information refer the [documentation](https://github.com/awaitility/awaitility)
+In the above case the ConsumerService will receive the message any time after the message is sent which might be say within 2 seconds or 5 seconds. In this case we can use awaitility dependency `atmost()` to wait for the response. For more detailed information refer the [documentation](https://github.com/awaitility/awaitility)
 
-In this demonstration, created a SpringBoot application which send and consume messages, to and from Kafak broker.
+In this demonstration, created a SpringBoot application which send and consume messages, to and from Kafka broker.
 
-For integration test, we use Kafak Embedded broker where we use ProducerService and ConsumerService to send and consumer message, wait for the message to be consumed using `Awaitility` dependency.
+For integration test, we use Kafk Embedded broker where we use ProducerService and ConsumerService to send and consumer message, wait for the message to be consumed using `Awaitility` dependency.
 
 ### Code details
 - Create SpringBoot application with `start.spring.io`, include the `lombok` and `kafka` dependency.
@@ -99,7 +99,7 @@ public class ConsumerService {
 #### Configuration of broker
 
 - `application.properties` file with the Kafka broker configuration
-  - Using the kafka port as 9094 than the default 9092.
+  - Using 9094 as Kafka port instead of default 9092.
 
 ```
 # topic name
@@ -292,5 +292,3 @@ class ConsumerServiceTest {
 - Running the test cases should succeed
 
 ![image](https://user-images.githubusercontent.com/6425536/198904572-db399126-69db-4aa0-bbde-b461e1e81553.png)
-
-
