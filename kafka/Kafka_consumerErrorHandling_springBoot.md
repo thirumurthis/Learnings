@@ -69,7 +69,34 @@ public class KafkaContainerHandler {
     }
 }
 ```
+- Producer code 
 
+```java
+package com.kafka.example.kafkademo.code;
+
+import java.text.MessageFormat;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Service
+@Slf4j
+public class ProducerService{
+
+    @Autowired
+    KafkaConstants kafakConstants;
+
+    public String sendMessage(String topic, String message){
+        log.info("Sending message from producer - {}",message);
+        kafkaTemplate.send(topic,message);
+        return MessageFormat.format("Message Sent from Producer - {0}",message);
+    }
+}
+```
 - Consumer configuration 
 ```java
 package com.kafka.example.kafkademo.restart;
@@ -103,7 +130,10 @@ public class kafkaListener {
     }
 }
 ```
-- 
+
+-Error handler to handle error during consuming message, we need to impelment `ConsumerAwareListenerErrorHandler`, there are other handler like `seekCurrentConsumer` etc.
+
+```java
 package com.kafka.example.kafkademo.restart;
 
 import lombok.extern.slf4j.Slf4j;
