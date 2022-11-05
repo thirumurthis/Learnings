@@ -78,8 +78,6 @@ pod/kind-demo labeled
 ```
 PS C:\learn\kind> kubectl expose pod/kind-demo --port=80 --target-port=80
 service/kind-demo exposed
-PS C:\learn\kind> kubectl get pod,sbc
-error: the server doesn't have a resource type "sbc"
 PS C:\thiru\learn\kafka-demo\kind_strimzi> kubectl get pod,svc
 NAME            READY   STATUS    RESTARTS   AGE
 pod/kind-demo   1/1     Running   0          2m30s
