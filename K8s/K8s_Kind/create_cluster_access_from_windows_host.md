@@ -15,8 +15,8 @@ nodes:
 - role: control-plane
   # port forward 80 on the host to 80 on this node
   extraPortMappings:
-  - containerPort: 8008
-    hostPort: 80
+  - containerPort: 80
+    hostPort: 8008
     # optional: set the bind address on the host
     # 0.0.0.0 is the current default
     listenAddress: "127.0.0.1"
