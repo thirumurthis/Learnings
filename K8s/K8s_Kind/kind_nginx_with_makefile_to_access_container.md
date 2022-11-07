@@ -1,39 +1,45 @@
-## Spin up Kubernetes cluster with Kind in Docker Desktop
+# Access container running in KIND Kubernetes cluster in Window Docker Desktop
 
-What is Kind?
- - With Kind (Kubernetes IN Docker) it is easy to sping up a local kubernetes cluster within Docker Desktop. The Kind runs as a container by itself.
+## What is Kind?
+
+ - With Kind (Kubernetes IN Docker) it is easy to spin up a local kubernetes cluster within Docker Desktop. The Kind runs as a container by itself.
  - Kind documentation is easy to understand, for more details and understanding refer [documentation](https://kind.sigs.k8s.io/) link.
 
-Motivation: 
+## Motivation
 
-  - With the default configuration we can't access the container running in Kind cluster within Windows Docker Desktop.
-  - To access the running container we need to expose the configuration `extraPortMappings`.
+  - KIND cluster deployed in Windows Docker Desktop with default configuration we will not be able to access the container running in the cluster from the host machine.
+  - In order to access the container from the host machine we need to create KIND cluster using  `extraPortMappings` cluster configuration.
+  - This is not the case if we create the KIND cluster in Linux based system, based on the documentation this is network based limitation in Windows and Mac.
 
-- Pre-requesites:
+## Pre-requisite tools installed
+
   - 1. Docker Desktop installed and running.
-  - 2. Install Kind using Chocolatey pacakge manager other option refer the Kind [documentation](https://kind.sigs.k8s.io/docs/user/quick-start/#installation), [Chocolatey documentation](https://community.chocolatey.org/packages/kind) package manager.
-  - 3. Kubectl installed using [chocolatey](https://community.chocolatey.org/packages/kubernetes-cli) package manager.
-  - 4. Install `GNU make` in Windows using [Chocolatey](https://community.chocolatey.org/packages/make)
+  - 2. Install **KIND** using Chocolatey package manager refer [Kind documentation](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) or [Chocolatey documentation](https://community.chocolatey.org/packages/kind) package manager.
+  - 3. Install **Kubectl** installed using [chocolatey](https://community.chocolatey.org/packages/kubernetes-cli) package manager.
+  - 4. Install **GNU make** in Windows using [Chocolatey](https://community.chocolatey.org/packages/make)
   
 
-In this blog I will use the make utility to automate the process of creating the cluster and deploying simple nginx container in the cluster and once deployed verify accessing.
+In this blog we will also see how to use the make utility to automate the steps to create the Kind cluster and deploy simple nginx container in the cluster. Once deployed we can use a target to verify whether we are able to access the container.
 
-Without the makefile below steps need to be followed
+## Instruction to create KIND cluster in Docker Desktop and deployed a Nginx container
 
-1. Create cluster using Kind cli, with the default configuration
+### 1. Create KIND cluster with CLI
   
+- KIND CLI used to create cluster with default configuration and specify the configuration in yaml file
+
 ```
 # command to create cluster with default config. 
 # the default cluster name is kind
 > kind create cluster
 ```
-- specify the cluster name
+
 ```
-# --name switch is used to provide name for cluster
+# --name switch can be used to provide name for cluster
  > kind create cluster --name=test01
 ```
  
-- Create cluster using cluster configuration in yaml
+ #### KIND cluster configuration exposes the port
+
   - In order to expose the port, we can use `extraPortMappings` option in the cluster config yaml file. The content of the cluster config, save it as `kind_cluster.yaml`.
   
 ```yaml
@@ -49,34 +55,37 @@ nodes:
     protocol: TCP
 ```
 
-- Pass the config file in the kind CLI
+- KIND CLI command to use the config file
 
 ```
 > kind create cluster --name=test --config=.\kind_cluster.yaml
 ```
 
+- List of context created after the KIND cluster is created
+
 ![image](https://user-images.githubusercontent.com/6425536/199400230-f65e22a1-f65a-46cc-92f9-b7bf10201d58.png)
 
 > **INFO:-**
 >
-> After deployment Kind automatically merges the configuration to the Kube config file, so we can use kubectl command directly. 
+> After cluster deployed the KIND kube config is automatically merged to the kubectl kube config file, so we can use kubectl command directly to access the context. 
 
-- Below is the command to list the context. This command will output the created cluster info
+- Command that lists the contexts after the KIND cluster is created
+- `*` indicates the kubectl is using it as current context
 
-```
-> kubectl config get-contexts
-```
-- Output
-   - `*` indicates the current context
 ```
 $ kubectl config get-contexts
+
 CURRENT   NAME              CLUSTER           AUTHINFO          NAMESPACE
           docker-desktop    docker-desktop    docker-desktop
 *         kind-test         kind-test         kind-test
           kind-test01       kind-test01       kind-test01
 ```
 
-2. Create a nginx container with the config file
+- With the above configuration once the cluster is deployed if we check the `docker ps` we should see the 8010 port exposed.
+
+![image](https://user-images.githubusercontent.com/6425536/200222117-b9d1d2ca-2cc0-451b-ae63-e2cd4a981c57.png)
+
+### 2. Create a nginx container with the config file
 
 - Instead of running nginx container using `kubectl run` command, we use the deployment manifest file below with ports specified.
   - We can see the `containerPort` and the `hostPort` in the deployment manifest both match cluster container port value 80.
@@ -129,47 +138,30 @@ spec:
 
 - Create the deployment with `kubectl -n web apply -f app_deployment.yaml`.
 
-3. To access the container from host machine, from Git Bahs use the `curl` command to hit the 8010 port.
+### 3. Access the container from host machine
+
+3. With the Git Bash use the `curl` command to hit the 8010 port.
 
 ```
 curl http://localhost:8010
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-html { color-scheme: light dark; }
-body { width: 35em; margin: 0 auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
-
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
 ```
+Or from the browser on host machine which displays the default nginx home page like below
 
 ![image](https://user-images.githubusercontent.com/6425536/199401277-6ab2bb24-8f5e-45ec-9b82-ff47b4af281d.png)
 
-### We automate the whole step abobe using make utility
+## Makefile to deploy the KIND cluster
 
-- We can define the above steps in Makefile. 
-- In brief, we have different target with recipe to perform the task in the make utility and these to be defined in `Makefile`.
-- GNU make supports lots of features.
+- `make` is a build tool used in Linux/Unix systems to build C/C++ code earlier
+- The make file included all the above steps,
+   - Create the KIND cluster, 
+   - Create a deployment to run a nginx container
+   - Target to run the curl command to access the container
+- GNU make also supports lots of features, refer [makde documentation](https://www.gnu.org/doc/doc.html).
 
 ```
+# Makefile simple representation
 target:
-   recipe 
+<tab-space>recipe 
 ```
 
 >**INFO:-**
@@ -235,14 +227,26 @@ info: # display the target names
 	awk -F":" 'BEGIN {print "targets" } /^[a-zA-Z_-]+/ {print "    "$$1}'
 ```
 
-- Place the cluster config (as kind_cluster.yaml) and manifest content (as app_deployment.yaml) in  file, under the directory along with the Makefile.
+- Place the cluster config (as kind_cluster.yaml) and manifest content (as app_deployment.yaml) in same directory as the Makefile.
 
 
-- From GitBash editor, navigate to the directory and issue the below command
+- From Git Bash editor, navigate to the directory and issue the below command
 
 ```
 > make deploy
 ```
 
-- Once deployed, using the target `make check-container-access`
-To list the targets use `make` or `make info`
+#### Output - using make targets
+
+- The output of using the `make deploy`, deploy target which deploys the cluster and Nginx container.
+
+![image](https://user-images.githubusercontent.com/6425536/200214360-6279da19-8fd8-4e5a-8430-94cc5cb917a7.png)
+
+- Output of `make check-container-access` once the deployment is complete
+
+![image](https://user-images.githubusercontent.com/6425536/200217172-8e715297-d081-49c0-a27b-c7ddd0bfd52a.png)
+
+
+- Output of `make` or or `make info` will list the targets like below
+
+![image](https://user-images.githubusercontent.com/6425536/200217353-2576f8c9-d894-4de6-8756-aee4e5fdb1b6.png)
