@@ -22,8 +22,10 @@ In this blog we will also see how to use the make utility to automate the steps 
 
 ## Steps to run the nginx container in KIND cluster deployed in Docker Desktop
 
-### 1. Create cluster using Kind cli, with the default configuration
+### 1. Create KIND cluster with CLI
   
+- KIND CLI used to create cluster with default configuration and specify the configuration in yaml file
+
 ```
 # command to create cluster with default config. 
 # the default cluster name is kind
@@ -35,7 +37,7 @@ In this blog we will also see how to use the make utility to automate the steps 
  > kind create cluster --name=test01
 ```
  
-### Create KIND cluster with configuration yaml file
+ #### KIND cluster configuration exposes the port
 
   - In order to expose the port, we can use `extraPortMappings` option in the cluster config yaml file. The content of the cluster config, save it as `kind_cluster.yaml`.
   
@@ -52,21 +54,22 @@ nodes:
     protocol: TCP
 ```
 
-- Using the config file to the kind CLI
+- KIND CLI command to use the config file
 
 ```
 > kind create cluster --name=test --config=.\kind_cluster.yaml
 ```
 
-#### Context info after the KIND cluster is created
+- List of context created after the KIND cluster is created
 
 ![image](https://user-images.githubusercontent.com/6425536/199400230-f65e22a1-f65a-46cc-92f9-b7bf10201d58.png)
 
 > **INFO:-**
 >
-> After deployment Kind automatically merges the configuration to the Kube config file, so we can use kubectl command directly. 
+> After cluster deployed the KIND kube config is automatically merged to the kubectl kube config file, so we can use kubectl command directly to access the context. 
 
-- Command to list the context, `*` indicates the kubectl uses that as current context
+- Command that lists the contexts after the KIND cluster is created
+- `*` indicates the kubectl is using it as current context
 
 ```
 $ kubectl config get-contexts
@@ -136,31 +139,8 @@ spec:
 
 ```
 curl http://localhost:8010
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-html { color-scheme: light dark; }
-body { width: 35em; margin: 0 auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
-
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
 ```
+Or from the browser on host machine which displays the default nginx home page like below
 
 ![image](https://user-images.githubusercontent.com/6425536/199401277-6ab2bb24-8f5e-45ec-9b82-ff47b4af281d.png)
 
