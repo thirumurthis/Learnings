@@ -5,12 +5,13 @@
  - With Kind (Kubernetes IN Docker) it is easy to spin up a local kubernetes cluster within Docker Desktop. The Kind runs as a container by itself.
  - Kind documentation is easy to understand, for more details and understanding refer [documentation](https://kind.sigs.k8s.io/) link.
 
-## Motivation: 
+## Motivation
 
-  - With the default configuration we can't access the container running in Kind cluster within Windows Docker Desktop.
-  - To access the running container we need to expose the configuration `extraPortMappings`.
+  - KIND cluster deployed in Windows Docker Desktop with default configuration we will not be able to access the container running in the cluster from the host machine.
+  - In order to access the container from the host machine we need to create KIND cluster using  `extraPortMappings` cluster configuration.
+  - This is not the case if we create the KIND cluster in Linux based system, based on the documentation this is network based limitation in Windows and Mac.
 
-## Pre-requisite tools required
+## Pre-requisite tools installed
 
   - 1. Docker Desktop installed and running.
   - 2. Install **KIND** using Chocolatey package manager refer [Kind documentation](https://kind.sigs.k8s.io/docs/user/quick-start/#installation) or [Chocolatey documentation](https://community.chocolatey.org/packages/kind) package manager.
@@ -20,7 +21,7 @@
 
 In this blog we will also see how to use the make utility to automate the steps to create the Kind cluster and deploy simple nginx container in the cluster. Once deployed we can use a target to verify whetehr we are able to access the container.
 
-## Steps to run the nginx container in KIND cluster deployed in Docker Desktop
+## Instruction to create KIND cluster in Docker Desktop and deployed a Nginx container
 
 ### 1. Create KIND cluster with CLI
   
@@ -231,7 +232,7 @@ info: # display the target names
 > make deploy
 ```
 
-#### Output - using make deploy
+#### Output - using make targets
 
 - The output of using the `make deploy`, deploy target which deploys the cluster and Nginx container.
 
