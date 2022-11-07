@@ -231,9 +231,17 @@ info: # display the target names
 > make deploy
 ```
 
-#### make deploy output info
+#### Output - using make deploy
+
+- The output of using the `make deploy`, deploy target which deploys the cluster and Nginx container.
 
 ![image](https://user-images.githubusercontent.com/6425536/200214360-6279da19-8fd8-4e5a-8430-94cc5cb917a7.png)
 
+- Output of `make check-container-access` once the deployment is complete
 
-- Once deployed, we can use the target `make check-container-access` to check if the container is accessible. Also to list the targets we can use `make` or `make info`
+![image](https://user-images.githubusercontent.com/6425536/200217172-8e715297-d081-49c0-a27b-c7ddd0bfd52a.png)
+
+
+- Output of `make` or or `make info` will list the targets like below
+
+![image](https://user-images.githubusercontent.com/6425536/200217353-2576f8c9-d894-4de6-8756-aee4e5fdb1b6.png)
