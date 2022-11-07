@@ -246,7 +246,6 @@ info: # display the target names
 
 ![image](https://user-images.githubusercontent.com/6425536/200217172-8e715297-d081-49c0-a27b-c7ddd0bfd52a.png)
 
-
 - Output of `make` or or `make info` will list the targets like below
 
 ![image](https://user-images.githubusercontent.com/6425536/200217353-2576f8c9-d894-4de6-8756-aee4e5fdb1b6.png)
