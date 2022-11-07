@@ -246,6 +246,114 @@ info: # display the target names
 
 ![image](https://user-images.githubusercontent.com/6425536/200217172-8e715297-d081-49c0-a27b-c7ddd0bfd52a.png)
 
+
 - Output of `make` or or `make info` will list the targets like below
 
 ![image](https://user-images.githubusercontent.com/6425536/200217353-2576f8c9-d894-4de6-8756-aee4e5fdb1b6.png)
+
+## Exposing multiple port from cluster
+
+- Cluster configuration to expose 8012 and 8013 is as follows
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+  # port forward 8008 on the host to 80 on this node (kind)
+  extraPortMappings:
+  - containerPort: 8000
+    hostPort: 8012
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+  - containerPort: 8001
+    hostPort: 8013
+    listenAddress: "127.0.0.1"
+    protocol: TCP
+```
+
+- Below are the two nginx deployment using different ports
+  - 8012.yaml
+    - The nginx `containerPort : 80`, the service definition targetPort is 80 which handles the traffic to the web-pod1 container
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web-pod1
+  name: web-pod1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-pod1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: web-pod1
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+          hostPort: 8000
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-pod1
+spec:
+  selector:
+    app: web-pod1
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 80
+```
+
+- 8013.yaml
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web-pod2
+  name: web-pod2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-pod2
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: web-pod2
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+          hostPort: 8001
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-pod2
+spec:
+  selector:
+    app: web-pod2
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 80
+```
