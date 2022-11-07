@@ -1,4 +1,4 @@
-## Sping up Kubernetes cluster with Kind in Docker Desktop
+## Spin up Kubernetes cluster with Kind in Docker Desktop
 
 What is Kind?
  - With Kind (Kubernetes IN Docker) it is easy to sping up a local kubernetes cluster within Docker Desktop. The Kind runs as a container by itself.
@@ -54,6 +54,8 @@ nodes:
 ```
 > kind create cluster --name=test --config=.\kind_cluster.yaml
 ```
+
+![image](https://user-images.githubusercontent.com/6425536/199400230-f65e22a1-f65a-46cc-92f9-b7bf10201d58.png)
 
 > **INFO:-**
 >
@@ -156,6 +158,8 @@ Commercial support is available at
 </body>
 </html>
 ```
+
+![image](https://user-images.githubusercontent.com/6425536/199401277-6ab2bb24-8f5e-45ec-9b82-ff47b4af281d.png)
 
 ### We automate the whole step abobe using make utility
 
