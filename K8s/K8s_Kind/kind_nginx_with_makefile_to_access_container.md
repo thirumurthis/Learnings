@@ -253,6 +253,8 @@ info: # display the target names
 
 ## Exposing multiple port from cluster
 
+![image](https://user-images.githubusercontent.com/6425536/200250963-d0ed4e12-9aba-4066-b7f8-5541a32d84f0.png)
+
 - Cluster configuration to expose 8012 and 8013 is as follows
 
 ```yaml
