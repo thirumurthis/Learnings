@@ -38,7 +38,9 @@
   - Kafka setup installed and running, accessible at `http://localhost:9092`
   - Basic understanding of Apache Camel
 
-## Code 
+## Code details
+
+### Dependencies 
 
 - Create springboot project with Apache Camel and WebFlux dependencies, pom.xml details as follows
   
@@ -121,6 +123,8 @@
 </project>
 ```
 
+### Routing configuration
+
 - Below code shows the route configuration mentioned above, we define it by extending the `RouteBuilder` of Camel.
 
 ```java
@@ -160,6 +164,8 @@ public class AppCamelBasedProducerConsumer extends RouteBuilder {
 }
 ```
 
+### Camel Process configuration to generate random number
+
 - Below is a implementation of Camel Processor which generates the random number.
 
 - In Camel with processor we can transform the messages retrieved from one endpoint to another. 
@@ -188,6 +194,8 @@ public class RandomGenerationProcess implements Processor {
     }
 }
 ```
+
+### Service layer to subscribe to the Camel Stream using Flux
 
 - Below is the service layer where the Camel reactive-streams and the Spring Flux are chained.
 
@@ -220,6 +228,8 @@ public class AppService{
     }
 }
 ```
+
+### Controller code to create an event stream endpoint
 
 - Below is a simple Controller, where we define the endpoint as a stream by defining a MediaType, so browsers can access the endpoint as stream of data
 
@@ -257,7 +267,7 @@ public class AppController {
 }
 ```
 
-### Output:
+## Output:
 
 - Running the above code will throws exception message until an active subscriber is connected, in this case had to hit the `http://localhost:8080/api/stream` from a browser browser. The console output once connected using browser starts streaming the data to the subscriber.
 
