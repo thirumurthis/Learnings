@@ -40,7 +40,7 @@
 
 ## Code details
 
-### Dependencies 
+### Required dependencies for the project
 
 - Create springboot project with Apache Camel and WebFlux dependencies, pom.xml details as follows
   
@@ -123,7 +123,7 @@
 </project>
 ```
 
-### Routing configuration
+### Camel Routing configuration details
 
 - Below code shows the route configuration mentioned above, we define it by extending the `RouteBuilder` of Camel.
 
@@ -164,7 +164,7 @@ public class AppCamelBasedProducerConsumer extends RouteBuilder {
 }
 ```
 
-### Camel Process configuration to generate random number
+### Camel Processor configuration that generates random number
 
 - Below is a implementation of Camel Processor which generates the random number.
 
