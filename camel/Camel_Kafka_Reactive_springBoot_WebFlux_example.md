@@ -1,9 +1,10 @@
-## Reactive application with SpringBoot, Apache Camel using Kafka Broker
+## Simple reactive application with SpringBoot, Apache Camel using Kafka Broker to stream the data.
 
-- This blog demonstrates how to integrate Apache Camel with Apache Kafka and SpringBoot to build a simple Reactive web application.
-- The endpoint exposed in this case will streams the data received from the Kafka broker.
+- In this blog have demonstrated how to integrate Apache Camel with Apache Kafka and SpringBoot, by building a simple Reactive application.
 
-## Brief introduction about the application
+- The Apache Camel components are used to generate random numbers every 2 seconds, this random number is sent to Kafka and consumed by different camel route finally connecting with SpringBoot Flux to stream the data via controller endpoint.
+
+## About the application
 
 - Apache camel route definition details are as follows
   - Route set 1:
@@ -34,7 +35,7 @@
 
 ## Pre-requisites:
 
-  - Kafka setup installed and running, accessible at http://localhost:9092
+  - Kafka setup installed and running, accessible at `http://localhost:9092`
   - Basic understanding of Apache Camel
 
 ## Code 
