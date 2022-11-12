@@ -1,6 +1,9 @@
-## Reactive application with SpringBoot, Apache Camel and Kafka
+## Reactive application with SpringBoot, Apache Camel using Kafka Broker
 
-- The application uses Apache camel components with below routes
+- This blog demonstrates how to integrate Apache Camel with Apache Kafka and SpringBoot to build a simple Reactive web application.
+- The endpoint is alos exposed in this case, which streams the data.
+
+- Apache camel route defintion details are as follows
   - Route set 1:
       - from: timer component used to poll every 2 seconds in this case
       - processor (this will generate Random number between 0-500 and set in camel exchange)
@@ -19,20 +22,20 @@
       - from: direct endpoint 
       - to: reactive-stream endpoint, named numbers
 
-- In order to subscribe to the strea, the publisher is obtained from the camel-context. This reactive-stream publisher is subscribed with Flux.
+- To integrate the Apache Camel `reative-stream` with the SpringBoot Flux, the publisher is retrieved from camel-context and subscribed using Flux. 
+- With Camel [reactive-streams component](https://camel.apache.org/components/3.18.x/reactive-streams-component.html) it is easy to use Project Reactor or RxJava or other reactive framework. In this case Spring Flux is used to subscribe to the publisher.
 
 - Code flow representation: 
 
 ![image](https://user-images.githubusercontent.com/6425536/201460847-9d270f86-c934-45a4-9955-dc65640874bd.png)
 
-
-Pre-requsites:
+## Pre-requsites:
   - Kafka setup installed and running, accessible at http://localhost:9092
+  - Basic understanding of Apache Camel
 
-Code 
+## Code 
 
-- Create springboot project with Apache Camel and WebFlux dependecies 
-  - pom.xml details
+- Create springboot project with Apache Camel and WebFlux dependencies, pom.xml details as follows
   
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -113,7 +116,7 @@ Code
 </project>
 ```
 
-- Route 
+- Below is the Apache Camel route configuration defined extending the `RouteBuilder` of Camel.
 
 ```java
 package com.camel.kafka.app;
@@ -152,7 +155,10 @@ public class AppCamelBasedProducerConsumer extends RouteBuilder {
 }
 ```
 
-- Processor
+- Below is a implementation of Camel Processor which generates the random number.
+- In Camel with processor we can transform the messages retrieved from one endpoint to another. 
+   - For example, we can use file component to read the contents of the file from a directory and use processor to transform all into uppercase.
+ 
 ```java
 package com.camel.kafka.app;
 
@@ -173,7 +179,8 @@ public class RandomGenerationProcess implements Processor {
     }
 }
 ```
-- Service
+
+- Below is the service layer where the Camel reactive-streams and the Spring Flux are chained.
 
 ```java
 package com.camel.kafka.app;
@@ -205,12 +212,11 @@ public class AppService{
 }
 ```
 
-- Controller
+- Below is a simple Controller, where we define the endpoint as a stream by defining a MediaType, so browsers can access the endpoint as stream of data
 
 ```java
 
 package com.camel.kafka.app;
-
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -241,7 +247,9 @@ public class AppController {
 }
 ```
 
-- Should see exception message till an client is subscribed in this case I had to use a browser 
+### Output:
+
+- Running the above code will throws exception message until an active subscriber is connected, in this case had to hit the `http://localhost:8080/api/stream` from a browser browser. The console output once connected using browser starts streaming the data to the subscriber.
 
 ```
 2022-11-11 22:31:11.779  WARN 17004 --- [mer[camel-demo]] o.a.camel.component.kafka.KafkaConsumer  : Error during processing. Exchange[9D3C45E152C9A66-0000000000000437]. Caused by: [org.apache.camel.component.reactive.streams.ReactiveStreamsNoActiveSubscriptionsException - The stream has no active subscriptions]
@@ -273,6 +281,7 @@ org.apache.camel.component.reactive.streams.ReactiveStreamsNoActiveSubscriptions
 2022-11-11 22:31:15.783  INFO 17004 --- [mer[camel-demo]] route3                                   : message - 205 from camel-demo
 2022-11-11 22:31:17.784  INFO 17004 --- [mer[camel-demo]] route3                                   : message - 53 from 
 ```
-- From Chrome browser we should be able to see the messages streaming continously- 
-![image](https://user-images.githubusercontent.com/6425536/201460960-9a407f96-b92a-45af-a948-9e81150fa6d1.png)
 
+- From Chrome browser below is the output where the data will be streamed continously
+ 
+![image](https://user-images.githubusercontent.com/6425536/201460960-9a407f96-b92a-45af-a948-9e81150fa6d1.png)
