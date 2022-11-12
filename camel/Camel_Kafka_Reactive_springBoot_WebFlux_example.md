@@ -1,35 +1,39 @@
 ## Reactive application with SpringBoot, Apache Camel using Kafka Broker
 
 - This blog demonstrates how to integrate Apache Camel with Apache Kafka and SpringBoot to build a simple Reactive web application.
-- The endpoint is alos exposed in this case, which streams the data.
+- The endpoint exposed in this case will streams the data received from the Kafka broker.
 
-- Apache camel route defintion details are as follows
+## Brief introduction about the application
+
+- Apache camel route definition details are as follows
   - Route set 1:
       - from: timer component used to poll every 2 seconds in this case
       - processor (this will generate Random number between 0-500 and set in camel exchange)
-      - to: direct endpoint (direct is specific toApache Camel)
+      - to: direct endpoint (direct is specific to Apache Camel)
       
   - Route set 2:
       - from: direct endpoint 
-      - to: kafka broker using the kafka component
+      - to: kafka broker using the Camel kafka component
 
   - Route set 3:
     - This will be 
-      - from: kafka broker consume the message
+      - from: kafka broker consumes the message
       - to: send to direct endpoint 
   
   - Route set 4:
       - from: direct endpoint 
       - to: reactive-stream endpoint, named numbers
 
-- To integrate the Apache Camel `reative-stream` with the SpringBoot Flux, the publisher is retrieved from camel-context and subscribed using Flux. 
+- To integrate the Apache Camel `reactive-stream` with the SpringBoot Flux, the publisher is retrieved from camel-context and subscribed using Flux. 
+
 - With Camel [reactive-streams component](https://camel.apache.org/components/3.18.x/reactive-streams-component.html) it is easy to use Project Reactor or RxJava or other reactive framework. In this case Spring Flux is used to subscribe to the publisher.
 
-- Code flow representation: 
+### Code flow representation: 
 
 ![image](https://user-images.githubusercontent.com/6425536/201460847-9d270f86-c934-45a4-9955-dc65640874bd.png)
 
-## Pre-requsites:
+## Pre-requisites:
+
   - Kafka setup installed and running, accessible at http://localhost:9092
   - Basic understanding of Apache Camel
 
@@ -116,7 +120,7 @@
 </project>
 ```
 
-- Below is the Apache Camel route configuration defined extending the `RouteBuilder` of Camel.
+- Below code shows the route configuration mentioned above, we define it by extending the `RouteBuilder` of Camel.
 
 ```java
 package com.camel.kafka.app;
@@ -156,8 +160,9 @@ public class AppCamelBasedProducerConsumer extends RouteBuilder {
 ```
 
 - Below is a implementation of Camel Processor which generates the random number.
+
 - In Camel with processor we can transform the messages retrieved from one endpoint to another. 
-   - For example, we can use file component to read the contents of the file from a directory and use processor to transform all into uppercase.
+    - For example, we can use file component to read the contents of the file from a directory and use processor to transform all into uppercase.
  
 ```java
 package com.camel.kafka.app;
@@ -175,6 +180,9 @@ public class RandomGenerationProcess implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         Integer rand = random.nextInt(500);
+
+        //Set the random number to the Camel exchange in the body
+        //This will be sent to the next endpoint
         exchange.getIn().setBody(rand);
     }
 }
@@ -234,13 +242,14 @@ public class AppController {
     @Autowired
     AppService appService;
 
-    //Including the Media Type event stream, browser can connect
-    //as data is streamed.
-    // accessing this endpoint with Chorme the data will be streamed
-    // at this time FireFox downloads the stream 
+    //Including the Media Type TEXT_EVENT_STREAM_VALUE enables browser 
+    //to connect to the endpoint as event stream so data will be streamed continuously
+
+    // accessing this endpoint with Chrome the data will be streamed
+    // at this time when I tried with FireFox it downloads the stream as file
     
     @GetMapping(value="/stream",produces= MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<Integer> geVehiclesStream(){
+    public Flux<Integer> getRandomIntegerStream(){
         log.info("invoked controller stream uri /stream");
           return appService.randomIntStream();
     }
