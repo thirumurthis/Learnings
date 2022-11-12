@@ -305,3 +305,9 @@ org.apache.camel.component.reactive.streams.ReactiveStreamsNoActiveSubscriptions
 - From Chrome browser below is the output where the data will be streamed continously
  
 ![image](https://user-images.githubusercontent.com/6425536/201460960-9a407f96-b92a-45af-a948-9e81150fa6d1.png)
+
+## Additional notes
+
+- In this pipeline instead of `timer` component we can use `file`, `jms`, etc. Camel component to fetch data and push to kafka.
+
+- The Camel Kafka component has additional configuration that can be found in the [documentation](https://camel.apache.org/components/3.18.x/kafka-component.html) like enabling transaction, reading from the offset, etc.
