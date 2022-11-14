@@ -195,6 +195,21 @@ public class RandomGenerationProcess implements Processor {
 }
 ```
 
+> **Info:-**
+> We can pass the processor can be passed as lambda expression as well like below
+> 
+> ```java
+>    //.....
+>    Random random = new Random();
+>    @Override
+>    public void configure() throws Exception {
+>        from("timer://foo?fixedRate=true&period=2000")
+>        //pass in hte lamda directly
+>        .process(exchange -> exchange.getIn().setBody(random.nextInt(500));)
+>        .to("direct:message");
+>    //....
+>```
+
 ### Service layer to subscribe to the Camel Stream using Flux
 
 - Below is the service layer where the Camel reactive-streams and the Spring Flux are chained.
