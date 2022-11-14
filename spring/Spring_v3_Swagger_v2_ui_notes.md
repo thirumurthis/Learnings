@@ -2,7 +2,9 @@ Spring Open API
 
 - Open API is a specification and Swagger is an implementation.
 
-Spring boot 3.0.0
+`Spring boot 3.0.0` and `Springdoc-openapi version 2.0.0-RC1`.
+
+Note: Spring 3 supports Java 17, and uses Jakarata pacakges instead of Javax, to support J2EE open source version.
 
 In order to include the OpenAPI in spring boot we need to add the dependencies
 
@@ -184,7 +186,8 @@ http://localhost:8080/swagger-ui/index.html
 - Raw openapi spec 
 http://localhost:8080/v3/api-docs
 
-In order to load the swagger-ui in a custom url we can use
+In order to load the swagger-ui in a custom url we can use below configuration in application.properties
+- with this we can access `http://localhost:8080/openapi-spec.html`
 
 ```
 # swagger-ui custom path
