@@ -196,7 +196,7 @@ public class RandomGenerationProcess implements Processor {
 ```
 
 > **Info:-**
-> We can pass the processor can be passed as lambda expression as well like below
+> We can pass the processor as lambda expression like below
 > 
 > ```java
 >    //.....
