@@ -250,6 +250,21 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 //....
+
+    @Operation(summary="Get Employees", description = "list of employees", tags = "Get")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Employee list",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Employee.class))})
+    })
+    @GetMapping("/employee/{empName}")
+    @CrossOrigin
+    public Employee getEmployee(@PathVariable String empName){
+        Optional<Employee> employee = this.employees.stream()
+                         .filter(item -> item.name().equals(empName)).findFirst();
+
+        return employee.orElseGet(()-> Employee.builder().build());
+    }
+    
     @Operation(summary="Get Employees", description = "list of employees", tags = "Get")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",description = "Employee list",
@@ -264,3 +279,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
     }
 //..
 ```
+
+- Swagger UI 
+
+![image](https://user-images.githubusercontent.com/6425536/201582882-d6a3f146-0c46-441c-aaca-d155db554431.png)
+
