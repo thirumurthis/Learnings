@@ -54,29 +54,28 @@ public class ExampleMain {
 	}
 	
   /* for hash map we can use below */
-  public static <T> Predicate<T> distinctByKeyForMap(
-    Function<? super T, ?> keyExtractor) {
+  public static <T> Predicate<T> distinctByKeyForMap(Function<? super T, ?> keyExtractor) {
   
     Map<Object, Boolean> seen = new ConcurrentHashMap<>(); 
-    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null; 
-}
+    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;  
+  }
 
   /* Create object to mock up the filtering scenario */
-	private static Vector<Object> createVectorMessageObjet() {
-		MessageObject message1 = new MessageObject("var1","var2","var3","var4");
-		MessageObject message2 = new MessageObject("var1","var2","var3","var4");
-		MessageObject message3 = new MessageObject("var1","var2","var3","var4");
-		MessageObject message4 = new MessageObject("var10","var20","var3","var4");
-		MessageObject message5 = new MessageObject("var1","var2","var30","var40");
+  private static Vector<Object> createVectorMessageObjet() {
+        MessageObject message1 = new MessageObject("var1","var2","var3","var4");
+        MessageObject message2 = new MessageObject("var1","var2","var3","var4");
+	MessageObject message3 = new MessageObject("var1","var2","var3","var4");
+	MessageObject message4 = new MessageObject("var10","var20","var3","var4");
+	MessageObject message5 = new MessageObject("var1","var2","var30","var40");
 		
-		Vector<Object> out = new Vector<>();
-		out.add(message1);
-		out.add(message2);
-		out.add(message3);
-		out.add(message4);
-		out.add(message5);
-		return out;
-	}
+	Vector<Object> out = new Vector<>();
+	out.add(message1);
+	out.add(message2);
+	out.add(message3);
+	out.add(message4);
+	out.add(message5);
+	return out;
+   }
 }
 ```
 
