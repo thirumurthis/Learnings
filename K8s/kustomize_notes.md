@@ -1,5 +1,6 @@
-
 ## Manage Kubernetes manifest using Kustomize
+
+- In this blog have demonstrated, how we can use Kustomize to manage Kubernetes manifest with simple example and also how to render Kubernetes manifest using Kustomize CLI.
 
 **Pre-requisites:**
 
@@ -289,6 +290,9 @@ spec:
         ports:
         - containerPort: 80
 ```
+
+> **Info:-**
+> The rendered YAML file can be directly deployed to the cluster using `kubectl` command. We can also directly use CD (continuous delivery) tool like `Argo CD` to use the kustomize configuration to deploy the resources.
 
 #### Additional Info
 
