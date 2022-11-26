@@ -9,12 +9,12 @@ Pre-requsites:
   - Understanding of kubernetes and deploying resources using YAML manifest
   - Basic understanding of GO Lang and installed locally for development. VS Code with Go plugin
   - Docker desktop installed and Kustomize CLI installed
-  - Basic understanding on Kustomize usage, for more details check my previous blog [link here]https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
+  - Basic understanding on Kustomize usage, for more details check my previous blog [link here](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
 
 
 ## Kustomize KRM function
 
-- The [Kustomize documentation]((https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize) with example is used for adding annotation value.
+- The [Kustomize documentation](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize) with example is used for adding annotation value.
 
 - This blog will explain GO lang code development for the plugin and how to debug the in local, with sample test case.
 
@@ -76,11 +76,16 @@ Pre-requsites:
   - The transformer Yaml should be reference in the kustomization.yaml configuraton using `transformer:` tag
   - The input values will be passed in the `spec` tab, the Kustomize framework will pass this as stdin to the specified container and transforms it to specified logic
 
+
+![image](https://user-images.githubusercontent.com/6425536/204107814-84c8d9fa-b41d-4f3f-bd64-c5a014eee065.png)
+
+
 Plugin development:
 
-  - For development we use a sample resource yaml which is Kubernetes ResourceList type.
-  - In this case we define the input under `functionConfig:` tag, where we specify use the list to define to which resource the annotation to be applied
-  - In the below yaml, the annotation value `holder: sample-io/add` will be added to ConfigMap and Service k8s resources only. The `kind: Deployment` will not include this annotation.
+  - For development we use below sample resource yaml which is Kubernetes ResourceList type
+  - In this case we define the input under `functionConfig:` tag, where we specify list of resource to which the annotation to be applied
+  - In the below yaml, the annotation value `holder: sample-io/add` will be added to ConfigMap and Service resources only. 
+  - The `kind: Deployment` will not include this annotation, this is the test case validation
 
 ```yaml
 apiVersion: config.kubernetes.io/v1
@@ -156,7 +161,7 @@ items:
 > go mod tidy
 ```
 
-- Below is the Go code with the logic
+- Go code with the logic
   - The `struct` type defined reperesents the `functionConfig` property `applyAnnotationTo` which stores the parsed resourceList by the kyaml framework
   - The kyaml framework injects the YAML data from the items tag in the function deinfed
   - For the resources specified in target, applyAnnotationTo the items list will be flitered and for the matching resource in kind we add annotation with key and value
@@ -166,20 +171,34 @@ items:
   > go run kustomizePlugin.go gen .
   ```
 
-> **Info:-**
->
-> Copy the Docker file from the `source` folder and move to `project` folder. 
-> The `go mod init` creates the `go.mod` and `go.sum` under the `project` directory, and these files needs to be copied to image.
-> The `go.mod` files defines the module info, which will be used in the container to build image
-> The copy command needs to be updated to copy only the source/kustomizePlugin.go
->
 
 ### Code defining the core logic
 
 > **Note:-**
-> - The code main() function has `runAsCommand` boolean, when set to true this will execute the code that can generate Docker file
-> 
+> - The code main() function has `runAsCommand` boolean, when set to true this will execute the code block
+> - With the below code, the Dockerfile will be generated automically with `go run` command with `gen`
+> ```
+>   cmd := command.Build(p, command.StandaloneDisabled, false)
+>   //automatically generates the Dockerfile for us
+>   command.AddGenerateDockerfile(cmd)
+>   if err := cmd.Execute(); err != nil {
+>		os.Exit(1)
+>   }
+> ```
+> - Below code is used, it will be easy for debug if we use reader and writer 
+> ```
+>     if error := framework.Execute(p, byteReadWriter); error != nil {
+>      panic(error)
+>    }
+> ```
 
+> ** Additional :-**
+>
+> Copy the Docker file from the `source` folder and move to `project` folder. 
+> The `go mod init` creates the `go.mod` and `go.sum` under the `project` directory, and these files needs to be copied to image.
+> The `go.mod` files defines the module info, which will be used in the container to build image
+> The copy command needs to be updated in the Dockerfile to copy only the source/kustomizePlugin.go
+>
 
 ```go
 package main
