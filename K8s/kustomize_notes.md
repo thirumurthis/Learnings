@@ -1,40 +1,67 @@
 
 ## Managing Kubernetes manifest using Kustomize
 
+**Pre-requisites:**
+
+ - Basic understanding of Kubernetes and how resources are deployed using yaml
+- Kustomize CLI installed in the machine. To install refer the [documentation](https://kubectl.docs.kubernetes.io/installation/kustomize/) for more details
+
+
 ### What is Kustomize?
-  - Kustomize is template-free way to customize application configuration. Refer [kustomize.io](https://kustomize.io/)
-  - Kustomize is built into `kubectl` and when the Kustomize configuration can be directly applied to the Kubernetes cluster directly using `kubectl apply -k <directory\to\kustomization.yaml>`
+
+  - Kustomize provides a solution for customizing Kubernetes resource configuration free from templates and DSLs. Refer [kustomize.io](https://kustomize.io/)
+ - Kustomize lets you customize raw, template-free YAML files for multiple purposes, leaving the original YAML untouched and usable as is.
+  - `kubectl` client already supports kustomize
+  - Kustomize configuration can applied directly to Kubernetes cluster using `kubectl apply -k <directory\to\kustomization.yaml>`
   
-#### High level overview
-  - In enterprise project to deploy application the resources will be defined in lots of Yaml manifest file. In case if we need to apply environment (dev,test,production) specify changes to those manifest we can use `helm`. When using `helm` the manifest are deinfed using templates, to generate the manifest we use helm command.  
-  - With Kustomize we not need to template the manifest, the environment specific configuration can be applied using erither the `kubectl` command or we can use the `ksutomize` cli to render the manifest. In this case we have a base manifest whcih nver changes, any envrionment specific changes will be manages in specific directories.
+### High level overview
+
+  - In enterprise project to deploy the application into Kubernetes cluster the resources will be defined in many of YAML manifest file. If there are lots of manifest file and in case we need to apply different configuration for each environment like dev, test or production we can use `helm` in order to render and deploy the manifest we need `helm` command. Kustomize can helps in managing the environment specific configuration in a manageable way.
+
+  - With Kustomize we not need to template the manifest, the environment specific configuration can be applied to cluster directly using the `kubectl` command. The manifest can also be rendered using `kustomize` cli. 
+
+- With the kustomize structure the base or raw manifest will never change.
 
 #### How kustomize works?
-  - Say, we have a manifest for our application in a directory named `base`, we require an  `kustomization.yaml`file which configures the path thes manifest under the same directory 
+
+  - Say, we have a manifest for our application in a directory named `base`, kustomize uses `kustomization.yaml` file that configures the path these manifest under the same directory using `resources` tag
+
 > **Info:-**
-> The `resource` tag is used to specify the path of the application manifest yaml this tag is identified by Kustomize CLI
+> The `resources` tag is used to specify the path of the application manifest yaml this tag is identified by kustomize framework
 >
-  - In order to configure the envronment specific configuration we need to create a `overlay` folder, which contains environemnt name, with reference to the image above have created `dev` and `test` environment folders.
-  
+
+  - In order to configure the environment specific configuration `overlay` folder is created, which contains folders specific to environment. With reference to the image below, we use `dev` and `test` folders refers the environment.
+
 > **Info:-**
-> Per Kustomize documentation i have used `overlay` folder which is best practice this folder can have different name as well.
+> Per Kustomize documentation example have used the folder name as `overlay`, this folder name can be different.
 > 
 
-  - `overlay\dev` folder contains `kustomization.yaml` file which defines the path to the base folder, and dev environment specific changes. In this case adding a namePrefix and updating replica
-  - `overlay\test` folder contains `kustomization.yaml` file which defines the path to the base folder, and refence to patch file that has definition to replace the replica and an inline patch to update image tags.
-  - When running the kustomize CLI command to render the environment specific manifest, the Kustomize will use the `kustomization.yaml` under specific environment to identify the base manifest configuration (kustomization.yaml under the base defines which resources to use, using the `resources` tag)
+  - `overlay\dev` folder contains `kustomization.yaml` file which defines the path to the base folder (in `resources` tag), and dev environment specific changes. For dev the configuration adds "-dev" to the name using `nameSuffix` and also updates the deployment replicas which is defined inline in the `kustomization.yaml`
+
+  - `overlay\test` folder contains `kustomization.yaml` file which defines the path to the base folder (in `resources` tag), and path of the patch file using `patches` tag. The `deployment_patch.yaml` use patch transform to update the replicas of the deployment. There are other options to update the configuration of resources, using inline patch configuration where the deployment image tag and the secret properties are updated.
+
+  - In order to render the environment specific manifest we can use the kustomize CLI command `kustomzie build /environment/directory/of/kustomization.yaml` or use ` kubectl apply -k /directory/of/kustomization.yaml`.In both case the command takes in the environment specific folder where the `kustomization.yaml` exists.
+
+- The framework will use the `kustomize.yaml` configuration to identify the base manifest.
 
 
-#### Kustomization manifest folder structure and dev environment depiction
+#### Project folder structure for dev environment manifest generation
+
 ![image](https://user-images.githubusercontent.com/6425536/204075864-fddca82d-d08e-4400-adf9-4ddaa252f81d.png)
 
 
 #### Test environment specific configuration
+
  - With reference to the dev, the base folder is same for the test as well.
 ![image](https://user-images.githubusercontent.com/6425536/204076298-992b39cb-ff10-4a5f-85dd-1d73831c4715.png)
 
 
-#### `base/deployment.yaml`
+### Code sample
+
+- Below are the YAML file used for this demonstration
+
+- `base/deployment.yaml`
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -59,7 +86,8 @@ spec:
         - containerPort: 80
 ```
 
-#### `base/secret.yaml`
+- `base/secret.yaml`
+
 ```yaml
 apiVersion: v1
 kind: Secret
@@ -71,7 +99,8 @@ data:
   ENV_CODE: DEV   # For test we need to update this to TEST
 ```
 
-#### `base/kustomization.yaml`
+- `base/kustomization.yaml`
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -81,9 +110,10 @@ resources:
    - secret.yaml
 ```
 
-- Below are the `dev` environment specific configuration
+### Dev environment specific configuration
 
-#### `overlay/dev/kustomization.yaml`
+- `overlay/dev/kustomization.yaml`
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -105,9 +135,9 @@ replicas:
   count: 1
 ```
 
-### To render the dev environment manifest, in this case using the kustomize CLI
+### Render manifest for dev environment using Kustomize CLI
 
-- Below command will generate the dev spcecific manifest
+- Command to generate dev specific manifest
 
 ```
 # navigate to specific directory where the manifest is stored
@@ -116,11 +146,13 @@ replicas:
 
 > kustomize build overlay/dev
 ```
+
 > **INFO:-**
 > The manifest will be displayed in the stdout, we can redirect it to specific directory using the `-o` switch, usage `kustomize build overlay/dev -o output/` 
 >
 
-#### Rendered dev manifest 
+### Output of rendered dev manifest 
+
 ```yaml
 apiVersion: v1
 data:
@@ -154,7 +186,10 @@ spec:
         - containerPort: 80
 ```
 
-### `overlay/test/deployment_patch.yaml`
+### Test environment specific cofiguration
+
+- `overlay/test/deployment_patch.yaml`
+
 ```yaml
 - op : replace
   path: /spec/replicas
@@ -174,8 +209,10 @@ spec:
 > - This patch file can directly define the deployment manifest yaml, with the test specific configuration. The `kustomization.yaml` file under test, will refer to the pathc using `patches` tag.
 > - kustomize framework will automatically infer the type of patch to be used when using `patches` tag, like `patchesStrategicMerge` or `patchTransform`
 
-#### `overlay/test/kustomization.yaml`
-  - Below yaml file defines different configuration that can be used to apply the patch
+- `overlay/test/kustomization.yaml`
+
+  - Below yaml file defines different options to apply the patch, using external file and inline in the configuration yaml
+
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -210,7 +247,12 @@ patches:
         ENV_CODE: TEST ## UPDATE TO TEST IN THIS PATCH
 ```
 
-### To render the test specific manifest, like we did for dev environment, we need to use Kustomize CLI `kustomzie build overlay/test`
+### Render manifest for test environment using Kustomize CLI
+
+- To render test environment specific manifest, the command is 
+`kustomzie build overlay/test`
+
+### Output of rendered test environment manifest
 
 ```yaml
 apiVersion: v1
@@ -245,6 +287,8 @@ spec:
         ports:
         - containerPort: 80
 ```
+
+#### Addotional Info
 
 Kustomize do supports different options to customize the configuration like 
   - replacements
