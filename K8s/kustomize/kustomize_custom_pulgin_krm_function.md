@@ -167,10 +167,10 @@ items:
   - For the resources specified in target, applyAnnotationTo the items list will be flitered and for the matching resource in kind we add annotation with key and value
   - To run the code and generate the Dockerfile (saved the below code `kustomizePlugin.go`) enable the `runAsCommand := true`
   - For debuging the code modify `runAsCommand := false`, and use the test case which calls the function
+
   ```
   > go run kustomizePlugin.go gen .
   ```
-
 
 ### Code defining the core logic
 
@@ -191,13 +191,14 @@ items:
 >      panic(error)
 >    }
 > ```
-
-> ** Additional :-**
 >
-> Copy the Docker file from the `source` folder and move to `project` folder. 
-> The `go mod init` creates the `go.mod` and `go.sum` under the `project` directory, and these files needs to be copied to image.
-> The `go.mod` files defines the module info, which will be used in the container to build image
-> The copy command needs to be updated in the Dockerfile to copy only the source/kustomizePlugin.go
+
+> ** Additional note :-**
+>
+> - Copy the Docker file from the `source` folder and move to `project` folder. 
+> - The `go mod init` creates the `go.mod` and `go.sum` under the `project` directory, and these files needs to be copied to image.
+> - The `go.mod` files defines the module info, which will be used in the container to build image
+> - The copy command needs to be updated in the Dockerfile to copy only the source/kustomizePlugin.go
 >
 
 ```go
