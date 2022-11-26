@@ -1,5 +1,5 @@
 
-## Managing Kubernetes manifest using Kustomize
+## Manage Kubernetes manifest using Kustomize
 
 **Pre-requisites:**
 
@@ -45,12 +45,14 @@
 - The framework will use the `kustomize.yaml` configuration to identify the base manifest.
 
 
-#### Project folder structure for dev environment manifest generation
+#### Kustomize project folder structure 
+
+##### Dev environment specific representation
 
 ![image](https://user-images.githubusercontent.com/6425536/204075864-fddca82d-d08e-4400-adf9-4ddaa252f81d.png)
 
 
-#### Test environment specific configuration
+##### Test environment specific representation
 
  - With reference to the dev, the base folder is same for the test as well.
 ![image](https://user-images.githubusercontent.com/6425536/204076298-992b39cb-ff10-4a5f-85dd-1d73831c4715.png)
@@ -135,7 +137,7 @@ replicas:
   count: 1
 ```
 
-### Render manifest for dev environment using Kustomize CLI
+### Render dev environment manifest 
 
 - Command to generate dev specific manifest
 
@@ -247,7 +249,7 @@ patches:
         ENV_CODE: TEST ## UPDATE TO TEST IN THIS PATCH
 ```
 
-### Render manifest for test environment using Kustomize CLI
+### Render test environment manifest 
 
 - To render test environment specific manifest, the command is 
 `kustomzie build overlay/test`
@@ -288,7 +290,7 @@ spec:
         - containerPort: 80
 ```
 
-#### Addotional Info
+#### Additional Info
 
 Kustomize do supports different options to customize the configuration like 
   - replacements
