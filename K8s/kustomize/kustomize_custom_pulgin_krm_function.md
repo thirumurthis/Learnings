@@ -15,14 +15,14 @@ Pre-requisites:
 - To understand what Kustomize is and how to use to mange manifest check my previous blog [link here](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
 
 
-### How the Kustomize plugin works?
+### How Kustomize plugin works?
 
   - With containerized KRM function kustomize framework will read the manifest and generate all resource into as Kubernetes resource ResourceList.
  - The ResourceList is further utilized by the framework by passing it to Generators and transformer pipeline finally rendering  the manifest.
 
   - Kustomize provides `kyaml` framework which is used to parse the ResourceList manifest in Go Language
   
-### Work flow
+#### Work flow
 
   - Using `kyaml` Go framework build the custom plugin with necessary logic.
   - Create container image, and push to docker hub or private image registry.
@@ -44,7 +44,7 @@ Pre-requisites:
   - The transformer file should be reference in the `kustomization.yaml` configuration using `transformer:` tag
   - The Kustomize framework will use this file and send it as stdin to the container, the output manifest will be updated with the logic defined in containre code.
 
-## Kustomize KRM function
+#### Kustomize KRM function
 
 - The [Kustomize documentation](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize) explains an example on adding annotation value to resources. This blog uses the same approach but shows how to debug the code during development with a test case.
 
@@ -137,7 +137,7 @@ items:
 > go mod tidy
 ```
 
-#### Code Logic
+- Code Logic
 
   - The `struct` type defined in the code represents information under the `functionConfig` property. 
   - The kyaml framework parse and injects the YAML data in the function argument that is passed to the Filter function. Our core logic should defined in this function and passed to the processor.
@@ -400,7 +400,7 @@ ENTRYPOINT ["function"]
 > docker build -t kustomize_dev:1.0.0 .
 ```
 
-### Using the custom plugin in kustomization.yaml configuration
+### Using the KRM function custom plugin container
 
 - Once the image is created successfully, we can add a `prod` folder under `overlay` check my previous blog [link](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
  
