@@ -186,7 +186,7 @@ spec:
         - containerPort: 80
 ```
 
-### Test environment specific cofiguration
+### Test environment specific configuration
 
 - `overlay/test/deployment_patch.yaml`
 
