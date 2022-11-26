@@ -1,67 +1,34 @@
-## Custom plugin development with kustomize containerized KRM function with Go Lang
+## Develop Kustomize custom plugin with containerized KRM function using Go
 
-- This blog details custom plugin development, extending the Kustomize framework to with containerized KRM functions.
+- In this blog we will see how to develop custom plugin for Kustomize using containers KRM function. 
 
-- The customized plugin developed in this blog, will add speified key value as annotation to the specified list of resource. 
-
-Pre-requsites:
-
-  - Understanding of kubernetes and deploying resources using YAML manifest
-  - Basic understanding of GO Lang and installed locally for development. VS Code with Go plugin
-  - Docker desktop installed and Kustomize CLI installed
-  - Basic understanding on Kustomize usage, for more details check my previous blog [link here](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
+- The customized plugin in this blog, will add annotation with specified key and value to set of resources mentioned under the `target:` tag of the `functionCondig:`. The annotation information will be defined in a YAML file and referred in the `kustomization.yaml` configuration using `transformers:` tag. Some of this information might be not clear at this step.
 
 
-## Kustomize KRM function
+Pre-requisites:
 
-- The [Kustomize documentation](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize) with example is used for adding annotation value.
+  - Basic understanding of kubernetes and deploying resources using YAML manifest
+  - Basic understanding of GO Lang. Installed locally for development. VS Code with Go plugin is easy to configure an use as IDE.
+  - Docker desktop installed 
+  - Kustomize CLI installed
 
-- This blog will explain GO lang code development for the plugin and how to debug the in local, with sample test case.
+- To understand what Kustomize is and how to use to mange manifest check my previous blog [link here](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
 
-### Basic of Go Language
-
-  - Go Lang program should be defined within main package, function main()  is the entry point
-  - Go Lang statement doesn't require any delimiter like semicolon used in Java, 
-       - so when defining a function or block of code compiler idenbrackets should be at the same statement.
-  - Refer below example
-  - The function name first char uppercase indicates it is public function, lowercase is private function.
-  - `struct` is a used to define custom data type in Go
-  - The code below also includes a testcase which uses YAML Go library
-       - The map of interface is used since the YAML manifest is not defined as struct data tyoe,  for unmarshalling the Kubernetes manifest rendered as stdout.
-
-  ```go
-  package main
-  // we need to import the package using below syntax,
-  // fmt package contains utilities to print to stdout like print
-  import(
-     "fmt"
-  )
-  
-  // as mentioned above the function main should end with bracket { 
-  // else Go will report error
-  function main(){
-
-    // alternate use of below code is var output = 0 
-    // use := to initalize variable with value
-    output := 0
-    for i := 1; i <= 10; i++ {
-        // use = to reassing values
-        output = output + i
-    }
-    // in order to make any function in package to be public
-    //the first char shoud be upper case
-    fmt.Println("sum :-", output)
-    fmt.Printf("sum:- %d", output)  
-   }
-  ```
 
 ### How the Kustomize plugin works?
 
-  - We are using Containerized KRM function to build the custom plugin
-  - The kustomize framework will read the resources and generate all into ResourceList kubernetes resource, the ResourceList is further utlizes by the framework passing to Generators and transformer to render the manifest.
-  - Kustomize provides KYAML framework to parse the resource Yaml in Go Language
-  - Once the Go code is built with the logic we need to create a container image
-  - The container image will be used in the transformer Yaml like below
+  - With containerized KRM function kustomize framework will read the manifest and generate all resource into as Kubernetes resource ResourceList.
+ - The ResourceList is further utilized by the framework by passing it to Generators and transformer pipeline finally rendering  the manifest.
+
+  - Kustomize provides `kyaml` framework which is used to parse the ResourceList manifest in Go Language
+  
+### Work flow
+
+  - Using `kyaml` Go framework build the custom plugin with necessary logic.
+  - Create container image, and push to docker hub or private image registry.
+  - Create a transformer yaml file with the configuration required for the plugin logic. The container reference will be provided in this file as annotation.
+ - Below is sample transformers file were the image is referenced.
+
   ```yaml
     apiVersion: transformers.example.co/v1 # any name that is unique
     kind: ValueAnnotator                   # any name to identify as transformer
@@ -73,19 +40,25 @@ Pre-requsites:
             image: example.docker.com/my-functions/valueannotator:1.0.0  # container image name
     value: 'important-data'
   ```
-  - The transformer Yaml should be reference in the kustomization.yaml configuraton using `transformer:` tag
-  - The input values will be passed in the `spec` tab, the Kustomize framework will pass this as stdin to the specified container and transforms it to specified logic
 
+  - The transformer file should be reference in the `kustomization.yaml` configuration using `transformer:` tag
+  - The Kustomize framework will use this file and send it as stdin to the container, the output manifest will be updated with the logic defined in containre code.
+
+## Kustomize KRM function
+
+- The [Kustomize documentation](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize) explains an example on adding annotation value to resources. This blog uses the same approach but shows how to debug the code during development with a test case.
+
+Kustomize provides a kyaml framework in GO language, with which we can build the custom plugin.
 
 ![image](https://user-images.githubusercontent.com/6425536/204107814-84c8d9fa-b41d-4f3f-bd64-c5a014eee065.png)
 
 
-Plugin development:
+#### Plugin development:
 
-  - For development we use below sample resource yaml which is Kubernetes ResourceList type
-  - In this case we define the input under `functionConfig:` tag, where we specify list of resource to which the annotation to be applied
-  - In the below yaml, the annotation value `holder: sample-io/add` will be added to ConfigMap and Service resources only. 
-  - The `kind: Deployment` will not include this annotation, this is the test case validation
+  - For local development we use a sample YAML which defines Kubernetes ResourceList type.
+
+  - Since the kustomize framework uses the data under the `functionConfig:` tag of the ResourseList resource as input to the container in stdin, we define the inputs to which set of resources the annotation value needs to be added.
+  - In the below yaml, we have defined the annotation value `holder: sample-io/add` this will be added to ConfigMap and Service resources only, not to `kind: Deployment` listed in the `items` tag
 
 ```yaml
 apiVersion: config.kubernetes.io/v1
@@ -143,17 +116,20 @@ items:
             - containerPort: 80
 ```
 
-- The Go code uses kustomize `kyaml` framework in Go to read the Yaml file
+### Go project setup
 
-- To setup the Go code from scratch, create a folder and issue `go mod init` command
-- I created a folder named project and created a folder called source under it, then issued below command
+- To initialize Go workspace from scratch, create a folder and issue `go mod init` command. This will create `go.mod` and `go.sum` files.
+- In below example I created a folder named `project` and the source code under folder named `source`.
+
 ```
-# from the project direcrory 
+# from the project directory issued below command
+# for my project structure
 > go mod init source 
 > go mod tiny
 ```
 
-- In order to write testing and use yaml package, I issued below command
+- For developing test case installed testing and yaml package, for which issued below command
+
 ```
 # from the project directory
 > go get gopkg.in/yaml.v3
@@ -161,22 +137,18 @@ items:
 > go mod tidy
 ```
 
-- Go code with the logic
-  - The `struct` type defined reperesents the `functionConfig` property `applyAnnotationTo` which stores the parsed resourceList by the kyaml framework
-  - The kyaml framework injects the YAML data from the items tag in the function deinfed
-  - For the resources specified in target, applyAnnotationTo the items list will be flitered and for the matching resource in kind we add annotation with key and value
-  - To run the code and generate the Dockerfile (saved the below code `kustomizePlugin.go`) enable the `runAsCommand := true`
-  - For debuging the code modify `runAsCommand := false`, and use the test case which calls the function
+#### Code Logic
 
-  ```
-  > go run kustomizePlugin.go gen .
-  ```
+  - The `struct` type defined in the code represents information under the `functionConfig` property. 
+  - The kyaml framework parse and injects the YAML data in the function argument that is passed to the Filter function. Our core logic should defined in this function and passed to the processor.
+  - With the list of items passed by the kyaml framework, with the information under the `functionConfig` we filter the matching resource and add the annotation with the specified key and value.
 
-### Code defining the core logic
+
+### Code 
 
 > **Note:-**
-> - The code main() function has `runAsCommand` boolean, when set to true this will execute the code block
-> - With the below code, the Dockerfile will be generated automically with `go run` command with `gen`
+> - The code main() function has `runAsCommand` with true will execute the code  block that can generates Dockerfile automatically with the command `go run kustomizePlugin.go gen .`
+> - Below code can generate the Dockerfile for us
 > ```
 >   cmd := command.Build(p, command.StandaloneDisabled, false)
 >   //automatically generates the Dockerfile for us
@@ -185,7 +157,7 @@ items:
 >		os.Exit(1)
 >   }
 > ```
-> - Below code is used, it will be easy for debug if we use reader and writer 
+> - `framework.Execute()` takes reader and writer object and the the ResourceList YAML file can be read and passed as input. Make development easy
 > ```
 >     if error := framework.Execute(p, byteReadWriter); error != nil {
 >      panic(error)
@@ -193,13 +165,7 @@ items:
 > ```
 >
 
-> ** Additional note :-**
->
-> - Copy the Docker file from the `source` folder and move to `project` folder. 
-> - The `go mod init` creates the `go.mod` and `go.sum` under the `project` directory, and these files needs to be copied to image.
-> - The `go.mod` files defines the module info, which will be used in the container to build image
-> - The copy command needs to be updated in the Dockerfile to copy only the source/kustomizePlugin.go
->
+- Code with the custom plugin logic, save this file as `kustomizePlugin.go`
 
 ```go
 package main
@@ -394,14 +360,32 @@ func TestAnnotationPlugin(t *testing.T) {
 }
 ```
 
-- Dockerfile   
- 
+### Run Go program
+
+- Use below command to run the Go code, which will also generate the Dockerfile only when the function `main()` `runAsCommand` is set to true.
+
+  ```
+  > go run kustomizePlugin.go gen .
+  ```
+
+- Dockerfile generated and updated to create the image
+
+
+> ** Additional note :-**
+>
+> - Move the Dockerfile generated under `source` folder to `project` folder. 
+> - The `go.mod` and `go.sum` is under the `project` directory and these files  are move to the image during creation process
+> - Update the Docker `COPY` command to copy only the file `source/kustomizePlugin.go`
+> 
+
 ```
 FROM golang:1.19-alpine as builder
 ENV CGO_ENABLED=0
 WORKDIR /go/src/
 COPY go.mod go.sum /go/src/
 RUN go mod download
+
+# update the path where the kustmizePlugin.go code is present
 COPY ./source/kustomizePlugin.go .
 RUN go build -ldflags '-w -s' -v -o /usr/local/bin/function ./
 
@@ -409,17 +393,18 @@ FROM alpine:latest
 COPY --from=builder /usr/local/bin/function /usr/local/bin/function
 ENTRYPOINT ["function"]
 ```
-- Docker command to generate the image in docker desktop
+
+- Docker command to generate the image, in below example it mage is only pushed to local Docker Desktop
 
 ```
 > docker build -t kustomize_dev:1.0.0 .
 ```
 
-### Now to build the manifes with the container KRM function
- - With reference to the kustomize project structure defined in the [link](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
- - Create a folder `prod` under `overlay`
+### Using the custom plugin in kustomization.yaml configuration
+
+- Once the image is created successfully, we can add a `prod` folder under `overlay` check my previous blog [link](https://thirumurthi.hashnode.dev/manage-kubernetes-manifest-with-kustomize)
  
- - `overlay\prod\annotationTransformer.yaml`
+ - `overlay\prod\annotationTransformer.yaml` defining the input to wich resource the annotation should be added. In this case to service only
  
 ```yaml
 apiVersion: transformers.customplugin.co/v1
@@ -438,7 +423,7 @@ annotationList:
     value: sample-io/add
 ```
  
- - `overlay\prod\kustomization.yaml`
+ - `overlay\prod\kustomization.yaml` reference the transformer file path
  
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -449,17 +434,21 @@ resources:
 
 nameSuffix: -prod
 
+# reference the path of the transformer file that uses the container
 transformers:
   - annotationTransformer.yaml
 ```
 
-- To render the mainfest file for prod
+### Output 
+
+- To render the manifest file for prod with below command
+- By default the custom plugins can't be used with kustomize CLI, we need to use `--enable-alpha-plugins` option
 
 ```
 > kustomize build --enable-alpha-plugins prod\
 ```
 
-- Output 
+- Rendered prod yaml file
 
 ```yaml
 apiVersion: v1
@@ -497,3 +486,41 @@ spec:
         ports:
         - containerPort: 80
 ```
+
+## Bonus
+### Basics of Go Language
+
+  - Go Lang program should be defined within main package, function main()  is the entry point
+  - Go Lang statement doesn't require any delimiter like semicolon used in Java
+       - By including the brackets at end of the function or block of code compiler will be identifying it as function or block. Refer below code example
+  - The function name first char uppercase indicates it is public function, lowercase is private function.
+  - `struct` is a used to define custom data type in Go
+  - The code below also includes a testcase which uses YAML Go library
+       - We don't define any data type to unmarshall the generated Kubernetes manifest, we use map of interface and iterate and assert based on the required output.
+
+  ```go
+  package main
+
+  // we need to import the package using below syntax,
+  // fmt package contains utilities to print to stdout like print
+  import(
+     "fmt"
+  )
+  
+  // as mentioned above the function main should end with bracket { 
+  // else Go will report error
+  function main(){
+
+    // alternate use of below code is var output = 0 
+    // use := to initialize variable with value
+    output := 0
+    for i := 1; i <= 10; i++ {
+        // use = to reassign values
+        output = output + i
+    }
+    // in order to make any function in package to be public
+    //the first char shoud be upper case
+    fmt.Println("sum :-", output)
+    fmt.Printf("sum:- %d", output)  
+   }
+  ```
