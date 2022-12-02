@@ -1,8 +1,6 @@
 makefile:
 
-Accessing environment variable
-
-#1 
+# 1. Accessing environment variable  
 
 Any variable set in the environment when GNU make is started witll be available as make varible inside makefile.
 
@@ -59,7 +57,7 @@ C:\Program Files\Java\jdk-17.0.1\ environment override
 print info
 ```
 
-# 2.1
+# 2.1 to check from where the variable set from environment, file, command line, override
 
 ```
 override JAVA_HOME="java"
@@ -98,7 +96,7 @@ overit command line
 print info
 ```
 
-# 3: Set variables from outside make file
+# 3. Set variables from outside make file
 
 ```
 make DEMO=value_of_demo target
@@ -274,7 +272,7 @@ all target DEMO TEST value is inFile | just for all
            - if you need to use, we can use MFLAGS
   - MAKELEVEL - variable contains depth of recursive make calls, via $(MAKE) starting at zero.
   
-# 6 The $(shell) environment
+# 6. The $(shell) environment
 - before executing the below make, set the environment variable 
 `export DEMO=envval`
  
@@ -366,7 +364,7 @@ In bar VAR is local scope
 In all VAR is global scope
 ```
 
-# 7.1 - Pattern specific variable
+# 7.1 Pattern specific variable
 
  NOTE: `$@` displays the target name
 ```
@@ -579,3 +577,427 @@ endif
  endif
  ```
  
+ # 10. Truth values using function in it
+ 
+```
+# check the first argument if present returns T, (no value so blank)
+checkTruth = $(if $1,T)
+# above can be written like below as well
+checkTruthDiffForm= $(if $1,T,)
+
+# below first argument is space, it will not be trimmed
+$(info $(call checkTruth, ))
+$(info $(call checkTruth,true))
+$(info $(call checkTruth,a b c))
+
+checkNow = $(if $1,T,F)
+
+$(info $(call checkNow,))
+```
+
+- output
+```
+> make
+T
+T
+T
+F
+```
+
+- assiating empty values and output
+
+```
+checkTruth = $(if $1,T)
+
+$(call checkTruth,)
+EMPTY =
+$(info $(call checkTruth,$(EMPTY)))
+VAR = $(EMPTY)
+$(info $(call checkTruth,$(VAR)))
+```
+- Output (blank line)
+```
+
+
+```
+
+# 10.1 or logical operator
+
+or = $1$2
+
+```
+or = $(call checkTruth,$1$2)
+# else
+
+or = $(if $1$2,T).
+
+$(info $(call or, , ))
+$(info $(call or,T, ))
+$(info $(call or, ,)) #no space on second arg
+$(info $(call or,param one,argument two ))
+
+EMPTY=
+
+$(info $call or,$(EMPTY),)
+```
+
+# 10.2 and 
+
+```
+and = $(if $1,$(if $2,T))
+```
+
+# 10.3 not
+
+```
+not = $(if $1,,T)
+```
+# 10.4 nand, nor, xor
+
+```
+nand = $(if $1,$(if $2,,T),T)
+nor= $(if $1$2,,T)
+xor = $(if $1,$(if $2,,T),$(if $2,T))
+```
+
+# 10.5 Starting version 3.81+ built-in logical operator exists
+
+```
+nativeAnd := $(and T,T)
+nativeOr := $(or T,T)
+
+ifneq($(nativeAnd),T)
+and = $(if $1,$(if $2,T))
+endif
+
+ifneq($(nativeOr),T)
+or= $(if $1$2,T)
+endif
+
+$(info test it for T: $(call and,T,T))
+```
+- output 
+
+```
+test it for T: T
+```
+
+# 11. Command detection
+- Say if we need to see if curl command is supported
+
+```
+HaveCurl := $(shell which curl)
+
+ifndef HaveCurl
+$(error curl is missing)
+else
+   $(info has curl installed)
+endif
+```
+- output
+
+```
+> make
+has curl installed
+```
+
+## 11.1 wrapping command detection with functions
+
+```
+assertCommandPresent = $(if $(shell which $1),,$(error '$1' missing required))
+
+$(info $(call assertCommandPresent,wget))
+$(info $(call assertCommandPresent,curly))  # this will throw error 
+```
+
+- output (first line is blank - since wget exists in the system)
+
+```
+
+Makefile:46: *** 'curly' missing required.  Stop.
+```
+
+## 11.2 To make the user function to check command execute only for that target
+
+```
+assertCommandPresent = $(if $(shell which $1),,$(error '$1' missing required))
+
+all: ; @echo "starting all target"
+
+download: export _check = $(call assertCommandPresent,curly)
+download: ; @echo "download target"
+```
+
+- output
+
+```
+> make all
+starting all target
+
+> make download
+Makefile:50: *** 'curly' missing required.  Stop.
+```
+
+# 13. Delayed variable assignment
+
+ - `:=` operator (this evaluates the right side immediately, uses the resluting value to the variable)
+ - `=` recursive operator ()
+ 
+```
+BAR = before
+FOO := $(BAR) then rain
+BAR = after
+
+$(info $(FOO))  # immideate evaluation happened in :=
+
+BAR = before
+FOO = $(BAR) then rain
+BAR = after
+
+$(info $(FOO))  # lazy or delayed evaluation happened in =
+```
+- Output
+
+```
+> make
+before then rain
+after then rain
+```
+
+# 13. defining a constant value in variable
+- Say if we need to compute a value once and keep it fixed 
+
+```
+SHALIST = $(shell find . -name '*.txt' | xargs shasum)
+```
+ - The SHALIST contains the name and SHA1 crytpographic has of evey .txt
+ - if we use `=` in here and invoke at multiple places this will slow down, better to use `:=` like below
+ 
+```
+SHALIST = $(eval SHALIST := $(shell find . -name '*.txt' | xargs shasum))$(SHALIST)
+```
+- if $(SHALIST) is ever evaluated, the $(eval SHALIST := $(shell ....)) part gets evauated.
+- Because `:=` is being used here.
+
+```
+SHALIST = $(eval SHALIST := $(shell find . -name '*.txt' | xargs shasum))$(SHALIST)
+
+$(info before $(value SHALIST))
+$(info SHALIST is $(SHALIST))
+$(info after $(value SHALIST))
+```
+
+- output ( there were two txt file in the same folder)
+
+```
+before $(eval SHALIST := $(shell find . -name '*.txt' | xargs shasum))$(SHALIST)
+SHALIST is 4b3a329a9b4a3f9867674679322a719770f2c0b0  ./Makefile_eval.txt
+after 4b3a329a9b4a3f9867674679322a719770f2c0b0  ./Makefile_eval.txt
+```
+
+# 14 simple list manipulation
+
+ - `$(firstword)` - get the first workd in a list
+ - `$(words)` - counts the number of list elements
+ - `$(word)` - extract the word at a specific index (couting from 1)
+ - `$(wordlist)` - Extract a range of words from a list
+ - `$(foreach)` - used to iterate over a list
+ 
+```
+LIST = a simple example of list
+$(info first word in LIST is $(firstword $(LIST))))
+```
+- output
+```
+first word in LIST is a
+```
+
+```
+lastword = $(if $1,$(word $(word $1),$1))
+LIST= example program to check
+$(info the last word in LIST $(call lastword,$(LIST)))
+```
+  - not in 3.81+ there is a `lastword` built-in function 
+  
+```
+#$(wordlist, S , E ,LIST)
+
+notFirst = $(wordlist 2,$(words $1),$1)
+LIST = Simple sentence for example
+$(info $(call notFirst,$(LIST)))
+```
+- output
+```
+sentence for example
+```
+
+```
+notlast = $(wordlist 2,$(words $1),dummy $1)
+LIST=take the first not the last
+$(info $(call notlast,$(LIST)))
+```
+- output
+```
+take the first not the
+```
+
+# 15. user-defined function
+
+```
+make_date = $1/$2/$3
+
+today := $(call make_date,12,5,2022)  # output: 12/5/2022
+```
+ - `$(0)` special argument contins the name of the function. (in above it is `make_date`)
+ - `$(origin $1)` using the origin on any argnent of the function will return `automatic` like `$@`
+
+```
+unix_to_dos = $(subst /,\,$1)
+```
+- make does very little escaping 
+
+```
+swap = $2 $1
+
+$(info $(call swap,first,argument,second)) # in this case make doesn't know first,argument is first value. it will assume just first as 1 argument and rest second(in this case argument,second)
+
+# to overcome it
+
+FIRSTARG := first,argument
+
+SWAPPED := $(call swap,$(FIRST),second)
+
+# approach 2
+
+c := ,
+SWAPPED := $(call swap,first$cargument,second)
+
+# approach 3
+
+, := ,
+SWAPPED := $(call swap,first$(,)argument,second)
+```
+
+# 16. Call built-in function
+
+```
+$(call info,message)
+
+# create map function from functional programming 
+# to apply that to every memember of a list, like below
+map = $(foreach a,$2,$(call $1,$a))
+```
+
+```
+print_variable = $(info $1 ($value $1) -> $($(1)) )
+
+print_variables = $(call map,print_variable,$1)
+VAR1 = foo
+VAR2 = $(VAR1)
+VAR3 = $(VAR2) $(VAR1)
+
+$(call print_variables,VAR1 VAR2 VAR3)
+```
+
+- Additional options in 3.81+
+   - .FEATURES
+   - .SECONDEXPANSION 
+          - the issue with make is that the automatic variables are valid and assinged only when a rule command are run, they are not valid part of the rule definition.
+          - example it is not possible to write , `foo: $@.c` to mean that `foo` should be made from `foo.c`. Though `$@` has the `foo` when the rule command executed. (after 3.81+, this is can be obtained with `$$@`) but in order to enabled this functionlity we need to define `.SECONDEXPANSION`
+          - automatic variable like $$ will always be blank because they cannot be comupted when makefile being parsed.
+          ```
+          .SECONDEXPANSION:
+          
+          FOO = foo
+          all: $$(FOO)
+          all: ; @echo Making $@ from $?
+          
+          bar: ; @echo Making $@
+          
+          FOO = bar
+          ```
+          -- output
+          ```
+          > make
+          Making bar
+          Making all from bar
+          ```
+          - NOTE if .SECONDEXPANSION is enabled, using any file name with `$` will need to be escaped by writting `$$`
+    - .INCLUDE_DIRS - contains the list of directory that make will search when looking for makefiles that are included using the include directive. (can be modified using -I command line option)
+          - example, running `make -I /user/foo` on linux with following make file 
+          ```
+          $(info $(.INCLUDE_DIRS))
+          all: ; @true
+          ```
+          - output
+          ```
+          /usr/foo /usr/local/inclure /usr/local/include..
+          ```
+    - .DEFAULT_GOAL
+    - MAKE_RESTARTS - variable is the count of the number of times that make has restarted.
+    - new function 
+       - $(info text)
+       - $(lastword LIST)
+       - $(flavor VAR) - returns the flavor of variable (eirther recursive for recursively expanded or simple)
+           ```
+             REC= foo
+             SIM := foo
+             $(info REC is $(flavor REC))
+             $(info SIM is $(flavor SIM))
+             
+             all: ; @true
+           ```
+        - $(or arg1,arg2..) & $(and arg1...)
+        - $(abspath DIR)
+          ```
+           $(info $(abspath foo/.////////bar))
+           
+           all: ; @true
+          ```
+        -$(realpath DIR)
+        
+    - `$?` - automatic variable includes the name of all prequisites to a target caused a rebuild, even if they do not exst.
+    - $(wildcard) function had always returned sorted list of files, so after 3.82 we need to use $(sort) wrapped over the $(wildcard) like `$(sort $(wildcart *.txt))
+     - to use a = sign in a target define it first
+     ```
+     eq := =
+     
+     all: odd$(eq)name
+     odd%:  @echo Make $@
+     ```
+     - after 3.82 variable name cannot contain any space. (note name not value)
+     
+     - new `--eval` command line option causes make to run its argument through $(eval) before parseing make files. 
+     ```
+     # using make --eval=FOO=bar
+     
+     all: ; @echo Foo has value $(FOO)
+     ```
+     - output
+     ```
+     Foo has value bar
+     ```
+     
+     Guile function are supported in 4.0 version
+     
+     ```
+     $(if $(guile (access? "foo.c" R_OK)), $(info foo.c exists))
+     ```
+     
+     - `$(file)` function 
+     ```
+     LOG = make.log
+     
+     $(file > $(LOG),Start)
+     
+     all: part-one part-two
+     
+     part-one: part-three
+        @$(file >> $(LOG),$@)
+        @echo Make $@
+        
+     part-three
+        @$(file >> $(LOG),$@)
+        @echo Make $@
+     ```
+     
