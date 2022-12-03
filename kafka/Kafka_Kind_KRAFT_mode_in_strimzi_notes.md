@@ -63,13 +63,15 @@ Deploying Kafka in Kubernetes?
     >     
     
 
-#### Why KRaft (experimental) mode?
+#### Why KRaft mode?
 
-*   In my case, the reason use Kraft mode is deploying the Strimzi Kafka with Zookeeper in my machine keeps on restarting the Zookeeper and cluster pods very often. I think this is because of memory limitations since my laptop only had 8GB of memory.
+*   The reason to use Kraft mode is on my laptop, deploying the Strimzi Kafka with `Zookeeper` keeps on restarting the `Zookeeper` and `Kafka Broker` pods very often most of the time not accessible. I think this is because of memory limitations my laptop only had 8GB of memory.
     
-*   `KRaft` feature doesn't include Zookeeper pods and related network traffics was less.
+*   `KRaft` feature does create `Zookeeper` pods.
     
-*   Deploying Kafka in KRaft mode with 3 brokers in `KIND` cluster was always successful. Another observation, when using the producer bat script to send messages to the cluster initially there were retry error messages.
+*   Deploying Kafka in `KRaft` mode with 3 brokers in `KIND` cluster was always running successfully.
+    
+*   Noticed that when sending messages to the cluster with the console producer bat script there are retry error messages printed in console.
     
 *   Since it is easy to spin up in a local machine we can use this to develop Kafka based applications locally.
     
