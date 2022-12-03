@@ -176,7 +176,7 @@ spec:
 - Once the Operator restarted with the KRaft feature enabled, we can deploy the cluster using below command
 
 ```
-kubectl -n kafka apply -f KraftMode.yaml
+kubectl -n kafka apply -f kraftMode.yaml
 ```
 
 - Check the status of the deployment with below command
