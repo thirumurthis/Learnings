@@ -1,6 +1,8 @@
-## Deploy kafka cluster in KIND cluster
+## Deploy Kafka cluster in KIND cluster
 
-*   In this article, I will explain to show how we can deploy Strimzi Kafka (KRaft mode) in KIND cluster within the Docker desktop.
+*   In this article, I will explain to show how we can deploy Strimzi Kafka enabling KRaft mode in KIND cluster within the Docker desktop.
+    
+*   The configuration defined in this article also shows how we can access Kafka broker from the host machine.
     
 
 Prerequisites :
