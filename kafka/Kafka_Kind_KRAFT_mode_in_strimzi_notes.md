@@ -335,6 +335,9 @@ info:
 
 ![image](https://user-images.githubusercontent.com/6425536/205426204-bdfecea8-ebb1-4bf5-8a88-edf466106704.png)
 
+> ** INFO:- **
+> - Code can be downloaded from [Github](https://github.com/thirumurthis/projects/tree/kafka_strimzi_kind_code) under the kafka_strimzi_kind_code branch.
+
 ### Additional info
 
 - Disabling the `UseKraft`, and using below configuration in step 5 will deploy the Zookeeper to mange leader election.
