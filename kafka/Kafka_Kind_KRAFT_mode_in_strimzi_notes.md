@@ -20,7 +20,7 @@ Deploying Kafka in Kubernetes?
  - Strimzi is part of CNCF supported projects.
  - Strimzi has different options to configure persistent of datastore like, 
     - Ephemeral
-    - JBOD (Just a Bunch Of Disks)[https://strimzi.io/blog/2019/07/08/persistent-storage-improvements/]
+    - JBOD [Just a Bunch Of Disks](https://strimzi.io/blog/2019/07/08/persistent-storage-improvements/)
     - Persistent Volumes provided by any Cloud providers
  - Strimzi website has the documented the steps to setup a persistent Kafka cluster in KIND [strimzi.io](https://strimzi.io/quickstarts/).
 
@@ -29,7 +29,7 @@ What does this article includes?
 
  - Strimzi cluster configuration as Ephemeral persistent storage and in deploying in `KRaft` mode.
  - To access the Kafka brokers running in KIND cluster from host machine we need to expose the ports. Includes the port configuration in both KIND cluster and Strimzi cluster CRD configuration.
- - To access Strimzi cluster from external client, we need to expose external bootstrap service as NodePort.(Refer this article that explains about accessing Strimzi Kafka cluster from external client)[https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/]ntity
+ - To access Strimzi cluster from external client, we need to expose external bootstrap service as NodePort.[Refer this article that explains about accessing Strimzi Kafka cluster from external client](https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/)
  
 
 Why KRaft (experimental) mode?
@@ -115,7 +115,7 @@ kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
  kubectl -n kafka set env deployment/strimzi-cluster-operator STRIMZI_FEATURE_GATES=+UseKRaft
  ```
 
-#### Step 5:
+#### Step 5: Install kafka cluster using Strimzi CRD definition
 
 - Below yaml file is the Strimzi cluster configuration to spin up three brokers, save this yaml content in file named `kraftmode.yaml`. Place this in the same directory, will be used in Makefile. 
 
@@ -230,7 +230,9 @@ kafka-topic.bat --bootstrap-server localhost:9092 --list
 
 - Below is the Makefile which will automate the process of deploying operator, creating cluster and deleting cluster
 
-- Note: Tab space is required on the statements in the recipe of the target
+> **Note:**
+> - Tab space is required on the statements in the recipe of the target
+>
 
 ```
 SHELL :=/bin/bash
@@ -316,6 +318,9 @@ info:
   - `make deploy-operator`, wait till the operator is in running status
   - `make install-kafka-cluster` 
 
+> **Info:-**
+> - The `Makefile` contains additonal targets for installing kind and kubectl, in case we use linux machine.
+
 ### Output
 	
 - make deploy-operator
@@ -326,3 +331,56 @@ info:
 
 ![image](https://user-images.githubusercontent.com/6425536/205426118-81f29c6d-a30d-4408-9161-bb51e5b9b7d8.png)
 
+- topic creation details
+
+![image](https://user-images.githubusercontent.com/6425536/205426204-bdfecea8-ebb1-4bf5-8a88-edf466106704.png)
+
+### Additional info
+
+- Disabling the `UseKraft`, and using below configuration in step 5 will deploy the Zookeeper to mange leader election.
+- Makefile requires change to disable the Kraft mode.
+	
+```yaml
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: my-cluster
+  namespace: kafka
+spec:
+  kafka:
+    version: 3.2.3
+    replicas: 1
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: false
+        configuration:
+          bootstrap:
+            nodePort: 31092
+          brokers:
+            - broker: 0
+              advertisedHost: 127.0.0.1
+              nodePort: 31234
+    config:
+      offsets.topic.replication.factor: 1
+      transaction.state.log.replication.factor: 1
+      transaction.state.log.min.isr: 1
+      default.replication.factor: 1
+      min.insync.replicas: 1
+      inter.broker.protocol.version: "3.2"
+    storage:
+      type: ephemeral
+  zookeeper:
+    replicas: 3
+    storage:
+      type: ephemeral
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+
+```
