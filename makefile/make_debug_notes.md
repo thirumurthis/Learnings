@@ -263,3 +263,7 @@ all: foo bar
 foo bar:
 	@echo building $@
 ```
+
+## 5. To display the target recipe info
+- use `make -n` command
+- 
