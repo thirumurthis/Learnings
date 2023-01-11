@@ -1,14 +1,52 @@
-### Install Jaeger Tracing in KIND cluster
+This blog will explain how to deploy the Jaeger all-in-one image in KIND cluster using the Jaeger operator.
 
-- In this blog will explain how to install the Jaeger tracing using Jaeger operator in Docker Desktop KIND cluster.
+**Pre-requesites**
 
-- We will use the Spring boot service to send traces using OpenTracing (note OpenTracing is now deprecated). Latest version of uses OpenTelementry.
+* Basic understanding of Jaeger architecture
+    
+* Docker Desktop installed and running
+    
+* KIND CLI configured
+    
 
+#### About this article
+
+* First, we will see instructions on how to deploy Jaeger instance in the Docker Desktop KIND cluster
+    
+* Next, we will run the SpringBoot application locally to send traces with OpenTracing.
+    
+
+#### Installing Jaeger
+
+* Install KIND cluster with necessary ports exposed
+    
+* Install cert-manager, using cert-manager yaml
+    
+    * Based on the Jaeger Installation document it requires cert-manager to be installed in the Kubernetes cluster before installing the Jaeger operator.
+        
+* Create Namespace and Install Jaeger operator yaml
+    
+* Create Jaeger instance using CRD manifest
+    
+    * In this case, have used `all-in-one` mode Jaeger instance
+        
+
+> NOTE:
+> 
+> There are different modes the Jaeger can be deployed, the default mode is `all-in-one` mode where the trace data will not be persisted.
+> 
+> `all-in-one` mode is mostly used for local development and data is held in memory.
+> 
+> For production, it is better to use `production` mode. Refer Jaeger documentation for more detals.
+
+#### Detail installation instruction
 
 #### KIND configuration
-- Kind cluster configuration with the multiple ports export
-- In below cluster configuration exposes most of the port, this can be updated to expose only minimal ports mostly 16686, 14268
-- Save the file as `jaeger_kind_cluster.yaml`
+
+* KIND cluster configuration below exposes multiple ports export, it is not necessary to expose all the ports, latter only ports 16686 and 14268 are forwarded.
+    
+* Save the YAML content as `jaeger_kind_cluster.yaml` file.
+    
 
 ```yaml
 kind: Cluster
@@ -71,13 +109,14 @@ nodes:
     protocol: TCP
 ```
 
-### Below shell script used to automate the process
+#### Required cert-manager and jaeger-operator yaml file reference
 
-- Store the `cert-manager.yaml` from [GitHub](https://github.com/cert-manager/cert-manager/releases/download/v1.6.3/cert-manager.yaml)
-
-- Store the the `jaeger-opertor.yaml` from (GitHub](https://github.com/jaegertracing/jaeger-operator/releases/download/v1.41.0/jaeger-operator.yaml)
-
-- Jaeger instance configuration to be installed in KIND cluster
+* Save the content from the [Cert-Manager/GitHub](https://github.com/cert-manager/cert-manager/releases/download/v1.6.3/cert-manager.yaml) file to `cert-manager.yaml`
+    
+* Save the content from the [Jaegertracing/GitHub](https://github.com/jaegertracing/jaeger-operator/releases/download/v1.41.0/jaeger-operator.yaml) file to `jaeger-opertor.yaml`
+    
+* Below is the Jaeger CRD manifest YAML, which deploys Jaeger instance in KIND cluster
+    
 
 ```yaml
 apiVersion: jaegertracing.io/v1
@@ -86,7 +125,12 @@ metadata:
   name: simplest
 ```
 
-- Shell script to install the jeager operator
+#### How to install the KIND cluster and Jaeger
+
+* Once the yaml files are stored under a directory, we can use the below script from GitBash to install the Jaeger Instance in Docker Desktop
+    
+* Shell script that installs the Jaeger operator
+    
 
 ```sh
 #! /bin/sh
@@ -113,11 +157,22 @@ sleep 100
 kubectl -n trace apply -f simple-jaeger.yaml
 ```
 
-- Though the port are exposed in the Docker process, we need to expose the ports from the cluster.
+* Once the shell script is executed, we can use below command to view the deployed Jaeger instance status and strategy.
+    
 
+```plaintext
+
+$ kubectl -n trace get jaegers
+NAME       STATUS    VERSION   STRATEGY   STORAGE   AGE
+simplest   Running   1.40.0    allinone   memory    10d
 ```
+
+* Below is the output of deployed Jaeger resources in the cluster
+    
+
+```plaintext
 # get the pods name of the jaeger
-kubectl -n trace get pods 
+$ kubectl -n trace get pods
 
 # output 
 NAME                               READY   STATUS    RESTARTS       AGE
@@ -125,8 +180,9 @@ jaeger-operator-6787f4df85-ww7mx   2/2     Running   7 (147m ago)   10d
 simplest-6b8dbb67c5-kpz5j          1/1     Running   0              146m
 ```
 
-```
-kubectl -n trace get svc
+```plaintext
+# ge the service status
+$ kubectl -n trace get svc
 
 # output sample
 NAME                            TYPE        CLUSTER-IP   PORT(S)                                                 
@@ -135,25 +191,35 @@ jaeger-operator-webhook-service ClusterIP   10.96.137.93 443/TCP
 simplest-agent                  ClusterIP   None         5775/UDP,5778/TCP,6831/UDP,6832/UDP                     
 simplest-collector              ClusterIP   10.96.135.45 9411/TCP,14250/TCP,14267/TCP,14268/TCP,4317/TCP,4318/TCP
 simplest-collector-headless     ClusterIP   None         9411/TCP,14250/TCP,14267/TCP,14268/TCP,4317/TCP,4318/TCP
-simplest-query                  ClusterIP   10.96.212.68 16686/TCP,16685/TCP                                     
+simplest-query                  ClusterIP   10.96.212.68 16686/TCP,16685/TCP
 ```
 
-- Command to port forward the jeager pod and service
+#### Port forward the UI and the Collector service port
 
-```
+* In the spring application, we will send the traces to the 14268 port, which is the Jaeger collector service running in the cluster.
+    
+* Based on the Jaeger architecture, the collector service will collect the traces.
+    
+
+```plaintext
 # port forward the jaeger pod (the pod name can be fetched from above command)
 kubectl -n trace port-forward pod/simplest-6b8dbb67c5-kpz5j 16686:16686
 
 # port forward the jaeger service 
 kubectl -n trace port-forward svc/simplest-collector 14268:14268
-``` 
+```
 
-- Simple SpringBoot application with the version 2.7.X, expose an API. We will use the same application in different port.
+> **NOTE**:
+> 
+> * SpringBoot application is developed using 2.7.7 version with OpenTracing dependencies.
+>     
+> * SpringBoot 3.0.0 doesn't support OpenTracing, it is deprecated in favour of OpenTelementry.
+>     
 
-> **Note:**
-> - The spring boot 3.0.0, with OpenTracing is not supported.
+#### SpringBoot Application to send traces
 
-- pom.xml
+* Below is the pom.xml file with `OpenTracing` dependencies
+    
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -209,7 +275,8 @@ kubectl -n trace port-forward svc/simplest-collector 14268:14268
 </project>
 ```
 
-- java application 
+* Entry point of springboot application
+    
 
 ```java
 package com.example.app;
@@ -235,7 +302,14 @@ public class JaegerApplication {
 }
 ```
 
-- Controller
+* Simple Spring controller, that expose two endpoint `/api/generate` and `api/fetch`
+    
+
+> **INFO:**
+> 
+> The same SpringBoot application will be running in different ports (8080 and 8090) on the host machine.
+> 
+> `http://localhost:8080/api/fetch` the endpoint will invoke the application running on `http:/localhost:8090/api/generate` and the traces will be sent to the Jaeger instance.
 
 ```java
 package com.example.kafka;
@@ -290,27 +364,35 @@ public class AppController {
 }
 ```
 
-- application.yml file, application name will be passed during java command
+* Configuration `application.yml` file defining the `OpenTracing` Jaeger url configuraton
+    
+* The spring application name will be passed during runtime with `Java` command
+    
 
-```
+```plaintext
   opentracing:
     jaeger:
       http-sender:
         url: http://localhost:14268/api/traces
 ```
 
-- With the above Spring boot application, using `mvn clean install` to create the jar file. 
-- Use below commands to run the application in two different ports
- 
-```
+#### Execute the spring boot application services
+
+* Use `mvn clean install` command to create the jar file.
+    
+* Once jar file is generated, execute two instance of application with below commands
+    
+
+```plaintext
 java -jar .\target\app-0.0.1-SNAPSHOT.jar --spring.application.name=service-1 --server.port=8080 --debug
 
 java -jar .\target\app-0.0.1-SNAPSHOT.jar --spring.application.name=service-2 --server.port=8090 --debug
 ```
 
-- Now we can use curl command to access the API
+* After application is up and running, use `curl` command to access the REST end-point like below
+    
 
-```
+```plaintext
 curl -i http://localhost:8080/api/fetch
 
 HTTP/1.1 200 
@@ -321,12 +403,18 @@ Date: Wed, 11 Jan 2023 02:09:58 GMT
 random num : 771
 ```
 
-- With the above access from [Jaeger UI](http://localhost:16686), we should be able to see spring boot application name as services in the UI, like below.
-- The service name `jaeger-query` is the default, once accessing the REST endpoint API the traces will be shipped to the Jaeger UI under services, with span id.
+* Once the `curl` command access the endpoing the traces are sent to Jaeger and we can view the spans from [Jaeger UI](http://localhost:16686) at `http://localhost:16686`
+    
+    > **INFO**
+    > 
+    > * In Jaeger UI the service name `jaeger-query` is the default.
+    >     
+    > * After accessing the REST endpoint and traces are collected the Jaeger UI spans can be viewed under service. This service is the SpringBoot application name. In this case, `service-1` and `service-2`.
+    >     
+    
 
-Service name details:
+#### Snapshot of the Jaeger UI after shipping the traces
 
 ![image](https://user-images.githubusercontent.com/6425536/211721720-4cc25cc7-4817-42b4-9ebc-26d1e2cffe17.png)
-
 
 ![image](https://user-images.githubusercontent.com/6425536/211721864-0fd6b612-f36e-4e17-9f91-a9063e1caf0e.png)
