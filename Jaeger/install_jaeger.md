@@ -1,6 +1,6 @@
 This blog will explain how to deploy the Jaeger all-in-one image in KIND cluster using the Jaeger operator.
 
-**Pre-requesites**
+**Pre-requisites**
 
 * Basic understanding of Jaeger architecture
     
@@ -16,13 +16,19 @@ This blog will explain how to deploy the Jaeger all-in-one image in KIND cluster
 * Next, we will run the SpringBoot application locally to send traces with OpenTracing.
     
 
-#### Installing Jaeger
+### what is Jaeger?
+
+Jaeger is an open-source project used for distributed tracing. Jaeger project was developed by Uber and is now a CNCF project.
+
+Say, when a request is being processed by multiple microservice the request flow between services can be traced in the Jaeger. The span tracing can be used to analyze the performance since the Jaeger UI provides details of how much time is spent on each service.
+
+### Jaeger installation steps
 
 * Install KIND cluster with necessary ports exposed
     
 * Install cert-manager, using cert-manager yaml
     
-    * Based on the Jaeger Installation document it requires cert-manager to be installed in the Kubernetes cluster before installing the Jaeger operator.
+    * Based on the Jaeger Installation document it requires `cert-manager` to be installed in the Kubernetes cluster before installing the Jaeger operator.
         
 * Create Namespace and Install Jaeger operator yaml
     
@@ -37,9 +43,7 @@ This blog will explain how to deploy the Jaeger all-in-one image in KIND cluster
 > 
 > `all-in-one` mode is mostly used for local development and data is held in memory.
 > 
-> For production, it is better to use `production` mode. Refer Jaeger documentation for more detals.
-
-#### Detail installation instruction
+> For production, it is better to use `production` mode. Refer Jaeger documentation for more details.
 
 #### KIND configuration
 
@@ -109,13 +113,13 @@ nodes:
     protocol: TCP
 ```
 
-#### Required cert-manager and jaeger-operator yaml file reference
+#### cert-manager and jaeger-operator yaml file reference
 
 * Save the content from the [Cert-Manager/GitHub](https://github.com/cert-manager/cert-manager/releases/download/v1.6.3/cert-manager.yaml) file to `cert-manager.yaml`
     
 * Save the content from the [Jaegertracing/GitHub](https://github.com/jaegertracing/jaeger-operator/releases/download/v1.41.0/jaeger-operator.yaml) file to `jaeger-opertor.yaml`
     
-* Below is the Jaeger CRD manifest YAML, which deploys Jaeger instance in KIND cluster
+* Below is the Jaeger CRD manifest YAML, which deploys Jaeger instance in KIND cluster.
     
 
 ```yaml
@@ -125,11 +129,9 @@ metadata:
   name: simplest
 ```
 
-#### How to install the KIND cluster and Jaeger
+#### Shell script to install Jaeger in KIND cluster
 
-* Once the yaml files are stored under a directory, we can use the below script from GitBash to install the Jaeger Instance in Docker Desktop
-    
-* Shell script that installs the Jaeger operator
+* Once the yaml files are stored under a directory, run below script in Git Bash to install the Jaeger Instance.
     
 
 ```sh
@@ -157,7 +159,7 @@ sleep 100
 kubectl -n trace apply -f simple-jaeger.yaml
 ```
 
-* Once the shell script is executed, we can use below command to view the deployed Jaeger instance status and strategy.
+* After execution of the shell script, with the below command status and strategy of deployed Jaeger instance can be verified.
     
 
 ```plaintext
@@ -167,7 +169,7 @@ NAME       STATUS    VERSION   STRATEGY   STORAGE   AGE
 simplest   Running   1.40.0    allinone   memory    10d
 ```
 
-* Below is the output of deployed Jaeger resources in the cluster
+* Below is the output of status of the deployed Jaeger resources in the KIND cluster
     
 
 ```plaintext
@@ -194,7 +196,7 @@ simplest-collector-headless     ClusterIP   None         9411/TCP,14250/TCP,1426
 simplest-query                  ClusterIP   10.96.212.68 16686/TCP,16685/TCP
 ```
 
-#### Port forward the UI and the Collector service port
+#### Port forward the UI and the Jaeger collector service port
 
 * In the spring application, we will send the traces to the 14268 port, which is the Jaeger collector service running in the cluster.
     
@@ -213,12 +215,12 @@ kubectl -n trace port-forward svc/simplest-collector 14268:14268
 > 
 > * SpringBoot application is developed using 2.7.7 version with OpenTracing dependencies.
 >     
-> * SpringBoot 3.0.0 doesn't support OpenTracing, it is deprecated in favour of OpenTelementry.
+> * SpringBoot 3.0.0 doesn't support OpenTracing, it is deprecated in favor of OpenTelementry.
 >     
 
 #### SpringBoot Application to send traces
 
-* Below is the pom.xml file with `OpenTracing` dependencies
+* The pom.xml file with `OpenTracing` dependencies.
     
 
 ```xml
@@ -275,7 +277,7 @@ kubectl -n trace port-forward svc/simplest-collector 14268:14268
 </project>
 ```
 
-* Entry point of springboot application
+* The entry point of SpringBoot application.
     
 
 ```java
@@ -302,14 +304,16 @@ public class JaegerApplication {
 }
 ```
 
-* Simple Spring controller, that expose two endpoint `/api/generate` and `api/fetch`
+* Simple Spring controller below exposes two endpoint `/api/generate` and `api/fetch`
     
 
 > **INFO:**
 > 
-> The same SpringBoot application will be running in different ports (8080 and 8090) on the host machine.
+> We will execute the same SpringBoot application in different ports (`8080` and `8090`) on the same host machine.
 > 
-> `http://localhost:8080/api/fetch` the endpoint will invoke the application running on `http:/localhost:8090/api/generate` and the traces will be sent to the Jaeger instance.
+> The endpoint `http://localhost:8080/api/fetch` will invoke the application running on `http:/localhost:8090/api/generate`. The traces will be sent to the Jaeger instance by the application.
+> 
+> We can update the Jaeger configuration to send traces in the sample rather than sending all the traces for each request which is not shown here.
 
 ```java
 package com.example.kafka;
@@ -364,9 +368,9 @@ public class AppController {
 }
 ```
 
-* Configuration `application.yml` file defining the `OpenTracing` Jaeger url configuraton
+* `application.yml` file defining the `OpenTracing` Jaeger URL configuration.
     
-* The spring application name will be passed during runtime with `Java` command
+* The spring application name is not passed during runtime with `Java` command.
     
 
 ```plaintext
@@ -380,7 +384,7 @@ public class AppController {
 
 * Use `mvn clean install` command to create the jar file.
     
-* Once jar file is generated, execute two instance of application with below commands
+* Once jar file is generated, execute two instances of application with the below commands.
     
 
 ```plaintext
@@ -389,7 +393,7 @@ java -jar .\target\app-0.0.1-SNAPSHOT.jar --spring.application.name=service-1 --
 java -jar .\target\app-0.0.1-SNAPSHOT.jar --spring.application.name=service-2 --server.port=8090 --debug
 ```
 
-* After application is up and running, use `curl` command to access the REST end-point like below
+* After the application is up and running, use `curl` command to access the REST end-point like below
     
 
 ```plaintext
@@ -403,7 +407,7 @@ Date: Wed, 11 Jan 2023 02:09:58 GMT
 random num : 771
 ```
 
-* Once the `curl` command access the endpoing the traces are sent to Jaeger and we can view the spans from [Jaeger UI](http://localhost:16686) at `http://localhost:16686`
+* Once the `curl` command access the endpoint the traces are sent to Jaeger and we can view the spans from [Jaeger UI](http://localhost:16686) at `http://localhost:16686`
     
     > **INFO**
     > 
