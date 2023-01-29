@@ -1,21 +1,21 @@
-## JBang CLI
+## JBang
 
-In this blog I have explained the basic usage of JBang CLI command.
+In this blog have explained the basic usage of JBang CLI command. With additional specification we will be able to run Java code without using any source code structure.
 
 ### What is JBang?
 
 - [JBang](https://www.jbang.dev/documentation/guide/latest/index.html) is a CLI tool which can run java code directly from a file.
 - With JBang CLI we can execute java code from file by passing it as a argument. 
     - In order to execute the Java file by JBang CLI, the file shouls include special defintions within java comments, which is explained in the example.
-- JBang can execute .jsh (java shell) file. The .jsh file is similar to the java file, in .jsh we don't need to define the class or main method.
-    - The .jsh supports the code that are executed in JShell REPL editor.
-- JBang can also be used to install JDK's and list JDK's. `jbang jdk list`. 
+- JBang can also execute .jsh (java shell) file. The .jsh file is similar to .java file, but it doesn't require class definition or main method.
+    - Any code that executes in JShell REPL editor, can be places in .jsh file.
+- JBang can also be used to install JDK's and list installed JDK's, using command `jbang jdk list`. 
 
-#### Install JBang CLI
+#### Install JBang
 - JBang CLI can be installed in different ways refer [installation](https://www.jbang.dev/documentation/guide/latest/installation.html) docs.
 - In my Windows machine I used chocolatey manager. 
 
-#### Simple hands-on to execute java code using JBang CLI
+#### Execute first Java code in JBang
 
 - JBang CLI requires the environment to be defined in very first line of the java file, like below.
 - This is similar to shell shebang, where we use `#!`.
@@ -24,7 +24,7 @@ In this blog I have explained the basic usage of JBang CLI command.
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 ```
 
-- Save below content to a file named `addTwoNumbers.java`
+- Save below code snippet as `addTwoNumbers.java`
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -46,34 +46,32 @@ class addTwoNumbers {
     }
 }
 ```
-
-- To execute the file using JBang CLI use below command
+##### JBang command to run Java file
 
 ```
-jbang addTwoNumbers.java 5 5
-
-# output of the execution will look like below
+> jbang addTwoNumbers.java 5 5
 Sum of 5 + 5 = 10
 ```
 
-#### Defining Maven dependencies for JBang execution
+#### JBang can resolve Maven dependencies
 
-- JBang CLI can resolve Maven or Gradle dependencies from the file.
-- The dependencies should be defined like below, where the line should start with `//DEPS`.
+- JBang CLI can resolve Maven or Gradle dependencies from the Java file.
+- JBang requires the dependencies to be specified in a specific format which should start with `//DEPS` and looks like below.
 
 ```
 //DEPS groupId:artifactId:version
 ```
 
-BOM dependencies can also be defined which will look like below. Note the suffix `@pom`, this should be specified in case of bom dependecy.
-  - The bom should be sepcified at first, any other related dependencies of the bom doesn't require version number to be specified.
-  - Only one bom can be defined in a file.
+- Defining Maven `BOM` dependencies in the Java file. Note, the suffix `@pom`, is required when defining the bom dependencies.
+     - Points to note when using  `bom` dependencies,
+          - The bom definition should be specified before using the related dependencies.
+          - Single Java file that is executed by JBang can only contain one `bom` definition.
 
 ```
 //DEPS groupId:artifactId:version@pom
 ```
 
-- Example for [camel bom](https://mvnrepository.com/artifact/org.apache.camel/camel-bom/3.20.1) dependencies, not nee to specify the versions for the realted dependencies.
+- Example for using [camel bom](https://mvnrepository.com/artifact/org.apache.camel/camel-bom/3.20.1) dependencies, not nee to specify the versions for the realted dependencies.
 
 ```
 //DEPS org.apache.camel:camel-bom:3.20.1@pom
@@ -81,10 +79,11 @@ BOM dependencies can also be defined which will look like below. Note the suffix
 //DEPS org.apache.camel:camel-main
 ```
 
-## Sample code that uses external maven dependencies
-- The code uses camel dependencies and generates random number every 2.5 seconds.
+#### Sample code defining maven dependencies for JBang
 
-- Save the below code snipet in a file named `CamelDemo.java`.
+- The java code below uses camel dependencies. It simply generates random number every 2.5 seconds.
+
+- Save below code snippet in `CamelDemo.java` file.
 
 ```java
 ///usr/bin/env jbang "$0" "$0" : exit $?
@@ -124,10 +123,11 @@ class CamelDemo{
     }
 }
 ```
+##### Output of JBang CLI execution
 
-- Run the above code using the command `jbang CamelDemo.java`
-- Initial run will download the jars and output will be displayed like below,
-- Additionally, if we need to print details we can use `jbang --verbose CamelDemo.java`
+- To execute the java file using jbang use the command `jbang CamelDemo.java`
+- Initial run will download the defined jar dependencies and output will look like below,
+- We can use the `-verbose` switch to print additional logs of `jbang`like, `jbang --verbose CamelDemo.java`
 
 ```
 > jbang CamelDemo.java
@@ -147,20 +147,21 @@ rNum: = 289
 
 ![image](https://user-images.githubusercontent.com/6425536/215309948-953a1b90-7f88-4496-8258-7684ac98019d.png)
 
-#### Executing the JBang in Docker container
+#### Use JBang in Docker to run Java file
 
 ```
 # in windows when attaching the volume better to use the complete path of the folder where CamelDemo.java exists
 docker run -v C:\\simple-camel\\:/ws -w/ws -ti jbangdev/jbang-action --verbose CamelDemo.java
 ```
+
 > **Note:**
 > Based on the JBang documentation, the command might looke like below, but note `pwd` in volume didn't work in windows
 > ```
 > docker run -v `pwd`:/ws -w/ws -ti jbangdev/jbang-action --verbose CamelDemo.java
 > ```
 
+#### Use JBang to execute Java code directly using URL
 
-#### Executing the Java code directly from internet
 - We can use JBang CLI to execute the java code directly from the internet as well 
 
 ```
@@ -170,9 +171,8 @@ docker run -v C:\\simple-camel\\:/ws -w/ws -ti jbangdev/jbang-action --verbose C
 ![image](https://user-images.githubusercontent.com/6425536/215311206-26a7b8b0-fb35-4203-9ce5-06326aa4edfe.png)
 
 
+#### Consideration
+
 - There are certain limitation in using JBang CLI, like it can't be used for complex Java programs. 
 - It can refer mulitple java file under pacakges, refer [documentation](https://www.jbang.dev/documentation/guide/latest/organizing.html)
-- When using in production, we might need to consider only for small automation process, this community is still growing.
-
-
-
+- To use JBang in production totally depends on the usage, it can be used for small automation process but not for any complex code still this community is growing.
