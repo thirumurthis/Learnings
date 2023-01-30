@@ -25,3 +25,23 @@ Select the Set me up
 Follow instruction
 ![image](https://user-images.githubusercontent.com/6425536/215361935-fb557913-50e8-4385-8eca-761f22c66545.png)
 
+
+To connect to the repo, we need to use the 
+
+curl -u <username>:<password> http://localhost:8082/artifactory/api/docker/docker-personal/v2/
+Above curl response 
+```
+{
+  "errors" : [ {
+    "status" : 503,
+    "message" : "status code: 503, reason phrase: In order to use Artifactory you must accept the EULA first"
+  } ]
+}
+```
+  
+ - To fix the above we need to execute below command, and the response looks like in image below
+ curl -XPOST -vu <username>:<password> http://localhost:8082/artifactory/ui/jcr/eula/accept
+
+![image](https://user-images.githubusercontent.com/6425536/215364612-1a68d737-10cc-456e-b7d8-82b0bfe6d4fb.png)
+
+ 
