@@ -44,4 +44,18 @@ Above curl response
 
 ![image](https://user-images.githubusercontent.com/6425536/215364612-1a68d737-10cc-456e-b7d8-82b0bfe6d4fb.png)
 
+Now, `curl -u admin:password http://localhost:8082/artifactory/api/docker/docker-personal/v2/` will display empty repsonse. `{}`
+  
+Then in order to login we need to use `docker login <artifactory url>`, make a note using `docker login localhost:8082` will not work in windows.
+
+We need to update the `hosts` file in the windows, `C:\Windows\System32\drivers\etc\hosts` file. (add below)
+  
+```
+  127.0.0.1 artifactory
+```
+ 
+  With the above update hostname update, the `docker login artifactory:8082`.
+  
+ 
+ 
  
