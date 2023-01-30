@@ -25,6 +25,12 @@ Select the Set me up
 Follow instruction
 ![image](https://user-images.githubusercontent.com/6425536/215361935-fb557913-50e8-4385-8eca-761f22c66545.png)
 
+To create the docker repo follow this instrcution
+https://jfrog.awsworkshop.io/2_self_guided_setup/29_docker_repositories.html
+
+Note:- we need to create a virtual repo and add the local repo to it. Doing so even after the main screen logs out we will still be able to see the artifacts.
+No need to re-deploy everything again.
+
 
 To connect to the repo, we need to use the 
 
