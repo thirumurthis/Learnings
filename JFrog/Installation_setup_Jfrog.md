@@ -57,11 +57,28 @@ We need to update the `hosts` file in the windows, `C:\Windows\System32\drivers\
 With the above update hostname update the we can login to docker
   
 ```
-> docker login http://artifactory:8082
+> docker login http://artifactory:8081
 Username: admin
 Password:
 Login Succeeded
 ```
+
+ We have a local program to build the image, use below commands to push image to private repo
+  -So in this case, we need to (note, 8081 port, not the 8082)  
+  Refer https://stackoverflow.com/questions/71132577/how-to-push-docker-image-to-self-hosted-artifactory
+  
+```
+docker login myartifactory:8081
+
+docker tag goapp:latest myartifactory:8081/docker-personal/goapp:v1.0
+
+docker push myartifactory:8081/docker-personal/goapp:v1.0
+```
+  
+  Image that got pushed to the repository
+  
+![image](https://user-images.githubusercontent.com/6425536/215382195-ff736023-7d07-4879-b59b-9f4ba3eb5f6a.png)
+
   
  
  
