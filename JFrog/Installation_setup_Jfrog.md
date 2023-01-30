@@ -54,7 +54,14 @@ We need to update the `hosts` file in the windows, `C:\Windows\System32\drivers\
   127.0.0.1 artifactory
 ```
  
-  With the above update hostname update, the `docker login artifactory:8082`.
+With the above update hostname update the we can login to docker
+  
+```
+> docker login http://artifactory:8082
+Username: admin
+Password:
+Login Succeeded
+```
   
  
  
