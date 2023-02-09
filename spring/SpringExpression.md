@@ -96,7 +96,7 @@ public class TestSpringExpression {
 	
 	public static SampleModel populateValues(){
 		Map<String, List<DataValue>> allValues = new HashMap<>();
-		// Example 1 : For ACMS DATA
+		// Example 1 
 		DataValue pValue = new DataValue();
 		pValue.setdataDate(new Date());
 		pValue.setdataValue(100);
