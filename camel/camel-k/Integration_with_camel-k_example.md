@@ -15,7 +15,7 @@
  - KIND CLI installed.
  - Basic understanding on Kubernetes and Operator pattern.
 
-#### Options of installing Camel-K operator
+#### Options to instal Camel-K operator
 
 - There are different option to install Camel-K. Options are listed below, 
   - using [Helm charts](https://artifacthub.io/packages/helm/camel-k/camel-k)
@@ -27,7 +27,7 @@
 > During Camel-K installation we need to configure the docker registry (docker.io).
 > In this blog have used Dockerhub, we can use private registry as well.
 
-### Install KIND cluster and setup Ingress controller
+### Install KIND cluster and deploy Nginx Ingress controller
 
 - The ingress controller is used to access the REST endpoint from the host machine.
 
@@ -79,7 +79,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 >```
 
 
-#### Install OLM in the cluster
+### Install OLM in the cluster
 
  - This is optional step. By installing the OLM (Operator Lifecycle Management)  we are not required to use the option `--olm=false` in Kamel CLI during installation.
  
@@ -201,11 +201,12 @@ kamel get
 kamel run --trait service.enabled=true --trait service.node-port=true --trait service.type=NodePort -n <namespace> <file.java> --dev 
 ```
 
-#### Apply ingress rule to access the endpoint
+### Apply ingress rule to access the endpoint
 
-- To access the REST endpoint from the host machine, we need Ingress controll to be installed in the KIND cluster.
-- To route trafic to access the port, we need a Ingress rule manifest routng the traffic to service.
-- Below is the ingress configuration manfiest, save this file named `ingress-rule.yaml`.
+- To access the REST endpoint from the host machine, we use Nginx Ingress control already deployed in cluster.
+- We need a ingress rule configuration to route traffic to access the service.
+
+- The ingress rule configuration manifest content is listed below save this in a file named `ingress-rule.yaml`.
 
 ```
 apiVersion: networking.k8s.io/v1
@@ -227,11 +228,12 @@ spec:
               number: 80
 ```
 
-- Apply the ingress using `kubectl apply -f ingress-rule.yaml` and check if the ingress is created using `kubectl get ingress`
+- To apply the ingress rule use `kubectl apply -f ingress-rule.yaml` command.
+- To check the ingress status use `kubectl get ingress` command.
 
-#### Access the REST endpoint 
+### Access the REST endpoint and output
 
-- Once the integration is successfully running, we can use `wget` to get access the response.
+- Once the integration is deployed successfully and in running state, we can use `wget` to get access the endpoint. Below is the complete command.
 
 ```
 wget -q -O - localhost/api/demo/hello
@@ -239,11 +241,11 @@ wget -q -O - localhost/api/demo/hello
 
 ![image](https://user-images.githubusercontent.com/6425536/217705778-00d05132-06bd-4943-8b55-163885fa3220.png)
 
-- Should see the integration running as a pod, using Lens to connect to the kind cluster
+- Below is the operator and integration pod running in cluster, have used Lens to connect to the kind cluster.
 
 ![image](https://user-images.githubusercontent.com/6425536/217706212-b66f9421-fc5c-41f5-9caa-e00ab55dc9f6.png)
 
-#### Passing properties to the integration code from Kamel CLI
+### Passing properties to the integration code
 
 For a simple groovy script, where the `my.message` is fetched from the properties. Save the below content to a file `Message.groovy`.
 
@@ -269,6 +271,7 @@ kamel run --property my.message="Example-From-Property" Message.groovy
 
 ![image](https://user-images.githubusercontent.com/6425536/217715505-5e351772-6175-47ed-b349-1a9ca96fbfae.png)
 
-#### Additional information
+### Additional information
+
 - We can use ConfigMap with the configuration or properties file and pass it in runtime using Kamel CLI to the integration code. Refer the [Camel-K runtime configuration documentation](https://camel.apache.org/camel-k/1.11.x/configuration/runtime-properties.html)
 - Promoting the integration to different environment, we can do it as well refer the [Camel-K promoting documentation](https://camel.apache.org/camel-k/1.11.x/running/promoting.html)
