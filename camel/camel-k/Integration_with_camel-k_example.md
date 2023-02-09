@@ -1,32 +1,33 @@
 ## Camel-K
 
 - Apache Camel K is a lightweight cloud-integration platform that runs natively on Kubernetes.
-- In this blog we will install the Camel-K operator in Kubernetes (KIND) cluster.
+- In this blog will show how to install Camel-K operator in Kubernetes (KIND) cluster.
 
-- Have explained to create a simple integration code.
+- Have created a simple integration code (Java integration).
    - The integration code expose a REST endpoint using Camel component.
-   - We can send a simple message as URL path variable.
+   - The message is passed as URL path variable.
    - The message is routed to `direct` endpoint and transform with a constant string.
 
-- There are different option to install Camel-K. Options are listed below, 
-  - using [Helm charts](https://artifacthub.io/packages/helm/camel-k/camel-k)
-  - using [OperatorHub](https://operatorhub.io/operator/camel-k)
-  - using [Kamel CLI](https://camel.apache.org/camel-k/1.11.x/installation.html)
-
-### Pre-requisities
+### Pre-requisites
  - Docker Desktop (Docker daemon running).
  - Dockerhub account.
  - Kamel CLI installed.
  - KIND CLI installed.
  - Basic understanding on Kubernetes and Operator pattern.
 
-- In this demonstration have installed the Camel-K operator with Kamel CLI in KIND cluster.
+#### Options of installing Camel-K operator
+
+- There are different option to install Camel-K. Options are listed below, 
+  - using [Helm charts](https://artifacthub.io/packages/helm/camel-k/camel-k)
+  - using [OperatorHub](https://operatorhub.io/operator/camel-k)
+  - using [Kamel CLI](https://camel.apache.org/camel-k/1.11.x/installation.html)
+- In this blog the Camel-K operator is installed with **Kamel CLI** in KIND cluster.
 
 > **Note:-**
-> During Camel-K installation we need to configure the docker registry (in this case have used dockerhub).
-> It can be private registry as well.
+> During Camel-K installation we need to configure the docker registry (docker.io).
+> In this blog have used Dockerhub, we can use private registry as well.
 
-### Create KIND cluster and setup Ingress controller
+### Install KIND cluster and setup Ingress controller
 
 - The ingress controller is used to access the REST endpoint from the host machine.
 
@@ -64,14 +65,13 @@ kind create cluster --config kamel-kind-cluster.yaml --name kamel-ingress
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
 ```
 
-### Install Camel-K operator in cluster
+### Install Camel-K operator in KIND cluster
 
-- Kamel CLI is used to install the Camel-K operator. 
-- Camel-K operator installation requires a registry (docker.io). 
-- The Docker credentials will be created as a secret and this secret is passed to Kamel CLI.
+- To install the Camel-K operator with Kamel CLI, we need to configure the docker registry (docker.io). For this first we need to create a secret in the cluster with the Docker credentials.
 
 > **Note:-**
-> - Creating a sceret with the $HOME/.docker/config.json file using below command didn't work for me
+> - Creating a secret with the $HOME/.docker/config.json file directly didn't work for me. When running the integration, the logs indicated unauthorized access.
+> - Below is the command to create secret from docker config file.
 > ```
 > kubectl create secret generic regcred \
 >    --from-file=.dockerconfigjson=$HOME/.docker/config.json \
@@ -80,16 +80,17 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 
 
 #### Install OLM in the cluster
- - This is optional step, if we install the OLM (Operator Lifecycle Management) then we don't need to use the `--olm=false` during Kamel installation part of the `kamel install` command.
+
+ - This is optional step. By installing the OLM (Operator Lifecycle Management)  we are not required to use the option `--olm=false` in Kamel CLI during installation.
  
-- Below command installs the OLM. Execute the command in GitBash.
+- To install the OLM, run below command from Gitbash.
 
 ```
 curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.23.1/install.sh | bash -s v0.23.1
 ```
 
-- Below command is used to create secret with the Docker credentials.
-   - Better to store the Dockerhub credentials in the environment variable, if we automate this will be much easier.
+- To create the secret with the Docker credentials use below commands
+   - Storing the Dockerhub credentials in the environment variable will help in case we need to automate the installation process.
 
 ```
 # from powershell use below command, to accessing environment variable we use $env:<env-key>
@@ -99,29 +100,34 @@ kubectl -n default create secret docker-registry external-registry-secret --dock
 kubectl -n default create secret docker-registry external-registry-secret --docker-username $DOCKER_USER --docker-password $DOCKER_PASS
 ```
 
-- Below is the Kamel CLI command to install Camel-K operator in default namespace.
+- Below command will install the Camel-K operator in default namespace.
 
 ```
 # the secret created above is passed in --registry-secret in this command
 kamel install -n default --registry docker.io --organization <organization-name> --registry-secret external-registry-secret --wait
 ```
 
-- If OLM is not installed in the cluster, then we need to use below command to install Camel-K operator.
+- If OLM is not installed in the cluster (as mentioned above), in this case then we need to use `--olm=false` in the command shown below.
 
 ```
 kamel install -n default --olm=false --registry docker.io --organization <organization-name> --registry-secret external-registry-secret --wait
 ```
 
 > **Info:**
+>
 > Camel-K operator installation takes sometime to install.
-> Check the operator pod status in the default namespace, it should be in running state.
+> Camel-K operator deploys as a pod, so to check the status of the pod in the default namespace use `kubectl get pods`.
+>
 > ![image](https://user-images.githubusercontent.com/6425536/217720112-da2a90e5-600a-46e4-afff-423a57bf409b.png)
+>
 
 
-### Run a simple integration 
+### Running a simple integration 
 
-- Once the Camel-K operator is in running state, we can use Kamel CLI to run an integration in the cluster.
-- Below is the integration code (Java code), which will uses Camel RouteBuilder to expose REST endpoint.
+- We can use Kamel CLI to run integration code developed in Java, groovy, etc. 
+- The Camel-K operator gets deployed to cluster as a pod, we can simply check the status of the pod and make sure it is in running state before creating an integration.
+ 
+- Below is a simple Java integration code, which uses Camel RouteBuilder and REST component to expose REST endpoint and routes the message.
 
 ```java
 
@@ -144,16 +150,16 @@ public class WelcomeRoute extends RouteBuilder {
 }
 ```
 
-- Run the integration in a `--dev` mode with below command
+- During development we can run the integration using `--dev` option, the command to create and run the integration looks like below.
 
 ```
 kamel run WelcomeRoute.java --dev
 ```
 
-- Using `--dev` will print the logs in console
-- With this flag any changes to the Java file will update the integration realtime.
+- Using `--dev` will print the logs in console.
+- With this flag any changes to the Java file will reflect immediately in the integration real time.
 
-- The deployed integration output looks like below after successful installation.
+- Below is the console log output of successfully deployed integration.
 
 ```
 Condition "Ready" is "True" for Integration welcome-route: 1/1 ready replicas
@@ -171,21 +177,25 @@ Condition "Ready" is "True" for Integration welcome-route: 1/1 ready replicas
 [1] 2023-02-09 02:36:55,889 INFO  [io.quarkus] (main) Installed features: [camel-attachments, camel-bean, camel-core, camel-direct, camel-java-joor-dsl, camel-k-core, camel-k-runtime, camel-kubernetes, camel-log, camel-platform-http, camel-rest, cdi, kubernetes-client, security, smallrye-context-propagation, vertx]
 ```
 
-- Camel-K Operator creates pod for the integration, to check the status of integration use `kamel get` command.
-  - To check the integration running in a specific namespace use `kame get -n <namespace-name>`.
+- Kamel CLI can be used to check the status of integration, use below command.
+
+```
+kamel get
+```
+  - If the integration is running on a specific namespace we can use `kame get -n <namespace-name>`.
 
 ![image](https://user-images.githubusercontent.com/6425536/217706482-39ecead7-d7cf-493c-a764-98215c4a148d.png)
 
-- By default Camel-K creates a `ClusterIP` service, for this integration
+- By default Camel-K creates a `ClusterIP` service for this integration.
 
 ![image](https://user-images.githubusercontent.com/6425536/217711853-fbe6d5ad-9a14-473d-9c89-1b79f1aaac53.png)
 
-- We can also check the exposed endpoints using `kubectl get endpoint`
+- The endpoints exposed can be checked using the command `kubectl get endpoint`
 
 ![image](https://user-images.githubusercontent.com/6425536/217706735-3abd5379-130e-4af1-859c-0e5fe313c097.png)
 
 - By default the Camel-K operator creates service as `ClusterIP`. In case if we want to expose the service as `NodePort` or `LoadBalancer`, we can use `Service Traits` to configure. The command looks like below.
-- There are different traits supported by Camel-K, refer the [Camel-K traits documentation](https://camel.apache.org/camel-k/1.11.x/traits/traits.html).
+        - There are different traits supported by Camel-K, refer the [Camel-K traits documentation](https://camel.apache.org/camel-k/1.11.x/traits/traits.html).
 
 ```
 kamel run --trait service.enabled=true --trait service.node-port=true --trait service.type=NodePort -n <namespace> <file.java> --dev 
