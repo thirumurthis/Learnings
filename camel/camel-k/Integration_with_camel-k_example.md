@@ -166,12 +166,17 @@ Condition "Ready" is "True" for Integration welcome-route: 1/1 ready replicas
 
 ![image](https://user-images.githubusercontent.com/6425536/217706482-39ecead7-d7cf-493c-a764-98215c4a148d.png)
 
-- By default Camel-K creates a `ClusterIP` service, we can check the exposed endpoints using `kubectl get endpoint`
+- By default Camel-K creates a `ClusterIP` service
+
+![image](https://user-images.githubusercontent.com/6425536/217711853-fbe6d5ad-9a14-473d-9c89-1b79f1aaac53.png)
+
+- We can check the exposed endpoints using `kubectl get endpoint`
 
 ![image](https://user-images.githubusercontent.com/6425536/217706735-3abd5379-130e-4af1-859c-0e5fe313c097.png)
 
 - In case if we want the service to be exposed as NodePort or LoadBalanceer, we can use `Service Traits`, below is how the command looks like
 - There are different traits supported by Camel-K check the [documentation](https://camel.apache.org/camel-k/1.11.x/traits/traits.html)
+
 ```
 kamel run --trait service.enabled=true --trait service.node-port=true --trait service.type=NodePort -n <namespace> <file.java> --dev 
 ```
@@ -215,9 +220,33 @@ wget -q -O - localhost/api/demo/hello
 ```
 
 ##### Output
+
 ![image](https://user-images.githubusercontent.com/6425536/217705778-00d05132-06bd-4943-8b55-163885fa3220.png)
 
 - Should see the integration running as a pod, using Lens to connect to the kind cluster
 ![image](https://user-images.githubusercontent.com/6425536/217706212-b66f9421-fc5c-41f5-9caa-e00ab55dc9f6.png)
 
+### Passing properties from kamel cli
+
+For a simple groovy script, where the `my.message` is fetched from the properties. Save the below content to a file `Message.groovy`.
+
+```java
+from('timer:props?period=1000')
+    .log('{{my.message}}')
+```
+
+- To pass the property values
+
+```
+kamel run --property my.message="Example-From-Property" Message.groovy
+```
+
+- Output 
+
+```
+[1] 2023-02-09 03:46:30,116 INFO  [route1] (Camel (camel-1) thread #1 - timer://props) Example-From-Property
+[1] 2023-02-09 03:46:31,090 INFO  [route1] (Camel (camel-1) thread #1 - timer://props) Example-From-Property
+[1] 2023-02-09 03:46:32,090 INFO  [route1] (Camel (camel-1) thread #1 - timer://props) Example-From-Property
+[1] 2023-02-09 03:46:33,090 INFO  [route1] (Camel (camel-1) thread #1 - timer://props) Example-From-Property
+```
 
