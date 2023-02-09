@@ -15,7 +15,7 @@
  - KIND CLI installed.
  - Basic understanding on Kubernetes and Operator pattern.
 
-#### Options to instal Camel-K operator
+#### Options to install Camel-K operator
 
 - There are different option to install Camel-K. Options are listed below, 
   - using [Helm charts](https://artifacthub.io/packages/helm/camel-k/camel-k)
@@ -270,6 +270,15 @@ kamel run --property my.message="Example-From-Property" Message.groovy
 ```
 
 ![image](https://user-images.githubusercontent.com/6425536/217715505-5e351772-6175-47ed-b349-1a9ca96fbfae.png)
+
+### Delete an integration using Kamel CLI
+
+- Kamel CLI command `kamel get` can be used to list the integration status.
+- To delete the integration, we need to use below command 
+
+```
+kamel delete <name-of-integration>
+```
 
 ### Additional information
 
