@@ -163,9 +163,11 @@ Condition "Ready" is "True" for Integration welcome-route: 1/1 ready replicas
 ```
 
 - Camel Operator creates pod for the integration, the status can be checked using `kamel get` command, for namespace use `-n <namespace-name>`.
+
 ![image](https://user-images.githubusercontent.com/6425536/217706482-39ecead7-d7cf-493c-a764-98215c4a148d.png)
 
 - By default Camel-K creates a `ClusterIP` service, we can check the exposed endpoints using `kubectl get endpoint`
+
 ![image](https://user-images.githubusercontent.com/6425536/217706735-3abd5379-130e-4af1-859c-0e5fe313c097.png)
 
 - In case if we want the service to be exposed as NodePort or LoadBalanceer, we can use `Service Traits`, below is how the command looks like
