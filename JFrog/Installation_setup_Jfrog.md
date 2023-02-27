@@ -34,8 +34,11 @@ No need to re-deploy everything again.
 
 To connect to the repo, we need to use the 
 
+```
 curl -u <username>:<password> http://localhost:8082/artifactory/api/docker/docker-personal/v2/
-Above curl response 
+```
+
+In case if the above curl response throws 503, like below we need to accept the EULA agreement.
 ```
 {
   "errors" : [ {
@@ -45,8 +48,11 @@ Above curl response
 }
 ```
   
- - To fix the above we need to execute below command, and the response looks like in image below
+ - To accept the EULA execute below command, and the response looks like in image below
+
+```
  curl -XPOST -vu <username>:<password> http://localhost:8082/artifactory/ui/jcr/eula/accept
+```
 
 ![image](https://user-images.githubusercontent.com/6425536/215364612-1a68d737-10cc-456e-b7d8-82b0bfe6d4fb.png)
 
@@ -54,13 +60,13 @@ Now, `curl -u admin:password http://localhost:8082/artifactory/api/docker/docker
   
 Then in order to login we need to use `docker login <artifactory url>`, make a note using `docker login localhost:8082` will not work in windows.
 
-We need to update the `hosts` file in the windows, `C:\Windows\System32\drivers\etc\hosts` file. (add below)
+We need to update the `hosts` file in the windows, `C:\Windows\System32\drivers\etc\hosts` file. (like below, add the line in hosts file)
   
 ```
   127.0.0.1 artifactory
 ```
  
-With the above update hostname update the we can login to docker
+Once the hosts file is updated we can login to docker like below
   
 ```
 > docker login http://artifactory:8081
