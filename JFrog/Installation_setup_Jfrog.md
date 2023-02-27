@@ -4,12 +4,19 @@
   - Start the artifact.bat under the apps/bin folder
   - Once the application is started the UI can be accessed using `http://localhost:8081`
 
+From the extraced jcr zip, run below services (run the .bat file)
+ - observability
+ - router
+ - metadata  (set the environment variable `$env:JF_SHARED_NODE_ID = 'artifactory'`) and then start the bat file
+ - integration
+ 
 
 ### Setting up Docker artifactory
 - From the UI, create the Docker repository with a repository key.
 - As the admin, click the `Get Started`, and click the Deploy Artifact option.
 
 The option looks like below
+
 ![image](https://user-images.githubusercontent.com/6425536/215361234-37942daf-2b11-40f0-8a86-4db9ee4d1525.png)
 
 The artifact section will look like below, the repository key used here is docker-personal.
@@ -17,15 +24,19 @@ The artifact section will look like below, the repository key used here is docke
 ![image](https://user-images.githubusercontent.com/6425536/215361279-3af5bb14-b05b-4f2d-ae39-2f9013435cf6.png)
 
 Select Docker 
+
 ![image](https://user-images.githubusercontent.com/6425536/215361921-70e5fc04-67e0-4847-8b78-981c01971ec2.png)
 
 Select the Set me up
+
 ![image](https://user-images.githubusercontent.com/6425536/215362254-e79ead91-8ee5-4b6d-bfbb-3f7bed8a99e3.png)
 
 Follow instruction
+
 ![image](https://user-images.githubusercontent.com/6425536/215361935-fb557913-50e8-4385-8eca-761f22c66545.png)
 
 To create the docker repo follow this instrcution
+
 https://jfrog.awsworkshop.io/2_self_guided_setup/29_docker_repositories.html
 
 Note:- we need to create a virtual repo and add the local repo to it. Doing so even after the main screen logs out we will still be able to see the artifacts.
