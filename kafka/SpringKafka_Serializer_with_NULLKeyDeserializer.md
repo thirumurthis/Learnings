@@ -1,21 +1,24 @@
-In this article explained how to extend the Spring Boot Kafka Serializer to handle payload that contains null keys in a Map when sending messages to Kafka topic.
+## Spring Boot NullKeySerializer - Handle Kafka payload with null keys
 
-Pre-requisites:
+In this article detailed how the default Spring Boot Kafka JSON Serializer can be extended with NullKeySerializer implementation to handle payload when message with map contains null keys. The default JSON Serializer throws exception when payload message to Kafka topic with null keys.
+
+### Pre-requisites:
   - Kafka cluster running in 9092 port
 
-In Message Oriented Middleware (MOM) based distributed application the payload messages communicate between system over network. There are scenarios like the payload containing null key when messages contains Map. The default Spring Boot JSON serializer will throw exception when trying to serialize map with null keys. Below is how the exception message looks for example.
+In Message Oriented Middleware (MOM) based distributed application, the payload messages communicate between system over network. There are scenarios where the payload may contain maps with null key. As mentioned above default Spring Boot JSON serializer will throw exception and exception message looks like below.
 
 ```
 Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.apache.kafka.common.errors.SerializationException: Can't serialize data [MapInputData(messageInfo={null=the key is null explicitly, 1=the key is one non-null}, date=Sun Mar 26 14:40:29 PDT 2023)] for topic [input-topic]] with root cause
 ```
 
-This blog explains how we can extend default Spring JSON Serializer implementing custom null serilaizer so the payload message will null key map data can be sent to Kafka broker.
+## Brief steps on how to handle null key in the payload:
 
-How to handle null key in payload when sending message to Kafka?
- - First  the default spring JSON serializer class `org.springframework.kafka.support.serializer.JsonSerializer` should be extended and we should implement the NullKeySerializer.
+ - First  the extend the default spring JSON serializer class `org.springframework.kafka.support.serializer.JsonSerializer` and implement the NullKeySerializer.
   - Next, the extended custom serializer class should be configured in the spring kafka producer `spring.kafka.producer.value-serializer` property.
 
-- Below is the complete custom serialzier code that implements NullKeySeralizer.
+### Code implementation
+
+- The complete spring custom serialzier code that implements NullKeySeralizer:
     - In this class the Jackson ObjectMapper is created and configured the implemented NullKeySerializer. The ObjectMapper is also configured to load additional modules, to handle the Date in the payload.
    - The ObjectMapper is passed to the Spring Boot default JsonSerializer.
   
@@ -66,8 +69,6 @@ public class CustomKafkaJsonSerializer extends JsonSerializer<Object> {
     }
 }
 ```
-
-- Following is complete code
 
 - Spring Boot application entry point
 
@@ -137,7 +138,6 @@ package com.example.kafka.model;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
-
 import java.util.Date;
 import java.util.Map;
 
