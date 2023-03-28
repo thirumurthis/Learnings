@@ -3,7 +3,7 @@
 In this article detailed how the default Spring Boot Kafka JSON Serializer can be extended with NullKeySerializer implementation to handle payload when message with map contains null keys. The default JSON Serializer throws exception when payload message to Kafka topic with null keys.
 
 ### Pre-requisites:
-  - Kafka cluster running in 9092 port
+  - Kafka cluster running in 9092 port 
 
 In Message Oriented Middleware (MOM) based distributed application, the payload messages communicate between system over network. There are scenarios where the payload may contain maps with null key. As mentioned above default Spring Boot JSON serializer will throw exception and exception message looks like below.
 
