@@ -1,7 +1,7 @@
 - Generic class to transform the data and extend the publisher
 
 Note:-
- - Pom.xml is same as the exemple with itemdata publisher and subscriber
+ - Pom.xml is same as the exemple with [failFase and failSilent](https://github.com/thirumurthis/Learnings/blob/master/reactive_program/reactive_java/SimpleReactive_failFast_failSilent_approach.md)
 
 ```java
 package com.reactive;
