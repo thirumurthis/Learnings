@@ -127,6 +127,8 @@ public class ItemPublisher extends SubmissionPublisher<ItemData> {}
 
 - Using the ItemTransformProcessor to extend for different covnertion in this case for integer transform
 - This can transform the item data price to int value (can also multply, etc).
+- Below is example of how to implement the TransformProcessor, in this case for Integer conversion of price
+
 ```java
 package com.reactive;
 
