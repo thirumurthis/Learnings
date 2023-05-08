@@ -297,5 +297,108 @@ public class TreeOperation<T extends Comparable<T>> implements Tree<T>{
         return sb.toString();
     }
 }
+```
 
+```java
+package algorithm.avl;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+/**
+ *  height of a tree
+ *   - number of edges from root node to the farthest null node from it
+ *   - null node has a height of 0
+ * Total height (h) = {h of Left subTree} - {h of right subTree}
+ *                      4   (h = 1 - 1 =0)
+ *                    /   \
+ *   (h = 0 - 0 =0)  3     6  h = 0
+ *
+ *               7 (h = 2 - 1 = 1)
+ *             /   \
+ *  h(0-1=-1) 5     9  (h = 0)
+ *             \
+ *        h=0   6
+ *
+ *  Balance of the tree =  {h of left subTree} - {h of right subTree} <= {-1,1}
+ *    - the tree or subTree is considered balanced
+ *      - when balance(tree) greater than -1 and less than 1
+ *
+ *                  9 h= 2-0=2
+ *                 /
+ *                6 h= 0
+ *               / \
+ *         h=0  4   8 h=0
+ */
+@Data
+@RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+public class Node<T extends Comparable<T>>{
+
+    @NonNull private T data;
+    //track the height
+    //Upon node creation, the height
+    //default value is 1
+    private int height =1;
+    private Node<T> leftChild;
+    private Node<T> rightChild;
+}
+```
+```java
+package algorithm.avl;
+
+public class EntryPoint {
+
+    public static void main(String[] args) {
+        TreeOperation tree = new TreeOperation();
+        boolean firstDataSet = false;
+        boolean secondDataSet = true;
+        if(firstDataSet) {
+            Node<Integer> node = new Node<>(10);
+            StringBuilder sb = new StringBuilder();
+            node =tree.insert(11, node);
+            //tree.traverse(node);
+            //tree.traversePreOrder(sb,"","",node);
+            System.out.println(tree.traversePreOrder(node));
+            //sb.append("-\n");
+            node = tree.insert(6, node);
+            //tree.traverse(node);
+            //tree.traversePreOrder(sb,"","",node);
+            System.out.println(tree.traversePreOrder(node));
+            //sb.append("-\n");
+            node = tree.insert(8, node);
+            //tree.traverse(node);
+            //tree.traversePreOrder(sb,"","",node);
+            System.out.println(tree.traversePreOrder(node));
+            //sb.append("-\n");
+            node =tree.insert(9, node);
+
+            //tree.traverse(node);
+            //tree.traversePreOrder(sb,"","",node);
+            System.out.println(tree.traversePreOrder(node));
+            //System.out.println(sb.toString()+"\n---");
+        }
+        if(secondDataSet){
+            Node<Integer> node = new Node<>(11);
+            System.out.println("----- add 10 -\n");
+            node = tree.insert(10,node);
+            System.out.println(tree.traversePreOrder(node));
+            System.out.println("----- add  8 - \n");
+            node =  tree.insert(8,node);
+            System.out.println(tree.traversePreOrder(node));
+            System.out.println("----- add  6 - \n");
+            node =  tree.insert(6,node);
+            System.out.println(tree.traversePreOrder(node));
+            System.out.println("----- add  5 - \n");
+            node =  tree.insert(5,node);
+            System.out.println(tree.traversePreOrder(node));
+            System.out.println("----- add  1 - \n");
+            node =  tree.insert(1,node);
+            System.out.println(tree.traversePreOrder(node));
+        }
+    }
+}
 ```
