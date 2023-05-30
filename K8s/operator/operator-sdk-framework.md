@@ -240,4 +240,6 @@ $ from the WSL2 then issue the command, which
 $ make run 
 
 # to run the operator locally 
-make run
+make run output
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/a03133f2-5c9a-4caf-93bd-fc6bf8e0e208)
+
