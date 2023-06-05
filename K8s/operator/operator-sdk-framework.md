@@ -44,14 +44,27 @@ Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
 $ make manifests
 ```
 
-### to build the image and deploying the operator.
-make docker-build docker-push IMG="example.com/memcached-operator:v0.0.1"
+### To build the image and deploying the operator
+```
+make docker-build docker-push IMG="example.com/podscaler-operator:v0.0.1"
+```
 
-# to generate the manfest yaml after making the changes
+### Any change to the `*types.go` file, will impact the CRD manifest generation
+ - To generate the manfest yaml after making the changes adding the properties issue below command
+```
 make mainfests
+```
 
-# the change should be done to 
+### Any updates to the `*types.go` file, will be used to generate the CRD yaml. The generated yaml will be under below path
+```
+config/crd/bases/scaler*
+```
+
+### the change should be done to `*types.go` file present under the directory structure shown in below image
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/ae479f8f-5449-4e41-b35e-adf5f7ae0189)
+
+
+### The types go file which defines the properties that goes into the CRD yaml
 
 ```go
 /*
@@ -231,16 +244,6 @@ func (r *PodScalerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&scalerv1alpha1.PodScaler{}).
 		Complete(r)
 }
-```
-
-### To generate the CRD manifest yaml issue below command
-```
-$ make manifests
-```
-
-### Any updates to the `*types.go` file, will be used to generate the CRD yaml. The generated yaml will be under below path
-```
-config/crd/bases/scaler*
 ```
 
 ### First CRD should be installed, then 
