@@ -1,14 +1,15 @@
 - Install `git`, `make` in the WSL2
 
-- The operator will be auto scaling the deployments in the specific namespace.
-
+- The operator code in this example will be auto scaling the deployments in the specific namespace.
  
-1. init the structure of the app
-$ operator-sdk init --domain podscaler.com --repo github.com/thirumurthis/podscaler-operator
+## 1. Init the operator project structure for the operator 
 
-output:
 ```
-thirumurthis/podscaler-operator
+$ operator-sdk init --domain podscaler.com --repo github.com/thirumurthis/podscaler-operator
+```
+
+###  output:
+```
 Writing kustomize manifests for you to edit...
 Writing scaffold for you to edit...
 Get controller runtime:
@@ -19,9 +20,13 @@ Next: define a resource with:
 $ operator-sdk create api
 ```
 
-$ operator-sdk create api --group scaler --version v1alpha1 --kind PodScaler --resource --controller
+## 2. Create the API by specifying resource coorinates the Kuberntes API would uniquely identify resources
 
-output:
+```
+$ operator-sdk create api --group scaler --version v1alpha1 --kind PodScaler --resource --controller
+```
+
+### output:
 ```
 Writing kustomize manifests for you to edit...
 Writing scaffold for you to edit...
@@ -31,15 +36,15 @@ Update dependencies:
 $ go mod tidy
 Running make:
 $ make generate
-mkdir -p /mnt/c/thiru/learn/goOperator/podscaler-operator/bin
-test -s /mnt/c/thiru/learn/goOperator/podscaler-operator/bin/controller-gen && /mnt/c/thiru/learn/goOperator/podscaler-operator/bin/controller-gen --version | grep -q v0.11.1 || \
-GOBIN=/mnt/c/thiru/learn/goOperator/podscaler-operator/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.1
-/mnt/c/thiru/learn/goOperator/podscaler-operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+mkdir -p /mnt/c/goOperator/podscaler-operator/bin
+test -s /mnt/c/goOperator/podscaler-operator/bin/controller-gen && /mnt/c/goOperator/podscaler-operator/bin/controller-gen --version | grep -q v0.11.1 || \
+GOBIN=/mnt/c/goOperator/podscaler-operator/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.1
+/mnt/c/goOperator/podscaler-operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
 Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
 $ make manifests
 ```
 
-# to build the image and deploying the operator.
+### to build the image and deploying the operator.
 make docker-build docker-push IMG="example.com/memcached-operator:v0.0.1"
 
 # to generate the manfest yaml after making the changes
@@ -228,18 +233,32 @@ func (r *PodScalerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 ```
 
-# the above command will generate the yaml file with the changes in the type,
-# config/crd/bases/scaler*
+### To generate the CRD manifest yaml issue below command
+```
+$ make manifests
+```
 
-# first CRD should be installed, then 
+### Any updates to the `*types.go` file, will be used to generate the CRD yaml. The generated yaml will be under below path
+```
+config/crd/bases/scaler*
+```
+
+### First CRD should be installed, then 
+```
 $ kubectl apply -f config/crd/bases/scaler.podscaler.com_podscalers.yaml
+```
 
-# if the wsl to not able to connect to Docker kind cluster, then copy the .kube/config to the $HOME/.kube/config
+#### If the `kubectl` from wsl not able to connect to kind cluster, then copy the .kube/config to the $HOME/.kube/config
+```
+cp /mnt/c/Users/<username>/.kube/config ~/.kube/config
+```
 
-$ from the WSL2 then issue the command, which
+### To deploy the operator to the local Kind cluster for development run below command from the WSL2
+```
 $ make run 
+```
 
-# to run the operator locally 
-make run output
+#### The output of deployed operator in local cluster
+
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/a03133f2-5c9a-4caf-93bd-fc6bf8e0e208)
 
