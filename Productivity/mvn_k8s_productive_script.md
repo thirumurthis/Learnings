@@ -27,12 +27,12 @@ alias runMvn='mvnFunc(){ POMFILE="pom.xml"; if [ -f "$POMFILE" ]; then mvn "$@" 
 
 ### Command usage in Git Bash
 
-- The alias command without any argument will execute the `mvn clean install`
+- Executing the alias command (without any argument) like below will run `mvn clean install`
 ```
 $ runMvn
 ```
+- Executing alias command (with argument -DskipTest) like below will execute `mvn -DskipTests clean install`
 
-- The alias command with argument will execute `mvn -DskipTests clean intall`
 ```
 $ runMvn -DskipTests
 ```
@@ -49,6 +49,8 @@ alias runK8SScript='kubeFunc(){ TMPPWD=$(pwd); cd /c/shellScript/; sh runK8SScri
 - Create a Script (.sh) file named `runK8SScript.sh` with the below content.
    - Below script can be extended say if we have mulitple yaml file we can utilize it.
    - Likewise we can use helm to deploy charts as well.
+
+- Logic in below script is self explanatory, script uses `getopts`, to get user option based on which the `kubectl apply` and `kubectl delete` command will be executed.
 
 ```
 #!/usr/bin/env bash
@@ -134,7 +136,7 @@ fi
 $ runK8SScript 
 ```
 
-#### Output
+#### Output with no argument
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/9068927b-fe43-47c0-8e43-17f33a769a73)
 
@@ -142,7 +144,7 @@ $ runK8SScript
 $ runK8SScript -c create
 ```
 
-#### Output 
+#### Output with create argument
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/34ccaee5-e5f3-4d79-91ab-8facd62799eb)
 
@@ -150,6 +152,6 @@ $ runK8SScript -c create
 $ runK8SScript -d delete
 ```
 
-#### Output
+#### Output with delete argument
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/4cedf531-d884-4b65-afb7-1c354468dab2)
