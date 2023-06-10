@@ -1,13 +1,13 @@
-# Automate repitative tasks using shell scripts
+# Automate repetitive tasks using shell scripts
 
-In day to day application development especially for Microservice architecture based application built using SpringBoot and  Kubernetes during development we tend to build artifacts images multiple times.
+In day to day application development especially building Microservice architecture based application using Spring Boot and  Kubernetes, during development we tend to build artifacts and images multiple times for validating the changes.
 
-In this blog will detail how to automate few of the day to day development process using shell script and Git Bash. 
-This is based on my day to day development activities where I tend to use `mvn` and `kubectl` commands frequently in my local environment.
+In this blog have detail how to automate day to day development tasks like using `mvn` and `kubectl` commands, both the commands configured in the Git Bash as alias in the `.bashrc` file. Demonstrated how to run the commands in bash terminal by passing arguments.
 
 ## Prerequisites
+
    - Basic understanding of Shell scripting
-   - Kind CLI installed (Running in Docker Desktop)
+   - Kind CLI installed (Docker Desktop)
    - Git Bash Installed
 
 ## Automate mvn command as a alias in Git Bash
