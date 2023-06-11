@@ -7,7 +7,7 @@ Resources:
   ` helm install my-app --debug --dry-run example1/`
 
 - In `_helpers.tpl`, the `Release.Name` is the value passed in the helm install command, `my-app`
-- `fullnameOverride` - was not specified in `values.yaml` file (this was note changed for this explanation)
+- `fullnameOverride` - was not specified in `values.yaml` file (this was not changed for this explanation)
 ```
 {{- define "example1.fullname" -}}
 {{- if .Values.fullnameOverride }}
