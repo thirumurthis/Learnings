@@ -122,7 +122,8 @@ management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 ```
 
-- the content of the `_configmap.yaml`
+- The content of the `_configmap.yaml`
+   - The `toYaml` usage to indicate the file.
 
 ```yaml
 {{- define "demo1.configmap_file" -}}
@@ -279,7 +280,7 @@ metadata:
     helm.sh/chart: {{ include "demo1.chart" . }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
-{{ toYaml (.Files.Glob "config-repo/*").AsConfig | indent 2 }}
+{{ toYaml (.Files.Glob "configuration/*").AsConfig | indent 2 }}
 {{- end -}}
 ```
 
