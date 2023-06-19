@@ -245,13 +245,6 @@ C:\LESSON1\DEMO1
 │   Chart.yaml
 │   values.yaml
 │
-├───archive
-│       deployment.yaml
-│       hpa.yaml
-│       ingress.yaml
-│       service.yaml
-│       serviceaccount.yaml
-│
 ├───charts
 ├───config-repo
 │       appconfig.yaml
