@@ -172,6 +172,14 @@ data:
       \"ALWAYS\"\r\nmanagement.endpoints.web.exposure.include: \"*\""
 ```
 
+- Values to be override the values.yaml to be provided
+
+```yaml
+demo1:
+   appName: demo-app
+   chart: demo1-chart
+```
+
 - Override values in local named template
 
 - Store the named template to _deployment.yaml
