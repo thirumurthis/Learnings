@@ -232,7 +232,7 @@ metadata:
 The structure of the directory works,
 
 ```
-C:\THIRU\LEARN\HELM\LESSONS\LESSON1\DEMO1
+C:\LESSON1\DEMO1
 │   .helmignore
 │   Chart.yaml
 │   values.yaml
