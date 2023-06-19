@@ -246,7 +246,7 @@ C:\LESSON1\DEMO1
 │   values.yaml
 │
 ├───charts
-├───config-repo
+├───configuration
 │       appconfig.yaml
 │       application.yaml
 │
@@ -263,4 +263,151 @@ C:\LESSON1\DEMO1
     │
     └───tests
             test-connection.yaml
+```
+- All content of the file
+
+- _configmap.yaml
+
+```yaml
+{{- define "demo1.configmap_from_file" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "demo1.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "demo1.name" . }}
+    helm.sh/chart: {{ include "demo1.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+{{ toYaml (.Files.Glob "config-repo/*").AsConfig | indent 2 }}
+{{- end -}}
+```
+
+- _deployment.yaml
+
+```yaml
+{{/*
+Simple defintion
+*/}}
+{{- define "demo1.deployment" -}}
+{{- $demo1 := dict "Values" .Values.demo1 -}} 
+{{- $noDemo1 := omit .Values "demo1" -}} 
+{{- $overrides := dict "Values" $noDemo1 -}} 
+{{- $noValues := omit . "Values" -}} 
+{{- with merge $noValues $overrides $demo1 -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "demo1.fullname" . }}
+  labels:
+    {{- range $key, $val := $demo1.Values }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+    custom.label: {{ $demo1.Values.chart | quote}}
+    debug.info: {{ printf "%s" ($demo1.Values.appName | quote) }}
+    debug.statement: {{ $demo1.name | quote }}
+    app.kubernetes.io/name: {{ include "demo1.name" . }}
+    helm.sh/chart: {{ include "demo1.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+{{- end -}}
+```
+
+- _secrets.yaml
+
+```yaml
+{{- define "demo1.secrets" -}}
+{{- range $secretName, $secretMap := .Values.secrets }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  labels:
+    app.kubernetes.io/name: {{ $secretName }}
+    helm.sh/chart: {{ include "demo1.chart" $ }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+type: Opaque
+data:
+{{- range $key, $val := $secretMap }}
+  {{ $key }}: {{ $val | b64enc }}
+{{- end }}
+---
+{{- end -}}
+{{- end -}}
+```
+
+- app_service.yaml
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "demo1.fullname" . }}
+  labels: 
+    app.kubernetes.io/name: {{ include "demo1.name" . }}
+    helm.sh/chart: {{ include "demo1.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+{{ toYaml .Values.service.ports | indent 4 }}
+  selector:
+    app.kubernetes.io/name: {{ include "demo1.name" . }}
+````
+
+- configMap.yaml
+
+```yaml
+{{ include "demo1.configmap_from_file" .}}
+```
+
+- deployment.yaml
+
+```yaml
+{{ include "demo1.deployment" . }}
+```
+
+- secrets.yaml
+
+```yaml
+{{ include "demo1.secrets" .}}
+```
+
+- values.yaml
+
+```yaml
+secrets:
+  frontend:
+    app-name: fe-app
+    version-name: alpha-release
+  backend:
+    app-name: be-app
+    version-name: beta-release
+
+demo1:
+   appName: demo-app
+   chart: demo1-chart
+
+service:
+  type: NodePort
+  ports:
+  - port: 443
+    targetPort: 8443
+    nodePort: 30443
+```
+
+- configuration/appconfig.yaml
+
+```yaml
+appName: my-app
+version: 1.0
+```
+
+- configuration/application.yaml
+
+```yaml
+server.port: 8090
+
+management.endpoint.health.show-details: "ALWAYS"
+management.endpoints.web.exposure.include: "*"
 ```
