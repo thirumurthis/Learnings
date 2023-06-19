@@ -54,12 +54,14 @@ data:
 
 - The `template\secrets\secrets.yaml` file content which will render the named template
   - Below is the only content that goes, since we are using named template reference
-```
+ 
+```yaml
 {{ include "demo1.secrets" .}}
 ```
 
 - To generate the templated output for specific file, use below command
   - Note: below command using .\template\secrets.yaml didn't work in powershell
+ 
 ```
 > helm template . -s template\secrets.yaml
 ```
