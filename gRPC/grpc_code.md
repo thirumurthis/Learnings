@@ -207,3 +207,123 @@ public class GrpcServer {
     }
 }
 ```
+
+- Alternate server implementation
+
+```java
+package org.grpc.server;
+
+
+import com.grpc.app.GreetingRequest;
+import com.grpc.app.GreetingResponse;
+import com.grpc.app.GreetingServiceGrpc;
+import com.grpc.app.TimeOfDay;
+import io.grpc.Context;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.Status;
+import io.grpc.protobuf.services.ProtoReflectionService;
+import io.grpc.stub.StreamObserver;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
+public class ServerImpl {
+
+    private final int port;
+    private final Server server;
+    public ServerImpl(int port){
+        this(ServerBuilder.forPort(port),port);
+    }
+
+    public ServerImpl(ServerBuilder serverBuilder, int port){
+        this.port = port;
+        server = serverBuilder
+                .addService(new GreetServiceImpl())
+                .addService(ProtoReflectionService.newInstance())
+                .build();
+    }
+
+    public void start() throws IOException{
+        server.start();
+        log.info("server start port {}",port);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(){
+            @Override
+            public void run(){
+                try{
+                    ServerImpl.this.stop();
+                } catch (InterruptedException e) {
+                    log.error("exception occurred ",e);
+                }
+            }
+        });
+    }
+
+    private void blockUntilShutdown() throws InterruptedException{
+        if(server != null){
+            server.awaitTermination();
+        }
+    }
+
+    public void stop() throws InterruptedException{
+        if (server != null){
+            server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
+        }
+    }
+    public static class GreetServiceImpl extends GreetingServiceGrpc.GreetingServiceImplBase {
+        @Override
+        public void greeting(GreetingRequest request,
+                             StreamObserver<GreetingResponse> responseObserver) {
+            log.info("Request - {}",request);
+
+            LocalTime currentTime = LocalTime.now();
+
+            int hour = currentTime.getHour();
+            TimeOfDay time;
+            if(hour >=6 && hour <12){
+                time = TimeOfDay.MORNING;
+            }else if( hour >=12 && hour <18){
+                time = TimeOfDay.AFTERNOON;
+            }else {
+                time = TimeOfDay.EVENING;
+            }
+
+            String greeting = "Hello there, " + request.getName();
+
+            GreetingResponse response = GreetingResponse
+                    .newBuilder()
+                    .setMessage(greeting)
+                    .setDayOfTime(time)
+                    .build();
+
+            if(Context.current().isCancelled()){
+                log.info("request cancelled");
+                responseObserver.onError(
+                        Status.CANCELLED
+                                .withDescription("Request is Cancelled")
+                                .asRuntimeException()
+                );
+                return;
+            }
+
+            try {
+                Thread.sleep(5000);
+            }catch (InterruptedException e){
+                log.error("sleep for a minute");
+            }
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+    }
+
+    public static void main(String ... args) throws IOException, InterruptedException {
+        ServerImpl serverImpl = new ServerImpl(8091);
+        serverImpl.start();
+        serverImpl.blockUntilShutdown();
+    }
+}
+```
