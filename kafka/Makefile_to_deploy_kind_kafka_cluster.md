@@ -1,3 +1,5 @@
+- Makefile to deploy kind cluster
+```
 SHELL :=/bin/bash
 
 NAMESPACE ?= kafka
@@ -79,3 +81,4 @@ deploy: install-cluster create-namespace install-operator wait-zz list-resource
 info:
 	@awk '/^[a-zA-Z_-]+: / { print $$0; print "\n"}' $(MAKEFILE_LIST) | \
 	awk -F":" 'BEGIN {print "targets" } /^[a-zA-Z_-]+/ {print "    "$$1}'
+```
