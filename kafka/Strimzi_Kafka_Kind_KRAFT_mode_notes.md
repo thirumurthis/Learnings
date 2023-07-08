@@ -24,7 +24,7 @@ Apache Kafka Zookeeper Vs KRaft:
     
 *   `KRaft` is new way by which Kafka manages quoram between multiple clusters.
     
-*   `Kraft` is still an experimental feature and **NOT** to be used in production yet.
+*   `KRaft` is still an experimental feature and **NOT** to be used in production yet.
     
 
 Deploying Kafka in Kubernetes?
