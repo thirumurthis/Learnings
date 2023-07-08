@@ -423,17 +423,17 @@ info:
 *   `make deploy-operator`
     
 
-![image](https://user-images.githubusercontent.com/6425536/205426061-1df530e5-e25c-4545-b0d4-055b8e896071.png align="left")
+![image](https://user-images.githubusercontent.com/6425536/205426061-1df530e5-e25c-4545-b0d4-055b8e896071.png)
 
 *   `make install-kafka-cluster`
     
 
-![image](https://user-images.githubusercontent.com/6425536/205426118-81f29c6d-a30d-4408-9161-bb51e5b9b7d8.png align="left")
+![image](https://user-images.githubusercontent.com/6425536/205426118-81f29c6d-a30d-4408-9161-bb51e5b9b7d8.png)
 
 *   Created topic details
     
 
-![image](https://user-images.githubusercontent.com/6425536/205426204-bdfecea8-ebb1-4bf5-8a88-edf466106704.png align="left")
+![image](https://user-images.githubusercontent.com/6425536/205426204-bdfecea8-ebb1-4bf5-8a88-edf466106704.png)
 
 > **CODE:-** Code can be downloaded from [Github](https://github.com/thirumurthis/projects/tree/kafka_strimzi_kind_code).
 
