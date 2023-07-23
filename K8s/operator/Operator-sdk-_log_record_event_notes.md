@@ -234,3 +234,62 @@ go run ./main.go
 It looks like below, note there are no event info, next we will try to add a report object and track the event.
 
  ![image](https://github.com/thirumurthis/Learnings/assets/6425536/c898b5fe-1cc4-48f3-b5b2-329694e2b1e4)
+
+
+# Adding recorder event to the operator
+- Add recorder to the struct in the *controller.go file and import the record
+
+```
+ import(
+  ....
+    "k8s.io/client-go/tools/record"
+  ....
+)
+
+type GreetReconciler struct {
+	client.Client
+	Scheme *runtime.Scheme
+	Recorder record.EventRecorder
+}
+```
+- Controller code that updates and adds the recorder.
+
+```go
+func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	_ = log.FromContext(ctx)
+
+	log.Log.Info("Reconciler invoked..")
+
+        instance := &greetv1alpha1.Greet{}
+
+	err := r.Get(ctx, req.NamespacedName, instance)
+        
+	if err != nil {
+             r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", "Failed to read Object")
+             return ctrl.Result{}, nil
+	}
+ 
+       appName := instance.Spec.Name
+       // Recorder event added
+       r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", fmt.Sprintf("Created - %s ",appName))
+
+       //..... other code
+	return ctrl.Result{}, nil
+}
+```
+- In main we included the records and get  the `Recorder`.
+
+ ```go
+    if err = (&controllers.GreetReconciler{
+	Client: mgr.GetClient(),
+	Scheme: mgr.GetScheme(),
+        Recorder: mgr.GetEventRecorderFor("greet-controller"), //MANUAL: added the recorder
+    }).SetupWithManager(mgr); err != nil {
+	setupLog.Error(err, "unable to create controller", "controller", "Greet")
+	os.Exit(1)
+    }
+```
+
+### output image where the events are displayed when we describe the CRD
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/4ac8148b-9ca4-472a-8fd5-e63bfc317c42)
