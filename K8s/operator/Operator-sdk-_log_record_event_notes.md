@@ -208,9 +208,9 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 ```
 - now with the above change, we need to apply it to local kind environment
 - Below command will deploy the controller changes to local kind cluster, the output looks like below..
-note: the log statement added is displayed, when the above CRD is applied
+Note: the log statement added is displayed, when the above CRD is applied
 ```
-$ make install run
+$ make generate install run
 ....
 go run ./main.go
 2023-07-23T13:28:13-07:00       INFO    controller-runtime.metrics      Metrics server is starting to listen    {"addr": ":8080"}
