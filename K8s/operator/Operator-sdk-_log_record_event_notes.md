@@ -290,6 +290,8 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
     }
 ```
 
+## add 
+
 ### output image where the events are displayed when we describe the CRD
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/4ac8148b-9ca4-472a-8fd5-e63bfc317c42)
