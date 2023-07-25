@@ -259,11 +259,9 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	_ = log.FromContext(ctx)
 
 	log.Log.Info("Reconciler invoked..")
-
         instance := &greetv1alpha1.Greet{}
-
 	err := r.Get(ctx, req.NamespacedName, instance)
-        
+       
 	if err != nil {
              r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", "Failed to read Object")
              return ctrl.Result{}, nil
@@ -277,7 +275,7 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	return ctrl.Result{}, nil
 }
 ```
-- In main we included the records and get  the `Recorder`.
+- In main we included the records and get  the `Recorder` from manager.
 
  ```go
     if err = (&controllers.GreetReconciler{
@@ -290,8 +288,101 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
     }
 ```
 
-## add 
-
 ### output image where the events are displayed when we describe the CRD
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/4ac8148b-9ca4-472a-8fd5-e63bfc317c42)
+
+- In below code if the Object is the reason of the event. In the above snapshot at the bottom we could see the value
+```
+ r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", fmt.Sprintf("Created - %s ",appName))
+```
+
+### Output where the updated reason
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/11cb3ad3-3f50-439d-be7a-9d2c6f407511)
+
+## Below is an example how to dynamically update the status update
+
+- So when we issue `kubectl get greet/greet-sample -w`,
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/4c1df07f-add4-48b4-a8e3-f63e22563705)
+
+- In the `*_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
+
+```
+//+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
+//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
+```
+
+- Code snippet of the `type.go` file, in the `GreetStatus`, which we included `Status` string type.
+- In the reconciler will be updated status dynamically in the code which we will update in the `controller.go`.
+
+```
+// GreetStatus defines the observed state of Greet
+type GreetStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+        Status string `json:"status,omitempty"`
+}
+
+//Don't leave any space between the marker - ADD below 
+
+//+kubebuilder:object:root=true
+//+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
+//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
+//+kubebuilder:subresource:status
+// +operator-sdk:gen-csv:customresourcedefinitions.displayName="Greet App"
+// +operator-sdk:gen-csv:customresourcedefinitions.resources="Deployment,v1,\"A Kubernetes Deployment of greet app\""
+
+type Greet struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   GreetSpec   `json:"spec,omitempty"`
+	Status GreetStatus `json:"status,omitempty"`
+}
+```
+
+### `main.go` 
+
+```
+func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	_ = log.FromContext(ctx)
+	log.Log.Info("Reconciler invoked..")
+	instance := &greetv1alpha1.Greet{}
+
+	if err := r.Get(ctx, req.NamespacedName, instance); err != nil {
+             r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", "Failed to read Object")
+             log.Log.Info("Error while reading the object")
+             return ctrl.Result{},client.IgnoreNotFound(err)
+	}
+ 
+       appName := instance.Spec.Name
+
+       if instance.Spec.Name != "" {
+	  log.Log.Info(fmt.Sprintf("appName for CRD is - %s ",instance.Spec.Name))
+          r.Recorder.Event(instance, corev1.EventTypeWarning, "Greet", fmt.Sprintf("Created - %s ",appName))
+       } else {
+          log.Log.Info("instance.Spec.Name - NOT FOUND")
+       }
+
+      // update the ok when it is blank
+      if instance.Status.Status == "" {
+          instance.Status.Status = "OK"
+          log.Log.Info("instance.Spec.Name - is set to OK")
+      }
+
+      // update the status with client
+      if err := r.Status().Update(ctx, instance); err != nil {
+             log.Log.Info("Error while reading the object")
+             return ctrl.Result{},client.IgnoreNotFound(err)
+      }
+      return ctrl.Result{}, nil
+}
+```
+
+### output
+- Once the `manifest` is updated and deployed with the `kubectl apply -f <manifest>`, then on watching the resources should see the status being updated. 
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d)
+
