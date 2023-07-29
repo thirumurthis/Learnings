@@ -1,23 +1,36 @@
 ## Extending Kubernetes API with Operator-SDK
 
-In this blog, we will see how  Kubernetes API can be extended using Operator-SDK.
+In this blog, will explain how to use operator-sdk to create additional resource in Kuberentes cluster. 
+To start with you will how to scaffold the project and initalize it, which provides a starting point for developing the CRD's and Controllers. Note, not all points are explained in details, only focus on necessary aspect like the steps required for developing operators.
 
-We will use Windows machine for development and operator-sdk CLI is installed in WSL2.
+I used Windows machine for development and the operator-sdk CLI was installed in WSL2. The scaffold operator-sdk project can be opened in Visual Studio code for development, explained later.
 
-Pre-requsites:
+### Pre-requsites:
+
+  - Basic understanding of Kubernetes and Opeators
   - Docker Desktop
-  - KIND CLI (we will use KinD cluster)
+  - KIND CLI (we will use KinD cluster, install in Windows)
+  - kubectl Installed in WSL2 and Windows
   - Go installed in WSL2
   - GNU make installed and updated in WSL2
   - Operator-SDK CLI installed in WSL2
 
-To install Go, follow the instruction in this [Go documenation](https://go.dev/doc/install)
+## About Operator framework
+
+Operator framework provides tools to extend the Kuberentes API, it can be used to create a new resource in the Kubernetes cluster. For example, when we issue `kubectl api-resource` will list the resource info. with operators we can create new resource and once deployed will be listed here.
+
+Once the operator-sdk project is scaffolded and initialized, we can update the `*type.go` file which will be used to generate(CRD). The reconciler logic goes into *controller.go
+ 
+### Install GoLang in WSL2
+
+- To install Go, follow the instruction in this [Go documenation](https://go.dev/doc/install)
 
 ```
 wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz
 sudo tar -xvf go1.20.4.linux-amd64.tar.gz
 sudo mv go /usr/local
 ```
+
 - Open the `~/.bashrc` file and add the below variables so it will update as environment variables
 
 ```
@@ -32,6 +45,8 @@ export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 $ go version
 go version go1.20.4 linux/amd64
 ```
+
+### Setup KinD CLI in Windows
 
 Download and install KinD CLI, this can be installed via Chocolatey, refer the [documentation]( https://community.chocolatey.org/packages/kind)
 
@@ -62,7 +77,9 @@ serverVersion:
   platform: linux/amd64
 ```
 
-To install GNU make version, simply use `sudo apt install make`
+### Install GNU make in WSL2 
+
+- To install GNU make version, simply use `sudo apt install make`
 
 ```
 $ make -version
@@ -72,15 +89,21 @@ Copyright (C) 1988-2020 Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 ```
 
-To install operator-sdk refer the Operator SDK [documentation](https://sdk.operatorframework.io/docs/installation/), it is self explainotary
+### Install Operator-SDK CLI in WSL2
+
+- To install operator-sdk refer the Operator SDK [documentation](https://sdk.operatorframework.io/docs/installation/), it is self explainotary.
+
+- Once installed, we can view the version refer below snippet for command and output response.
+
 ```
 $ operator-sdk version
 operator-sdk version: "v1.30.0", commit: "b794fe909abc1affa1f28cfb75ceaf3bf79187e6", kubernetes version: "1.26.0", go version: "go1.19.10", GOOS: "linux", GOARCH: "amd64"
 ```
 
-### Lets start creating the first Operator project
+## Creating the Operator-SDK project and developing few basic features
 
-- Create a folder and issue below command to scaffolding the operator skd project
+- Create a new folder to scaffold the operator-skd project. Below command will create project structure
+
 ```
 operator-sdk init --domain greetapp.com --repo github.com/thirumurthis/app-operator
 ```
@@ -97,9 +120,27 @@ Next: define a resource with:
 $ operator-sdk create api
 ```
 
-## Create the api with the resource coordinates within the initialized operator project
+- The switch option in the operator-sdk command above used to scaffold a project.
+
+  - `--domain` in the command is required which will identify the resource when using `kubectl api-resource`
+
 ```
-$ operator-sdk create api --group scaler --version v1alpha1 --kind DeploymentScaler --resource --controller
+$ kubectl api-resources | grep -e greet -e NAME
+NAME        SHORTNAMES   APIVERSION                             NAMESPACED   KIND
+greets                   greet.greetapp.com/v1alpha1            true         Greet
+```
+  - `--repo` is uses to specify that this project is outside go path
+
+
+## Create a new api on the scaffolded project
+
+- Over the scaffolded operator-sdk project we now need to create an API.
+- This is the next step after scaffolding a operator-sdk project, which is also listed in the output of the `operator-sdk init` command. 
+- The `operator-sdk create api` command requires kind, version and group where the Kuberentes API can identify the resource in the cluster.
+- Mostly, the kind and version, we will use in the CRD manifest as well.
+
+```
+$ operator-sdk create api --group greet --version v1alpha1 --kind Greet --resource --controller
 ```
 
 ### Output:
@@ -120,7 +161,7 @@ Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
 $ make manifests
 ```
 
-- We are using latest version of the pacakges, so we update the `go.mod` file, looks like below.
+- This step is optional, I am using the latest kubernetes libraries that where available at the time of writing. These latest version of the pacakges is updated in the `go.mod` file and it looks like below.
 
 ```go
 go 1.19
