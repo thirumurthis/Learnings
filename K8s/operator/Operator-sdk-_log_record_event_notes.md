@@ -1,10 +1,12 @@
+This article gives a simple overview of how we can use Operator SDK (Go) to create Custom Resource Definition and Controller to manage the Custom Resources.
+
+This is a hands-on article and requires a good understanding in Kubernetes and how operators work.
+
 ## Extending Kubernetes API with Operator-SDK
 
-In this blog, will explain how to use operator-sdk to create additional resource in Kuberentes cluster. 
-To start with you will how to scaffold the project and initalize it, which provides a starting point for developing the CRD's and Controllers. Note, not all points are explained in details, only focus on necessary aspect like the steps required for developing operators.
+In this blog, have explained how to use operator-sdk to create additional resource in Kuberentes cluster. To start with you we first scaffold the project and create api using the operator-sdk cli, this gives us a starting point to develop the CRD's and Controllers. Note, not all points are explained in detail, only focus on necessary aspect required in developing operators.
 
-I used Windows machine for development and the operator-sdk CLI was installed in WSL2. The scaffold operator-sdk project can be opened in Visual Studio code for development, explained later.
-
+I used Windows machine for development. The *operator-sdk* CLI was installed in WSL2. The scaffold operator-sdk project can be opened in Visual Studio code for development to update code.
 ### Pre-requsites:
 
   - Basic understanding of Kubernetes and Opeators
