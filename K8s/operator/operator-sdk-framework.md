@@ -1,14 +1,91 @@
-- Install `git`, `make` in the WSL2
+## Extending Kubernetes API with Operator-SDK
 
-- The operator code in this example will be auto scaling the deployments in the specific namespace.
- 
-## 1. Init the operator project structure for the operator 
+In this blog, we will see how  Kubernetes API can be extended using Operator-SDK.
+
+We will use Windows machine for development and operator-sdk CLI is installed in WSL2.
+
+Pre-requsites:
+  - Docker Desktop
+  - KIND CLI (we will use KinD cluster)
+  - Go installed in WSL2
+  - GNU make installed and updated in WSL2
+  - Operator-SDK CLI installed in WSL2
+
+To install Go, follow the instruction in this [Go documenation](https://go.dev/doc/install)
 
 ```
-$ operator-sdk init --domain podscaler.com --repo github.com/thirumurthis/podscaler-operator
+wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz
+sudo tar -xvf go1.20.4.linux-amd64.tar.gz
+sudo mv go /usr/local
+```
+- Open the `~/.bashrc` file and add the below variables so it will update as environment variables
+
+```
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 ```
 
-###  output:
+- To find the Go version, issuing `go version` command we should see the response like below.
+
+```
+$ go version
+go version go1.20.4 linux/amd64
+```
+
+Download and install KinD CLI, this can be installed via Chocolatey, refer the [documentation]( https://community.chocolatey.org/packages/kind)
+
+The Kubernetes cluster that was created using KinD, details below.
+
+```
+~$ kubectl version -o yaml
+clientVersion:
+  buildDate: "2023-05-17T14:20:07Z"
+  compiler: gc
+  gitCommit: 7f6f68fdabc4df88cfea2dcf9a19b2b830f1e647
+  gitTreeState: clean
+  gitVersion: v1.27.2
+  goVersion: go1.20.4
+  major: "1"
+  minor: "27"
+  platform: linux/amd64
+kustomizeVersion: v5.0.1
+serverVersion:
+  buildDate: "2023-06-15T00:36:28Z"
+  compiler: gc
+  gitCommit: 25b4e43193bcda6c7328a6d147b1fb73a33f1598
+  gitTreeState: clean
+  gitVersion: v1.27.3
+  goVersion: go1.20.5
+  major: "1"
+  minor: "27"
+  platform: linux/amd64
+```
+
+To install GNU make version, simply use `sudo apt install make`
+
+```
+$ make -version
+GNU Make 4.3
+Built for x86_64-pc-linux-gnu
+Copyright (C) 1988-2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+```
+
+To install operator-sdk refer the Operator SDK [documentation](https://sdk.operatorframework.io/docs/installation/), it is self explainotary
+```
+$ operator-sdk version
+operator-sdk version: "v1.30.0", commit: "b794fe909abc1affa1f28cfb75ceaf3bf79187e6", kubernetes version: "1.26.0", go version: "go1.19.10", GOOS: "linux", GOARCH: "amd64"
+```
+
+### Lets start creating the first Operator project
+
+- Create a folder and issue below command to scaffolding the operator skd project
+```
+operator-sdk init --domain greetapp.com --repo github.com/thirumurthis/app-operator
+```
+
+### Output:
 ```
 Writing kustomize manifests for you to edit...
 Writing scaffold for you to edit...
@@ -20,248 +97,320 @@ Next: define a resource with:
 $ operator-sdk create api
 ```
 
-## 2. Create the API by specifying resource coorinates the Kuberntes API would uniquely identify resources
-
+## Create the api with the resource coordinates within the initialized operator project
 ```
-$ operator-sdk create api --group scaler --version v1alpha1 --kind PodScaler --resource --controller
+$ operator-sdk create api --group scaler --version v1alpha1 --kind DeploymentScaler --resource --controller
 ```
 
-### output:
+### Output:
 ```
 Writing kustomize manifests for you to edit...
 Writing scaffold for you to edit...
-api/v1alpha1/podscaler_types.go
-controllers/podscaler_controller.go
+api/v1alpha1/deploymentscaler_types.go
+controllers/deploymentscaler_controller.go
 Update dependencies:
 $ go mod tidy
 Running make:
 $ make generate
-mkdir -p /mnt/c/goOperator/podscaler-operator/bin
-test -s /mnt/c/goOperator/podscaler-operator/bin/controller-gen && /mnt/c/goOperator/podscaler-operator/bin/controller-gen --version | grep -q v0.11.1 || \
-GOBIN=/mnt/c/goOperator/podscaler-operator/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.1
-/mnt/c/goOperator/podscaler-operator/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
+mkdir -p /mnt/c/goOperator/deploymentscaler/bin
+test -s /mnt/c/goOperator/deploymentscaler/bin/controller-gen && /mnt/c/goOperator/deploymentscaler/bin/controller-gen --version | grep -q v0.11.1 || \
+GOBIN=/mnt/c/goOperator/deploymentscaler/bin go install sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.1
+/mnt/c/goOperator/deploymentscaler/bin/controller-gen object:headerFile="hack/boilerplate.go.txt" paths="./..."
 Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
 $ make manifests
 ```
 
-### To build the image and deploying the operator
-```
-make docker-build docker-push IMG="example.com/podscaler-operator:v0.0.1"
-```
-
-### Any change to the `*types.go` file, will impact the CRD manifest generation
- - To generate the manfest yaml after making the changes adding the properties issue below command
-```
-make mainfests
-```
-
-### Any updates to the `*types.go` file, will be used to generate the CRD yaml. The generated yaml will be under below path
-```
-config/crd/bases/scaler*
-```
-
-### the change should be done to `*types.go` file present under the directory structure shown in below image
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/ae479f8f-5449-4e41-b35e-adf5f7ae0189)
-
-
-### The types go file which defines the properties that goes into the CRD yaml
+- We are using latest version of the pacakges, so we update the `go.mod` file, looks like below.
 
 ```go
-/*
-Copyright 2023.
+go 1.19
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+require (
+        github.com/onsi/ginkgo/v2 v2.9.5
+        github.com/onsi/gomega v1.27.7
+        k8s.io/apimachinery v0.27.4
+        k8s.io/client-go v0.27.4
+        sigs.k8s.io/controller-runtime v0.15.0
+)
+```
 
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
+First we add a new property to the CRD called Name, and read this value from the reconciler
+and print it in the log
+1. Lets add a name to the `*_types.go` which will be the name of the app and file by adding a name string 
+  From the below code, 
+   1 and 2 are annotation added for length validation 
+   3 is the new property name for hte resource
+  
+```go
 package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
-// NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+type GreetSpec struct {
 
-// PodScalerSpec defines the desired state of PodScaler
-type PodScalerSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
-	ScaleCount  int32           `json:"scaleCount"`
-	Deployments []NameNamespace `json:"deployments"`
+    //Name of the resource 
+    // +kubebuilder:validation:MaxLength=15   // --->  1
+    // +kubebuilder:validation:MinLength=1    // --->  2
+    Name string `json:"name"`    //------------------> 3
 }
 
-type NameNamespace struct {
-	Name      string `json:"name"`
-	Namespace string `json:"namespace"`
-}
-
-// PodScalerStatus defines the observed state of PodScaler
-type PodScalerStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+// GreetStatus defines the observed state of Greet
+type GreetStatus struct {
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-
-// PodScaler is the Schema for the podscalers API
-type PodScaler struct {
+type Greet struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   PodScalerSpec   `json:"spec,omitempty"`
-	Status PodScalerStatus `json:"status,omitempty"`
+	Spec   GreetSpec   `json:"spec,omitempty"`
+	Status GreetStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 
-// PodScalerList contains a list of PodScaler
-type PodScalerList struct {
+// GreetList contains a list of Greet
+type GreetList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []PodScaler `json:"items"`
+	Items           []Greet `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&PodScaler{}, &PodScalerList{})
+	SchemeBuilder.Register(&Greet{}, &GreetList{})
 }
 ```
-- sample CRD yaml (based on the property provided below like `deployment`
+
+With the above changes, we need to issue `make generate` and `make manifest`. 
+- the sample CRD manifest will be created, in this case will look like below
 
 ```yaml
-apiVersion: scaler.podscaler.com/v1alpha1
-kind: PodScaler
+apiVersion: greet.greetapp.com/v1alpha1
+kind: Greet
 metadata:
   labels:
-    app.kubernetes.io/name: podscaler
-    app.kubernetes.io/instance: podscaler-sample
-    app.kubernetes.io/part-of: podscaler-operator
+    app.kubernetes.io/name: greet
+    app.kubernetes.io/instance: greet-sample
+    app.kubernetes.io/part-of: app-op
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: podscaler-operator
-  name: podscaler-sample
+    app.kubernetes.io/created-by: app-op
+  name: greet-sample
 spec:
-  scaleCount: 5
-  deployments: 
-    - name: podscale
-      namespace: project
+  name: first-app
 ```
-- The yaml file code, controller file
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/0b821d73-126f-4662-8689-34a8c814cee4)
-
+- Controller changes
+- At this point there are NO changes to other files,
 ```go
-
-package controllers
-
-import (
-	"context"
-	"fmt"
-	"time"
-
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	scalerv1alpha1 "github.com/thirumurthis/podscaler-operator/api/v1alpha1"
-	v1 "k8s.io/api/apps/v1"
-)
-
-// PodScalerReconciler reconciles a PodScaler object
-type PodScalerReconciler struct {
-	client.Client
-	Scheme *runtime.Scheme
-}
-
-//+kubebuilder:rbac:groups=scaler.podscaler.com,resources=podscalers,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=scaler.podscaler.com,resources=podscalers/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=scaler.podscaler.com,resources=podscalers/finalizers,verbs=update
-
-// Reconcile is part of the main kubernetes reconciliation loop which aims to
-// move the current state of the cluster closer to the desired state.
-// TODO(user): Modify the Reconcile function to compare the state specified by
-// the PodScaler object against the actual cluster state, and then
-// perform operations to make the cluster state reflect the state specified by
-// the user.
-//
-// For more details, check Reconcile and its Result here:
-// - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.14.1/pkg/reconcile
-func (r *PodScalerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
-	log.Log.Info("reconsiler invoked")
-	podScaler := &scalerv1alpha1.PodScaler{}
-	err := r.Get(ctx, req.NamespacedName, podScaler)
+	log.Log.Info("Reconciler invoked..") // -------------> Logs the message passed
+	instance := &greetv1alpha1.Greet{}   //--------------> create an instance of the CRD 
+
+	err := r.Get(ctx, req.NamespacedName, instance)
 
 	if err != nil {
 		return ctrl.Result{}, nil
 	}
+ 
+    appName := instance.Spec.Name
 
-	scaleCount := podScaler.Spec.ScaleCount
-	for _, deploy := range podScaler.Spec.Deployments {
-		deployment := &v1.Deployment{}
+    log.Log.Info(fmt.Sprintf("app Name for CRD is - %s ",appName))
+    if instance.Spec.Name != "" {
+	  log.Log.Info(fmt.Sprintf("appName for CRD is - %s ",instance.Spec.Name))
+    } else {
+      log.Log.Info("instance.Spec.Name - NOT FOUND")
+    }
 
-		err := r.Get(ctx,
-			types.NamespacedName{
-				Namespace: deploy.Namespace,
-				Name:      deploy.Name,
-			},
-			deployment,
-		)
-		if err != nil {
-			return ctrl.Result{}, err
-		}
+    if err := r.Get(ctx, req.NamespacedName, instance); err == nil {
+      log.Log.Info(fmt.Sprintf("GET invoked reconile for resource name - %s", instance.GetName()))
+    }
 
-		log.Log.Info("invoke scale count")
-		if deployment.Spec.Replicas != &scaleCount {
-			deployment.Spec.Replicas = &scaleCount
-			log.Log.Info(fmt.Sprint("deployment %v", deployment))
-			err := r.Update(ctx, deployment)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
-		}
+    return ctrl.Result{}, nil
+}
+
+```
+- now with the above change, we need to apply it to local kind environment
+- Below command will deploy the controller changes to local kind cluster, the output looks like below..
+Note: the log statement added is displayed, when the above CRD is applied
+```
+$ make generate install run
+....
+go run ./main.go
+2023-07-23T13:28:13-07:00       INFO    controller-runtime.metrics      Metrics server is starting to listen    {"addr": ":8080"}
+2023-07-23T13:28:13-07:00       INFO    setup   starting manager
+2023-07-23T13:28:13-07:00       INFO    Starting server {"kind": "health probe", "addr": "[::]:8081"}
+2023-07-23T13:28:13-07:00       INFO    starting server {"path": "/metrics", "kind": "metrics", "addr": "[::]:8080"}
+2023-07-23T13:28:13-07:00       INFO    Starting EventSource    {"controller": "greet", "controllerGroup": "greet.greetapp.com", "controllerKind": "Greet", "source": "kind source: *v1alpha1.Greet"}
+2023-07-23T13:28:13-07:00       INFO    Starting Controller     {"controller": "greet", "controllerGroup": "greet.greetapp.com", "controllerKind": "Greet"}
+2023-07-23T13:28:13-07:00       INFO    Starting workers        {"controller": "greet", "controllerGroup": "greet.greetapp.com", "controllerKind": "Greet", "worker count": 1}
+2023-07-23T13:28:28-07:00       INFO    Reconciler invoked..
+2023-07-23T13:28:28-07:00       INFO    app Name for CRD is - first-app
+2023-07-23T13:28:28-07:00       INFO    appName for CRD is - first-app
+2023-07-23T13:28:28-07:00       INFO    GET invoked reconile for resource name - greet-sample
+```
+
+## output 
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/782d4fab-7529-4584-9371-d69b0237e3cd)
+
+- We can describe the CRD
+It looks like below, note there are no event info, next we will try to add a report object and track the event.
+
+ ![image](https://github.com/thirumurthis/Learnings/assets/6425536/c898b5fe-1cc4-48f3-b5b2-329694e2b1e4)
+
+
+# Adding recorder event to the operator
+- Add recorder to the struct in the *controller.go file and import the record
+
+```
+ import(
+  ....
+    "k8s.io/client-go/tools/record"
+  ....
+)
+
+type GreetReconciler struct {
+	client.Client
+	Scheme *runtime.Scheme
+	Recorder record.EventRecorder
+}
+```
+- Controller code that updates and adds the recorder.
+
+```go
+func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	_ = log.FromContext(ctx)
+
+	log.Log.Info("Reconciler invoked..")
+        instance := &greetv1alpha1.Greet{}
+	err := r.Get(ctx, req.NamespacedName, instance)
+       
+	if err != nil {
+             r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", "Failed to read Object")
+             return ctrl.Result{}, nil
 	}
+ 
+       appName := instance.Spec.Name
+       // Recorder event added
+       r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", fmt.Sprintf("Created - %s ",appName))
 
-	return ctrl.Result{RequeueAfter: time.Duration(30 * time.Second)}, nil
-}
-
-// SetupWithManager sets up the controller with the Manager.
-func (r *PodScalerReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&scalerv1alpha1.PodScaler{}).
-		Complete(r)
+       //..... other code
+	return ctrl.Result{}, nil
 }
 ```
+- In main we included the records and get  the `Recorder` from manager.
 
-### First CRD should be installed, then 
-```
-$ kubectl apply -f config/crd/bases/scaler.podscaler.com_podscalers.yaml
-```
-
-#### If the `kubectl` from wsl not able to connect to kind cluster, then copy the .kube/config to the $HOME/.kube/config
-```
-cp /mnt/c/Users/<username>/.kube/config ~/.kube/config
-```
-
-### To deploy the operator to the local Kind cluster for development run below command from the WSL2
-```
-$ make run 
+ ```go
+    if err = (&controllers.GreetReconciler{
+	Client: mgr.GetClient(),
+	Scheme: mgr.GetScheme(),
+        Recorder: mgr.GetEventRecorderFor("greet-controller"), //MANUAL: added the recorder
+    }).SetupWithManager(mgr); err != nil {
+	setupLog.Error(err, "unable to create controller", "controller", "Greet")
+	os.Exit(1)
+    }
 ```
 
-#### The output of deployed operator in local cluster
+### output image where the events are displayed when we describe the CRD
 
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/a03133f2-5c9a-4caf-93bd-fc6bf8e0e208)
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/4ac8148b-9ca4-472a-8fd5-e63bfc317c42)
+
+- In below code if the Object is the reason of the event. In the above snapshot at the bottom we could see the value
+```
+ r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", fmt.Sprintf("Created - %s ",appName))
+```
+
+### Output where the updated reason
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/11cb3ad3-3f50-439d-be7a-9d2c6f407511)
+
+## Below is an example how to dynamically update the status update
+
+- So when we issue `kubectl get greet/greet-sample -w`,
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/4c1df07f-add4-48b4-a8e3-f63e22563705)
+
+- In the `*_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
+
+```
+//+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
+//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
+```
+
+- Code snippet of the `type.go` file, in the `GreetStatus`, which we included `Status` string type.
+- In the reconciler will be updated status dynamically in the code which we will update in the `controller.go`.
+
+```
+// GreetStatus defines the observed state of Greet
+type GreetStatus struct {
+	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+	// Important: Run "make" to regenerate code after modifying this file
+        Status string `json:"status,omitempty"`
+}
+
+//Don't leave any space between the marker - ADD below 
+
+//+kubebuilder:object:root=true
+//+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
+//+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
+//+kubebuilder:subresource:status
+// +operator-sdk:gen-csv:customresourcedefinitions.displayName="Greet App"
+// +operator-sdk:gen-csv:customresourcedefinitions.resources="Deployment,v1,\"A Kubernetes Deployment of greet app\""
+
+type Greet struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   GreetSpec   `json:"spec,omitempty"`
+	Status GreetStatus `json:"status,omitempty"`
+}
+```
+
+### `main.go` 
+
+```
+func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	_ = log.FromContext(ctx)
+	log.Log.Info("Reconciler invoked..")
+	instance := &greetv1alpha1.Greet{}
+
+	if err := r.Get(ctx, req.NamespacedName, instance); err != nil {
+             r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", "Failed to read Object")
+             log.Log.Info("Error while reading the object")
+             return ctrl.Result{},client.IgnoreNotFound(err)
+	}
+ 
+       appName := instance.Spec.Name
+
+       if instance.Spec.Name != "" {
+	  log.Log.Info(fmt.Sprintf("appName for CRD is - %s ",instance.Spec.Name))
+          r.Recorder.Event(instance, corev1.EventTypeWarning, "Greet", fmt.Sprintf("Created - %s ",appName))
+       } else {
+          log.Log.Info("instance.Spec.Name - NOT FOUND")
+       }
+
+      // update the ok when it is blank
+      if instance.Status.Status == "" {
+          instance.Status.Status = "OK"
+          log.Log.Info("instance.Spec.Name - is set to OK")
+      }
+
+      // update the status with client
+      if err := r.Status().Update(ctx, instance); err != nil {
+             log.Log.Info("Error while reading the object")
+             return ctrl.Result{},client.IgnoreNotFound(err)
+      }
+      return ctrl.Result{}, nil
+}
+```
+
+### output
+- Once the `manifest` is updated and deployed with the `kubectl apply -f <manifest>`, then on watching the resources should see the status being updated. 
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d)
 
