@@ -4,7 +4,7 @@ This is a hands-on article and requires a good understanding in Kubernetes and h
 
 ## Extending Kubernetes API with Operator-SDK
 
-In this blog, have explained how to use operator-sdk to create additional resource in Kuberentes cluster. To start with you we first scaffold the project and create api using the operator-sdk cli, this gives us a starting point to develop the CRD's and Controllers. Note, not all points are explained in detail, only focus on necessary aspect required in developing operators.
+In this blog, have explained how to use operator-sdk to create additional resource in Kubernetes cluster. To start with you we first scaffold the project and create api using the operator-sdk cli, this gives us a starting point to develop the CRD's and Controllers. Note, not all points are explained in detail, only focus on necessary aspect required in developing operators.
 
 I used Windows machine for development. The *operator-sdk* CLI was installed in WSL2. The scaffolded operator-sdk project can be opened in Visual Studio code for development to update code.
 
@@ -345,22 +345,20 @@ go run ./main.go
 2023-07-23T13:28:28-07:00       INFO    Reconciler invoked..
 2023-07-23T13:28:28-07:00       INFO    app Name for CRD is - first-app
 2023-07-23T13:28:28-07:00       INFO    appName for CRD is - first-app
-2023-07-23T13:28:28-07:00       INFO    GET invoked reconile for resource name - greet-sample
+2023-07-23T13:28:28-07:00       INFO    GET invoked reconcile for resource name - greet-sample
 ```
 
 #### Output once operator deployed
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/782d4fab-7529-4584-9371-d69b0237e3cd)
 
-* We can describe the CRD It looks like below, note there are no event info, next we will try to add a report object and track the event.
-    
+* `kubectl describe` to describe the CRD and looks like below, note there are no event info we can add it later in next section to controller code.
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/c898b5fe-1cc4-48f3-b5b2-329694e2b1e4)
 
 ## Tracking Event in the Controller
 
 * To record the events, first we need to add recorder to the `GreetReconciler` struct in the `controllers/greet_controller.go` file and import the library for record.
-    
 
 ```go
  import(
@@ -377,7 +375,6 @@ type GreetReconciler struct {
 ```
 
 * We will use the Recorder event object to record events and the code looks like below
-    
 
 ```go
 func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -403,7 +400,6 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 ```
 
 * Since the `GreetReconciler` struct is updated to include a recorder object, the `main.go` needs to fetch the recorder object from the manager and set to the struct.
-    
 
 ```go
    if err = (&controllers.GreetReconciler{
@@ -426,7 +422,7 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 * In Recorder.Event the "Object" is the displayed as reason of the event.
 
-```plaintext
+```go
  r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", fmt.Sprintf("Created - %s ",appName))
 ```
 
@@ -436,23 +432,22 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 ## Update the status when the Custom Resource deployed
 
-* Once the Controller and Custom resources are deployed we can track the status with `kubectl get greet/greet-sample -w`, in this section we will see the code changes required to include the Appname and status so using `kubectl get` will provide the info, like in the snapshot.
+* Once the Controller and Custom resources are deployed, we can track the status with `kubectl get greet/greet-sample -w`, in this section we will see the code changes required to include the Appname and status so using `kubectl get` will provide the info, like in the snapshot.
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/4c1df07f-add4-48b4-a8e3-f63e22563705)
 
 * In the `api/v1alpha1/greet_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
  
-```plaintext
+```go
 //+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
 //+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
 ```
 
 * The code snippet of the `greet_type.go` file, the `GreetStatus` struct includes new property `Status` which is of type string.
-    
 * In the `controllers/greet_controller.go` reconciler function we check the status and updated it dynamically based on resource status.
     
 
-```plaintext
+```go
 // GreetStatus defines the observed state of Greet
 type GreetStatus struct {
         Status string `json:"status,omitempty"`   // ----------> newly added status property
@@ -478,7 +473,7 @@ type Greet struct {
 
 ### The reconciler logic to validate the status and update it
 
-```plaintext
+```go
 func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 	log.Log.Info("Reconciler invoked..")
