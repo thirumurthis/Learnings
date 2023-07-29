@@ -1,4 +1,4 @@
-This article gives a simple overview of how we can use Operator SDK (Go) to create Custom Resource Definition and Controller to manage the Custom Resources.
+This article gives a brief overview of how to use Operator SDK (Go) to create Custom Resource Definition and Controller to extend Kubernetes API and manage Custom Resources.
 
 This is a hands-on article and requires a good understanding in Kubernetes and how operators work.
 
@@ -113,7 +113,7 @@ operator-sdk version: "v1.30.0", commit: "b794fe909abc1affa1f28cfb75ceaf3bf79187
 operator-sdk init --domain greetapp.com --repo github.com/thirumurthis/app-operator
 ```
 
-#### Output of operator-sdk init
+#### Output of operator-sdk init command
 
 ```plaintext
 Writing kustomize manifests for you to edit...
@@ -169,7 +169,7 @@ $ make manifests
 ```
 
 *Note:*
-> * The operator-sdk project includes a Makefile with bunch of useful commands that will be used during development.
+> * The operator-sdk project includes a Makefile with bunch of useful commands that is useful during development.
 > * In WSL2 terminal, if we are already navigated to the project folder issue `make manifests` which will generate CRD file. This yaml file will be under `config/crd/bases/`, in this case the file name will start with greet.
 
 ### Update the go mod with the latest library version
@@ -518,3 +518,7 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 * With`kubectl get greet/greet-sample -w` command we can monitor the resource status.
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d)
+
+### Points that where not covered
+* Deploying the operator in actual cluster by creating an image.
+* We can package the CRDs to helm and deploy it via helm CLI
