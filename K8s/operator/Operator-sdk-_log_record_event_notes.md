@@ -361,7 +361,7 @@ It looks like below, note there are no event info, next we will try to add a rep
 
 - To record the events, first we need to add recorder to the GreetReconciler struct in the `controllers/*controller.go` file and import the library for record.
 
-```
+```go
  import(
   ....
     "k8s.io/client-go/tools/record"    // Import the library for record
@@ -432,31 +432,30 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/11cb3ad3-3f50-439d-be7a-9d2c6f407511)
 
 
-## Update the status of the resource in Controller
+## Update the status when the Custom Resource deployed
 
-- Once the Controller and Custom resources are deployed we can track the status with `kubectl get greet/greet-sample -w`,
+- Once the Controller and Custom resources are deployed we can track the status with `kubectl get greet/greet-sample -w`, in this section we will see the code changes required to include the Appname and status so using `kubectl get` will provide the info, like in the snapshot.
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/4c1df07f-add4-48b4-a8e3-f63e22563705)
 
-- In the `*_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
+
+- In the `api/v1alpha1/*_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
 
 ```
 //+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
 //+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
 ```
 
-- Code snippet of the `type.go` file, in the `GreetStatus`, which we included `Status` string type.
-- In the reconciler will be updated status dynamically in the code which we will update in the `controller.go`.
+- The code snippet of the `type.go` file, in the `GreetStatus` struct includes new property `Status` of string type.
+- In the `controllers/*controller.go` reconciler function we check the status and updated it dynamically based on resource status.
 
 ```
 // GreetStatus defines the observed state of Greet
 type GreetStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-        Status string `json:"status,omitempty"`
+        Status string `json:"status,omitempty"`   // ----------> newly added status property
 }
 
-//Don't leave any space between the marker - ADD below 
+//Don't leave any new line space between the marker // below marker used to display APPNAME and STATUS
 
 //+kubebuilder:object:root=true
 //+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
@@ -474,7 +473,7 @@ type Greet struct {
 }
 ```
 
-### `main.go` 
+### The reconciler logic to validate the status and update it 
 
 ```
 func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -503,7 +502,7 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
           log.Log.Info("instance.Spec.Name - is set to OK")
       }
 
-      // update the status with client
+      // update the status with client ------------> Only status will be updated
       if err := r.Status().Update(ctx, instance); err != nil {
              log.Log.Info("Error while reading the object")
              return ctrl.Result{},client.IgnoreNotFound(err)
@@ -512,8 +511,13 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 }
 ```
 
-### output
-- Once the `manifest` is updated and deployed with the `kubectl apply -f <manifest>`, then on watching the resources should see the status being updated. 
+### Output for status change
+
+- Stop the operator if it was deployed in local cluster.
+- Delete the Custom Resource if it was deployed to local cluster
+- Deploy the operator to local cluster using `make generate install run` 
+- Deploy the custom resource yaml manifest to the local cluster using `kubectl apply -f config/samples/`.
+- Issue `kubect get greet/greet-sample -w` to monitor the resource status.
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d)
 
