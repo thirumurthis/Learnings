@@ -6,57 +6,65 @@ This is a hands-on article and requires a good understanding in Kubernetes and h
 
 In this blog, have explained how to use operator-sdk to create additional resource in Kuberentes cluster. To start with you we first scaffold the project and create api using the operator-sdk cli, this gives us a starting point to develop the CRD's and Controllers. Note, not all points are explained in detail, only focus on necessary aspect required in developing operators.
 
-I used Windows machine for development. The *operator-sdk* CLI was installed in WSL2. The scaffold operator-sdk project can be opened in Visual Studio code for development to update code.
-### Pre-requsites:
+I used Windows machine for development. The *operator-sdk* CLI was installed in WSL2. The scaffolded operator-sdk project can be opened in Visual Studio code for development to update code.
 
-  - Basic understanding of Kubernetes and Opeators
-  - Docker Desktop
-  - KIND CLI (we will use KinD cluster, install in Windows)
-  - kubectl Installed in WSL2 and Windows
-  - Go installed in WSL2
-  - GNU make installed and updated in WSL2
-  - Operator-SDK CLI installed in WSL2
+### Pre-requisites:
+
+* Basic understanding of Kubernetes and Operators
+    
+* Docker Desktop
+    
+* KIND CLI (we will use KinD cluster, install in Windows)
+    
+* kubectl Installed in WSL2 and Windows
+    
+* Go installed in WSL2
+    
+* GNU make installed and updated in WSL2
+    
+* Operator-SDK CLI installed in WSL2
+    
 
 ## About Operator framework
 
-- Operator framework provides tools to extend the Kuberentes API, `kubectl api-resource` will list the existing resources from the cluster API with operator framework we can create a new resource and deploy it to the cluster.
+* Operator framework provides tools to extend the Kuberentes API, `kubectl api-resource` will list the existing resources from the cluster API with operator framework we can create a new resource and deploy it to the cluster.
+    
+* Operator-SDK CLI provides option to scaffold the project and updates the project with the resource coordinates like Kind, Version and Group used to identify once the new resource is deployed to cluster. Few of the files will be edited, `api/<version>/<kind-name>_type.go` file contains the go struct where we can define the properties this will be used to generate CRD. The reconciler logic goes into `controllers/<kind-name>_controller.go`, the entry point will be the `main.go` file. The operator-sdk project utilizes *kubebuilder* underneath. The details are explained later. The operator-sdk already has the code to create new manager in `main.go` and provides the basic code structure for reconciler logic under `controllers/` folder.
+    
+* Once the CRD is deployed to the cluster, we need a controller logic which will monitor for any changes to the resources. For example, when the resource is created the controller will know of this event and in operator will invoke the defined function.
 
-- Operator-SDK CLI provides option to scaffolded the project and updates the project with the resource cordinates like Kind, Version and Group used to identify once the new resource is deployed to cluster. Few of the files will be edited, api/<version/`*type.go` file contains the go struct where we can define the properties this will be used to generate(CRD). The reconciler logic goes into *controller.go, the entry point will be the `main.go` file. The operator-sdk project utlizes kubebuilder undeneath. The details are explained later. The operator-sdk already has the code to create new manager in `main.go` and provides the basic code structure for reconciler logic under `controllers/` folder.
-
-- Once the CRD is deployed to the cluster, we need a controller logic which will monitor for any changes to the resources. For example, when the resource is created the controller will know of this event and in operator will invoke the defined function.
- 
 ### Install GoLang in WSL2
 
-- To install Go, follow the instruction in this [Go documenation](https://go.dev/doc/install)
+* To install GoLang, refer this [Go documentation](https://go.dev/doc/install)
 
-```
+```plaintext
 wget https://dl.google.com/go/go1.20.4.linux-amd64.tar.gz
 sudo tar -xvf go1.20.4.linux-amd64.tar.gz
 sudo mv go /usr/local
 ```
 
-- Open the `~/.bashrc` file and add the below variables so it will update as environment variables
+* Open the `~/.bashrc` file and add the below variables so it will update as environment variables
 
-```
+```plaintext
 export GOROOT=/usr/local/go
 export GOPATH=$HOME/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
 ```
 
-- To find the Go version, issuing `go version` command we should see the response like below.
+* To find the Go version, issuing `go version` command we should see the response like below.    
 
-```
+```plaintext
 $ go version
 go version go1.20.4 linux/amd64
 ```
 
 ### Install KinD CLI in Windows
 
-Download and install KinD CLI, this can be installed via Chocolatey, refer the [documentation]( https://community.chocolatey.org/packages/kind)
+Download and install KinD CLI, this can be installed via Chocolatey, refer the [documentation](https://community.chocolatey.org/packages/kind)
 
 The Kubernetes cluster that was created using KinD, details below.
 
-```
+```plaintext
 ~$ kubectl version -o yaml
 clientVersion:
   buildDate: "2023-05-17T14:20:07Z"
@@ -81,11 +89,12 @@ serverVersion:
   platform: linux/amd64
 ```
 
-### Install GNU make in WSL2 
+### Install GNU make in WSL2
 
-- To install GNU make version, simply use `sudo apt install make`
+* To install GNU make version, simply use `sudo apt install make`
+    
 
-```
+```plaintext
 $ make -version
 GNU Make 4.3
 Built for x86_64-pc-linux-gnu
@@ -95,26 +104,28 @@ License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 
 ### Install Operator-SDK CLI in WSL2
 
-- To install operator-sdk refer the Operator SDK [documentation](https://sdk.operatorframework.io/docs/installation/), it is self explainotary.
+* To install operator-sdk refer the Operator SDK [documentation](https://sdk.operatorframework.io/docs/installation/), it is self explainotary.
+    
+* Once installed, we can view the version refer below snippet for command and output response.
+    
 
-- Once installed, we can view the version refer below snippet for command and output response.
-
-```
+```plaintext
 $ operator-sdk version
 operator-sdk version: "v1.30.0", commit: "b794fe909abc1affa1f28cfb75ceaf3bf79187e6", kubernetes version: "1.26.0", go version: "go1.19.10", GOOS: "linux", GOARCH: "amd64"
 ```
 
 ## Creating new Operator-SDK project for development
 
-- Create a new folder, using the operator-sdk CLI we can initalize the project. The `operator-sdk init` command will scaffold the necessary files. The command looks like below, the switch options explained below.
+* Create a new folder, using the operator-sdk CLI we can initalize the project. The `operator-sdk init` command will scaffold the necessary files. The command looks like below, the switch options explained below.
+    
 
-```
+```plaintext
 operator-sdk init --domain greetapp.com --repo github.com/thirumurthis/app-operator
 ```
 
 ### Output of operator-sdk init
 
-```
+```plaintext
 Writing kustomize manifests for you to edit...
 Writing scaffold for you to edit...
 Get controller runtime:
@@ -125,35 +136,40 @@ Next: define a resource with:
 $ operator-sdk create api
 ```
 
-- The switch option in the operator-sdk command above used to scaffold a project.
+* The switch option in the operator-sdk command above used to scaffold a project.
+    
+    * `--domain` in the command is required which will identify the resource when using `kubectl api-resource`
+        
 
-  - `--domain` in the command is required which will identify the resource when using `kubectl api-resource`
-
-```
+```plaintext
 $ kubectl api-resources | grep -e greet -e NAME
 NAME        SHORTNAMES   APIVERSION                             NAMESPACED   KIND
 greets                   greet.greetapp.com/v1alpha1            true         Greet
 ```
-  - `--repo` is uses to specify that this project is outside go path
 
+* `--repo` is uses to specify that this project is outside go path
+    
 
 ## Update the scaffolded project with the API with operator-sdk CLI
 
-- As mentioned above the API is identified by Kuberentes cluster using Kind, Version and Group, we using operator-sdk with these coordinates as switch options to update the already created operator-sdk project.
-- This will update the project strucutre by updating *type.go file and other files.
-- The outut of `operator-sdk init` command also directs this step to be next. 
-- The kind and version will be used in the CRD manifest.
+* As mentioned above the API is identified by Kuberentes cluster using Kind, Version and Group, we using operator-sdk with these coordinates as switch options to update the already created operator-sdk project.
+    
+* This will update the project strucutre by updating \*type.go file and other files.
+    
+* The outut of `operator-sdk init` command also directs this step to be next.
+    
+* The kind and version will be used in the CRD manifest.
+    
+* Command to use operator-sdk CLI to create API on the scaffolded project
+    
 
-
-- Command to use operator-sdk CLI to create API on the scaffolded project
-
-```
+```plaintext
 $ operator-sdk create api --group greet --version v1alpha1 --kind Greet --resource --controller
 ```
 
 ### Output of operator-sdk create api command
 
-```
+```plaintext
 Writing kustomize manifests for you to edit...
 Writing scaffold for you to edit...
 api/v1alpha1/deploymentscaler_types.go
@@ -171,14 +187,18 @@ $ make manifests
 ```
 
 Note:
-  - The operator-sdk project includes a Makefile with bunch of useful commands that will be used during development.
-  - In WSL2 terminal, if we are already navigated to the project folder issue `make manifests` which will generate CRD file. This yaml file will be under `config/crd/bases/`, in this case the file name will start with greet.
 
+* The operator-sdk project includes a Makefile with bunch of useful commands that will be used during development.
+    
+* In WSL2 terminal, if we are already navigated to the project folder issue `make manifests` which will generate CRD file. This yaml file will be under `config/crd/bases/`, in this case the file name will start with greet.
+    
 
 ### Update the go mod with the lastest librariy version
 
-- This step is optional, we can update the `go.mod` file from the porject structure so the project can use the the latest kubernetes libraries. These are the latest version from go package documentation at the time of writing. 
-- The `go.mod` file with the updated version looks like below. Once the file is updated, issue `go mod tidy` to download the latest libraries. `go.mod` file is more like depenedency manager for Go, like maven for Java or pacakge.json in node.js.
+* This step is optional, we can update the `go.mod` file from the porject structure so the project can use the the latest kubernetes libraries. These are the latest version from go package documentation at the time of writing.
+    
+* The `go.mod` file with the updated version looks like below. Once the file is updated, issue `go mod tidy` to download the latest libraries. `go.mod` file is more like depenedency manager for Go, like maven for Java or pacakge.json in node.js.
+    
 
 ```go
 go 1.19
@@ -194,16 +214,20 @@ require (
 
 ### Adding new property to the CRD
 
-- Lets add new property to the CRD called `Name`, latter we will see how we can read this value from the reconciler code and print this in log
-
-- The `Name` property should be updated in the api/v1alpha1/`*_types.go`, where `v1alpha1` is the version used in the `operator-sdk create api` command. 
-
-- The new property is updated in the `GreetSpec` struct.
-   - On top of the new property we add two markers which will perform length validation (comments 1 and 2).
-   - Note, the comment `//Name of the resource` will be displayed in the CRD, when we create one from this project using `make manifests`. Once deployed to the cluster the same will be displayed in `kubectl explain <crd-resource>`
-  - Other section of the type.go file remains unchanged
-
-- With the below change, if we issue `make 
+* Lets add new property to the CRD called `Name`, latter we will see how we can read this value from the reconciler code and print this in log
+    
+* The `Name` property should be updated in the api/v1alpha1/`*_types.go`, where `v1alpha1` is the version used in the `operator-sdk create api` command.
+    
+* The new property is updated in the `GreetSpec` struct.
+    
+    * On top of the new property we add two markers which will perform length validation (comments 1 and 2).
+        
+    * Note, the comment `//Name of the resource` will be displayed in the CRD, when we create one from this project using `make manifests`. Once deployed to the cluster the same will be displayed in `kubectl explain <crd-resource>`
+        
+    * Other section of the type.go file remains unchanged
+        
+* With the below change, if we issue \`make
+    
 
 ```go
 package v1alpha1
@@ -248,7 +272,8 @@ func init() {
 }
 ```
 
-- With the above code change, if we issue `make manifests` command, this will create the CRD file under `config/crd/bases/`. The newly added properties looks like below
+* With the above code change, if we issue `make manifests` command, this will create the CRD file under `config/crd/bases/`. The newly added properties looks like below
+    
 
 ```yaml
             properties:
@@ -264,15 +289,20 @@ func init() {
 
 ### Update the controller code to read the new property
 
-- Whenever the `api/v1alpha1/`*_types` file is updated, we need to use `make generate` command. This command will perform updates the project with the newly included properties.
-
-- Below is the reconciler Go code created by operator-sdk under `controllers`.
-
-- In the Reconcile function, the `log.Log` is used to log simple message
-- We initialize an instance of the Greet CRD object which has Name property
-- The `r.Get()` will fetch the CRD instance from the Cluster, in case of error when obtaining the object simply return it.
-- If the CRD instance is availabe, we get the name and log it.
-- At this point there are NO changes to other files in the project.
+* Whenever the `api/v1alpha1/`\*\_types1 `file is updated, we need to use`make generate\` command. This command will perform updates the project with the newly included properties.
+    
+* Below is the reconciler Go code created by operator-sdk under `controllers`.
+    
+* In the Reconcile function, the `log.Log` is used to log simple message
+    
+* We initialize an instance of the Greet CRD object which has Name property
+    
+* The `r.Get()` will fetch the CRD instance from the Cluster, in case of error when obtaining the object simply return it.
+    
+* If the CRD instance is availabe, we get the name and log it.
+    
+* At this point there are NO changes to other files in the project.
+    
 
 ```go
 func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -302,7 +332,8 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 ### Create the Custom resource for the Greet CRD
 
- - The skeleton of the Custom Resource file will be created when we issue `make manifests`, where the newly added property is used here `name: first-app`
+* The skeleton of the Custom Resource file will be created when we issue `make manifests`, where the newly added property is used here `name: first-app`
+    
 
 ```yaml
 apiVersion: greet.greetapp.com/v1alpha1
@@ -322,17 +353,24 @@ spec:
 
 ### Deploy operator to local KinD cluster
 
-- The operator-sdk includes additional make targets, to help in development. Issuing below command will deploy the controller changes to local kind cluster. The output looks like below..
+* The operator-sdk includes additional make targets, to help in development. Issuing below command will deploy the controller changes to local kind cluster. The output looks like below..
+    
 
-Note: 
-   - The log statement added in the reconciler will be is displayed once we deploy the Custom resoruce to cluster.
-   - In below first I deployed the Custom resource first, so when the operator changes where deployed it picked and printed the log message.
+Note:
+
+* The log statement added in the reconciler will be is displayed once we deploy the Custom resoruce to cluster.
+    
+* In below first I deployed the Custom resource first, so when the operator changes where deployed it picked and printed the log message.
+    
 
 Info:
-   - If `make generate install run` from the WSL2 terminal was not able to find the Kuberentes cluster, you can copy the kube config from the windows `.kube` to WSL2 path. 
-   - Form WSL2 terminal, you can issue the command `cp /mnt/c/Users/<username>/.kube/config ~/.kube/config`
 
-```
+* If `make generate install run` from the WSL2 terminal was not able to find the Kuberentes cluster, you can copy the kube config from the windows `.kube` to WSL2 path.
+    
+* Form WSL2 terminal, you can issue the command `cp /mnt/c/Users/<username>/.kube/config ~/.kube/config`
+    
+
+```plaintext
 $ make generate install run
 ....
 go run ./main.go
@@ -351,17 +389,17 @@ go run ./main.go
 
 ### Output once operator deployed
 
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/782d4fab-7529-4584-9371-d69b0237e3cd)
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/782d4fab-7529-4584-9371-d69b0237e3cd align="left")
 
-- We can describe the CRD
-It looks like below, note there are no event info, next we will try to add a report object and track the event.
+* We can describe the CRD It looks like below, note there are no event info, next we will try to add a report object and track the event.
+    
 
- ![image](https://github.com/thirumurthis/Learnings/assets/6425536/c898b5fe-1cc4-48f3-b5b2-329694e2b1e4)
-
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/c898b5fe-1cc4-48f3-b5b2-329694e2b1e4 align="left")
 
 ## Tracking Event in the Controller
 
-- To record the events, first we need to add recorder to the GreetReconciler struct in the `controllers/*controller.go` file and import the library for record.
+* To record the events, first we need to add recorder to the GreetReconciler struct in the `controllers/*controller.go` file and import the library for record.
+    
 
 ```go
  import(
@@ -377,7 +415,8 @@ type GreetReconciler struct {
 }
 ```
 
-- We will use the Recorder event object to record events and the code looks like below
+* We will use the Recorder event object to record events and the code looks like below
+    
 
 ```go
 func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -402,56 +441,63 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 }
 ```
 
-- Since the `GreetReconciler` struct is updated to include a recorder object, the `main.go` needs to fetch the recorder object from the manager and set to the struct.
+* Since the `GreetReconciler` struct is updated to include a recorder object, the `main.go` needs to fetch the recorder object from the manager and set to the struct.
+    
 
- ```go
-    if err = (&controllers.GreetReconciler{
-                Client: mgr.GetClient(),
-                Scheme: mgr.GetScheme(),
-                Recorder: mgr.GetEventRecorderFor("greet-controller"), //Obtain the recorder
-    }).SetupWithManager(mgr); err != nil {
-        setupLog.Error(err, "unable to create controller", "controller", "Greet")
-        os.Exit(1)
-    }
+```go
+   if err = (&controllers.GreetReconciler{
+               Client: mgr.GetClient(),
+               Scheme: mgr.GetScheme(),
+               Recorder: mgr.GetEventRecorderFor("greet-controller"), //Obtain the recorder
+   }).SetupWithManager(mgr); err != nil {
+       setupLog.Error(err, "unable to create controller", "controller", "Greet")
+       os.Exit(1)
+   }
 ```
 
 ### Output events are displayed when we describe the CRD
 
-- If the operator is running in local cluster stop it. `make generate install run` 
-- Delete the CR if it already deployed using `kubectl delete`
-- Once deployed the operator will display the logs
+* If the operator is running in local cluster stop it. `make generate install run`
+    
+* Delete the CR if it already deployed using `kubectl delete`
+    
+* Once deployed the operator will display the logs
+    
 
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/4ac8148b-9ca4-472a-8fd5-e63bfc317c42)
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/4ac8148b-9ca4-472a-8fd5-e63bfc317c42 align="left")
 
-- In Recorder.Event the "Object" is the displayed as reason of the event. 
+* In Recorder.Event the "Object" is the displayed as reason of the event.
+    
 
-```
+```plaintext
  r.Recorder.Event(instance, corev1.EventTypeWarning, "Object", fmt.Sprintf("Created - %s ",appName))
 ```
 
 ### Output where the Recorder.Event is updated with different value
 
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/11cb3ad3-3f50-439d-be7a-9d2c6f407511)
-
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/11cb3ad3-3f50-439d-be7a-9d2c6f407511 align="left")
 
 ## Update the status when the Custom Resource deployed
 
-- Once the Controller and Custom resources are deployed we can track the status with `kubectl get greet/greet-sample -w`, in this section we will see the code changes required to include the Appname and status so using `kubectl get` will provide the info, like in the snapshot.
+* Once the Controller and Custom resources are deployed we can track the status with `kubectl get greet/greet-sample -w`, in this section we will see the code changes required to include the Appname and status so using `kubectl get` will provide the info, like in the snapshot.
+    
 
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/4c1df07f-add4-48b4-a8e3-f63e22563705)
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/4c1df07f-add4-48b4-a8e3-f63e22563705 align="left")
 
+* In the `api/v1alpha1/*_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
+    
 
-- In the `api/v1alpha1/*_type.go` file we need to add the marker like below over the corresponding `Greet` struct in this case.
-
-```
+```plaintext
 //+kubebuilder:printcolumn:name="APPNAME",type="string",JSONPath=".spec.name",description="Name of the app"
 //+kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.status",description="Status of the app"
 ```
 
-- The code snippet of the `type.go` file, in the `GreetStatus` struct includes new property `Status` of string type.
-- In the `controllers/*controller.go` reconciler function we check the status and updated it dynamically based on resource status.
+* The code snippet of the `type.go` file, in the `GreetStatus` struct includes new property `Status` of string type.
+    
+* In the `controllers/*controller.go` reconciler function we check the status and updated it dynamically based on resource status.
+    
 
-```
+```plaintext
 // GreetStatus defines the observed state of Greet
 type GreetStatus struct {
         Status string `json:"status,omitempty"`   // ----------> newly added status property
@@ -475,9 +521,9 @@ type Greet struct {
 }
 ```
 
-### The reconciler logic to validate the status and update it 
+### The reconciler logic to validate the status and update it
 
-```
+```plaintext
 func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 	log.Log.Info("Reconciler invoked..")
@@ -515,11 +561,15 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 ### Output for status change
 
-- Stop the operator if it was deployed in local cluster.
-- Delete the Custom Resource if it was deployed to local cluster
-- Deploy the operator to local cluster using `make generate install run` 
-- Deploy the custom resource yaml manifest to the local cluster using `kubectl apply -f config/samples/`.
-- Issue `kubect get greet/greet-sample -w` to monitor the resource status.
+* Stop the operator if it was deployed in local cluster.
+    
+* Delete the Custom Resource if it was deployed to local cluster
+    
+* Deploy the operator to local cluster using `make generate install run`
+    
+* Deploy the custom resource yaml manifest to the local cluster using `kubectl apply -f config/samples/`.
+    
+* Issue `kubect get greet/greet-sample -w` to monitor the resource status.
+    
 
-![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d)
-
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d align="left")
