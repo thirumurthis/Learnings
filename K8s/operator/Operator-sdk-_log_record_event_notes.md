@@ -138,7 +138,7 @@ $ operator-sdk create api
 
 ## Update the scaffolded project with the API with operator-sdk CLI
 
-* As mentioned above the API is identified by Kuberentes cluster using Kind, Version and Group, we are using operator-sdk with these coordinates as switch options to update the already created operator-sdk project.
+* As mentioned above the API is identified by Kubernetes cluster using Kind, Version and Group, we are using operator-sdk with these coordinates as switch options to update the already created operator-sdk project.
 * This will update the project structure by updating generated `_type.go` file and other files.
 * The output of `operator-sdk init` command also directs this step to be next.
 * The kind and version will be used in the CRD manifest.
@@ -515,6 +515,6 @@ func (r *GreetReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 * Delete the Custom Resource if it was deployed to local cluster
 * Deploy the operator to local cluster using `make generate install run`
 * Deploy the custom resource yaml manifest to the local cluster using `kubectl apply -f config/samples/`.
-* With`kubect get greet/greet-sample -w` command we can monitor the resource status.
+* With`kubectl get greet/greet-sample -w` command we can monitor the resource status.
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/fbb3b88b-fd7a-4d2b-9bb4-36d4f3976e7d)
