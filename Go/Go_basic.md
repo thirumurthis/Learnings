@@ -1,4 +1,4 @@
-Go lang
+## Go lang
 
 Every Go code lives inside a package. All the files inside the folder should be in this package.
 
@@ -28,19 +28,15 @@ Every package that is invoked from the external package will start with the uppe
 
 String in Go are UTF-8 standard. The Go code doesn't have any semicolon, ";".
 
-To setup the enviornment:-
-In visual studio code, install the Go plugin.
-Next, Press Cntrl + Shift + p, type Go: Install/update tools and select all the options and wait till the plugins
+## To setup the enviornment:-
 
-Once the plugins and modules are installed successfully. Then create a folder `go-app`.
-
-Open up the terminal the, `go mod init go-app` in this case i created a folder called `go-app`.
-
-Create the Hello.go with the above content.
-
-In visual Studio code, now use Run -> Run without debugging option.
-
-check the Debug console in the terminal section to view the results.
+- In visual studio code, install the Go plugin.
+- Next, Press Cntrl + Shift + p, type Go: Install/update tools and select all the options and wait till the plugins
+- Once the plugins and modules are installed successfully. Then create a folder `go-app`.
+- Open up the terminal the, `go mod init go-app` in this case i created a folder called `go-app`.
+- Create the Hello.go with the above content.
+- In visual Studio code, now use Run -> Run without debugging option.
+- check the Debug console in the terminal section to view the results.
 
 ### using Go Cli
 
