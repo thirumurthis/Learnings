@@ -177,10 +177,10 @@ Cilium Identities:
 	```
 	etcd key-value store
 	-----------------------------------------------
-	| Lables                      |    Identity    |
+	| Lables                        |    Identity    |
 	-----------------------------------------------
-	| ["role=frontend"            |   10           |
-	| ["role=backend","role=admin"|  20            |
+	| ["role=frontend"              |   10           |
+	| ["role=backend","role=admin"] |   20           |
 	
 	```
 
