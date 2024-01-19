@@ -190,6 +190,38 @@ Cilium Identities:
    - As network packets enter or leave a node, Cilium eBPF programs map the source and destination IP address to appropriate numeric identity number and then decide which datapath action should be taken based on policy configuration referring to hose numeric identifiers.
    - Each cilium agent is responsible for updating identity-relevant eBPF maps with numberic identifiers relevant to endpoints running locally on the node by watching for updates to relevant Kubernetes resources.
 
+--------------------
+Network Policy:
+
+- Better ways to secure Kubernetes workload netowrking by understanding the network policies.
+- Label based Layer 3/4 network policy to secure cluster internal communication between pods and service.
+- How to write layer 7 network ploicy making use of Cilium agent's embedded HTTP proxy.
+
+Types of Network policy:
+   - Network Policies allow users to define what traffic is permitted in a kubernetes cluster. Where traditional firewalls are configured to permit or deny traffic based on source or destination IP address and ports, *Cilium uses kubernetes identity information such as label selectors, namespace names, and even fully qualified domain names for defining rules* about what traffic is permitted and disallowed.
+   - This allows network policies to work in a dynamic environment like kuberentes, where IP address are constantly being used and reused for different pods as those pods are created and destroyed.
+
+   - When running Cilium on Kubernetes, we can define network policies using kuberentes resources.
+   - Cilium agent will watch the Kuberentes API server for updates to network policies and will load the necessary eBPF programs and maps to ensure the desired network policy is implemented.
+   - *Three network plocu formats are availabe* with Cilium enabled Kubernetes:
+      - Standard kuberentes `NetworkPolicy` resource which supports Layer 3 and 4 policies
+      - The `CiliumNetworkPolicy` resource which supports Layer 3,4 and 7 (application layer) policies
+      - The `CiliumClusterWideNetworkPolicy` resource for specifying policies that apply to an entire cluster rather than a specified namespace.
+    
+  - Cilium supports using all of the policy types at the same time. However, caution should be applied when using multiple policy types, as it can be confusing to understand the complete set of allowed traffic accross multiple polcy types.
+  - If close attention is not applied, this may lead to unintended policy behavior.
+  - Visualization tool at `networkpolicy.io` can help understand the impact of different policy definitions.
+
+ We will primarily focus on `CiliumNetworkPolcy` resource, as it represents a superset of the standard NetworkPolicy.
+
+- NetworkPolicy resource is a standard kuberentes resource that lets to controll traffic flow at an IP address or port level (OSI level 3 or 4).
+- This includes,
+    - L3/L4 Ingress and Egress policy using lable matching
+    - L3 IP/CIDR Ingress and Egress policy using IP/CIDR for cluster external endpoints
+    - L4 TCP and ICMP port ingress and Egress policy
+ 
+  
+
 
 
 
