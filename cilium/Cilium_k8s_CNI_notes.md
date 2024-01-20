@@ -220,9 +220,218 @@ Types of Network policy:
     - L3 IP/CIDR Ingress and Egress policy using IP/CIDR for cluster external endpoints
     - L4 TCP and ICMP port ingress and Egress policy
  
+`NetworkPolicy.io` policy editor provides a great way to explore and craft L3 and L4 network policy, by providing with a graphical depiction of a cluster and letting you select the correct policy elements scoped for the desired type of network policy.
+ - The policy editor supports both standard Kubernetes NteworkPolicy and CiliumNetworkPolicy resources.
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/5eb8634b-2e0d-4314-9e79-f98ce06380a2)
+
+ - *Across the top*, there is an interactive service map visualization that you can use to create new policies.
+ - The green lines indicate traffic flow that is allowed and the red lines indicate traffic flow that is denied by the current policy defintion.
+ - We can configure Ingress and Egress policies targeting either clustet internal or external endpoints using the interactive service map UI.
+ - *The lower left*, there is a read-only YAML description of the netwrok policy mathcing teh service map depiction above.
+ - we can choose either to view the standard Kuberentes NetworkPolicy specification or the CiliumNetworkPolicy specification.
+ - we can also download the policy to apply it to the cluster with kubectl.
+ - The existing policy defintion can be uploaded and policy editor will update the visual service map representation to show how it works.
+ - The visalization helps to ensure the policy work as intended.
+ - *At lower right*, the editor provides tutorial interface populated with common situation to help how to craft policy.
+ - we can use the area to upload Hubble flows and generate network policies from what Hubble can observe.
+Note: The policy editor isn't yet able to craft the L7 policy tht CiliumNetowrkPolicy supports. To mitigate it, we can craft L3/4 policy and then extedn it to include L7 ingress/egress rules manually.
+
+- The most significant difference between the `CiliumNetworkPolicy` and standard `NetworkPolicy` is support for L7 protocol-aware rules.
+- In Cilium, its possible to craft protocol-specific L7 policy for different protocols, including HTTP, Kafka and DNS.
+- The Layer 7 policy rules extend the Layer 4 policy `toPorts` secton for both ingres and egress, and as such are relatively easy to add `CiliumNetworkPolicy` yaml manifests crafted with the networkpolicy.io editor.
+
+### What is network policy?
+- `L7 HTTP Policy`
+   - when any L7 HTTP policy is active for any endpoint running on a node, the Cilium agent on that node will start an embedded local-only HTTP proxy service and the eBPF programs will be instructed to forward packets on to that local HTTP proxy.
+   - The HTTP proxy is responsible for interpreting the L7 network policy rules and forwarding the packet further if appropriate.
+   - In addition, once the HTTP proxy is in place, we can gain L7 observibility in Hubble flows.
+ 
+   - when writting L7 HTTP policy, there are several fields that the HTTP proxy can be used to match network traffic:
+   - `Path` => An extended POSIX regex matched against the conventional path of a URL request. If omitted or empty, all paths are allowed.
+   - `Method` => the method of a request, eg. GET, POST, PUT, PATCH, DELETE. If omitted all methods are allowed.
+   - `Host` => An extended POSFIX regex mathced against the host header of a request. If omitted or empty, all hosts are allowed.
+   - `Header` => A list of HTTP headers that mist be present in the request. If omitted or empty, requests are alloed regardless of the headers present.
+ 
+   - Example below uses several L7 HTTP protocol rules featuring regex path defintion to extend the L4 policy limiting all endpoints which carry the labels app=myService to only be able to receive packets oon port 80 using TCP.
+   - While commuincating on this port, the only HTTP API endpoints allowed will be:
+        - `GET /v1/path1` => This matches the exact path "/v1/path1"
+        - `PUT /v2/path2.*` => This matched all paths starting with "/v2/path2"
+        - `POST .*/path3` => This matches all paths ending in "/path3" with the additional constraint that the HTTP header `X-My-Header` must be set to true.
+
+```yaml
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+   name: "L7-rule-spec"
+spec:
+  endpointSelector:
+    matchLables:
+      app: myService
+  ingress:
+  - toPorts:
+    - ports:
+      - port: '80'
+        protocol: TCP
+      rules:
+        http:
+        - method: GET
+          path: "/v1/path1"
+        - method: PUT
+          path: "/v2/path2.*"
+          headers:
+          - 'X-My-header: true'
+```
+
+- The rules block holds the L7 policy logic that extends the L4 policy.
+- we can start with an L4 policy and provide granular HTTP API support by just adding the appropriate `rules` block as an attribute in `toPorts` list.
+
+The hands on for educational purpose:
+
+You are part of Empires Platform team taksed with developing a Death Star API to the Imperial Galactic Kubernetes Service. 
+You have the service deployed, but you need to ensure only Imperial TIE fighters have access to make landing requests using Death star API via HTTP POST method call and don't have acccess to use the PUT method on any other paths in the API, like the exhast port path.
+Not that any TIE fighter pilot would intentainally put anything in the exhaust port, but things happen, and tour team wants to be able to use Ciliums netowrk policy support as a safeguard just in case a TIE fighre pilot has a momentary lapse in judgement.
+you really don't want Darth Vader losing faith in your ability to keep the Death Star service secure. 
+- goal is to craft a CiliumNetworkPolicy resource to limit access to the Death Star service so TIE fighters can only make HTTP based landing request.
+
+- Say, we had the Death Star application deployed including service definition, service backend pods, and pods acting as TIE figher clients that access the service using internal-only cluster communication.
+- Refer the Cilium project which has example of Death Star demo application manifest which can be used.
+
+  ```
+  kubectl create -f https://raw.githubusercontent.com/cilium/cilium/HEAD/examples/minikube/http-sw-app.yaml
+
+  # this creas service/deathstar, deployment.apps/deathstar, pod/tiefighter, pod/xwing
+  ```
+  - we will make sure the network policy denied the X-winfs access to the fuull Death Star service as well.
+  - Use below command to check the resources
+  ```
+  kubectl get services
+  ```
+  ```
+  kubectl get pods,CiliumEndpoints
+
+  # Name                                 Endpoint ID   Identity ID
+  cilciumendpoing.cilium.io/deathstar-*     1818         25788
+  cilciumendpoing.cilium.io/deathstar-*     601          25788
+  cilciumendpoing.cilium.io/tiefighter     62             63670  
+  ```
+
+  - Cilium has created endpoinfs corresponding to both Death Star backend port, as well as the Xwing and Tie Figher pods.
+
+  Note:
+  - Both `deathstar-*` endpoints share the same IDENTITY ID. This is where pods share the same Cilium Identity because they both have same set of security-relevant labels.
+  - Cilium agents will use the Identity Id for endpoints matching relevant network policy to facilitate efficient key-value lookups in the operation of eBPF programs operating in the network datapath.
+ 
+  - Till now the network policy is not deployed, so there should be nothing stopping either X-wing or TIE fighters rom accessing the cluster-internal Death Star service by its FQDN and then having either kube-proxy or Cilium forward the HTTP based landing request to one of the Death Star backend ports.
+
+ - below command can be used to request form both pods
+  ```
+  kubectl exec xwing -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing
+  kubectl exec tiefighter -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing
+  ```
   
+ - WE need to create and apply the network policy.
+ - The simplest way to ensure the X-Wing pods don't have acess to Death star service endpoints in this cluster is to write a label-based L3 policy that takes advantage of the different labels used in the pods.
+ - A L3 policy would restrict acess to all network ports at the endpoint. if we want to limit access to a specific port number, we can write Label based L4 policy.
 
+ - The xwing pod has the lable org=alliance and tiegighre pod is labeled org=empire.
 
+ - An L4 network policy refereing TCP port 80 that only allows pods labled with org=empire will prevent the xwing pod from acessing the Death Star service endpoints. We use the networkpolicy.io editor
 
+- Edit the namespace and proivide the label, hit enter on for each key value on label. Save the changes will update in the yaml.
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/a6972147-6870-4df8-8e51-cb46ef29d521)
 
+- In the interactive service-map UI, create a new policy and add "In Namespace" Ingress ploicy rule that uses org=empire as the pod selector expression and uses 80:TCP as the value for "To Ports" entry field
 
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/1c2ee991-75f7-4982-aa3e-aca897da1bcf)
+- After adding the Ingress rules
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/b8a92f1d-fb7e-4ec4-a6e4-6909bd2d9469)
+
+- After adding the section will be updated
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/752e3281-c5a8-4ad1-a66d-18e97aae0b7e)
+
+- The service map in the policy editor should now indicate that only ingres from the pods labled org=empire in the same namespace as the Death star service will be able to access TCP port 80 on corresponding deathstar endpoints.
+
+   - below is the yaml content from the editor
+```yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-empire-in-namespace
+spec:
+  endpointSelector:
+    matchLabels:
+      org: empire
+      class: deathstar
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            org: empire
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+```
+- Note: This L4 policy specifically restricts ingress access to the deathstar-* pods acting as service endpoints and not the Death Star service itself.
+
+- If we want to restrict a pod's egress to a limited number of service, we could create an egress policy for the client pod that reference alloewed services by name in the `toService` attribute of the Egress policy. In our case , that woudl mean wiriting Egress for both xwing and tiefighter pods with differeing `toService` information. for now single ingress policy is sufficient, just allows imperial unit access to the death star API and deny everything else access.
+
+- Save the yaml content to a file and apply to the cluster. Now, if we try to access the service with xwing will not access death star service.
+```
+  kubectl exec xwing -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing`
+# command terminated with exit code 28
+```
+- All othe pods labled org=empire still have access to the full API, including exhaust port API endpoint.
+```
+kubectl exec tiefighter -- curl -s -XPUT deathstar.default.svc.cluster.local/v1/exhaust-port
+Panic: deathstar exploded
+```
+- But we can fix that with L7 HTTP policy that limits access even further, so the exhaust-port API endpoint only availabe to Imperial maintance droid and not hotshot rookie pilots who can't tell a landing bay from an exhaust port.
+- we can use CiliumNetworkPolicy Custom resource defintion to restrct access so it doesn't happen again.
+
+```yaml
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: allow-empire-in-namespace
+spec:
+  endpointSelector:
+    matchLabels:
+      org: empire
+      class: deathstar
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            org: empire
+      toPorts:
+        - ports:
+            - port: "80"
+              protocol: TCP
+    - fromEndpoints:
+        - matchLabels:
+            org: empire
+            class: maintanance-droid
+        toPorts:
+          - ports:
+            - port: "80"
+              protocol: TCP
+          rules:
+            http:
+            - method: "PUT"
+              path: "/v1/exhaust-port"
+```
+- save and apply the manifest to cluster. Now, we could see accessing the exhaust-port will throw access deined
+
+```
+ kubectl exec tiefighter -- curl -s -XPUT deathstar.default.svc.cluster.local/v1/exhaust-port
+```
+
+Note:- xwing trying to access the Death Star API is still denied access via the L4 policy, which has the packets dropped resulting in a conection timeout instead of an HTTP forbidden status message
+
+we have successfully limited access to Death star APU so tie figher can access it,without giving then access to exhaust-port.
+
+Info:
+  - The difference in behaviour in how the L3/4 policy and L7 policy handled dropped packets is expected, because of the different impmentation being used.
+  - For L3/L4 policy the eBPF programs running in the linux networ datapath are used to drop the packets, essentially eaten by a black hole in the network.
+  - The L7 policy is implementing the embedded HTTP proxy and making decisons as if it were an HTTP server, denying requests and providing an HTTP status response back to the client with a raon as to why it was deined.
+  - Regardless of the implementation used, we will be able to track that a packet was dropped at the DeathStar endpoint ingress using the hubble to examine network flows.
