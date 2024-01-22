@@ -1,11 +1,24 @@
 Cilium 
 
+- eBPF is like how javascript is for browser.
+- When the user clicks submit button the program gets executed. (very high overview), this is the similar for eBPF.
+
+When the execev() is called, we can run a program. conceptually similar, the level and performace are different.
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/74348626-9a70-4d31-8db1-b14bf96a3ef1)
+
 BPF overview
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/8e7365eb-9a8f-4840-aae9-ae0be8834fb5)
 
 
-installation
+Cilium Architecture:
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/1145efd4-0ad7-481e-a204-22a0c2a58872)
+
+
+
+Installation
  - Cilicum CLI tool 
           - this uses kubernetes API directly to examine the cluster corresponding to an existing kubectl context.
  - helm chart 
