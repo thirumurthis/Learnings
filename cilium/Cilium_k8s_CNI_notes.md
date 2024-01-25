@@ -4,18 +4,14 @@ Cilium
 - When the user clicks submit button the program gets executed. (very high overview), this is the similar for eBPF.
 
 When the execev() is called, we can run a program. conceptually similar, the level and performace are different.
-
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/74348626-9a70-4d31-8db1-b14bf96a3ef1)
 
 BPF overview
-
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/8e7365eb-9a8f-4840-aae9-ae0be8834fb5)
 
 
 Cilium Architecture:
-
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/1145efd4-0ad7-481e-a204-22a0c2a58872)
-
 
 
 Installation
@@ -25,7 +21,7 @@ Installation
           - this is meant for advanced installtiona and production environment where granular control for Cilim installation is reqired.
 		  - this requires to manually select the best datapath and IPAM mode for particular k8s environment.
 
-setting up environment locally:
+Setting up environment locally:
  - k8s cluster appropriately configured and ready for an external CNI to be instaled.
  - in here we can configure in local using kind cluster as first step. (check the cilium doc)
  - the kubectl to be installed.
@@ -825,3 +821,220 @@ However, there is no evidence of a connection to the Death Star backend endpoint
 On the second landing request, we see both the DNS request and the HTTP request show up in the tcpdump session. For the second landing request, the DNS lookup returned the Deathstar backend running on a different node, and the encrypted WireGuard link was used for the node-to-node communication. Great! It’s working just as expected. Cilium is now providing transparent node-to-node communication, without making any changes to the deployed microservice workloads in the cluster, and without having to add resource-intensive sidecars into each pod.
 
 If you repeat that process and attempt to interact with an IP address for an external service, there will be no traffic on the WireGuard link. Be careful though, if you access a service by DNS name, you still may see DNS request traffic to the kube-dns service on the encrypted WireGuard link.
+
+-------------
+
+Benefits Replacing kube-proxy:
+
+CNI plugins, like Cilium, aren’t the only place where the container’s networking configuration is modified. The kube-proxy daemonset, which implements part of the Kubernetes services model, also interacts with the Linux container networking stack. kube-proxy adjusts the iptables ruleset controlling load balancing of Kubernetes services to pods acting as service endpoints using forwarding rules for virtual IP addresses. In fact, kube-proxy installs multiple iptables rules for each backend a service is serving. For each service added to Kubernetes, the list of iptables rules to be traversed grows exponentially! This can have serious performance impacts at large production scales.
+
+With eBPF, it's possible to replace kube-proxy entirely with Cilium, so that eBPF programs are performing the same service endpoint load balancing for increased scalability. Once you’ve replaced kube-proxy with Cilium, you can significantly reduce the amount of churn in iptables rules, save on resource overhead, and speed up your cluster scaling
+
+Kubeproxy functionality:
+
+By default, Cilium only handles per-packet in-cluster load-balancing of ClusterIP services and kube-proxy is used for handling services of types NodePort and LoadBalancer and handling service ExternalIPs. Cilium’s eBPF-based kube-proxy replacement takes over handling of all service types and service ExternalIP handling. In addition, once kube-proxy replacement is enabled, Cilium will also handle HostPort allocations for containers with HostPort defined.
+
+Enabling kube-proxy replacement:
+
+The simplest way to enable Cilium’s kube-proxy replacement is to use the Cilium CLI tool to install Cilium on a fresh cluster prepared without kube-proxy enabled. The Cilium CLI tool will detect that the kube-proxy is not configured and automatically make the necessary Helm template configuration adjustments to the resource manifests it uses to install Cilium into the cluster.
+
+If you are using Helm to facilitate the Cilium install, you’ll need to explicitly set a few Helm chart options that the Ciium CLI tool is able to auto-detect:
+
+```
+API_SERVER_IP=<your_api_server_ip>
+API_SERVER_PORT=<your_api_server_port>
+helm install cilium cilium/cilium --version 1.13.1 \
+     --namespace kube-system \
+     --set kubeProxyReplacement=strict \
+     --set k8sServiceHost=${API_SERVER_IP} \
+     --set k8sServicePort=${API_SERVER_PORT}
+```
+
+If you have kube-proxy already installed on the system, you’ll need to take additional steps to make sure kube-proxy is removed from the cluster, including any iptables rules kube-proxy has installed into the cluster nodes. Details on how to fully remove kube-proxy from a cluster are provided in the Cilium documentation.
+
+Note: There are advanced workload situations where operators may want to use kube-proxy for some functions but rely on Cilium for others. It’s also possible to configure Cilium as a partial kube-proxy replacement, specifying which of the kube-proxy functions you want Cilium to be responible.
+
+For this lab, we’ll need to start with a Kubernetes cluster created without kube-proxy installed. The details of how to do that will depend on the specific Kubernetes service you are using.
+
+For convenience, here is a reference kind cluster configuration that you can use for a local lab cluster environment:
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+networking:
+  disableDefaultCNI: true
+  kubeProxyMode: none
+```
+
+Save this to the file kind-no-kp-config.yaml and then create a new kind cluster using the config:
+
+```
+kind create cluster --config kind-no-kp-config.yaml
+Creating cluster "kind" ...
+You can now use your cluster with:
+```
+
+```
+kubectl cluster-info --context kind-kind
+```
+
+Now let’s confirm the cluster does not have kube-proxy installed:
+
+```
+kubectl get --all-namespaces daemonsets | grep kube-proxy
+kubectl get --all-namespaces pods | grep kube-proxy
+kubectl get --all-namespaces configmaps |grep kube-proxy
+```
+These should all return empty result
+
+- Install Cilium with Kube-Proxy Replacement Enabled
+
+Now, with the cluster prepared without kube-proxy, we can install Cilium using the Cilium CLI tool. It will auto-detect the need for the kube-proxy replacement and configure the Cilium Helm chart settings appropriately.
+
+```
+cilium install
+```
+
+We can first validate that the Cilium agent is running in the desired mode:
+
+```
+kubectl -n kube-system exec ds/cilium -- cilium status | grep KubeProxyReplacement
+KubeProxyReplacement: Strict [eth0 10.89.0.15]
+```
+
+To validate that Cilium has taken over the duties normally performed by kube-proxy, you can create a NodePort service and validate it is still operating correctly. We’re using a NodePort service explicitly because NodePort service port allocation is one of the functions kube-proxy performs unless Cilium is configured to take over that functionality from kube-proxy.
+
+In fact, the Cilium CLI tool’s connectivity tests includes a series of NodePort tests that are skipped by default unless the Cilium CLI tool detects Cilium has been configured to take over the NodePort service port allocation as part of kube-proxy replacement. To validate the kube-proxy replacement is working, we can use the Cilium CLI tool and have it run the full set of connectivity tests now and we should see NodePort services being created for testing:
+
+```
+cilium connectivity test --connect-timeout 30s --request-timeout 30s
+```
+
+Note: The full set of connectivity tests can take several minutes to complete.
+
+Alternatively, we can test the NodePort connectivity manually, by deploying our own NodePort service and make sure it's operating correctly. We can start by creating a simple Nginx deployment and related NodePort service:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-nginx
+spec:
+  selector:
+    matchLabels:
+      run: my-nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        run: my-nginx
+    spec:
+      containers:
+        - name: my-nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+```
+Save this to the file my-nginx.yaml.
+
+Apply the my-nginx.yaml deployment manifest to your cluster:
+
+```
+kubectl apply -f my-nginx.yaml
+```
+
+and verify that the Nginx pods are up and running:
+
+```
+kubectl get pods -l run=my-nginx -o wide
+NAME                      READY  STATUS            RESTARTS AGE  IP     NODE         NOMINATED NODE  READINESS GATES
+my-nginx-77d5cb496b-n6jmb  0/1   ContainerCreating     0    54s  <none> kind-worker  <none>          <none>
+my-nginx-77d5cb496b-v7m4m  0/1   ContainerCreating     0    54s  <none> kind-worker2 <none>          <none>
+```
+
+Now we create the NodePort service:
+
+```
+kubectl expose deployment my-nginx --type=NodePort --port=80
+service/my-nginx exposed
+```
+And verify the service exists:
+
+```
+kubectl get svc my-nginx
+NAME      TYPE      CLUSTER-IP     EXTERNAL-IP  PORT(S)       AGE
+my-nginx  NodePort  10.96.162.217  <none>       80:32166/TCP  54s
+```
+
+With the help of the Cilium client’s service list command, we can validate that Cilium’s eBPF kube-proxy replacement created the new NodePort service:
+
+```
+kubectl -n kube-system exec ds/cilium -- cilium service list
+ID   Frontend          Service Type     Backend
+1    10.96.0.1:443     ClusterIP        1 => 10.89.0.17:6443 (active)
+2    10.96.0.10:53     ClusterIP        1 => 10.244.1.54:53 (active)
+                                        2 => 10.244.1.31:53 (active)
+3    10.96.0.10:9153   ClusterIP        1 => 10.244.1.54:9153 (active)
+                                        2 => 10.244.1.31:9153 (active)
+4    10.96.162.217:80  ClusterIP        1 => 10.244.2.209:80 (active)
+                                        2 => 10.244.1.111:80 (active)
+5    10.89.0.15:32166  NodePort         1 => 10.244.2.209:80 (active)
+                                        2 => 10.244.1.111:80 (active)
+6    0.0.0.0:32166     NodePort         1 => 10.244.2.209:80 (active)
+                                        2 => 10.244.1.111:80 (active)
+```
+
+Here we see NodePort Cilium services were created corresponding to the listed service NodePort of 32166 that are directed to each of the Nginx backend services at port 80.
+
+Note: This same NodePort is now available on all the nodes managed by Cilium and will redirect to one of the Nginx backends.
+
+We can now curl from any of the Cilium agent containers, using the local port corresponding to the NodePort definition as a final verification that it's working. First, let’s get shell access to one of the Cilium agent containers:
+
+```
+kubectl -n kube-system exec -ti ds/cilium -- /bin/bash
+root@kind-worker:/home/cilium#
+```
+
+Then let’s install curl into the container:
+
+```
+apt update
+apt install curl
+```
+
+We can now use curl from the Cilium agent container to confirm the NodePort service port results in a response from one of the Nginx servers:
+
+```
+curl http://localhost:32166
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to <a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at <a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
+What’s more, we can confirm from the Cilium agent container that there are no iptables rules associated with this service definition:
+
+iptables-save | grep KUBE-SVC
+
+This should return nothing, indicating there are no iptables rules associated with the NodePort service; this is now being managed entirely by Cilium.
+
