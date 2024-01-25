@@ -673,3 +673,155 @@ Mar 24 20:36:06.285: default/tiefighter:37248 (ID:63675) -> kube-system/coredns-
 
 Note: You could achieve a similar result by changing the policy from an EgressDeny policy applied to the X-wing pods to an IngressDeny policy applied to the pods acting as kube-dns service endpoints. There’s always some flexibility in how you approach policy when both the source and destination are Cilium-managed endpoints.
 
+----------
+
+Transport encryption:
+
+Cilium supports both IPsec and WireGuard to transparently encrypt traffic between nodes.
+
+what is Transparent Encryption?
+
+Microservices inside your cluster typically communicate across Kubernetes nodes that may be physically separated over a network that you may not have full control over. 
+By encrypting the traffic between nodes in your cluster, you no longer have to implicitly trust the network itself, and you don’t have to worry about other systems sharing the network being able to read sensitive information passed between microservices in different nodes in your cluster.
+
+In fact, certain regulation frameworks, such as PCI and HIPAA, have started to require encryption of data transmitted between networked services. Implementing transparent encryption provides a straightforward path forward to meeting those requirements.
+
+Kubernetes doesn’t have a native feature to encrypt data in-transit inside the cluster. It’s up to cluster admins to decide how this will be implemented. Fortunately, Cilium offers an easy way to enable transparent node-to-node encryption, using WireGuard or IPSec, without having to modify any microservice application code or configuration. We'll be using WireGuard-based transparent encryption in the course labs.
+
+------
+
+Why to use WireGaurd or IPSec?
+
+WireGuard and IPsec are both protocols to provide in-kernel transparent traffic encryption.
+
+WireGuard is a simple to use, lightweight, virtual Private Network (VPN) solution that is built into the Linux kernel. WireGuard is a peer-based VPN solution. A VPN connection is made between peers simply by exchanging public keys (like exchanging SSH keys).
+
+IPsec is a similar, older and FIPS-compliant solution.
+
+When WireGuard or IPsec is enabled in Cilium, the Cilium agent running on each cluster node will establish a secure tunnel to other Cilium-managed nodes in the 
+
+---
+
+It is incredibly easy to set up transparent encryption in an existing Cilium-managed cluster.
+
+Assuming you installed Cilium 1.13 using Helm in the previous chapter, you can enable transparent encryption in that existing Helm-managed cluster with:
+
+```
+helm upgrade cilium cilium/cilium --namespace kube-system \
+  --reuse-values \
+  --set l7Proxy=false \
+  --set encryption.enabled=true \
+  --set encryption.type=wireguard
+```
+
+And restart the cilium daemonset:
+
+```
+kubectl rollout restart daemonset/cilium -n kube-system
+cilium status --wait
+```
+
+If you want to do a fresh Cilium install with the Cilium CLI tool, you can install with WireGuard encryption enabled using this command:
+
+```
+cilium install --encryption wireguard
+```
+
+Note: In Cilium 1.13, the WireGuard transparent encryption feature is incompatible with the embedded L7 HTTP proxy feature. We anticipate that future versions will no longer need to disable L7 proxy support when enabling encryption.
+
+-----
+
+Let’s enable WireGuard encryption using Helm:
+
+```
+helm upgrade cilium cilium/cilium --namespace kube-system \
+  --reuse-values \
+  --set l7Proxy=false \
+  --set encryption.enabled=true \
+  --set encryption.type=wireguard
+```
+
+Now let’s restart the Cilium daemonset to ensure the running Cilium agents pick up the configuration change.
+
+```
+kubectl rollout restart daemonset/cilium -n kube-system
+```
+
+Once the Cilium pods are restarted, they’ll update the CiliumNode custom resources that represent Cilium-managed Kubernetes nodes to include a new annotation holding the WireGuard public key for that node.
+
+```
+kubectl get -n kube-system CiliumNodes
+NAME                  CILIUMINTERNALIP   INTERNALIP   AGE
+kind-control-plane    10.0.1.213         10.89.0.7    18h
+kind-worker           10.0.2.26          10.89.0.8    18h
+kind-worker2          10.0.0.117         10.89.0.6    18h
+```
+
+```
+kubectl get -n kube-system CiliumNode kind-worker -o json | jq .metadata.annotations
+{
+  "network.cilium.io/wg-pub-key": "a1PgUa1Bj/vLlDUDQ5qJP/uboCIYKq50GuPScmA7BXw="
+}
+```
+--- 
+To verify the Transparent Encryption:
+
+We can use the Cilium agent clients available in the Cilium agent pods to check to see if the Agent has enabled encryption.
+
+This agent has WireGuard enabled, and it sees the expected number of peers (2 peers in a 3 node cluster). Double check the number of peers makes sense for your cluster.
+
+
+```
+kubectl exec -n kube-system -ti ds/cilium -- cilium status |grep Encryption
+Encryption: Wireguard [cilium_wg0 (Pubkey: a1PgUa1Bj/vLlDUDQ5qJP/uboCIYKq50GuPScmA7BXw=, Port: 51871, Peers: 2)]
+```
+
+If we check the IP devices available in the host network, we should see a new device named cilium_wg0:
+
+```
+kubectl exec -n kube-system -ti ds/cilium -- ip link |grep cilium
+```
+
+Let’s now verify that this new WireGuard link is being used for traffic destined for another node by making some Death Star landing requests while watching that device with tcpdump.
+
+Below is the step to open interactive bash shell in the cilium agent container and install tcpdump:
+
+```
+kubectl exec -n kube-system -ti pod/cilium-2j6zl -- /bin/bash
+root@kind-worker:/home/cilium#
+```
+
+```
+apt-get update
+apt-get -y install tcpdump
+```
+
+Once installed, we can watch the packet flow through the WireGuard network device:
+```
+tcpdump -n -i cilium_wg0
+```
+```
+kubectl describe node kind-worker
+```
+
+If we make landing requests from the TIE fighter pod, we should see network traffic in the tcpdump output only when the TIE fighter communicates with the Death Star endpoint not running on the same node. Thus the tcpdump session will only see some of the requests. Let’s run the TIE fighter landing request a few times:
+
+```
+kubectl exec tiefighter -- curl -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing
+```
+
+Here is what our tcpdump session captured after two successful landing requests:
+
+```
+20:56:24.842905 IP 10.0.2.188.53622 > 10.0.0.104.53: 64461+ A? deathstar.default.svc.cluster.local. (53)
+20:56:24.843493 IP 10.0.2.188.53622 > 10.0.0.104.53: 64835+ AAAA? deathstar.default.svc.cluster.local. (53)
+20:56:24.843976 IP 10.0.0.104.53 > 10.0.2.188.53622: 64461*- 1/0/0 A 10.96.129.196 (104)
+```
+
+On the first request, all we see is communication to a DNS server, which makes sense because in our cluster there is no core-dns pod running on the node shared by the TIE fighter pod. Thus, every landing request we make will result in a DNS request to a different node, and that request is now transparently encrypted via WireGuard, without having to reconfigure the DNS service to enable encryption. Cool!
+
+However, there is no evidence of a connection to the Death Star backend endpoint on this first request. That is because the DNS request returned the backend address running on the same node as the TIE fighter. The WireGuard link we are watching wasn’t used because that connection ended up being node-local between pods running on the same node.
+
+On the second landing request, we see both the DNS request and the HTTP request show up in the tcpdump session. For the second landing request, the DNS lookup returned the Deathstar backend running on a different node, and the encrypted WireGuard link was used for the node-to-node communication. Great! It’s working just as expected. Cilium is now providing transparent node-to-node communication, without making any changes to the deployed microservice workloads in the cluster, and without having to add resource-intensive sidecars into each pod.
+
+If you repeat that process and attempt to interact with an IP address for an external service, there will be no traffic on the WireGuard link. Be careful though, if you access a service by DNS name, you still may see DNS request traffic to the kube-dns service on the encrypted WireGuard link.
