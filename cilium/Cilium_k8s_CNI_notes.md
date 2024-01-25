@@ -452,3 +452,224 @@ Info:
   - For L3/L4 policy the eBPF programs running in the linux networ datapath are used to drop the packets, essentially eaten by a black hole in the network.
   - The L7 policy is implementing the embedded HTTP proxy and making decisons as if it were an HTTP server, denying requests and providing an HTTP status response back to the client with a raon as to why it was deined.
   - Regardless of the implementation used, we will be able to track that a packet was dropped at the DeathStar endpoint ingress using the hubble to examine network flows.
+
+--------------
+
+Hubble:
+
+Hubble can provide insights on below:
+
+Service dependencies & communication map:
+
+What and how frequently ther services are communicating with each other? 
+Service dependency graph
+What HTTP calls are being made? 
+What Kafka topics does a service consume from or produce to?
+
+Network monitoring & alerting:
+
+Provides which network communication failed? Why communication failing? 
+Is it DNS or it is an application or network problem? 
+Is the communication broken on layer 4 (TCP) or layer 7 (HTTP)?
+Which services have experienced a DNS resolution problem in the last 5 minutes? 
+Which services have experienced an interrupted TCP connection recently or have seen connections timing out?
+What is the rate of unanswered TCP SYN requests?
+
+Application monitoring:
+
+What is the rate of 5xx or 4xx HTTP response codes for a particular service or across all clusters?
+What is the 95th and 99th percentile latency between HTTP requests and responses in my cluster? 
+Which services are performing the worst? What is the latency between services?
+
+Security observability:
+
+Which services had connections blocked due to network policy? 
+What services have been accessed from outside the cluster? 
+Which services have resolved a particular DNS name?
+
+All of this is made possible by eBPF, which provides deep visibility into the network datapath for all the application workloads running in your Kubernetes cluster. With Hubble, you are able to tap into this flow of information and filter it using contextual Kubernetes metadata.
+
+*Hubble CLI*
+```sh
+$ hubble observe --since=1m -t l7 -j
+```
+
+-----
+When Hubble is enabled as part of your Cilium-managed cluster, several additional components are configured:
+
+Hubble server:
+  - Runs on each Kubernetes node as part of Cilium agent operations
+  - Implements the gRPC observer service, which provides access to network flows on a node
+  - Implements the gRPC peer service used by Hubble Relay to discover peer Hubble servers
+
+Hubble Peer Kubernetes Service:
+  - Used by Hubble Relay to discover available Hubble servers in the cluster
+
+Hubble Relay Kubernetes Deployment:
+  - Communicates with Cluster-wide Hubble Peer service to discover Hubble servers in the cluster
+  - Keeps persistent connections with Hubble server gRPC API
+  - Exposes API for cluster-wide observability
+
+Hubble Relay Kubernetes Service:
+  - Used by the Hubble UI service
+  - Can be exposed for use by Hubble CLI tool
+
+Hubble UI Kubernetes Deployment
+  - Act as a service backend for Hubble UI Kubernetes service
+
+Hubble UI Kubernetes Service
+  - Used for cluster networking visualizations
+
+---
+
+`Network flows` are a key concept in Hubble’s value. 
+`Flows` are similar to a `packet capture` that you would get from a tool like *tcpdump*, except instead of focusing on the packet contents, flows are designed to help you better understand how packets flow through your Cilium-managed Kubernetes cluster.
+
+`Flows` include contextual information that helps you figure out 
+   - where in the cluster a network packet is coming from,
+   - where it’s going, and
+   - whether it was dropped or forwarded;
+without having to rely on knowing the source and destination IP addresses of the packet.
+
+Since Kubernetes pod IP addresses are ephemeral resources, they aren’t reliable enough to filter on. 
+Simply capturing packets from the same IP address for several minutes, as you would do with a VM running in a data center, may not help diagnose Kubernetes pod networking issues and it certainly won’t help you construct trendable metrics for any application. `Flows` provide contextual metadata that is more durable inside of a Kubernetes cluster that you can filter on.
+
+Moreover, you can expose the context made available by flows as labels in Prometheus metrics.
+Flows make it possible to have metrics in your networking dashboard labeled in a way that corresponds to your application performance, even as they scale up or down. The metric labels derived from flows are another great benefit of Cilium’s identity model that just makes sense in a Cloud Native world, we’ll take a closer look at that in the next chapter.
+
+Here’s an abbreviated example of a flow we’ve captured using the Hubble CLI tool so you can see what contextual metadata is available in a flow. This flow is from the Death Star service endpoint node, created when the TIE fighter pod was denied a PUT request made in the last chapter’s lab. The flow is captured using the Hubble CLI tool running on the same Kubernetes node as a Death Star backend endpoint.
+
+```json
+{
+      "time": "2023-03-23T22:35:16.365272245Z",
+      "verdict": "DROPPED",
+      "Type": "L7",
+      "node_name": "kind-kind/kind-worker",
+      "event_type": {
+           "type": 129
+      },
+      "traffic_direction": "INGRESS",
+      "is_reply": false,
+      "Summary": "HTTP/1.1 PUT http://deathstar.default.svc.cluster.local/v1/exhaust-port"
+      "IP": {
+"source": "10.244.2.73",
+           "destination": "10.244.2.157",
+           "ipVersion": "IPv4"
+     },
+     "source": {
+          "ID": 62,
+          "identity": 63675,
+          "namespace": "default",
+          "labels": [...],
+          "pod_name": "tiefighter"
+     },
+     "destination": {
+                "ID": 601,
+                "identity": 25788,
+                "namespace": "default",
+                "labels": [...],
+                "pod_name": "deathstar-54bb8475cc-d8ww7",
+                "workloads": [...]
+     },
+     "l4": {
+          "TCP": {
+               "source_port": 45676,
+               "destination_port": 80
+            }
+     },
+     "l7": {
+          "type": "REQUEST",
+          "http": {
+               "method": "PUT",
+               "Url": "http://deathstar.default.svc.cluster.local/v1/exhaust-port",
+               ...
+          }
+     }
+}
+```
+
+There’s a lot of contextual information packed into a flow. Looking just at the top of the JSON object, from the Verdict and Type information we can see this flow resulted in a packet drop, associated with Layer 7 network policy logic. If we inspect the flow of the same PUT request made by an X-wing pod, we would see the same DROPPED verdict, but the TYPE would be L3_L4, because the X-wing connection to the exhaust-port was denied due to Layer 3-4 policy, not the Layer 7 policy we crafted in the previous lab. Skimming further through the JSON object, there’s a lot more information in the flows that can help diagnose networking problems quickly.
+
+-----
+
+Below command is used to filter the flow 
+```
+kubectl -n kube-system exec -ti pod/cilium-w7r54 -c cilium-agent -- hubble observe --from-label "class=tiefighter" --to-label "class=deathstar" --verdict DROPPED --last 1 -o json
+```
+
+This command makes use of the --from-label filter to make sure only flows with TIE fighter pods as the source are considered. The `--to-label` filter is used to make sure only flows with Death Star endpoint as the destination are considered. The `--verdict` filter is used to ensure only flows for DROPPED packets are considered.
+
+---
+After installing the Hubble CLI
+
+- We can get access to the cluster-wide Hubble Relay service, we need to expose the Hubble Relay service to our workstation. We can do this using `kubectl port-forwarding` or just by using the Cilium CLI, which runs kubectl on our behalf. You may still have a Hubble Relay port-forward active on your workstation 
+ 
+```
+cilium hubble port-forward & hubble status
+```
+
+- Below is the output using the `hubble` CLI.
+
+```
+hubble observe --to-label "class=deathstar" --verdict DROPPED --all
+Mar 24 01:41:14.758: default/tiefighter:58374 (ID:63675) -> default/deathstar-54bb8475cc-4pv5c:80 (ID:25788) http-request DROPPED (HTTP/1.1 PUT http://deathstar.default.svc.cluster.local/v1/exhaust-port)
+Mar 24 01:41:17.254: default/tiefighter:48852 (ID:63675) -> default/deathstar-54bb8475cc-d8ww7:80 (ID:25788) http-request DROPPED (HTTP/1.1 PUT http://deathstar.default.svc.cluster.local/v1/exhaust-port)
+Mar 24 01:41:26.495: default/xwing:59940 (ID:828) <> default/deathstar-54bb8475cc-d8ww7:80 (ID:25788) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+Mar 24 01:43:38.458: default/xwing:42378 (ID:828) <> default/deathstar-54bb8475cc-4pv5c:80 (ID:25788) policy-verdict:none INGRESS DENIED (TCP Flags: SYN)
+```
+
+- We can get access to the Hubble ui
+
+```
+cilium hubble ui
+```
+
+- Applying the DNS Egress policy to deny
+
+To narrowly target the X-wing access to the DNS service, we can craft an explicit EgressDeny policy that applies only to the X-wing pods.
+
+Save this CiliumNetworkPolicy definition to a file called xwing-dns-deny-policy.yaml:
+
+```yaml
+apiVersion: "cilium.io/v2"
+kind: CiliumNetworkPolicy
+metadata:
+  name: "xwing-dns-deny"
+spec:
+  endpointSelector:
+    matchLabels:
+      class: xwing
+  egressDeny:
+  - toEndpoints:
+    - matchLabels:
+        namespace: kube-system
+        k8s-app: kube-dns
+```
+The policy applies to all pods labeled "class=xwing" and will restrict packet egress to any endpoint labeled as "k8s-app=kube-dns" in the kube-system namespace.
+
+- After applying the above policy
+
+- If  invoke the API
+```
+kubectl exec xwing -- curl --connect-timeout 2 -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing
+command terminated with exit code 6
+```
+
+- view the traffic with hubble cli, we now see packets are being dropped, because this was a narrowly targeted EgressDeny policy.
+
+```
+hubble observe --label="class=xwing" --to-namespace "kube-system" --last 1
+Mar 24 20:37:24.013: default/xwing:52779 (ID:828) <> kube-system/coredns-565d847f94-9gddx:53 (ID:49917) Policy denied DROPPED (UDP)
+```
+
+```
+kubectl exec tiefighter -- curl --connect-timeout 2 -s -XPOST deathstar.default.svc.cluster.local/v1/request-landing
+Ship landed
+```
+```
+hubble observe --label="class=tiefighter" --to-namespace "kube-system" --last 1
+Mar 24 20:36:06.285: default/tiefighter:37248 (ID:63675) -> kube-system/coredns-565d847f94-9gddx:53 (ID:49917) to-endpoint FORWARDED (UDP)
+```
+
+Note: You could achieve a similar result by changing the policy from an EgressDeny policy applied to the X-wing pods to an IngressDeny policy applied to the pods acting as kube-dns service endpoints. There’s always some flexibility in how you approach policy when both the source and destination are Cilium-managed endpoints.
+
