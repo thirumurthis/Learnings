@@ -159,7 +159,8 @@ check - https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
 
 ------
 
-Check: https://developers.google.com/oauthplayground/
+Check url for google playground of OAuth 2: https://developers.google.com/oauthplayground/
+
 -----
 
 
