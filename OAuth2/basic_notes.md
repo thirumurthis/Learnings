@@ -125,13 +125,42 @@ Decision tree for choosing grant type
                                                      /           \ use Device Grant type
                                             Server-side only?
                                                /        \
-                                          yes /          \ no
+                                          yes /          \ no (if it is client side)
                                             /             \ use Implicit Grant type (Formerly) Now knows as Authorization Code Flow with PKCE
                                Authorization code Flow
-                                (Occasionally: resource Owner
-                                   password flow)
+  (Occasionally: resource Owner password flow -> not for long term, mostly used for migrations)
 ```
+-----
+OAuth Scopes:
+  - Scopes are set of permission we requested like read, write, etc. The permission can be compilcated as well.
 
+In GitHub, we GitHub Scopes.
+   - repo
+   - public_repo
+   - repo_deployment
+   - repo:invite
+   - write:repo_hook
+
+In Google, Google Scopes.
+  - Mostly URL based.
+
+In Okta API Scopes
+  - uses simple namespace. resource . action. 
+
+Above three approach is valid, we can choose which one to use.
+
+OpenID Connect Scopes:
+ - openid (this should be included, followed by any of the below scopes)
+ - profile
+ - email
+ - address
+ - phone
+check - https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
+
+------
+
+Check: https://developers.google.com/oauthplayground/
+-----
 
 
 
