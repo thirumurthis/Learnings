@@ -98,10 +98,41 @@ Endpoint:
   -  /revoke => Endpoint that application uses to deactivate (invalidate) token(s). Refersh tokens.
 -------
 
+## Grant Types:
+ - Authorization Code
+ - Implicit or Hybrid
+ - Resource Owner Password
+ - Client Credentials
+ - Device Code
+ - Authorization Code with PKCE
 
- 
+ Below question help us to choose the grant types:
+   - are you authrozing on behalf of a user or service?
+   - does the system in question have a web browser available on device of the client?
+   - is the application entirely server side, or does it have a client-side component?
 
-  
+Decision tree for choosing grant type
+
+```
+                                                              For a user?
+                                                               /     \
+                                                         yes  /       \  no (used for service) like used for backend to interact
+                                                             /         \  use Client Credential Grant type
+                                                        Browser
+                                                        available?
+                                                        /      \
+                                                   yes /        \ no
+                                                     /           \ use Device Grant type
+                                            Server-side only?
+                                               /        \
+                                          yes /          \ no
+                                            /             \ use Implicit Grant type (Formerly) Now knows as Authorization Code Flow with PKCE
+                               Authorization code Flow
+                                (Occasionally: resource Owner
+                                   password flow)
+```
+
+
 
 
      
