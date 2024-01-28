@@ -52,4 +52,57 @@ OpenID connect: provdes and lacks
    - Userinfo endpoint
    - Lacks client credentials work flow. (this is mostly used for machine to machine flow)
 
+ ----------------
+
+OpenID connect mostly replaces SAML for Single Sign-On
+
+--------------
+
+How OAuths work?
+
+OAuth concept:
+   - Resource owner - that mostly you or whoever authenticating eventually authorizing your application
+   - Resource server - what you are grating access to (ask the resource owner to acess to). The resource server validates the token and provides access.
+   - Grant type - how the application is asking for access, this is the process for request, there are various flow.
+   - Scope - what access that applciation is requesting
+   - Authorization server - who that application is asking for access (brain of the process of validating the authorization, etc)
+   - Token - how the application get that access (assuming the authentication is success, then you get a token). this could be JWT or opaque string.
+   - Claims - the token relates to claims, this claims is embedded in the JWT token or token.
+--------------
+
+RFC 6749 OAuth Core
+- Endpoints
+   - /authorize  => this endpoint the end user (resource owner) interacts with to grant permission for the application to access the resource.
+                 => could return an authorization code or an access token
+   - /token => the application uses this endpoint to trade an authorization code or refresh token for an access token
+
+---------
+OpenID Connect Core
+- Endpoints
+   -   /userinfo  => appliation uses this endpoint to retrieve profile info about the authenticated user.
+                  => This returns a spec-defined set of fields, depending on the permission (scope) requested.
+-------
+RFC 8414 OAuth Authorization server metadata discovery
+Discovery endpoint 
+  - /.well-known/oauth-authorization-server => application uses to retrive the configuration info for the authorization server
+                                            => This returns spec-defined fields.
+                                            => optional, check the Provider doc or spec.
+----------
+Token Introspection
+Endpoint:
+   - /introspect  => Endpoint used by application to learn more about token:
+                  => whether it is active or not (not revoked or expired), additional info such as expiration time, scopes, etc.
+-------
+Token revocation
+Endpoint:
+  -  /revoke => Endpoint that application uses to deactivate (invalidate) token(s). Refersh tokens.
+-------
+
+
+ 
+
+  
+
+
+     
  
