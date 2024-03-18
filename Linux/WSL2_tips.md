@@ -17,11 +17,11 @@ $ sudo visudo
 ```
 sudo vi /etc/wsl.conf
 # add
-
+[boot]
 systemd=true
 ```
 - Shutodown using `wsl.exe --shutdown Ubuntu` to take effect of running systemd.
-- issue command `systemd list-unit-files --type=service` to verify if the it is enabled.
+- issue command `systemctl list-unit-files --type=service` to verify if the it is enabled.
 -----------------
 
 ## Install Ansible to the WSL2
