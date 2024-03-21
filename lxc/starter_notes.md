@@ -49,7 +49,7 @@ config:
    linux.kernel_modules: ip_tables,ip6_tables,netlink_diag,nf_nat, overlay
    raw.lxc: "lxc.apparmor.profile=unconfined\nlxc.cap.drop=\nlxc.group.devices.allow=a\nlxc.mount.auto=proc:rw
     sys:rw"
-security.previleged: "true"
-security.nesting: "true"
+   security.previleged: "true"
+   security.nesting: "true"
   
 ```
