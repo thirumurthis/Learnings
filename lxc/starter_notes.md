@@ -53,3 +53,18 @@ config:
    security.nesting: "true"
   
 ```
+under device
+
+```yaml
+device:
+  eth0:
+    name: eth0
+    nictype: bridges
+    parent: lxdbr0
+    type: nic
+  root:
+    path: /
+    pool: default
+    type: disk
+
+```
