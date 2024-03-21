@@ -47,7 +47,8 @@ config:
    limits.memory: "2GB"
    limits.memory.swap: "false"
    linux.kernel_modules: ip_tables,ip6_tables,netlink_diag,nf_nat, overlay
-   raw.lxc: "lxc.apparmor.profile=unconfined\nlxc.cap.drop=\nlxc.group.devices.allow=a\lxc.mount.auto=proc:rw sys:rw"
+   raw.lxc: "lxc.apparmor.profile=unconfined\nlxc.cap.drop=\nlxc.group.devices.allow=a\nlxc.mount.auto=proc:rw
+    sys:rw"
 security.previleged: "true"
 security.nesting: "true"
   
