@@ -39,6 +39,13 @@ to edit the lxc profile use
 lxc profile edit k8s
 ```
 
+initialize lxc
+
+```
+lxc init
+# accept all default values
+```
+
 update under config
 
 ```yaml
