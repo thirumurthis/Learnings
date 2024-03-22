@@ -13,7 +13,7 @@
 
 ```
 # below installs virtual swtich
-$ sudo apt install openswtich-switch
+$ sudo apt install openvswtich-switch
 ```
 - once the swtich is installed, we need to make changes to network configration
 
@@ -193,3 +193,4 @@ $ incus profile device add netbridgeprofile eth0 nic nictype=bridged parent=brid
 ```
 $ incus launch images:ubuntu/22.04 demo02 --profile=default --profile=netbridgeprofile
 ```
+- since we added the profile now when we create the container the ip address will be provided by the bridge network
