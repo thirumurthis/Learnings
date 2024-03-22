@@ -13,7 +13,7 @@
 
 ```
 # below installs virtual swtich
-$ sudo apt install openvswtich-switch
+$ sudo apt install openvswitch-switch
 ```
 - once the swtich is installed, we need to make changes to network configration
 
