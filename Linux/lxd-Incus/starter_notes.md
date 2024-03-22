@@ -77,11 +77,11 @@ $ curl -fsSL https://pkgs.zabbly.com/key.asc | gpg --show-keys --fingerprint
 - create a folde to store the key ring
 
 ```
-$ mkdir -p /etc/apt/keyrings/
-$ curl -fsSL https://pkgs.zabbly.com/key.asc -o /etc/apt/keyrings/zabbly.asc
+$ sudo mkdir -p /etc/apt/keyrings/
+$ sudo curl -fsSL https://pkgs.zabbly.com/key.asc -o /etc/apt/keyrings/zabbly.asc
 ```
 
-Add the repository 
+- Add the repository, perofrm it as sudo
 ```sh
 sh -c 'cat <<EOF > /etc/apt/sources.list.d/zabbly-incus-stable.sources
 Enabled: yes
@@ -97,5 +97,58 @@ EOF'
 
 - Now we can install incus
 ```
-sudo apt incus
+$ sudo apt-get update
+$ sudo apt install incus
+# when prompted type y
+```
+
+- Add the current user to the incus-admin group
+
+```
+$ getent group incus
+$ getent group incus-admin
+# to add to the group
+$ sudo usermod -aG incus-admin <current-user>
+
+# to publish the changes
+$ newgrp incus-admin
+```
+
+-example
+```
+user01@user01:~$ id
+uid=1000(user01) gid=1000(user01) groups=1000(user01),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),116(netdev),999(lxd)
+user01@user01:~$ newgrp incus-admin
+user01@user01:~$ id
+uid=1000(user01) gid=997(incus-admin) groups=997(incus-admin),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),116(netdev),999(lxd),1000(user01)
+```
+
+- ZFS utility needs to be installed before initializing the incus.
+- This can be used for creating zfs pools for containers.
+
+```
+$ sudo apt install zfsutils-linux
+```
+- Before start using the incus, we need to init
+
+```
+$ incus admin init
+```
+
+- example output, note it should prompt for addition storage backend pool might be different when using physical server.
+```
+$ incus admin init
+Would you like to use clustering? (yes/no) [default=no]:
+Do you want to configure a new storage pool? (yes/no) [default=yes]: yes
+Name of the new storage pool [default=default]:
+Would you like to create a new local network bridge? (yes/no) [default=yes]:
+What should the new bridge be called? [default=incusbr0]:
+What IPv4 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]:
+What IPv6 address should be used? (CIDR subnet notation, “auto” or “none”) [default=auto]:
+Would you like the server to be available over the network? (yes/no) [default=no]: yes
+Address to bind to (not including port) [default=all]:
+Port to bind to [default=8443]:
+Would you like stale cached images to be updated automatically? (yes/no) [default=yes]:
+Would you like a YAML "init" preseed to be printed? (yes/no) [default=no]:
+
 ```
