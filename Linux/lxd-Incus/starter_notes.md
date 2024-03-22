@@ -152,3 +152,44 @@ Would you like stale cached images to be updated automatically? (yes/no) [defaul
 Would you like a YAML "init" preseed to be printed? (yes/no) [default=no]:
 
 ```
+
+- to view the list of images that we can use
+
+```
+# below lists lots of images to pick from
+$ incus image list images:
+```
+
+- create and launch a container
+
+```
+$ incus launch images:ubuntu/22.04 <name-of-container> 
+```
+
+- example output
+```
+user01@user01:~$ incus launch images:ubuntu/22.04 demo01
+Launching demo01
+user01@user01:~$ incus list
++--------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+|  NAME  |  STATE  |        IPV4         |                     IPV6                      |   TYPE    | SNAPSHOTS |
++--------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+| demo01 | RUNNING | 10.32.15.204 (eth0) | fd42:f3d3:63df:3a93:216:3eff:feca:1626 (eth0) | CONTAINER | 0         |
++--------+---------+---------------------+-----------------------------------------------+-----------+-----------+
+```
+- Note: The ip address is a nat'ed ip address created internal to the nat work that incus creates by default.
+
+- We need to access the incus container to be accessed from the network, to do that we need to create a profile
+
+```
+$ incus profile create netbridgeprofile
+
+# add the device to the profile; bridge0 is virtual
+$ incus profile device add netbridgeprofile eth0 nic nictype=bridged parent=bridge0
+```
+
+- we can create new container with the created profile
+
+```
+$ incus launch images:ubuntu/22.04 demo02 --profile=default --profile=netbridgeprofile
+```
