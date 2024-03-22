@@ -194,3 +194,20 @@ $ incus profile device add netbridgeprofile eth0 nic nictype=bridged parent=brid
 $ incus launch images:ubuntu/22.04 demo02 --profile=default --profile=netbridgeprofile
 ```
 - since we added the profile now when we create the container the ip address will be provided by the bridge network
+
+
+- to stop the container
+```
+$ incus stop demo01
+```
+
+- to delete the container
+```
+$ incus delete demo01
+```
+
+- to shell to the container
+
+```
+$ incus shell demo1
+```
