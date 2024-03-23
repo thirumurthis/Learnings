@@ -377,6 +377,15 @@ spec:
     - If the limits and requests of memory is `equal` - after creating the pod, using `kubectl get pods -o yaml` should see the status of qosClass: **`Guaranteed`**
     - If the limits set `high` and requests set `low memory` (different) - after creating the pod, the pod definition yaml file the status of qosClass: **`Burstable`**
     - if the limits and requests are `not set` - after creating the pod, the pod definition file will has the status of qosClass: **`BestEffort`**
+   
+ ##### ResourceQuota
+ - Resource can be applied to a namespace to restrict the number resource eg. pod, configmap, memory, cpu usage.
+ - To imperatively create the resource qouta use below command.
+ - When the resource quota created on specific `namespace` it will be applied to that namespace.
+
+```
+$ kubectl create quota myrq --hard=cpu=1,memory=1G,pods=2 --dry-run=client -o yaml
+```
 -----------------------------
 
 ### Taint and Toleration:
