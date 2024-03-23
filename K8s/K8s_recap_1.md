@@ -361,16 +361,27 @@ spec:
                 memory: "100Mi:   # when creating the pod Kubelet will use this as a minimum level to schedule the pods on the node.
                 cpu: "0.5"
      ```
-     - Note: At container level, if only the limits - is set in definition file after creating the pod the requested memory/cpu will be same as the limit value
-     -       At container level, if only the requests - is set in defintion file after creating the pod the limit will be the max (utilizes the all available in the Node)
-     -       Requests attribute memory/cpu should always be less than the limit attribute value.
-     ```
-     Note: If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes automatically assigns a memory request that matches the limit.
-     Similarly, if a Container specifies its own CPU limit, but does not specify a CPU request, Kubernetes automatically assigns a CPU request that matches the limit.
-     ```
-  - `ResoruceQuota` can also be used to hard limit for number of resources that can be created like pods, service, deployment, etc. in the namespace
-      - First create the namespace, and then create the resourceQuota using `$ kubectl create resourcequota rq1 -n <name-space>` or using `yaml resource definition file`.
-      - using `$ kubectl describe resourcequota rq1 -n <name-space>` will list the hard limit and usage limit.
+  - ** Note: **
+   - At container level, 
+     - if only the limits is set in definition file after creating the pod, requested memory/cpu will be same as the limit value
+     - if only the requests is set in defintion file after creating the pod, limit will be the max (utilizes all available in the Node)
+     - ** Requests attribute memory/cpu should always be less than the limit attribute value.**
+     
+  - ** Note: **
+    - If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes automatically assigns a memory request that matches the limit.
+    - Similarly, if a Container specifies its own CPU limit, but does not specify a CPU request, Kubernetes automatically assigns a CPU request that matches the limit.
+     
+  - `ResoruceQuota` can also be used to hard limit number of resources that can be created like pods, service, deployment, etc. in the namespace
+  - First create the namespace and then create the resourceQuota using `$ kubectl create resourcequota rq1 -n <name-space>` or using `yaml resource definition file`.
+      - use `$ kubectl describe resourcequota rq1 -n <name-space>` list the hard limit and usage limit.
+
+##### ResourceQuota imperitive 
+ - Resource can be applied to a namespace to restrict the number resource eg. pod, configmap, memory, cpu usage.
+ - To imperatively create the resource qouta use below command.
+ -  ```
+ -  $ kubectl create quota myrq --hard=cpu=1,memory=1G,pods=2 --dry-run=client -o yaml
+ -  ```
+ - When the resource quota created on specific `namespace` it will be applied to that namespace.
       
 ##### Quality of service: 
   - in the pod defintion file for container if below condition is set, the qosClass will be as listed:
@@ -378,14 +389,6 @@ spec:
     - If the limits set `high` and requests set `low memory` (different) - after creating the pod, the pod definition yaml file the status of qosClass: **`Burstable`**
     - if the limits and requests are `not set` - after creating the pod, the pod definition file will has the status of qosClass: **`BestEffort`**
    
- ##### ResourceQuota
- - Resource can be applied to a namespace to restrict the number resource eg. pod, configmap, memory, cpu usage.
- - To imperatively create the resource qouta use below command.
- - When the resource quota created on specific `namespace` it will be applied to that namespace.
-
-```
-$ kubectl create quota myrq --hard=cpu=1,memory=1G,pods=2 --dry-run=client -o yaml
-```
 -----------------------------
 
 ### Taint and Toleration:
