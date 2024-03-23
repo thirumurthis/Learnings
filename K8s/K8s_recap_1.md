@@ -143,16 +143,31 @@ spec:
  - base64 encoded text.
 
 #### how to create secrets, in different apporach
+- 1. Imperative way
+   - passing key value pairs as literals
+   - from file
 ```
-## using command
+## using command with key values 
 $ kubectl create secret generic <secret-name> --from-literal=KEY1=VALUE1 --from-literal=KEY2=VALUE2
 $ kubectl create secret generic test-secret --from-literal=User=VALUE1 --from-literal=Password=VALUE2
-## Creating an Yaml definition file and creating it.
+
+## using command with secrets stored in file
+$ kubectl create secret generic my-secret-frm-file --from-file=secretfile.properties
 ```
 
-Another example of creating secrets with tls key and certificate
+  - Example of creating secrets with tls key and certificate
 ```
 $ kubectl create secret tls secret-name1 --key /tmp/nginx.key --cert /tmp/nginx.crt
+```
+
+- 2. Declerative way using yaml defintion
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dotfile-secret
+data:
+  .secret-file: dmFsdWUtMg0KDQo=
 ```
 #### Different ways to associate the secrets as environment variable to a POD
  - adding secret to pod as environment 
