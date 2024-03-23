@@ -69,6 +69,7 @@ spec:
   - In the Pod definition file, say we have many environment variable declared as if the PODS grow it would be difficult to manage those environment variables.
   - `ConfigMaps` helps us to declare those environment variables (key value pair) centrally and refer it within the Pod definition file.
 
+- Imperitive way
 ```
 ## creating configMap using imperative way
 $ kubectl create configmap <configMap-name> --from-literal=<key>=<value> --from-literal=<key>=<value>
@@ -77,7 +78,10 @@ $ kubectl create configmap <configMap-name> --from-literal=<key>=<value> --from-
 $ kubectl create configmap <configmap-name> --from-file=<path-to-file>
   ### the file in this case is a properties file with key value pair.
   ### the data from this file is read and stored under the name of the file.
-  
+```
+
+- Declaritive using defintion yaml
+```yaml
 ## Declerative way, using a definition yaml file
 
 apiVersion: v1
@@ -88,7 +92,8 @@ data:  # Not this is different for Pods/deployment - used to be spec, here it is
    ENV_KEY1: value1
    ENV_KEY2: value2
 ```
- - Name of the configuration will be used to associate with the pods.
+
+ - Name of the configmap will be used to associate with the pods.
 
 #### Other ways to inject environment variables to pod:
   - through configMap 
