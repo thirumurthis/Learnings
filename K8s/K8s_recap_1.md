@@ -33,7 +33,8 @@ $ kubectl scale --replicas=6 replicaset name-of-replica-set-running
 
 ![image](https://user-images.githubusercontent.com/6425536/120940352-b447c900-c6d1-11eb-982b-b7988fb7b773.png)
 
-#### How to set `environment` variables and use it in pods, use the `env` array within the defintion yaml and other approach.
+#### Environment variables
+##### How to set `environment` variables and use it in pods, use the `env` array within the defintion yaml and other approach.
 
 Different ways of speicifying environment variables:
 ```
@@ -62,7 +63,58 @@ spec:
       valueFrom:
           secretKeyRef:
 ```
-
+- Expose the Pod spec via environment variables.
+- In below we use the defintion yaml properties to expose as environment variable.
+- for example, if need to pod name to be used in the environment variable or podId we can de
+- refer the env section `fieldRef` and `fieldPath`, it is associating to one env variable
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-envars-fieldref
+spec:
+  containers:
+    - name: test-container
+      image: registry.k8s.io/busybox
+      command: [ "sh", "-c"]
+      args:
+      - while true; do
+          echo -en '\n';
+          printenv MY_NODE_NAME MY_POD_NAME MY_POD_NAMESPACE;
+          printenv MY_POD_IP MY_POD_SERVICE_ACCOUNT;
+          sleep 10;
+        done;
+      env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MY_POD_SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+  restartPolicy: Never
+```
+  - The output when vierifed using `kubectl logs pod/pod-name` for above defintion looks something like
+    ```
+    node01
+    dapi-envars-fieldref
+    default
+    192.168.1.4
+    default
+    ```
 -----------------------------------------------
 
 ### ConfigMaps
