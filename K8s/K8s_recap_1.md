@@ -424,8 +424,47 @@ spec:
       automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
 ```
 
-we can use ` jq -R ' split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' <<< $(k exec pod/nginx -- cat /var/run/secrets/kubernetes.io/serviceaccount/token)` to decode the jwt token
+From kuberentes 1.22, **TokeRequestAPI** was introduced, since the jwt token earlier version is not bound to time. The JWT toke didn't include any expiry time. The new API is Audience bound, time bound and object bound making more secure.
+- From 1.22, when new pod is created it doesn't relies on service account secret token
 
+- `kubectl get pod/nginx -o yaml` output
+```yaml
+   #...
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-m8hw7
+      readOnly: true
+   #....
+ volumes:
+  - name: kube-api-access-m8hw7
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607     # <----------- time bound and projected volume
+          path: token
+``` 
+
+- From 1.24 onwards, the `kubectl create serviceaccount my-sa` doesn't include or create any token
+- To create a token we need to use `kubectl create token my-sa`. this new token from 1.24 will have the expiry date defined
+- The usual expire date is 1hr, there are options to increase check documentation.
+- In order to create service account with non expiry date, we need to use defintion
+  ```
+  # the service account should be availabe first
+  apiVersion: v1
+  kind: Secret
+  type: kubernetes.io/service-account-token
+  metadata:
+    name: my-secret
+    annotations:
+      kuberentes.io/service-account.name: my-sa
+  ```
+
+### To decode the jwt token with jq 
+```
+ jq -R ' split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' <<< $(kubectl exec pod/nginx -- cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+```
+- From the pod describe command fetch the service account mount path
 ```
 controlplane $ jq -R ' split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' <<< $(k exec pod/nginx -- cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 {
