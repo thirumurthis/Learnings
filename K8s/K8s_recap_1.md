@@ -424,6 +424,8 @@ spec:
       automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
 ```
 
+we can use `jq -R 'split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' << jwttoken` to decode the jwt token
+
 ---------------------------
 
 ### Resource within container (request and limits of resources)
