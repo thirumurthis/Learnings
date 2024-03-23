@@ -167,7 +167,7 @@ kind: Secret
 metadata:
   name: dotfile-secret
 data:
-  .secret-file: dmFsdWUtMg0KDQo=
+  .secret-file: dmFsdWUtMg0KDQo=  # This is encoded foramt 
 ```
 #### Different ways to associate the secrets as environment variable to a POD
  - adding secret to pod as environment 
