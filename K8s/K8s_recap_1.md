@@ -79,7 +79,7 @@ $ kubectl create configmap <configMap-name> --from-literal=<key>=<value> --from-
 
 $ kubectl create configmap <configmap-name> --from-file=<path-to-file>
 
-  ### the file in this case is a properties file with KEY-VALUE pair.
+  ### the file can be properties file with KEY-VALUE pair, other data files like sql, etc.
   ### the data from this file is read and stored under the name of the file.
 ```
 
