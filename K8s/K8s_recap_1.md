@@ -424,7 +424,7 @@ spec:
       automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
 ```
 
-From kuberentes 1.22, **TokeRequestAPI** was introduced, since the jwt token earlier version is not bound to time. The JWT toke didn't include any expiry time. The new API is Audience bound, time bound and object bound making more secure.
+From kuberentes 1.22, **TokeRequest** API was introduced, since the jwt token earlier version is not bound to time. The JWT toke didn't include any expiry time. The new API is Audience bound, time bound and object bound making more secure.
 - From 1.22, when new pod is created it doesn't relies on service account secret token
 
 - `kubectl get pod/nginx -o yaml` output
