@@ -390,17 +390,18 @@ USER 1000
     - This token can be used as authentication Bearer token while making call to access REST API.
       - In Curl command we can provide this bearer token ` curl <rest-url-of-application> -k --header "Authorization: Bearer <token>`;
 
-In general:
+- Say, if there is an dashboard application which needs to connect to the Kuberenets cluster and get the pods running in it. In this case, the application can't directly access the k8s cluster, it requires a token. In this case we,
   - Create a service account
   - Assign right permission using RBAC mechanism
   - Export the service account token, to third party to access the application.
 
-What can be done if the third party application is running/hosted with the same K8S cluster where the REST API is running.
- - In this case then, simply mount the service token secret as a volume inside the pod hosting the third party application itself.
+- What if the application is running/hosted within the same K8S cluster. then, simply mount the service token secret as a volume inside the pod hosting the third party application itself.
  - No need to provide this token manually.
 
-Note: Each namespace has its default service account and token created, the tockens are automatically mounted as volumes to the pod when Pods are created under the namespce.
-
+- **Note:**
+ - When namespace is created it includes a default service account. The service account includes a token associated to it.
+ - This token is associated to the service account is a secret.
+ - When we create a pod, by default the service account is mounted as volume to pod, which can be viewed with `kubectl describe pod/pod-name`.
  - The default service account has restriction, and is automatically attached to the pod when created.
  - If we need to attach a different service account that was created, we can update the Pod defintion yaml file (or deployment file)
 
@@ -409,10 +410,12 @@ spec:
    containers: 
      - name: nginx
        image: nginx
-       serviceAccount: <service-account-newly-created>
-``` 
+       serviceAccount: <service-account-newly-created>  # <---- the service account created with additional access
+```
+- Note, if the pod is already running and we need to add the new service account, the pod must be deleted and recreated with the changes.
+- In case of the deployment, we can edit the service account which will trigger a rollout.
 
-- In order to tell the pods not to use/mount the default service token we can use below attribute `automountServiceAccountToken`:
+- In order to tell the pods NOT to use/mount the default service token we need to use `automountServiceAccountToken : false` like below in defintion
 ```
 spec:
   containers:
@@ -420,6 +423,7 @@ spec:
       image: nginx
       automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
 ```
+
 ---------------------------
 
 ### Resource within container (request and limits of resources)
@@ -510,7 +514,16 @@ spec:
         - A taint is set on the Master node when the kubernetes is setup.
         - Best practice, not to deploy any pods on the Master node.
         - `$ kubectl describe node kubemaster | grep -i taints`
-    
+
+#### To remove the taint on a master node or control-plane node use 
+`kubectl taint nodes node1 node-role.kubernetes.io/control-plane-`
+- The master node describe displays the taints config like below,
+```
+ taints:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane 
+```
+
 ### Assing Pods to Nodes using `Node Selector` and `Node Affinity`:
    - If we want a pod to be executed on a specific node, then we can specify that using `nodeSelector` attribute in the pod defintion file.
    - In order to use the `nodeSelector`, create a label on the nodes or use the existing node.
