@@ -361,13 +361,13 @@ spec:
                 memory: "100Mi:   # when creating the pod Kubelet will use this as a minimum level to schedule the pods on the node.
                 cpu: "0.5"
      ```
-  - ** Note: **
-   - At container level, 
-     - if only the limits is set in definition file after creating the pod, requested memory/cpu will be same as the limit value
-     - if only the requests is set in defintion file after creating the pod, limit will be the max (utilizes all available in the Node)
-     - ** Requests attribute memory/cpu should always be less than the limit attribute value.**
+
+- **Note:** At container level, 
+   - if only the limits is set in definition file after creating the pod, requested memory/cpu will be same as the limit value
+   - if only the requests is set in defintion file after creating the pod, limit will be the max (utilizes all available in the Node)
+   - ** Requests attribute memory/cpu should always be less than the limit attribute value.**
      
-  - ** Note: **
+ - **Note:**
     - If a Container specifies its own memory limit, but does not specify a memory request, Kubernetes automatically assigns a memory request that matches the limit.
     - Similarly, if a Container specifies its own CPU limit, but does not specify a CPU request, Kubernetes automatically assigns a CPU request that matches the limit.
      
@@ -378,9 +378,9 @@ spec:
 ##### ResourceQuota imperitive 
  - Resource can be applied to a namespace to restrict the number resource eg. pod, configmap, memory, cpu usage.
  - To imperatively create the resource qouta use below command.
- -  ```
- -  $ kubectl create quota myrq --hard=cpu=1,memory=1G,pods=2 --dry-run=client -o yaml
- -  ```
+   ```
+    $ kubectl create quota myrq --hard=cpu=1,memory=1G,pods=2 --dry-run=client -o yaml
+   ```
  - When the resource quota created on specific `namespace` it will be applied to that namespace.
       
 ##### Quality of service: 
