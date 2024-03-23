@@ -494,7 +494,46 @@ controlplane $ jq -R ' split(".") | select(length >0) | .[0],.[1] | @base64d | f
   "sub": "system:serviceaccount:default:default"
 }
 ```
+#### To create a SA and provide access we can follow below steps
+- Create the Service account first
+- Add the role base access with Role and RoleBinding (like below)
+- Then update the deployment/pod to use the created Service account (no need to generate the token any more)
+#### Roles RBAC and RoleBinding
 
+```yaml
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: default
+  name: pod-reader
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - get
+  - watch
+  - list
+```
+- RoleBinding
+```yaml
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: my-sa # <----------------------- Name is case sensitive
+  namespace: default
+roleRef:
+  kind: Role # <------------------ this must be Role or ClusterRole
+  name: pod-reader # <----------------- this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+```
 ---------------------------
 
 ### Resource within container (request and limits of resources)
