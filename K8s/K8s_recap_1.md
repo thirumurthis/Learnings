@@ -105,18 +105,8 @@ envFrom:
    - configMapRef:
        name: application-configuration 
 ```
-- more example of configmap
-```
-spec:
-  containers:
-    - name: test-container
-      image: k8s.gcr.io/busybox
-      command: [ "/bin/sh", "-c", "env" ]
-      envFrom:
-      - configMapRef:
-          name: special-config
-          
-```
+  `Key Take` - when using configMapRef in yaml, it is an list use - under envFrom
+
  - through single Environment value
 ```
   env: 
@@ -133,8 +123,19 @@ volumes:
     configMap:
       name: application-configuration 
 ```
-`Key Take` - when using configMapRef in yaml, it is an list use - under envFrom
 
+- more example of configmap, injected using env to pod
+```
+spec:
+  containers:
+    - name: test-container
+      image: k8s.gcr.io/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+      envFrom:
+      - configMapRef:
+          name: special-config
+          
+```
 ----------------------------
 
 ### Secrets:
