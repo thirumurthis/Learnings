@@ -144,7 +144,7 @@ Another example of creating secrets with tls key and certificate
 ```
 $ kubectl create secret tls secret-name1 --key /tmp/nginx.key --cert /tmp/nginx.crt
 ```
-#### Different ways to and associate the secrets as environment variable to a POD
+#### Different ways to associate the secrets as environment variable to a POD
  - adding secret to pod as environment 
 ```
  ## Associating a secret as environment variable to POD
@@ -172,6 +172,55 @@ volumes:
 ```
   - Note: when mounting a secret from volume, each attribute in secret is created as seperate file with value of the secret as content.
   -   say, KEY1 will be the file and VALUE1 will be the content of the file if the secret was created with --from-literal=KEY1=VALEU1 
+
+#### using kustomize to create secret
+  1. secrets as literal
+  2. secrets as file
+  3. secrets from env
+
+##### 1. secrets using literal
+- Create a folder, and create a file named "kustomization.yaml" or extension can be yml
+- Copy below content to the file
+- Note, no need to convert to base64 in this case
+```yaml
+secretGenerator:
+- name: app-creds
+  literals:
+  - appuser=appuser
+  - appsecret=secret
+```
+- From the folder, issue below command. The `.` current working dir can be replaced with `directory or folder path where kustomization.yaml file` exists
+```
+$ kubectl apply -k .
+``` 
+##### 2. secrets using file
+- create a folder, and create a file named "kustomization.yaml"
+- Create a file named `app-user.txt`, and add the content `appuser`
+- create a file named `app-secret.txt`, and add the content `secret`
+- Copy below content to the kustomization.yaml file
+```yaml
+secretGenerator:
+- name: database-creds
+  files:
+  - appuser.txt
+  - appsecret.txt
+```
+- From the folder issue below command
+```
+$ kubectl apply -k .
+```
+
+##### 3. secrets using env
+- Create a folder and file named "kustomization.yaml"
+- copy content below
+```yaml
+secretGenerator:
+- name: app-pass-secret
+  envs:
+  - .env.secret
+```
+- create a file in the folder, `.env.secret` and add the content `appsecret`
+- Now run the command `kubectl apply -f .` from that folder.
 
 ---------------------
 
