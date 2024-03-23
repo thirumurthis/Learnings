@@ -91,12 +91,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata: 
    name: application-configuration
-data:  # Not this is different for Pods/deployment - used to be spec, here it is data
+data:  # ** Instead of spec like in Pods/Deployment definition here it is data ***
    ENV_KEY1: value1
    ENV_KEY2: value2
 ```
 
- - Name of the configmap will be used to associate with the pods.
+- Name of the configmap will be used to associate with the pods.
 
 #### Other ways to inject environment variables to pod:
   - through configMap 
