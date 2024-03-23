@@ -424,7 +424,37 @@ spec:
       automountServiceAccountToken: false   # this will make sure not to create the default token as volume when creating a pod
 ```
 
-we can use `jq -R 'split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' << jwttoken` to decode the jwt token
+we can use ` jq -R ' split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' <<< $(k exec pod/nginx -- cat /var/run/secrets/kubernetes.io/serviceaccount/token)` to decode the jwt token
+
+```
+controlplane $ jq -R ' split(".") | select(length >0) | .[0],.[1] | @base64d | fromjson' <<< $(k exec pod/nginx -- cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+{
+  "alg": "RS256",
+  "kid": "ZoxJnSXzhIi85Qp2hAft8ldinJr5DfTbIxpbDXZmWGE"
+}
+{
+  "aud": [
+    "https://kubernetes.default.svc.cluster.local"
+  ],
+  "exp": 1742710290,
+  "iat": 1711174290,
+  "iss": "https://kubernetes.default.svc.cluster.local",
+  "kubernetes.io": {
+    "namespace": "default",
+    "pod": {
+      "name": "nginx",
+      "uid": "187ca2a5-e6ce-4b46-b770-9fa1e7b05026"
+    },
+    "serviceaccount": {
+      "name": "default",
+      "uid": "e8d45a4e-2032-4aa8-934c-11fbd5495f6c"
+    },
+    "warnafter": 1711177897
+  },
+  "nbf": 1711174290,
+  "sub": "system:serviceaccount:default:default"
+}
+```
 
 ---------------------------
 
