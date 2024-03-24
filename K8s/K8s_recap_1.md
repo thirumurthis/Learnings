@@ -634,10 +634,11 @@ spec:
         key: node-role.kubernetes.io/control-plane 
 ```
 
-### Assing Pods to Nodes using `Node Selector` and `Node Affinity`:
+### Assing Pods to Nodes using `Node Selector` and `NodeAffinity`:
    - If we want a pod to be executed on a specific node, then we can specify that using `nodeSelector` attribute in the pod defintion file.
    - In order to use the `nodeSelector`, create a label on the nodes or use the existing node.
- -STEP1
+
+ - STEP1
    - Creating a label for node
    ```
    $ kubectl label node <node-name> <label-key>=<label-value>
@@ -646,7 +647,7 @@ spec:
    # to list the labels of the nodes
    $ kubectl get nodes --show-labels
    ```
- -STEP2
+ - STEP2
    - Using the node label in the pods definition file.
   ```
   spec:
@@ -687,6 +688,11 @@ spec:
                values:
                  - labelvalue
   ```
+
+PodAffinity and PodAntiAffinity - check documnetattion. 
+  - Example, in case if we want only 1 pods on each worker node we can use PodAffintiy or PodAntiAffinity.
+  - This uses topologyKey which can be hostname for distributing the pods in each nodes based on hostname
+
 -----------
 ### Job
   - In order to run a batch process we can use JOBs. The same can be achived to some extent with pods, when the restartPolicy is set to Never or OnFailure.
