@@ -27,7 +27,7 @@ systemd=true
 ## Install Ansible to the WSL2
 - refer the ansible doc
 ```
-sudo apt-get install -y gcc python3-dev libkrb5-dev && \
+sudo apt-get install -y gcc python3-dev python3-pip libkrb5-dev && \
 pip3 install --upgrade pip && \
 pip3 install --upgrade virtualenv && \
 sudo apt install krb5-user -y && \
