@@ -250,6 +250,8 @@ ansible-playbook playbook-filedir.yaml -i config.ini --check
 ```
 ansible-playbook playbook-filedir.yaml -i config.ini --check --diff 
 ```
+- no need to use `--check`
+
 - output
 ```
 PLAY [Create directory and file] *********************************
@@ -276,5 +278,40 @@ PLAY RECAP ******************************************
 localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
+#### Syntax check
+```
+ansible-playbook playbook-filedir.yaml -i config.ini --syntax-check 
+```
 
-### To make the ssh password less update we have to do below
+#### Ansible linit
+- this lints the ansible plabook checks all the code
+
+```
+ansible-lint playbook-filedir.yaml -i config.ini 
+```
+- install the `ansible-lint` using `sudo apt install ansible-lint`
+
+- output
+```
+ansible-lint playbook-filedir.yaml
+WARNING  Listing 4 violation(s) that are fatal
+risky-file-permissions: File permissions unset or incorrect
+playbook-filedir.yaml:4 Task/Handler: Create a directory
+
+yaml: wrong indentation: expected 6 but found 8 (indentation)
+playbook-filedir.yaml:6
+
+risky-file-permissions: File permissions unset or incorrect
+playbook-filedir.yaml:8 Task/Handler: Create a file
+
+yaml: wrong indentation: expected 6 but found 9 (indentation)
+playbook-filedir.yaml:10
+
+You can skip specific rules or tags by adding them to your configuration file:
+# .ansible-lint
+warn_list:  # or 'skip_list' to silence them completely
+  - experimental  # all rules tagged as experimental
+  - yaml  # Violations reported by yamllint
+
+Finished with 2 failure(s), 2 warning(s) on 1 files.
+```
