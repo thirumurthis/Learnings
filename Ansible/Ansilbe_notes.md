@@ -138,14 +138,14 @@ $ ansible servers -i config.ini -m ping --ask-pass
 `Playbook` is a single Yaml file containing set of plays.
 `Plays` - defines set of `tasks` to be run on the host
 
-- Example:
+- Example: save below content as playbook-one.yaml
 ```yaml
 - name: "Get date and timezone"
   hosts: localhost
   gather_facts: yes
   tasks:
    - name: Get date
-     ansible.bultin.shell: date
+     ansible.bulitin.shell: date  # instead of ansible.builtin.shell we can use shell
      register: date
 
    - name: Get timezone
@@ -153,12 +153,128 @@ $ ansible servers -i config.ini -m ping --ask-pass
      register: timezone
     
    - name: display date
-     ansible.builtin.debug:
+     ansible.builtin.debug:   # instead of ansible.builtin.debug we can use debug
        msg: "{{ date.stdout }}"
     
    - name: display timezone
      ansible.builtin.debug:
         msg: "{{ timezone.stdout }}"
 ```
+
+- To execute the playbook, the command is
+```
+$ ansible-playbook playbook-one.yaml -i config.ini
+```
+- output
+```
+ansible-playbook playbook-one.yaml -i config.ini
+
+PLAY [Get date and timezone]****************************
+
+TASK [Gathering Facts] *********************************
+ok: [localhost]
+
+TASK [Get date] ***************************************
+changed: [localhost]
+
+TASK [Get timezone] **********************************
+changed: [localhost]
+
+TASK [display date] *********************************
+ok: [localhost] => {
+    "msg": "Sun Apr  7 21:53:14 PDT 2024"
+}
+
+TASK [display timezone] *****************************
+ok: [localhost] => {
+    "msg": "America/Los_Angeles"
+}
+
+PLAY RECAP *************************************
+localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
+- Example of having multiple plays
+```
+- name: "Get date"
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+   - name: Get date
+     ansible.bulitin.shell: date  # instead of ansible.builtin.shell we can use shell
+     register: date
+   - name: display date
+     ansible.builtin.debug:   # instead of ansible.builtin.debug we can use debug
+       msg: "{{ date.stdout }}"
+    
+- name: "Get timezone"
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+   - name: Get timezone
+     ansible.builtin.shell: cat /etc/timezone
+     register: timezone
+   - name: display timezone
+     ansible.builtin.debug:
+        msg: "{{ timezone.stdout }}"
+```
+
+### Ansible linting
+
+- To test the ansible play with check command
+
+```
+ansible-playbook playbook-filedir.yaml -i config.ini --check
+```
+- Note, the results will be displayed but no action would have done on the server
+
+- Content for the file playbook-filedir.yaml is below
+```yaml
+- name: "Create directory and file"
+  hosts: localhost
+  tasks:
+   - name: Create a directory
+     file:
+        path: /tmp/example
+        state: directory
+   - name: Create a file
+     file:
+         path: /tmp/example.txt
+         state: touch
+```
+
+#### Diff mode
+- With the `--diff` flag will provide the change before and after applying the changes.
+
+
+```
+ansible-playbook playbook-filedir.yaml -i config.ini --check --diff 
+```
+- output
+```
+PLAY [Create directory and file] *********************************
+
+TASK [Gathering Facts] ********************************
+ok: [localhost]
+
+TASK [Create a directory] ******************************
+--- before
++++ after
+@@ -1,4 +1,4 @@
+ {
+     "path": "/tmp/example",
+-    "state": "absent"
++    "state": "directory"
+ }
+
+changed: [localhost]
+
+TASK [Create a file] ***************************
+ok: [localhost]
+
+PLAY RECAP ******************************************
+localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+
 
 ### To make the ssh password less update we have to do below
