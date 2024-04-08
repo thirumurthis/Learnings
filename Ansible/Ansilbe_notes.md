@@ -131,3 +131,34 @@ local ansible_host=localhost
 ```
 $ ansible servers -i config.ini -m ping --ask-pass
 ```
+
+### Ansible playbook
+- This is the entry point, which defines what needs to be done
+
+`Playbook` is a single Yaml file containing set of plays.
+`Plays` - defines set of `tasks` to be run on the host
+
+- Example:
+```yaml
+- name: "Get date and timezone"
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+   - name: Get date
+     ansible.bultin.shell: date
+     register: date
+
+   - name: Get timezone
+     ansible.builtin.shell: cat /etc/timezone
+     register: timezone
+    
+   - name: display date
+     ansible.builtin.debug:
+       msg: "{{ date.stdout }}"
+    
+   - name: display timezone
+     ansible.builtin.debug:
+        msg: "{{ timezone.stdout }}"
+```
+
+### To make the ssh password less update we have to do below
