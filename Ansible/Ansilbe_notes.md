@@ -106,4 +106,28 @@ web2 ansible_host=web2.my-domain.com ansible_connection=winrm
 db ansible_host=db.my-domain.com ansible_connection=ssh
 ```
 - check the doc on building inventory file
+- Inventory file has `all` and `ungrouped` section
+- we can pass more than one invetory file
+- The inventory file can also be generated dyanmically say by python script
+- The incentory files can be grouped and can be specify to be executed in order
 
+#### To use the alias name with the ansbile command
+
+```
+$ ansible local -i config.ini -m ping -u <username> --ask-pass
+
+OR
+$ ansible local -i config.ini -m ping --ask-pass
+```
+
+- The config.ini file look like
+```
+[servers]
+local ansible_host=localhost
+```
+
+- To connect to the group of servers then
+
+```
+$ ansible servers -i config.ini -m ping --ask-pass
+```
