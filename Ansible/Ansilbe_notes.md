@@ -603,3 +603,26 @@ ok: [localhost] => {
         - "Groups : {{ groups['all'] }}"
         - "GroupName : {{ group_names }}"
 ```
+##### Using the magic variable
+
+```yaml
+- hosts: localhost
+  gather_facts: true  # <-= this will be interpreted as a task in the output
+  tasks:
+    - name: "Display host facts"
+      debug:
+        msg: "{{ ansible_facts }}"  # <= magic variable
+    - debug:
+        msg: "python version : {{ ansible_facts.python }}"
+    - debug:
+        msg: "kernel version : {{ ansible_facts.kernel_version }}"
+```
+- output
+```
+ok: [localhost] => {
+    "msg": "python version : {'version': {'major': 3, 'minor': 10, 'micro': 12, 'releaselevel': 'final', 'serial': 0}, 'version_info': [3, 10, 12, 'final', 0], 'executable': '/usr/bin/python3', 'has_sslcontext': True, 'type': 'cpython'}"
+}
+ok: [localhost] => {
+    "msg": "kernel version : #1 SMP Thu Jan 11 04:09:03 UTC 2024"
+}
+```
