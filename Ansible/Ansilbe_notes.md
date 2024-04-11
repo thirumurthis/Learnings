@@ -347,6 +347,7 @@ java_version=openjdk21
 
 ### Using the variables from the config to playbook
 
+- Save below content in pb-variables.yaml file
 ```yaml
 - hosts: localhost
   gather_facts: false
@@ -375,4 +376,230 @@ local ansible_host=localhost
 [servers:vars]
 msgval=from ini config
 ```
+- to run use `ansible-playbook -i config.ini pb-variables.yaml`
 
+
+#### Ansible variable type
+ - String
+ - number
+ - boolean
+ - list
+ - dictionary
+
+- Integer/number
+  
+```yaml
+- hosts: localhost
+  gather_facts: false
+  vars:
+    item1: 10
+    item2: 20
+  tasks:
+    - name: sum the numbers
+      debug:
+        msg: "Sum is : {{ item1 + item2 }}"
+```
+
+- boolean
+
+```yaml
+- hosts: localhost
+  gather_facts: false
+  vars:
+    isValid: false
+  tasks:
+    - name: boolean example1
+      debug:
+        msg: "variable value {{ isValid }}"
+      when: isValid == true                # <= the indentation is key here
+    - name: boolean example2
+      debug:
+        msg: "variable value {{ isValid }}"
+      when: isValid == false
+```
+
+- list (ordered collection)
+
+```yaml
+- hosts: localhost
+  gather_facts: false
+  vars:
+    items:
+      - one
+      - two
+      - three
+  tasks:
+    - name: Print all item of list
+      debug:
+        msg: "all items : {{ items }}"
+    - name: Print second item of list
+      debug:
+        msg: " second item: {{ items[1] }}"
+    - name: Print the items of list
+      debug:
+         msg: "item: {{ item }}"
+      loop : "{{ items }}"
+```
+
+- output fragment:
+```
+ok: [localhost] => (item=one) => {
+    "msg": "item: one"
+}
+ok: [localhost] => (item=two) => {
+    "msg": "item: two"
+}
+ok: [localhost] => (item=three) => {
+    "msg": "item: three"
+}
+```
+
+- dictionary
+
+```yaml
+- hosts: localhost
+  gather_facts: false
+  vars:
+    vehicle:
+      car: toyota
+      wheels: four
+      type: corolla
+  tasks:
+    - name: Print dictionary
+      debug:
+        msg:
+         - "Car make {{ vehicle.car }}"   # <===== note the key of dictionary
+         - "Car type {{ vehicle.type }}"
+         - "No. of wheels {{ vehicle.wheels }}"
+```
+- output `ansible-playbook pb-variables.yaml`
+
+```
+ok: [localhost] => {
+    "msg": [
+        "Car make toyota",
+        "Car type corolla",
+        "No. of wheels four"
+    ]
+}
+```
+
+#### Ansible variable precedence
+- variables can be defined in inventory file
+- variables can be defined within the playbook directly
+- variables can be passed using command line as well
+
+##### When not passed via command line, the variable in the playbook take precedence
+- varconfig.ini, note the variable value is in double quotes
+```
+backend1 ansible_host=localhost msgval="defined hostlevel"
+
+[backend_server]
+backend1
+
+[backend_server:vars]
+msgval="defined group level"
+```
+
+- pb-varprecedence.yaml
+```yaml
+- hosts: backend_server
+  gather_facts: false
+  vars:
+    msgval: "in playbook"
+  tasks:
+    - name: Print value of var
+      debug:
+        msg: " Value of variable - {{msgval}}"
+```
+- output of `ansible-playbook pb-varprecendence.yaml -i varconfig.ini`
+```
+ok: [backend1] => {
+    "msg": " Value of variable - in playbook"
+}
+```
+#### If the variable not defined in the playbook, then the hostlevel variable takes precedence.
+
+#### If the variable not defined in the config at the host level, then the variable at group level will be printed. This is the least precedence level.
+
+#### Passing variables from CLI
+- command with the above playbook and ini file, below command will print
+- `-e` takes yaml/json use quotes appropriately
+```
+ansible-playbook  pb-varprecendence.yaml -i varconfig.ini -e '{"msgval": "defined in CLI"}'
+```
+-output
+```
+ok: [backend1] => {
+    "msg": " Value of variable - defined in CLI"
+}
+```
+- Check the docs for more info like role level  variables.
+
+#### Registering ansible variables
+- To store the output of the variable and use it. check the very first playbook example in this notes.
+
+```yaml- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: get date
+      shell: date +%D
+      register: dt
+
+    - name: print date
+      debug:
+        msg: "command out : {{dt}}"
+    - name: print date stdout
+      debug:
+        var: dt.stdout
+```
+- output
+  - Note, the print date provides additional info, which can be used in when condition to validate. Like when return code is non zero handle it.
+  - The task print date stdout we are using dt.stdout
+```
+TASK [print date] ***********************
+ok: [localhost] => {
+    "msg": "command out : {'cmd': 'date +%D', 'stdout': '04/10/24', 'stderr': '', 'rc': 0, 'start': '2024-04-10 21:16:38.489874', 'end': '2024-04-10 21:16:38.493209', 'delta': '0:00:00.003335', 'changed': True, 'stdout_lines': ['04/10/24'], 'stderr_lines': [], 'failed': False}"
+}
+
+TASK [print date stdout] **********************
+ok: [localhost] => {
+    "dt.stdout": "04/10/24"
+}
+```
+#### There are few inbuilt variables which can't be used 
+- These are called magic variables, default value provided by the ansible.
+
+```yaml
+- hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: In built vars
+      debug:
+        msg:
+        - "Inventory hostname: {{ inventory_hostname }} "
+        - "Groups : {{ groups['all'] }}"
+```
+
+- output command `ansible-playbook pb-builtinvar.yaml -i varconfig.ini`
+  - the varconfig.ini is the same as previously used file
+```
+ok: [localhost] => {
+    "msg": [
+        "Inventory hostname: localhost ",
+        "Groups : ['backend1']"
+    ]
+}
+```
+- Additionally, you can defined the tasks `-debug` without a name like below
+
+```yaml
+- hosts: localhost
+  gather_facts: false
+  tasks:     # <= no name
+    - debug:
+        msg:
+        - "Inventory hostname: {{ inventory_hostname }} "
+        - "Groups : {{ groups['all'] }}"
+        - "GroupName : {{ group_names }}"
+```
