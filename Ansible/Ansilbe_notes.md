@@ -1,6 +1,6 @@
 - Once the Ansible is installed in WSL, refer `install_ansible_in_wsl2.md` for more info
 
-### Optional
+### Optional to work with Ansible in local WSL2
 - To work with ansible from your local, with the ubuntu distro, we need to check if we are able to connect to the with ssh
 - To do that you follow below steps
 
@@ -112,7 +112,7 @@ db ansible_host=db.my-domain.com ansible_connection=ssh
 - The incentory files can be grouped and can be specify to be executed in order
 
 #### To use the alias name with the ansbile command
-
+- instead of using `all` in the ansible command, we use the alias `local`
 ```
 $ ansible local -i config.ini -m ping -u <username> --ask-pass
 
@@ -194,8 +194,9 @@ PLAY RECAP *************************************
 localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 ```
 
-- Example of having multiple plays
-```
+- Example of having multiple plays in playbook
+
+```yaml
 - name: "Get date"
   hosts: localhost
   gather_facts: yes
@@ -315,3 +316,63 @@ warn_list:  # or 'skip_list' to silence them completely
 
 Finished with 2 failure(s), 2 warning(s) on 1 files.
 ```
+### Variables
+
+```
+[backendservers]
+localhost
+dbserver1
+
+[webservers]
+webserver1
+
+[backendservers:vars]
+java_version=openjdk17
+
+[webservers]
+java_version=openjdk21
+```
+
+#### Using the variables in playbook
+```yaml
+- hosts: localhost
+  gather_facts: false
+  vars:
+    msgstring: "hello ansible!"
+  tasks:
+   - name: Display message
+     debug:
+       msg: "{{msgstring}}"
+```
+
+### Using the variables from the config to playbook
+
+```yaml
+- hosts: localhost
+  gather_facts: false
+  vars:
+    msgstring: "hello ansible!"  # <== Variables can also be passed at this level
+  tasks:
+   - name: Display msg from playbook
+     debug:
+       msg: "{{ msgstring }}"
+
+- hosts: servers  # <= This is the name of the host from the inventory file
+  gather_facts: false
+  tasks:
+   - name: Display msg from ini
+     debug:
+       msg: "{{ msgval }}"        # <= the variable defined in inventory file
+
+```
+
+ - The config.ini cotent
+
+```
+[servers]
+local ansible_host=localhost
+
+[servers:vars]
+msgval=from ini config
+```
+
