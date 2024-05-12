@@ -12,28 +12,29 @@ Software to be installed
 
 ### What is Apache Apisix?
 
-Apache Apisix is opensource API Gateway based on Nginx and etcd. 
-Apache Apisix is installed to cluster using helm chart, along with Apisix Dashboard and Apisix Ingress controller.
-This deployment is only for development and not production grade. For more info refer the [Apache Apisix](https://apisix.apache.org) documentation.
+- Apache Apisix is opensource API Gateway based on Nginx and etcd. 
+- Apache Apisix is installed to cluster using helm chart, along with Apisix Dashboard and Apisix Ingress controller.
+- This deployment is only for development and not production grade. For more info refer the [Apache Apisix](https://apisix.apache.org) documentation.
 
 ### What is Zitadel?
 
-Zitadel provides identity management service along with authentication management. There is a opensource version of this application.
-Zitadel can be configured with custom OIDC (OpenID connect specifications) provider.
+- Zitadel provides identity management service along with authentication management. Zitadel can be installed in standalone refer [Zitadel](https://zitadel.com/docs/guides/start/quickstart) documentation. Custom OIDC (OpenID connect specifications) provider can also be configured in Zitadel.
 
-Zitadel application is installed with helm chart along with UI dashboard. 
-We need to define a domain name prior to deploying Zitadel application, the override values file has the configuration `ExternalDomain` and `ExternalPort` for this values.
-Zitadel uses database cockroach and also supports Postgres, in this demonstration we install Postgres db.
-Zitadel UI, default username uses the Externaldomain in it and also a default password.
+- Zitadel application is installed with helm chart along with UI dashboard. Prior to deploying Zitadel application the domain name needs to be defined, the values should be set in the configuration `ExternalDomain` and `ExternalPort` either in override values or passed in helm command.
+- The deployment uses Postgres db, Zitadel also supports Cockroach db.
+- When accessing Zitadel UI, default username has part of Externaldomain and a default password for very first access.
 
-## Configuring the Kind Cluster
+## Installing Kind Cluster
 
 With Docker desktop running we can use below Kind configuration file to create the cluster.
 
-- In the kind cluster the ingress is enabled with kubeadmConfigPatches
-- Note the Apisix exposes the gateway service as NodePort or Loadbalancer, in Kind cluster we use NodePort service and so expose the port 30080 in Kind cluster configuration. This port will be passed in Apisix helm installation so we can access the Dashboard without any port frowarding.
+Note:- 
+  - The ingress option is enabled in the kind cluster configuration.
+  - Apisix exposes the Gateway service as NodePort or Loadbalancer. In here NodePort service is used and port 30080 is exposed.
+  - By configuring the ports in extraPortMappings the Apisix Dashboard can be accessed without port frowarding.
 
 ```yaml
+# filename: kind-cluster.yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: api6-zitadel
@@ -52,10 +53,9 @@ nodes:
   - containerPort: 30443
     hostPort: 443
     protocol: TCP
-
 ```
 
-- Save the kind configuration to a file kind-cluster.yaml, and use below command to install
+- Save the kind configuration to a file `kind-cluster.yaml`, and use below command to install
 
 ```sh
 kind create cluster --config kind-cluster.yaml
@@ -103,7 +103,7 @@ dependencies:
     alias: ingress-controller
 ```
 
-#### Override values yaml for Apisix
+#### Custom override values yaml for Apisix chart
 
 Below is the override values file for Apisix deployment, which is used for this deployment.
 Only few configuration has been updated like image name of init container, http service ports for Apisix service.
@@ -251,7 +251,7 @@ kubectl -n ingress-apisix get pods,svc
 ```
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/6625d78f-b0ba-4fa9-8714-a0b32af11f56)
 
-#### Deploy Apisix route for Apisix dashboard
+#### Install Ingress route for Apisix dashboard
 
 Once the apisix ingress controller pod is in running state, we can configure apisix dashboard ingress route to access the Apisix dashboard from browser.
 
