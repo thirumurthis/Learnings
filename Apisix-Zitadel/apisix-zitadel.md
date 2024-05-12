@@ -374,3 +374,162 @@ From the Dashboard sample route where we see all three parts of the configuratio
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/e25f6128-2016-4e5c-9f4c-1d25e546e592)
 
 
+## Installing Zitadel
+
+Installing Zitadel invloved with secure Postgres involves below steps,
+ - Installing certificates
+ - Installing Postgres DB
+ - Installing Zitadel
+
+In order to configure the standalone Zitadel we need to define the `ExternalDomain` and `ExternalPort` in the Zitadel configuration.
+
+Note:-
+  - Latter in this blog, we configure a Nginx backend application to be accessed using Apisix congigured with oidc-connector plugin.
+  - Since the Apisix pod tries to discover the Zitadel OIDC url from the pod it is will not be able to access `http://zitadel.localhost` within pods.
+  - As a workaround, created the helm release with the name `zitadel` and the app installed in namespace `local`. With this configuration, the url would be `https://zitadel.local`, which is kuberentes DNS resolution `<service-name>.<namespace>`. 
+
+#### Installing certificates
+
+- Download the certificate job yaml
+
+```sh
+# Create namespace
+kubectl create namespace local
+
+# Generate TLS certificates
+kubectl apply -f https://raw.githubusercontent.com/zitadel/zitadel-charts/main/examples/2-postgres-secure/certs-job.yaml -n local
+
+# wait till the job is completed 
+kubectl wait --for=condition=complete job/create-certs -n local
+```
+
+#### Install Postgres
+
+- The override values yaml file
+
+```yaml
+volumePermissions:
+  enabled: true
+tls:
+  enabled: true
+  certificatesSecret: postgres-cert
+  certFilename: "tls.crt"
+  certKeyFilename: "tls.key"
+auth:
+  postgresPassword: "abc"
+
+```
+- Save the above content in a file postgres-values.yaml, to install we can use below command.
+
+```sh
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install --wait db bitnami/postgresql --version 15.2.11 --values postgres-values.yaml
+```
+
+# Install ZITADEL
+
+To add the helm repo to local
+
+```sh
+helm repo add zitadel https://charts.zitadel.com
+helm repo update
+```
+
+Zitadel override values yaml file
+
+```yaml
+# zitadel-values.yaml
+zitadel:
+  masterkey: x123456789012345678901234567891y
+  configmapConfig:
+    ExternalSecure: false
+    # modify the external domain to localhost or any domain exists
+    # currently this value will be overrided from helm command with set
+    ExternalDomain: localhost
+    # add this configuration since we have ingress
+    ExternalPort: 80
+    TLS:
+      Enabled: false
+    Database:
+      Postgres:
+        Host: db-postgresql
+        Port: 5432
+        Database: zitadel
+        MaxOpenConns: 20
+        MaxIdleConns: 10
+        MaxConnLifetime: 30m
+        MaxConnIdleTime: 5m
+        User:
+          Username: zitadel
+          SSL:
+            Mode: verify-full
+        Admin:
+          Username: postgres
+          SSL:
+            Mode: verify-full
+  secretConfig:
+    Database:
+      Postgres:
+        User:
+          Password: xyz
+        Admin:
+          Password: abc
+
+  dbSslCaCrtSecret: postgres-cert
+  dbSslAdminCrtSecret: postgres-cert
+  dbSslUserCrtSecret: zitadel-cert
+
+replicaCount: 1
+```
+
+- Save the content in file named zitadel-values.yaml, and issue below command
+- The service port is set as 80, instead of default 8080.
+
+```sh
+helm upgrade --install zitadel -f ./zitadel-values.yaml . \
+    --set zitadel.configmapConfig.ExternalDomain=zitadel.local \
+    --set zitadel.configmapConfig.ExternalPort=80 \
+    --set service.port=80 \
+    --create-namespace \
+    --namespace local
+```
+
+#### Creating Zitadel Apisix route
+
+- The Apisix route configuration
+
+```yaml
+# apisix-zitadel-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api6-zitadel-ingress
+spec:
+  ingressClassName: apisix
+  rules:
+  - host: zitadel.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: zitadel
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+```
+
+- Issue below command to install apisix zitadel ingress route
+
+```sh
+kubectl apply -f apisix-zitadel-ingress.yaml -n local
+```
+
+The Zitadel UI accessible via `http://zitadel.local`, the username in this case is zitadel-admin@zitadel.zitadel.local, default password. Refer [doc](https://zitadel.com/docs/self-hosting/deploy/linux)
+- On first login, the password should be reset.
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/55668ec2-59bb-4662-ad81-9c28f61bf797)
+
+## Configuring simple Nginx Backend application
+
