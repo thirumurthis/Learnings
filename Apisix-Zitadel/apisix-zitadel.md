@@ -2,7 +2,7 @@
 
 In this blog will be demonstrating how to setup Apisix and Zitadel in Kind Kubernetes cluster for development.
 
-Pre-requesites:
+Pre-requisites:
 
 Software to be installed
   - Docker desktop 
@@ -13,20 +13,20 @@ Software to be installed
 ### What is Apache Apisix?
 
 - Apache Apisix is opensource API Gateway based on Nginx and etcd. 
-- Apache Apisix is installed to cluster using helm chart, along with Apisix Dashboard and Apisix Ingress controller.
+- In this demonstration Apache Apisix is installed to cluster using helm chart, along with Apisix Dashboard and Apisix Ingress controller.
 - This deployment is only for development and not production grade. For more info refer the [Apache Apisix](https://apisix.apache.org) documentation.
 
 ### What is Zitadel?
 
-- Zitadel provides identity management service along with authentication management. Zitadel can be installed in standalone refer [Zitadel](https://zitadel.com/docs/guides/start/quickstart) documentation. Custom OIDC (OpenID connect specifications) provider can also be configured in Zitadel.
-
-- Zitadel application is installed with helm chart along with UI dashboard. Prior to deploying Zitadel application the domain name needs to be defined, the values should be set in the configuration `ExternalDomain` and `ExternalPort` either in override values or passed in helm command.
-- The deployment uses Postgres db, Zitadel also supports Cockroach db.
-- When accessing Zitadel UI, default username has part of Externaldomain and a default password for very first access.
+- Zitadel provides identity management service along with authentication management. Zitadel can also be installed as standalone application, refer  [Zitadel](https://zitadel.com/docs/guides/start/quickstart) documentation.
+- In this demonstration Zitadel application is installed with helm chart along with UI dashboard. 
+- Prior to deploying Zitadel application the define a domain name, this value should be set in the configuration `ExternalDomain` either in override values or passed as helm command.
+- Zitadel can be installed with either Cockroach db or Postgres db. In this demonstartion Postgres db is used.
+- The `Externaldomain` value is also used as part of default username and for password check the documentation.
 
 ## Installing Kind Cluster
 
-With Docker desktop running we can use below Kind configuration file to create the cluster.
+Below yaml defines the Kind cluster configuration, with Docker desktop running we can create the the cluster with this configuration.
 
 Note:- 
   - The ingress option is enabled in the kind cluster configuration.
