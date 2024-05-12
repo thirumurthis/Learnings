@@ -531,5 +531,184 @@ The Zitadel UI accessible via `http://zitadel.local`, the username in this case 
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/55668ec2-59bb-4662-ad81-9c28f61bf797)
 
-## Configuring simple Nginx Backend application
+## Create Nginx Backend app access with Apisix and Zitadel configuration
+
+### Creating simple Nginx backend application
+
+Below is the manifest file to deploy simple nginx app with an endpoint `/greet` which responds with json object.
+
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend-app
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-nginx-config
+  namespace: backend-app
+data:
+  nginx.conf: |
+    worker_processes auto;
+    error_log stderr notice;
+    events {
+      worker_connections 1024;
+    }
+    http {
+      variables_hash_max_size 1024;
+
+      log_format main '$remote_addr - $remote_user [%time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+      access_log off;
+      real_ip_header X-Real-IP;
+      charset utf-8;
+
+      server {
+        listen 80;
+        
+        location /greet {
+          default_type application/json;
+          return 200 '{"status":"OK","message":"Greetings!! from server"}';
+        }
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-server
+  namespace: backend-app
+  labels:
+    app: backend-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-server
+  template:
+    metadata:
+      labels:
+        app: backend-server
+    spec:
+      volumes:
+       - name: nginx-config
+         configMap:
+           name: backend-nginx-config
+           items:
+           - key: nginx.conf
+             path: nginx.conf
+      containers:
+      - name: backend-server
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+         - name: nginx-config
+           mountPath: /etc/nginx
+        resources:
+          requests: 
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+  namespace: backend-app
+spec:
+  selector:
+    app: backend-server
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 80
+---
+```
+
+- Apisix route configured to access using zitadel as oidc-connect plugin
+
+The configuration looks like below
+Note, the `redirect_uri` should be provided which expected to be same as route config in this case host `backend.localhost` uri `/*`. In here we also add it as `http://backend.localhost/greet/redirect`. Only when redirect url had additiona path was able to successfully access the backend
+
+From browser if we access `http://backend.localhost/greet`, we could accesss backend
+
+From the Zitadel UI, create a project and application 
+ - Select Web -> Code -> note the `client_id` and `client_secret`.
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/74fc4c3d-855e-4052-bef0-66e0cbf0473b)
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/3641f8d8-aa16-40c1-a2f2-528facfaee79)
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/1386a352-06ea-4b80-bdc4-217aa0cf37c8)
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/054b1a96-32aa-48a9-9b50-ea814a9e9ada)
+
+Using the Apisix UI create route and add the plugin and enable it.
+
+```json
+{
+  "uri": "/*",
+  "name": "backend-app",
+  "methods": [
+    "GET",
+    "OPTIONS"
+  ],
+  "host": "backend.localhost",
+  "plugins": {
+    "openid-connect": {
+      "_meta": {
+        "disable": false
+      },
+      "bearer_only": false,
+      "client_id": "****clientid created in zitadel app****",
+      "client_secret": "*** Zitadel app client secret *****",
+      "discovery": "http://zitadel.local/.well-known/openid-configuration",
+      "introspection_endpoint": "http://zitadel.local/oauth/v2/introspect",
+      "realm": "master",
+      "redirect_uri": "http://backend.localhost/greet/redirect"
+    }
+  },
+  "upstream": {
+    "nodes": [
+      {
+        "host": "backend-svc.backend-app",
+        "port": 8081,
+        "weight": 10
+      }
+    ],
+    "timeout": {
+      "connect": 6,
+      "send": 6,
+      "read": 6
+    },
+    "type": "roundrobin",
+    "scheme": "http",
+    "pass_host": "pass",
+    "keepalive_pool": {
+      "idle_timeout": 60,
+      "requests": 1000,
+      "size": 320
+    }
+  },
+  "status": 1
+}
+```
+
+The `http://backend.localhost/greet` we see the redirection to `zitadel.local`
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/cd579785-f392-4a26-9cf5-3d5c8f9d9b6a)
+
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/7932aa16-5995-46b7-8fd5-ad925210b2ef)
+
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/c9b405aa-0230-4657-83b3-2218b99f99b2)
+
+![image](https://github.com/thirumurthis/Learnings/assets/6425536/807f6c09-fda8-4e00-a299-22405df90c81)
 
