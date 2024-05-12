@@ -704,11 +704,10 @@ The `http://backend.localhost/greet` we see the redirection to `zitadel.local`
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/cd579785-f392-4a26-9cf5-3d5c8f9d9b6a)
 
-
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/7932aa16-5995-46b7-8fd5-ad925210b2ef)
-
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/c9b405aa-0230-4657-83b3-2218b99f99b2)
 
+Note, in some occasion from browser noticed below issue.
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/807f6c09-fda8-4e00-a299-22405df90c81)
 
