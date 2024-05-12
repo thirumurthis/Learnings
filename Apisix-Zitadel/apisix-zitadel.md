@@ -1,30 +1,33 @@
 ## Deploying Apache Apisix and Zitadel in Kuberentes
 
+In this blog will be demonstrating how to setup Apisix and Zitadel in Kind Kubernetes cluster for development.
+
 Pre-requesites:
-- Below software installed
- - Docker desktop 
- - Kind
- - Helm
- - Kubectl
 
-
-We will use Kind cluster to demostrate the deployment of Apisix and Zitadel.
+Software to be installed
+  - Docker desktop 
+  - Kind
+  - Helm
+  - Kubectl
 
 ### What is Apache Apisix?
-Apache Apisix is opensource API Gateway based on Nginx and etcd. For more info, refer the Apisix documentation.
 
-In this demonstration, Apache Apisix is installed to cluster using helm chart. 
-Along with Apache Apisix additionally the Apisix Dashboard and Apisix Ingress controller will aslo be deployed.
-This deployment is only for development, for production grade refer the documentation.
+Apache Apisix is opensource API Gateway based on Nginx and etcd. 
+Apache Apisix is installed to cluster using helm chart, along with Apisix Dashboard and Apisix Ingress controller.
+This deployment is only for development and not production grade. For more info refer the [Apache Apisix](https://apisix.apache.org) documentation.
 
 ### What is Zitadel?
-Zitadel provides identity management service along with authentication management. This application has a opensource version, whcih supports OIDC (OpenID connect specifications)
 
-Zitadel application is also installed with helm chart, it provides a dashboard. Priod to deploying Zitadel, `ExternalDomain` and `ExternalPort` configuration needs to be provided in the values yaml.
+Zitadel provides identity management service along with authentication management. There is a opensource version of this application.
+Zitadel can be configured with custom OIDC (OpenID connect specifications) provider.
 
+Zitadel application is installed with helm chart along with UI dashboard. 
+We need to define a domain name prior to deploying Zitadel application, the override values file has the configuration `ExternalDomain` and `ExternalPort` for this values.
+Zitadel uses database cockroach and also supports Postgres, in this demonstration we install Postgres db.
 Zitadel UI, default username uses the Externaldomain in it and also a default password.
 
-## Configuring the Kind Cluster.
+## Configuring the Kind Cluster
+
 With Docker desktop running we can use below Kind configuration file to create the cluster.
 
 - In the kind cluster the ingress is enabled with kubeadmConfigPatches
@@ -100,7 +103,7 @@ dependencies:
     alias: ingress-controller
 ```
 
-### Override values yaml for Apisix
+#### Override values yaml for Apisix
 
 Below is the override values file for Apisix deployment, which is used for this deployment.
 Only few configuration has been updated like image name of init container, http service ports for Apisix service.
@@ -109,6 +112,7 @@ Compare with the default values.yaml file, most of the configuration will be sim
 The kuberentes discovery registry is enabled here. There are other registry option which can be configured in Apisix, refer documentation.
 
 ```yaml
+# filename: apisix-values.yaml
 image:
   repository: apache/apisix
   pullPolicy: IfNotPresent
@@ -131,64 +135,40 @@ service:
   externalTrafficPolicy: Cluster
   externalIPs: []
       
-  # -- Apache APISIX service settings for http
   http:
     enabled: true
     servicePort: 80
     containerPort: 9080
-    nodePort: 30080
-  # -- Apache APISIX service settings for tls
+    nodePort: 30080   # port used in kind cluster configuration
   tls:
     servicePort: 443
     nodePort: 30443
 
 apisix:
-  # -- Enable nginx IPv6 resolver
   enableIPv6: true
-
-  # -- Whether the APISIX version number should be shown in Server header
   enableServerTokens: true
 
   admin:
-    # -- Enable Admin API
     enabled: true
-    # -- admin service type
     type: ClusterIP
-    # loadBalancerIP: a.b.c.d
-    # loadBalancerSourceRanges:
-    #   - "143.231.0.0/16"
-    # -- IPs for which nodes in the cluster will also accept traffic for the servic
     externalIPs: []
-    # -- which ip to listen on for Apache APISIX admin API. Set to `"[::]"` when on IPv6 single stack
     ip: 0.0.0.0
-    # -- which port to use for Apache APISIX admin API
     port: 9180
-    # -- Service port to use for Apache APISIX admin API
     servicePort: 9180
-    # -- Admin API support CORS response headers
     cors: true
-    # -- Admin API credentials
     credentials:
-      # -- Apache APISIX admin API admin role credentials
-      admin: <***edd1c9f034335f136f87ad84b625c8f1***> #Using default as in values yaml
-      # -- Apache APISIX admin API viewer role credentials
-      viewer: <***4054f7cf07e344346cd3f287985e76a2***>
+      admin: edd1c9f034335f136f87ad84b625c8f1  # Default value as in values yaml
+      viewer: 4054f7cf07e344346cd3f287985e76a2
 
   discovery:
    enabled: true
    registry:
      kubernetes:
         service:
-          # apiserver schema, options [http, https]
-          schema: http #default https
+          schema: http 
+          host: ${KUBERNETES_SERVICE_HOST}
+          port: ${KUBERNETES_SERVICE_PORT}
 
-          # apiserver host, options [ipv4, ipv6, domain, environment variable]
-          host: ${KUBERNETES_SERVICE_HOST} #default ${KUBERNETES_SERVICE_HOST}
-
-          # apiserver port, options [port number, environment variable]
-          port: ${KUBERNETES_SERVICE_PORT}  #default ${KUBERNETES_SERVICE_PORT}
-
-# -- external etcd configuration. If etcd.enabled is false, these configuration will be used.
 externalEtcd:
   host:
     - http://etcd.host:2379
@@ -197,35 +177,21 @@ externalEtcd:
   existingSecret: ""
   secretPasswordKey: "etcd-root-password"
 
-# -- etcd configuration
-# use the FQDN address or the IP of the etcd
 etcd:
-  # -- install etcd(v3) by default, set false if do not want to install etcd(v3) together
   enabled: true
-  # -- apisix configurations prefix
   prefix: "/apisix"
-  # -- Set the timeout value in seconds for subsequent socket operations from apisix to etcd cluster
   timeout: 30
 
-  # -- if etcd.enabled is true, set more values of bitnami/etcd helm chart
   auth:
     rbac:
-      # -- No authentication by default. Switch to enable RBAC authentication
       create: false
-      # -- root password for etcd. Requires etcd.auth.rbac.create to be true.
       rootPassword: ""
     tls:
-      # -- enable etcd client certificate
       enabled: false
-      # -- name of the secret contains etcd client cert
       existingSecret: ""
-      # -- etcd client cert filename using in etcd.auth.tls.existingSecret
       certFilename: ""
-      # -- etcd client cert key filename using in etcd.auth.tls.existingSecret
       certKeyFilename: ""
-      # -- whether to verify the etcd endpoint certificate when setup a TLS connection to etcd
       verify: true
-      # -- specify the TLS Server Name Indication extension, the ETCD endpoint hostname will be used when this setting is unset.
       sni: ""
 
   service:
@@ -245,16 +211,13 @@ dashboard:
         # -- Supports defining multiple etcd host addresses for an etcd cluster
         endpoints:
           - apisix-etcd:2379
-        # -- apisix configurations prefix
         prefix: "/apisix"
-        # -- Specifies etcd basic auth username if enable etcd auth
         username: ~
-        # -- Specifies etcd basic auth password if enable etcd auth
         password: ~
 
 # -- Ingress controller configuration
 ingress-controller:
-  enabled: false
+  enabled: true
   image:
     pullPolicy: IfNotPresent
   config:
@@ -262,8 +225,9 @@ ingress-controller:
       adminAPIVersion: "v3"
 ```
 
-- Save the override values yaml in a file named `apisix-values.yaml` in the apisix chart.
-- From apisix helmchart issue below command
+- Save the above content in a file `apisix-values.yaml` as override values yaml within the apisix chart directory.
+  
+- To install Apisix along with Dashboard and Ingress use below helm command from within the apisix helm chart directory.
 
 ```bash
 helm upgrade --install apisix -f apisix-values.yaml . \
@@ -277,22 +241,27 @@ helm upgrade --install apisix -f apisix-values.yaml . \
 ```
 
 Note:- 
-  - We override some of the values with helm chart as well. For example, you can remove the line `--set service.type=NodePort --set service.http.nodePort=30080` since they are already added in `apisix-values.yaml`
+  - Not all the configuration in override values yaml is customized, compare it with default values yaml file.
+  - Also, the line `--set service.type=NodePort --set service.http.nodePort=30080` in helm command can be removed since they are already added override yaml.
 
-- Once deployed the apisix application should start running as expected. Use below command to check the status
+- The Apisix deployments should be in running state, use below command to track the status.
 
 ```sh
-kubectl -n ingress-apisix get pods
+kubectl -n ingress-apisix get pods,svc
 ```
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/6625d78f-b0ba-4fa9-8714-a0b32af11f56)
 
+#### Deploy Apisix route for Apisix dashboard
 
-Now since the apps are running, we need to create a ingress route to access the Apisix dashboard from browser
+Once the apisix ingress controller pod is in running state, we can configure apisix dashboard ingress route to access the Apisix dashboard from browser.
 
-- Since the Apisix Ingress controller is installed, the CRD's will resolve the Ingress yaml definition and create routes for us.
-The ingress configuration is similar to the Kuberentes Ingress resources, in here we specify any route from the host `apisix.localhost` to be routed to apisix-dashboard service port 80. 
+Info:- 
+  - Apisix Ingress controller uses CRD's to resolve Apisix routes and also resolves Ingress resource definition. It creates route and registers in apisix application as well.
+ 
+The ingress configuration is similar to the Kuberentes Ingress resources, in below any traffic from `http://apisix.localhost/` will be routed since the host `apisix.localhost` to `apisix-dashboard` service to port 80. 
 
 ```yaml
+#filename:  apisix-dashboard-ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -313,15 +282,15 @@ spec:
         pathType: Prefix
 ```
 
-- Save the ingress configuration in `apisix-dashboard-ingress.yaml`, to deploy use below command
+- Save the ingress configuration in `apisix-dashboard-ingress.yaml` and use below command to deploy.
 
 ```sh
 kubect apply -f apisix-dashboard-ingress.yaml
 ```
 
-##### Configure the local hosts file with domain name
+#### Configure hosts file with domain name for loop back address
 
-Open the hosts file and add below domain for loop back address
+Open the hosts file and add below domains for loop back address (127.0.0.1)
 
 ```sh
 127.0.0.1 localhost apisix.localhost zitadel.local backend.localhost
@@ -337,12 +306,14 @@ The configured routes will be displayed in the dashbord like
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/42c554ba-e304-423e-9d98-911ca312fef7)
 
 
-In case if the Apisix ingress controller is not installed, we can create the route configuration and update manually.
+Info:- 
+  
+  Installing Apisix ingress controller is optional, if not installed the route configuration has to be updated and created manually. 
 
-To apply the route configuration manually, 
-1. Port forward the `apisix-admin` service `kubectl -n ingress-apisix port-forward svc apisix-admin 9180:9180`
-2. From the override values yaml grab the admin_key, should be under `apisix.admin.credentias.admin`. This is default value mentioned in documentation.
-3. Use below curl command to configure route
+  Below is optional only if Apisix ingress controller is NOT installed. To update the route configuration manually to apisix. 
+  1. Port forward the `apisix-admin` service use command - `kubectl -n ingress-apisix port-forward svc apisix-admin 9180:9180`
+  2. Obtain the admin key from the override values yaml under `apisix.admin.credentias.admin`. In this demonstration this default value as mentioned in Apisix documentation.
+  3. Use Curl command to configure route. Below is the curl command to configure apisix dashboard route
 
 ```sh
   curl http://127.0.0.1:9180/apisix/admin/routes/1 \
@@ -366,11 +337,13 @@ To apply the route configuration manually,
           }
       }'
 ```
-Route configuration representation
+
+#### Apisix route configuration representation
 
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/d14ccbb6-4f76-4266-984d-306e4f78528b)
 
-From the Dashboard sample route where we see all three parts of the configuration
+Apisix Dashboard route view showing sample route configuration with all three parts of the configuration
+
 ![image](https://github.com/thirumurthis/Learnings/assets/6425536/e25f6128-2016-4e5c-9f4c-1d25e546e592)
 
 
