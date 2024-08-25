@@ -1,14 +1,13 @@
 Observability - Create and trace spans between applications
 
 Pre-requisites:
- - Understanding on Jaeger installed and running
- - For this example, used Kind cluster to deploy the Jaeger
+ - Jaeger installed and running (in this example deployed in kind cluster)
+ - Understanding on traces and spans
 
-This blog shows how to create spans manually using spring boot application. 
-There was a requirement where we need to add observability to business process. In order to demonstrate how to create spans with name and add additional tags two applications are created. First application (named invoker-app) exposes a REST API when invoked will call the REST API of second app (named app-1). During the invocation the code creates the spans on both the application. These traces are grouped under the same trace, some of the traces are created as child traces.
+This blog provides code example on how to create spans manually in spring boot application. This is based on a requirement in a project where the work flow of application invocation to be tracked using Jaeger so it can visualized and helps the business process. 
+In order to demonstrate, have created two spring boot application which uses the tracer object configured and created at runtime, the spans are created using the tracer object. The spans are created with name with additional tags which is key value pair that can hold metadata. In here the application named invoker-app exposes a REST API (/api/v2/execute), which when invoked will call the REST API (/app/run?traceId=xxx&spanId=yyy) of second application named app-1. The app-1 application uses the traceId and spanId to create a tracecontext and adds to the current tracer object.
 
-
-The second app (app-1) uses the tracerId and spandId passed from the first app (invoker-app), to build the tracer context and set that in the tracer object tacer's currentcontext. The code looks like below.
+The code snippet below is from app-1 application which creates traceContext using traceId and spanId. The traceContext is set to the tracer objects currentTracerContext scope. 
 
 ```java
 var contextWithCustomTraceId = tracer.traceContextBuilder()
@@ -22,17 +21,19 @@ try (var sc = tracer.currentTraceContext().newScope(contextWithCustomTraceId)) {
 }
 ```
 
-Below is the simple representation of the API that is getting invoked.
+Simple representation of the REST API invocation between invoker-app and app-1 with flow.
 
 ![image](https://github.com/user-attachments/assets/589948c3-6365-4cce-a33d-bdf6adf19937)
 
-Below is the flow where the spans created from app invoker-app and app-1.
+The expected flow from Jager UI looks like below, where the invoker-app span and app-1 span can be seen as child spans.
 
 ![image](https://github.com/user-attachments/assets/551914ef-659a-4464-bea2-c0604727ff20)
 
+### Code
 #### Invoker app
 
-The pom.xml shows the dependencies required for the application. Note the app-1 also uses the same dependencies only the artifactid and name changes.
+Below is the pom.xml with dependencies. Note the dependencies are same for both invoker-app and app-1 only change is the name of the apps.
+When using [Spring starter](https://start.spring.io) create two projects, just copy paste the dependencies section. 
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -152,11 +153,28 @@ The pom.xml shows the dependencies required for the application. Note the app-1 
 </project>
 ```
 
-##### invoker app controller
- - The code includes steps to create the RestTemplate to create the request with the URL to access the app-1 app.
- - The traceId and spandId is obtained from the tracer object created by the Spring boot app.
- - The span created at the end of the application below just to show how the Jaeger UI shows the last step is invoked and created.
+- The application.yaml for the spring boot application, which includes the tracing endpoint url
 
+```yaml
+spring.application.name: invoker
+
+server.port: 8080
+
+management:
+  server.port: 9145
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: 'http://localhost:9411/api/v2/spans'
+```
+
+##### Invoker app controller
+ - The invoker app uses the RestTemplate to create the REST API GET request to access the app-1 app.
+ - The traceId and spandId is obtained from the tracer object configured and created by the Spring boot application during deployment.
+ - The use of Random class to induce additional random delay after the span is created just for demonstration to view it in Jaeger UI.
 ```java
 package com.trace.invoker;
 
@@ -188,15 +206,12 @@ public class AppInvokerController {
         this.tracer = tracer;
     }
 
-
     @GetMapping("/execute")
     public String invokeTask() {
 
-        //works
-        //Span span = tracer.currentSpan().name("api/v2");
-
         // new span
         Span span1 = tracer.nextSpan().name("invoker-api-parent").start();
+        // URL for second app app-1 application
         String APPURL = "http://localhost:8082/app/v1/run?traceId=%s&spanId=%s";
         String traceId = tracer.currentSpan().context().traceId();
         String spanId = span1.context().spanId();
@@ -220,7 +235,7 @@ public class AppInvokerController {
         }finally {
             span1.end();
         }
-
+        // New span- just for example to demonstrate the last step in invoker-app
         Span span2 = tracer.nextSpan().name("last step").start();
         span2.event("completed");
         span2.tag("app","invoker");
@@ -235,7 +250,8 @@ public class AppInvokerController {
 
 }
 ```
-- RestTemplate bean is created which will be used by the tracer object to publish the trace and span to Jaeger server.
+
+- RestTemplate bean is used by the tracer object to publish the trace and span to Jaeger server.
 
 ```java
 package com.trace.invoker;
@@ -252,34 +268,35 @@ public class AppConfig {
 }
 ```
 
-- Application.yaml
+- Application entry point usually class created by the spring starter itself.
 
-```yaml
-spring.application.name: invoker
+```java
+package com.trace.invoker;
 
-server.port: 8080
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
-management:
-  server.port: 9145
-  tracing:
-    sampling:
-      probability: 1.0
+@SpringBootApplication
+public class InvokerApplication {
 
-  zipkin:
-    tracing:
-      endpoint: 'http://localhost:9411/api/v2/spans'
+	public static void main(String[] args) {
+		SpringApplication.run(InvokerApplication.class, args);
+	}
+}
 ```
 
-##### app-1 
-- The app-1 spring boot 
+##### app-1 application
 
-- The same pom.xml dependencies are same as invoke-app Spring boot app above.
+- The pom.xml with dependencies is same as the invoker-app dependencies. The only change would be the name and artifactId.
 
-
-- controller app 
+- The app-1 controller code,
+  - With the provided traceId and spandId a new tracerContext is build and added to the current tracer context scope.
+  - The `sampleThreadInvocation()` uses Task Callable class (note, we can use Runnable as well) to run set of thread in parallel and create child spans with provided parent span
+  - The `additionalProcess()` method demonstrates creating the spans outside the thread.
+ 
 ```java
 package com.trace.app.one;
-
 
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
@@ -305,21 +322,19 @@ public class AppController {
         this.tracer = tracer;
     }
 
-
     @PostMapping("/run")
     public String process(@RequestParam String traceId,
                           @RequestParam String spanId){
-
-        if(!Objects.isNull(traceId) ) {
+        // traceId and spanId can't be null
+        if(!Objects.isNull(traceId) && !Objects.isNull(spanId) ) {
             log.info("traceId included - {}", traceId);
-            //log.info("traceId from the passed span {}", span.context().traceId());
-            //Span span = tracer.currentSpan().name("app-1-tracing");
+           // create trace context with teh traceId and spanId
             var contextWithCustomTraceId = tracer.traceContextBuilder()
                     .traceId(traceId)
                     .spanId(spanId)
                     .sampled(true)
                     .build();
-
+            // set the tracercontext to current trace context scope
             try (var sc = tracer.currentTraceContext().newScope(contextWithCustomTraceId)) {
                var span =  tracer.spanBuilder().name("app-one-tracing").start();
                 try(Tracer.SpanInScope spanInScope= tracer.withSpan(span)) {
@@ -384,7 +399,7 @@ public class AppController {
 }
 
 ```
-- Task class
+- Below is Task class just used to demonstrate the use of parallel threads and span creation.
 
 ```java
 package com.trace.app.one;
@@ -432,7 +447,7 @@ public class Task implements Callable<Void> {
 }
 ```
 
-- Span helper
+- SpanHelper class is a helper class used for creating the spans either with provides parent span or new span.
 
 ```java
 package com.trace.app.one;
@@ -473,7 +488,7 @@ public class SpanHelper {
     }
 }
 ```
-- application app
+- The entry point of the app-1 application, usually generated by the spring boot starter
 
 ```java
 package com.trace.app.one;
@@ -490,7 +505,7 @@ public class AppOneApplication {
 }
 ```
 
-- application.yaml
+- application.yaml configuration for the app-1 application
 
 ```yaml
 spring.application.name: app-1
@@ -501,3 +516,90 @@ management:
     tracing:
       endpoint: 'http://localhost:9411/api/v2/spans'
 ```
+
+#### Jaeger in Kind cluster
+- Use the Kind cluster yaml configuration to create the cluster
+- Deploy Jaeger to the cluster
+- Port forward the necessary ports so spring boot application can send traces and spans.
+
+- Save the below kind configuration yaml as `jaeger-cluster.yaml`.
+- Use the command `kind create cluster --config jaeger-cluster.yaml` to create the cluster, make sure the docker desktop is running.
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: jaeger-cluster
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 31443
+    hostPort: 7443
+    protocol: TCP
+```
+
+- Use below set of command to deploy the Jaeger in Kind cluster, we use jaeger-all-in-one image which is not production ready.
+
+- Download the cert-manager from `https://github.com/cert-manager/cert-manager/releases/download/v1.15.3/cert-manager.yaml` to `cert-manager-v1.15.3.yaml`. Use kubectl apply command below to deploy to kind cluster
+
+```
+kubectl apply -f cert-manager_v1.15.3.yaml
+```
+
+- Create the namespace with below command
+```
+kubectl create namespace observability
+```
+
+- Download the Jaeger operator yaml from `https://github.com/jaegertracing/jaeger-operator/releases/download/v1.60.0/jaeger-operator.yaml` and save it as `jaeger-operator.yaml`. Use below command to deploy to kind cluster
+
+```
+kubectl apply -f jaeger-operator.yaml
+```
+
+- With the below jaeger-all-in-one configuration create a yaml file named `jaeger_allinone.yaml`
+
+```yaml
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: my-jaeger
+spec:
+  strategy: allInOne # <1>
+  allInOne:
+    image: jaegertracing/all-in-one:latest # <2>
+    options: # <3>
+      log-level: debug # <4>
+  storage:
+    type: memory # <5>
+    options: # <6>
+      memory: # <7>
+        max-traces: 100000
+  ingress:
+    enabled: false # <8>
+  agent:
+    strategy: DaemonSet # <9>
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: "" # <10>
+
+```
+
+- Use below command to deploy the Jaeger all in one server.
+```
+kubectl apply -f jaeger_allinone.yaml
+```
+
+##### Port forward using below commands
+
+```
+# below ports will be used by the spring boot application to send traces and spans
+kubectl port-forward svc/my-jaeger-collector 9411:9411 14250:14250 14267:14267 14269:14269 4317:4317 4318:4318
+
+# below is to access the jaeger UI from local
+kubectl port-forward svc/my-jaeger-query 16686:16686
+```
+
+#### Accessing the application
+- With the spring boot applications running and Jaeger deployed, use `http://localhost:8080/api/v2/execute` to create traces.
+- The Jaeger UI can be viewed using `http://localhost:16686/`
+
+
