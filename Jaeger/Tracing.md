@@ -333,24 +333,6 @@ public class AppController {
                     span.end();
                 }
             }
-            //Span newSpan = tracer.nextSpan().name("app-1-span");
-            //try (Tracer.SpanInScope ws = tracer.withSpan(newSpan.start())) {
-            /*
-            try (Tracer.SpanInScope ws = tracer.withSpan(span.start())) {
-                log.info("spanId - {}",span.context().spanId());
-                log.info("traceId - {}",span.context().traceId());
-                // ...
-                // You can tag a span - put a key value pair on it for better debugging
-                //newSpan.tag("app", "run invoked");
-                span.tag("app","run invoked from invoker");
-
-            } finally {
-                // Once done remember to end the span. This will allow collecting
-                // the span to send it to a distributed tracing system e.g. Zipkin
-                //newSpan.end();
-                span.end();
-            }
-             */
         }
         return "completed invocation";
     }
