@@ -1,17 +1,21 @@
 Observability - Create and trace spans between applications
 
+Pre-requisites:
+ - Understanding on Jaeger installed and running
+ - For this example, used Kind cluster to deploy the Jaeger
 
-This blog demostrate to create spans manually from one application and use the traceId and span to create spans for other application.
+This blog shows how to create spans manually using spring boot application. 
+There was a requirement where we need to add observability to business process. In order to demonstrate how to create spans with name and add additional tags two applications are created. First application (named invoker-app) exposes a REST API when invoked will call the REST API of second app (named app-1). During the invocation the code creates the spans on both the application. These traces are grouped under the same trace, some of the traces are created as child traces.
 
-In below example, `invoker-app` use the Spring Boot configured tracer to create span and passes the traceId and SpanId to applocatuion via REST aPI to `app-1` which will create child spans under the same traceId.
 
-- With the traceId and spanId, we can use the traceContextBuilder to create tht 
+The second app (app-1) uses the tracerId and spandId passed from the first app (invoker-app), to build the tracer context and set that in the tracer object tacer's currentcontext. The code looks like below.
+
 ```java
 var contextWithCustomTraceId = tracer.traceContextBuilder()
-                                .traceId(traceId)
-                                .spanId(spanId)
-                                .sampled(true)
-                                .build();
+                    .traceId(traceId)
+                    .spanId(spanId)
+                    .sampled(true)
+                    .build();
 // use traceContext as a newScope
 try (var sc = tracer.currentTraceContext().newScope(contextWithCustomTraceId)) {
  // create spans process any operation
@@ -26,8 +30,9 @@ Below is the flow where the spans created from app invoker-app and app-1.
 
 ![image](https://github.com/user-attachments/assets/551914ef-659a-4464-bea2-c0604727ff20)
 
+#### Invoker app
 
-The invoker app, the pom.xml uses spring boot web, actuator, Lombok and micrometer dependencies.
+The pom.xml shows the dependencies required for the application. Note the app-1 also uses the same dependencies only the artifactid and name changes.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -147,7 +152,10 @@ The invoker app, the pom.xml uses spring boot web, actuator, Lombok and micromet
 </project>
 ```
 
-Controller with the REST API
+##### invoker app controller
+ - The code includes steps to create the RestTemplate to create the request with the URL to access the app-1 app.
+ - The traceId and spandId is obtained from the tracer object created by the Spring boot app.
+ - The span created at the end of the application below just to show how the Jaeger UI shows the last step is invoked and created.
 
 ```java
 package com.trace.invoker;
@@ -227,8 +235,7 @@ public class AppInvokerController {
 
 }
 ```
-
-App config
+- RestTemplate bean is created which will be used by the tracer object to publish the trace and span to Jaeger server.
 
 ```java
 package com.trace.invoker;
@@ -238,15 +245,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 public class AppConfig {
-
     @Bean
     RestTemplate restTemplate(RestTemplateBuilder builder){
         return builder.build();
     }
-
 }
 ```
 
+- Application.yaml
+
+```yaml
+spring.application.name: invoker
+
+server.port: 8080
+
+management:
+  server.port: 9145
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: 'http://localhost:9411/api/v2/spans'
+```
+
+##### app-1 
 - The app-1 spring boot 
 
 - The same pom.xml dependencies are same as invoke-app Spring boot app above.
@@ -482,4 +506,16 @@ public class AppOneApplication {
 		SpringApplication.run(AppOneApplication.class, args);
 	}
 }
+```
+
+- application.yaml
+
+```yaml
+spring.application.name: app-1
+
+server.port: 8082
+management:
+  zipkin:
+    tracing:
+      endpoint: 'http://localhost:9411/api/v2/spans'
 ```
