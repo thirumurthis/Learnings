@@ -1,14 +1,31 @@
 Observability - Create and trace spans between applications
 
 
-This blog demostrate 
-In this blog we have two Spring Boot apps where first app invokes the second app. 
-The tracing will be tracked from the first app to the next app.
+This blog demostrate to create spans manually from one application and use the traceId and span to create spans for other application.
+
+In below example, `invoker-app` use the Spring Boot configured tracer to create span and passes the traceId and SpanId to applocatuion via REST aPI to `app-1` which will create child spans under the same traceId.
+
+- With the traceId and spanId, we can use the traceContextBuilder to create tht 
+```java
+var contextWithCustomTraceId = tracer.traceContextBuilder()
+                                .traceId(traceId)
+                                .spanId(spanId)
+                                .sampled(true)
+                                .build();
+// use traceContext as a newScope
+try (var sc = tracer.currentTraceContext().newScope(contextWithCustomTraceId)) {
+ // create spans process any operation
+}
+```
+
+Below is the simple representation of the API that is getting invoked.
 
 ![image](https://github.com/user-attachments/assets/589948c3-6365-4cce-a33d-bdf6adf19937)
 
+Below is the flow where the spans created from app invoker-app and app-1.
 
-We use the micrometer dependency to create the traces and spans.
+![image](https://github.com/user-attachments/assets/551914ef-659a-4464-bea2-c0604727ff20)
+
 
 The invoker app, the pom.xml uses spring boot web, actuator, Lombok and micrometer dependencies.
 
