@@ -4,10 +4,11 @@ Pre-requisites:
  - Jaeger installed and running (in this example deployed in kind cluster)
  - Understanding on traces and spans
 
-This blog provides code example on how to create spans manually in spring boot application. This is based on a requirement in a project where the work flow of application invocation to be tracked using Jaeger so it can visualized and helps the business process. 
-In order to demonstrate, have created two spring boot application which uses the tracer object configured and created at runtime, the spans are created using the tracer object. The spans are created with name with additional tags which is key value pair that can hold metadata. In here the application named invoker-app exposes a REST API (/api/v2/execute), which when invoked will call the REST API (/app/run?traceId=xxx&spanId=yyy) of second application named app-1. The app-1 application uses the traceId and spanId to create a tracecontext and adds to the current tracer object.
+This blog details on how to create spans manually in Spring Boot application. This is based on a requirement in a project, to track the flow between application using Jaeger. To create the traces and spans manually so it can visualized in Jaeger UI and helps the business process on how much time it takes.
+ 
+In order to demonstrate we have two Spring Boot application, use the tracer object configured in Spring boot to create the spans. The spans set with name with additional tags which is key value pair which can be viewed in Jaeger UI. In the example, the application named `invoker-app` exposes a REST API (`/api/v2/execute`), when invoked calls the REST API (`/app/run?traceId=xxx&spanId=yyy`) of second application named `app-1`. The `app-1` application uses the traceId and spanId to create a trace context and adds to the current tracer.
 
-The code snippet below is from app-1 application which creates traceContext using traceId and spanId. The traceContext is set to the tracer objects currentTracerContext scope. 
+The code snippet below is in app-1 application which creates traceContext with the traceId and spanId. The created traceContext is set to the configured tracer objects current Tracer Context scope. 
 
 ```java
 var contextWithCustomTraceId = tracer.traceContextBuilder()
@@ -28,6 +29,9 @@ Simple representation of the REST API invocation between invoker-app and app-1 w
 The expected flow from Jager UI looks like below, where the invoker-app span and app-1 span can be seen as child spans.
 
 ![image](https://github.com/user-attachments/assets/551914ef-659a-4464-bea2-c0604727ff20)
+
+
+![image](https://github.com/user-attachments/assets/8e7ae5a0-9361-48e1-baaa-c82bb11d67d9)
 
 ### Code
 #### Invoker app
