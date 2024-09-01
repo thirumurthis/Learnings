@@ -1,47 +1,47 @@
 ## Istio with Kuberentes Gateway API
 
-- In this blog we will see how to deploy Istio in Kind cluster configure Kuberenetes Gateway API.
+- In this blog have detailed deploying Istio in Kind cluster and configure Kuberenetes Gateway API.
 
-
-Pre-requsites:
+### Pre-requsites:
  - Docker desktop installed and running
  - Kind CLI
  - Helm CLI (v3.15.3+)
- - Understanding of Service Mesh
- - Understanding on Isio basics and Gateway
+ - Understanding of Service Mesh (Isio basics and Gateway API)
 
+### Istio with Kubernetes Gateway API
 
- From Istio documentation the recommended way to create Gateway is to use Kuberentes Gateway API since the release of version v1.1. With the Istio Ingress Gateway, we create a `VirtualService`, with Kuberentes Gateway API we have to create HTTPRoute which directly configures to the service.
+- From Istio documentation the recommends to use Kuberentes Gateway API since the release of version v1.1. 
+- In the Istio Ingress Gateway `VirtualService` is created for routing, with Kuberentes Gateway API to route the `HTTPRoute` is created that  configures the service of the app.
 
- In order to configure the Kuberentes Gateway API, we need to deploy the CRD in Kind cluster
+ - To configure Kuberentes Gateway API in the cluster the CRD should be deployed in Kind cluster. The manifest for the CRD used in this example is `https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml`.
 
- ```
- kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
- ```
+### Summary of components installed and deployed
 
-Below is what will be done in this blog
-
-- Create a kind cluster, exporting few node ports to access the apps
+- Creating a kind cluster with configuration exposing few ports to access the apps
 - Deploy Istio using helm charts (base and istiod) with basic configuration (not production ready)
-- Deploy Prometheus community chart, which includes Prometheus, Grafana in monitor namespace
-- Deploy the Kuberentes Gateway API CRD 
-- Deploy an simple Nginx all to serve simple response
-- Deploy Kiali (Istio Dashboard) which is configured to use the external services of Promethus and Grafana
-- Create Gateway and HTTPRoutes resources to access the kiali and Nginx backend apps
+- Deploy Prometheus community chart includes Prometheus, Grafana and AlertManager in monitor namespaces (not production ready)
+- Deploy the Kuberentes Gateway API CRD in cluster
+- Deploy a simple Nginx (backend-app) configured to serve simple response
+- Deploy Kiali (Istio Dashboard) configured to use the external services of Promethus and Grafana deployed on monitor namespace
+- Create Gateway resoruce and configure HTTPRoutes to access the kiali and Nginx backend apps
 
-
-Note,
-  - The Istio helm charts where downloaded to my local and the deployed. It can also be deployed directly once the repo is added.
-
-- Create Kind cluster named istio-dev with below configuration
- - hostPort 9001 and 9002 used to access the Prometheus and Grafana
- - 8180 will be used to access the gateway. Note, once the Gateway service is created we will edit it to configure this port.
+> Note
+>  - The Istio helm charts are downloaded to local machine and then deployed.
+>  - It can also be deployed directly once the repo is added to helm CLI.
 
 Represenation of the app deployed in the Kind cluster
 
 ![image](https://github.com/user-attachments/assets/30b72d2e-e316-4dda-b518-8261a284eeb2)
 
-#### Configuration 
+### Kind Cluster creation
+
+- Create Kind cluster named istio-dev with below configuration
+- Few ports exposed in the configuration
+  - hostPort 9001 and 9002 used to access the Prometheus and Grafana
+  - 8180 exposed to access the gateway from the host machine. Note, once the Gateway service is created it has to be edited to configure the port.
+
+#### Kind configuration
+
 ```yaml
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -77,16 +77,22 @@ kind create cluster --config cluster_config.yaml --name istio-dev
 
 ### Install Istio
 
-- Add the repo to the helm
+#### Download the charts locally
+
+- To add the repo to the helm for the Istio charts
 
 ```
 helm repo add istio https://istio-release.storage.googleapis.com/charts
 helm repo update
 ```
 
-Create a charts directory and download the base and istiod charts to local with below commands
+- The Istio charts are download to `charts/` folder. The Istio base and istiod charts to local with below commands
 
 ```sh
+-- create and navigate charts folder
+mkdir charts
+cd charts/
+
 -- download install helm base
 helm pull istio/base --untar
 
@@ -94,11 +100,15 @@ helm pull istio/base --untar
 helm pull istio/istiod --untar
 ```
 
-- Create istio-system namespace
+#### Create namespace to deploy the Istio charts
+
+- To create `istio-system` namespace with below command, in which the Istio base and istiod charts will be deployed
 
 ```sh
 kubectl create ns istio-system
 ```
+
+#### Deploy the Istio base charts
 
 - Deploy Istio base charts to kind cluster.
 - The default revision is deployed in this case by passing `default` in value defaultRevision. 
@@ -109,6 +119,8 @@ cd charts/base
 helm upgrade -i istio-base . -n istio-system --set defaultRevision=default
 ```
 
+#### Deploy the Istio istiod charts
+
 - Deploy Istio istiod, before deploying Istio CRD make sure the Istio base is deployed
 
 ```sh
@@ -118,28 +130,33 @@ cd charts/istiod
 helm upgrade -i istiod . -n istio-system --wait
 ```
 
-- Once installed we should be able to see the deployed chart version and status
+#### Chart status check
+
+- Once Charts are installed the status can be checked using below helm command. Chart status should be deployed. 
+
 ```sh
-helm ls -n istio-system
+$ helm ls -n istio-system
+
 NAME         NAMESPACE       REVISION   UPDATED                       STATUS          CHART                   APP VERSION
 istio-base   istio-system    1          2024-09-01 08:10:11 -0700 PDT deployed        base-1.23.0             1.23.0
 istiod       istio-system    1          2024-09-01 08:10:28 -0700 PDT deployed        istiod-1.23.0           1.23.0
 ```
 
-### Deploy Kuberented Gateway API
+#### Deploy Kuberented Gateway API
 
-- Deploy the Gateway API CRD with below command
+- To deploy the Gateway API CRD use below command
 
 ```sh
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml
 ```
 
-- Create the Gateway resource with below yaml file.
-- Note, in case if istio ingress gateway the apiVersion would be `networking.istio.io/v1alpha3`
+##### Create and deploy Gateway API custom resource
 
-- Save below YAML resource to `kuberentes-gateway-api.yaml`
+- The Kubenetes Gateway API custom resource YAML content looks like below (refer `kuberentes-gateway-api.yaml`).
+- Note, in case of Istio Ingress Gateway the apiVersion would be `networking.istio.io/v1alpha3`.
 
 ```yaml
+# fileName: kuberentes-gateway-api.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -157,7 +174,9 @@ spec:
         from: All
 ```
 
-- To deploy the Gateway resource use below command
+##### Deploy the Gateway API resource
+
+- Create namespace `istio-ingress` and deploy the Gateway resource. Use below command,
 
 ```sh
 -- create namespace command
@@ -167,7 +186,7 @@ kubectl create ns istio-ingress
 kubectl apply -f kuberentes-gateway-api.yaml
 ```
 
-- Once the Gateway is deployed, validate the resource creation using below command
+- Once the Gateway is deployed, validate the service creation. Use below command
 
 ```sh
 kubectl -n istio-ingress get svc
@@ -179,9 +198,13 @@ NAME            TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)            
 gateway-istio   LoadBalancer   10.96.201.160   <pending>     15021:32753/TCP,80:30526/TCP   8m20s
 ```
 
-- Edit the Gateway service using `kubectl -n istio-ingress edit svc/gateway-istio` and make sure the nodePort are updated to below port values. The 31000 port is already configured as containerPort in the kind cluster configuration.
+#### Edit the Gateway API service to update the nodePort to match Kind cluster configuration
 
-```
+- Edit the Gateway service using `kubectl -n istio-ingress edit svc/gateway-istio`.
+- The nodePort(s) has to be updated like in below snippet.
+- The incomming traffic from port 8180 will be routed to 31000 nodePort, already updated in Kind cluster configuration.
+
+```yaml
     ipFamilies:
     - IPv4
     ipFamilyPolicy: SingleStack
@@ -201,22 +224,27 @@ gateway-istio   LoadBalancer   10.96.201.160   <pending>     15021:32753/TCP,80:
 ```
 
 #### Deploy Kiali service 
-- Deploy the Kiali server using helm chart
+
+- To deploy the Kiali server using helm chart, add the repo to helm CLI and download to local charts folder.
 
 ```sh
+-- add repo to the helm cli
 helm repo add kiali https://kiali.org/helm-charts
 helm repo update
 ```
 
-- Navigate to the charts folder and download the chart to local using below command
+- Navigate to charts folder and download the charts to local.
 
-```sh 
+```sh
+cd charts/
 helm pull kiali/kiali-server --untar
 ```
 
-- To deploy the kiali server navigate to the downloaded charts and issue below command
-- Note, the externa_service urls are defined but will be configured later.
-- Prometheus and Grafana are deployed by single chart, and deployed to monitor namespace. The url pattern is `<service>.<namespace>:port`
+- Execute below command from the downloaded charts folder kaili-server.
+
+> Note :-
+> - The external_service urls are configured to access the Prometheus and Grafana. These components will be deployed by single chart later.
+> - The components are deployed to monitor namespace, hence the url pattern is `<service-name>.<namespace>:port`
 
 ```sh
 helm upgrade -i kiali-server . \
@@ -237,9 +265,12 @@ istiod       istio-system    1         2024-09-01 08:10:28 -0700 PDT deployed   
 kiali-server istio-system    1         2024-09-01 08:34:58 -0700 PDT deployed        kiali-server-1.89.0     v1.89.0
 ```
 
-- Create HTTPRoute for kiali, refer the configuration below and save it in a file named `kiali-http-route.yaml`
+##### Create HTTPRoute resource to access Kiali server
+
+- Create HTTPRoute resource for kiali as shown in the below yaml content, save the config in a file named `kiali-http-route.yaml`
 
 ```yaml
+# filename: kiali-http-route.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
@@ -259,23 +290,30 @@ spec:
     - name: kiali
       port: 20001
 ```
-- Deploy the kiali route using below command
+
+##### Deploy Kiali HTTPRoute
+
+- To deploy the kiali route use below command
 
 ```sh
 -- the resource will be deployed to istio-system namespace and uses the Gateway API previously deployed
 kubectl apply -f kiali-http-route.yaml
 ```
 
-- To access the kiali server use `http://127.0.0.1:8180/kiali`
+##### Accessing Kiali from browser
 
-Below is how the Kiali UI looks after configuring the Nginx, Prometheus and Grafana.
+- The address to access the Kiali UI is - `http://127.0.0.1:8180/kiali`
+
+The Kiali UI looks like in below snaphsot. The Nginx backend app, Prometheus and Grafana where deployed here in the snapshot.
+
 ![image](https://github.com/user-attachments/assets/2b7c821d-9646-4c51-9b04-e4816b6dda3e)
 
 ![image](https://github.com/user-attachments/assets/ce544224-2814-4a44-afac-22484337685d)
 
 ![image](https://github.com/user-attachments/assets/19ae2aba-fd4d-4ae8-9829-b27563679cf2)
 
-Note, Kiali UI might throw warning messages if the Prometheus chart is not deployed.
+> Note :-
+> Kiali UI might throw warning messages if the Prometheus chart is not deployed.
 
 ### Deploy prometheus 
 
@@ -289,7 +327,9 @@ cd charts/
 helm pull prometheus-community/kube-prometheus-stack --untar
 ```
 
-- To deploy Prometheus
+#### Create namespace and deploy the charts to Kind cluster
+
+- To create namespace monitor and deploy Prometheus, use below set of commands
 
 ```sh
 -- create namespace
@@ -311,7 +351,9 @@ helm upgrade -i prometheus . \
 --set prometheus-node-exporter.service.type=NodePort
 ```
 
-- Verify the status of chart deployment, output might look like below
+#### Status check of Prometheus chart deployment
+
+- Verify the status of chart deployment use the helm command mentioned below and the output of the status will be similar to below snippet.
 
 ```sh
 $ helm ls -n monitor
@@ -319,28 +361,36 @@ NAME        NAMESPACE   REVISION  UPDATED                       STATUS    CHART 
 prometheus  monitor     1         2024-09-01 08:43:38 -0700 PDT deployed  kube-prometheus-stack-62.3.1    v0.76.0
 ```
 
-- Accessing the Prometheus and Graphana
+#### Access Prometheus and Grafana
+
+- Accessing Prometheus
   - To access the Prometheus use `http://127.0.0.1:9001/` or `http://localhost:9001`
 
 ![image](https://github.com/user-attachments/assets/3a8fca83-e7d9-4458-a1aa-afbdcc9fd557)
 
-  
+- Acessing Grafana
   - To access the Grafana use `http://127.0.0.1:9002/` or `http://localhost:9002`, when prompted use username: `admin` and password: `prom-operator`.
 ![image](https://github.com/user-attachments/assets/15b02a2b-d40d-46e1-9eab-a1454136cb5f)
 
 ![image](https://github.com/user-attachments/assets/eee9ee05-fca4-4b08-857d-ace56c48f85c)
 
 
-- Create backend app
+### Creating the NGNIX backend app
 
-- Resource defintion for the backend apps save this to a file named `backend_app_deployment.yaml`
+#### Deploy the backend app to kind cluster
+
+- Below YAML content is resource defintion for the backend apps including namespace, service and deployment.
+- The namespace label `istio-injection: enabled` will automatically create the Istio Proxy when the backend pod is created.
+- Save the YAML content to a file named `backend_app_deployment.yaml`.
 
 ```yaml
+# filename: backend_app_deployment.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: backend-app
-  istio-injection: enabled 
+  labels:
+    istio-injection: enabled
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -437,6 +487,8 @@ spec:
 -- the namespace will be created note, the label istio-injection is enabled which will create a envoy proxy sidecar automatically 
 kubectl apply -f backend_app_deployment.yaml
 ```
+
+#### Define HTTPRoute for the backend app 
 
 - To access the backend we need to define a HTTPRoute like below and save it to a file named `app-httproute.yaml`
 
