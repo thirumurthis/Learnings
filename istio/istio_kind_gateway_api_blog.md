@@ -190,13 +190,13 @@ gateway-istio   LoadBalancer   10.96.201.160   <pending>     15021:32753/TCP,80:
     ports:
     - appProtocol: tcp
       name: status-port
-      nodePort: 31021
+      nodePort: 31021  #<--- update to 31021 port not used for this example
       port: 15021
       protocol: TCP
       targetPort: 15021
     - appProtocol: http
       name: default
-      nodePort: 31000
+      nodePort: 31000  # <--- update this port from any to 31000 configured in kind config
       port: 80
       protocol: TCP
       targetPort: 80
