@@ -39,8 +39,7 @@ Note,
 
 Represenation of the app deployed in the Kind cluster
 
-![image](https://github.com/user-attachments/assets/b678dd9f-8767-4255-8563-5ae85ad19446)
-
+![image](https://github.com/user-attachments/assets/30b72d2e-e316-4dda-b518-8261a284eeb2)
 
 #### Configuration 
 ```yaml
