@@ -37,6 +37,11 @@ Note,
  - hostPort 9001 and 9002 used to access the Prometheus and Grafana
  - 8180 will be used to access the gateway. Note, once the Gateway service is created we will edit it to configure this port.
 
+Represenation of the app deployed in the Kind cluster
+
+![image](https://github.com/user-attachments/assets/b678dd9f-8767-4255-8563-5ae85ad19446)
+
+
 #### Configuration 
 ```yaml
 kind: Cluster
