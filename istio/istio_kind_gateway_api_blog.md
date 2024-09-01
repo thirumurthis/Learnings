@@ -1,35 +1,35 @@
-## Istio with Kuberentes Gateway API
+## Istio with Kubernetes Gateway API
 
 - In this blog have detailed deploying Istio in Kind cluster and configure Kuberenetes Gateway API.
 
-### Pre-requsites:
+### Pre-requisites:
  - Docker desktop installed and running
  - Kind CLI
  - Helm CLI (v3.15.3+)
- - Understanding of Service Mesh (Isio basics and Gateway API)
+ - Understanding of Service Mesh (Istio basics and Gateway API)
 
 ### Istio with Kubernetes Gateway API
 
-- From Istio documentation the recommends to use Kuberentes Gateway API since the release of version v1.1. 
-- In the Istio Ingress Gateway `VirtualService` is created for routing, with Kuberentes Gateway API to route the `HTTPRoute` is created that  configures the service of the app.
+- From Istio documentation the recommends to use Kubernetes Gateway API since the release of version v1.1. 
+- In the Istio Ingress Gateway `VirtualService` is created for routing, with Kubernetes Gateway API to route the `HTTPRoute` is created that  configures the service of the app.
 
- - To configure Kuberentes Gateway API in the cluster the CRD should be deployed in Kind cluster. The manifest for the CRD used in this example is `https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml`.
+ - To configure Kubernetes Gateway API in the cluster the CRD should be deployed in Kind cluster. The manifest for the CRD used in this example is `https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml`.
 
 ### Summary of components installed and deployed
 
 - Creating a kind cluster with configuration exposing few ports to access the apps
 - Deploy Istio using helm charts (base and istiod) with basic configuration (not production ready)
 - Deploy Prometheus community chart includes Prometheus, Grafana and AlertManager in monitor namespaces (not production ready)
-- Deploy the Kuberentes Gateway API CRD in cluster
+- Deploy the Kubernetes Gateway API CRD in cluster
 - Deploy a simple Nginx (backend-app) configured to serve simple response
 - Deploy Kiali (Istio Dashboard) configured to use the external services of Promethus and Grafana deployed on monitor namespace
-- Create Gateway resoruce and configure HTTPRoutes to access the kiali and Nginx backend apps
+- Create Gateway resource and configure HTTPRoutes to access the kiali and Nginx backend apps
 
 > Note
 >  - The Istio helm charts are downloaded to local machine and then deployed.
 >  - It can also be deployed directly once the repo is added to helm CLI.
 
-Represenation of the app deployed in the Kind cluster
+Representation of the app deployed in the Kind cluster
 
 ![image](https://github.com/user-attachments/assets/30b72d2e-e316-4dda-b518-8261a284eeb2)
 
@@ -152,11 +152,11 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 
 ##### Create and deploy Gateway API custom resource
 
-- The Kubenetes Gateway API custom resource YAML content looks like below (refer `kuberentes-gateway-api.yaml`).
+- The Kubenetes Gateway API custom resource YAML content looks like below (refer `kuberenetes-gateway-api.yaml`).
 - Note, in case of Istio Ingress Gateway the apiVersion would be `networking.istio.io/v1alpha3`.
 
 ```yaml
-# fileName: kuberentes-gateway-api.yaml
+# fileName: kuberenetes-gateway-api.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -183,7 +183,7 @@ spec:
 kubectl create ns istio-ingress
 
 -- deploy the gateway api resource
-kubectl apply -f kuberentes-gateway-api.yaml
+kubectl apply -f kuberenetes-gateway-api.yaml
 ```
 
 - Once the Gateway is deployed, validate the service creation. Use below command
@@ -202,7 +202,7 @@ gateway-istio   LoadBalancer   10.96.201.160   <pending>     15021:32753/TCP,80:
 
 - Edit the Gateway service using `kubectl -n istio-ingress edit svc/gateway-istio`.
 - The nodePort(s) has to be updated like in below snippet.
-- The incomming traffic from port 8180 will be routed to 31000 nodePort, already updated in Kind cluster configuration.
+- The incoming traffic from port 8180 will be routed to 31000 nodePort, already updated in Kind cluster configuration.
 
 ```yaml
     ipFamilies:
@@ -304,7 +304,7 @@ kubectl apply -f kiali-http-route.yaml
 
 - The address to access the Kiali UI is - `http://127.0.0.1:8180/kiali`
 
-The Kiali UI looks like in below snaphsot. The Nginx backend app, Prometheus and Grafana where deployed here in the snapshot.
+The Kiali UI looks like in below snapshot. The Nginx backend app, Prometheus and Grafana where deployed here in the snapshot.
 
 ![image](https://github.com/user-attachments/assets/2b7c821d-9646-4c51-9b04-e4816b6dda3e)
 
@@ -322,7 +322,7 @@ The Kiali UI looks like in below snaphsot. The Nginx backend app, Prometheus and
 
 ```sh
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo udpdate
+helm repo update
 cd charts/
 helm pull prometheus-community/kube-prometheus-stack --untar
 ```
@@ -368,7 +368,7 @@ prometheus  monitor     1         2024-09-01 08:43:38 -0700 PDT deployed  kube-p
 
 ![image](https://github.com/user-attachments/assets/3a8fca83-e7d9-4458-a1aa-afbdcc9fd557)
 
-- Acessing Grafana
+- Accessing Grafana
   - To access the Grafana use `http://127.0.0.1:9002/` or `http://localhost:9002`, when prompted use username: `admin` and password: `prom-operator`.
 ![image](https://github.com/user-attachments/assets/15b02a2b-d40d-46e1-9eab-a1454136cb5f)
 
