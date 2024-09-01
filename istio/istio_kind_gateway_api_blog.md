@@ -1,6 +1,6 @@
 ## Istio with Kubernetes Gateway API
 
-- In this blog have detailed deploying Istio in Kind cluster and configure Kuberenetes Gateway API.
+- In this blog have detailed deploying Istio in Kind cluster and configure Kubernetes Gateway API.
 
 ### Pre-requisites:
  - Docker desktop installed and running
@@ -10,26 +10,28 @@
 
 ### Istio with Kubernetes Gateway API
 
-- From Istio documentation the recommends to use Kubernetes Gateway API since the release of version v1.1. 
+- [Istio documentation](https://istio.io/latest/docs/tasks/traffic-management/ingress/gateway-api/) recommends to use Kubernetes Gateway API since the release of version v1.1. 
 - In the Istio Ingress Gateway `VirtualService` is created for routing, with Kubernetes Gateway API to route the `HTTPRoute` is created that  configures the service of the app.
 
- - To configure Kubernetes Gateway API in the cluster the CRD should be deployed in Kind cluster. The manifest for the CRD used in this example is `https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml`.
+- To configure Kubernetes Gateway API in Kind cluster the Gateway API CRD should be deployed first. In this example the standard install is used. Referred from `https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.1.0/standard-install.yaml`.
 
-### Summary of components installed and deployed
+### Summary of components deployed
 
-- Creating a kind cluster with configuration exposing few ports to access the apps
-- Deploy Istio using helm charts (base and istiod) with basic configuration (not production ready)
-- Deploy Prometheus community chart includes Prometheus, Grafana and AlertManager in monitor namespaces (not production ready)
-- Deploy the Kubernetes Gateway API CRD in cluster
-- Deploy a simple Nginx (backend-app) configured to serve simple response
-- Deploy Kiali (Istio Dashboard) configured to use the external services of Promethus and Grafana deployed on monitor namespace
-- Create Gateway resource and configure HTTPRoutes to access the kiali and Nginx backend apps
+- Kind cluster creation with configuration. Few ports are exposed to access the apps.
+- Istio is deployed using helm charts. Istio - `base` and `istiod` charts are deployed with basic configuration. (Not production ready configuration).
+- Kiali Server (Istio Dashboard) is deployed using helm charts, configured to use the external services of Prometheus and Grafana deployed on monitor namespace.
+- Kubernetes Gateway API CRD deployed to cluster.
+- Gateway API custom resource deployed to cluster.
+- `HTTPRoute` configured and deployed to access the Kiali from browser.
+- Prometheus community chart deployed which installs Prometheus, Grafana and AlertManager. All the components are deployed in monitor namespace. (Not production ready configuration). Refer [Chart documentation](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
+- Simple backend-app (NGINX) deployed to serve simple JSON response.
+-  `HTTPRoute` configured and deployed to access the backend-app.
 
 > Note
 >  - The Istio helm charts are downloaded to local machine and then deployed.
->  - It can also be deployed directly once the repo is added to helm CLI.
+>  - It can also be deployed directly once the repo is added to helm CLI. Refer [Istio documentation](https://istio.io/latest/docs/setup/install/helm/).
 
-Representation of the app deployed in the Kind cluster
+### Representation of the app deployed in the Kind cluster
 
 ![image](https://github.com/user-attachments/assets/30b72d2e-e316-4dda-b518-8261a284eeb2)
 
@@ -37,7 +39,7 @@ Representation of the app deployed in the Kind cluster
 
 - Create Kind cluster named istio-dev with below configuration
 - Few ports exposed in the configuration
-  - hostPort 9001 and 9002 used to access the Prometheus and Grafana
+  - Port 9001 and 9002 used to access the Prometheus and Grafana
   - 8180 exposed to access the gateway from the host machine. Note, once the Gateway service is created it has to be edited to configure the port.
 
 #### Kind configuration
