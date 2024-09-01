@@ -521,8 +521,8 @@ spec:
 kubectl apply -f app-httproute.yaml
 ```
 
-### Testing the access of Backend API
-- From browser use `http://127.0.0.1:8180/greet` should see the respone like below
+### Accessing Backend app API
+- From browser use `http://127.0.0.1:8180/greet` should see the response like below
 
 ![image](https://github.com/user-attachments/assets/4948d4c0-8e33-40bb-9c89-8ac0885c3cdd)
 
