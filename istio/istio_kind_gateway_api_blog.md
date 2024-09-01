@@ -65,7 +65,6 @@ nodes:
     hostPort: 9002
     listenAddress: "127.0.0.1"
     protocol: TCP
-  - containerPort: 31120
 ```
 
 #### Command to create kind cluster
