@@ -8,7 +8,7 @@ ArgoCD explicitly disables the application in any namespace feature and needs to
 - The ArgoCD application should be installed is cluster-scope, so it has permissions to list and manipulate resources on a cluster level. This feature will not work if Argocd is installed in namespace-scoped mode.
 - The argocd-cm configmap property [resource tracking method](https://argo-cd.readthedocs.io/en/latest/operator-manual/app-any-namespace/#switch-resource-tracking-method) should be updated to `annotation` or `annotation+label`. The configuration looks like below.
 
-```
+```yaml
 # argocd-cmd-patch.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -20,7 +20,7 @@ data:
 
 - Update the `application.namespace` property to include the namespace the argocd will use to manage from the target cluster.
 
-```
+```yaml
 # argocd-cmd-params-cm-patch.yaml
 apiVersion: v1
 kind: ConfigMap
