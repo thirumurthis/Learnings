@@ -9,10 +9,10 @@ This feature is not explictly enabled.
 
 To follow along we require below items to be installed 
 
-Docker desktop
-KIND CLI
-Helm CLI
-Kubectl CLI
+- Docker desktop
+- KIND CLI
+- Helm CLI
+- Kubectl CLI
 
 
 The application in any namespace feature in ArgoCD works only when ArgoCD is installed at Cluster-scope level.
