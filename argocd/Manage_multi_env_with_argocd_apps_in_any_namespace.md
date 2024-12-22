@@ -113,3 +113,28 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 kubectl create ns argocd
 kubectl apply -n argocd  -k argocd_install/kustomize/
 ```
+
+### To deploy APISIX we use helm command
+
+```
+helm repo add apisix https://charts.apiseven.com
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+helm repo update
+
+kubectl create ns ingress-apisix
+
+helm upgrade -i apisix apisix/apisix --namespace ingress-apisix \
+--set service.type=NodePort \
+--set service.http.enabled=true \
+--set service.http.servicePort=80 \
+--set service.http.containerPort=9080 \
+--set service.http.nodePort=30080 \
+--set service.tls.servicePort=443 \
+--set service.tls.nodePort=30443 \
+--set dashboard.enabled=true \
+--set ingress-controller.enabled=true \
+--set ingress-controller.config.apisix.serviceNamespace=ingress-apisix \
+--set ingress-controller.config.kubernetes.enableGatewayAPI=true
+```
