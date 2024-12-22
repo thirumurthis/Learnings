@@ -3,7 +3,7 @@
 
 In this blog we will install ArgoCD with cert manager in KIND cluster. With the KIND cluster we will have an local environment to learn different components.
 
-In this blog the focus is to enable and use the ArgoCD application in any namespace feature. With the ArgoCD application in any namespace feature ArgoCD controller can manage any namespace in the remote cluster other than the default argocd. This feature is not explictly enabled.
+In this blog the focus is to enable ArgoCD application in any namespace feature and use it. The application in any namespace feature lets ArgoCD controller to manage any namespace in the remote cluster other than the default argocd. This feature is not explictly enabled.
 
 ### Pre-requisites:
 
@@ -15,13 +15,13 @@ Below software would be required to installing the ArgoCD,
 - Kubectl CLI
 - ArgoCD CLI
 
-Along with the ArgoCD installation in the KIND cluster we install Cert manager, Kubernetes Gateway and Apisix, with which we configure cluster to access the ArgoCD UI from the host machine. Understanding of Cert manager and Apisix would be nice but it is not mandatory to follow along.
+In the demonstration the ArgoCD is deployed in KinD cluster with Cert manager, Kubernetes Gateway and Apisix. These components are configured so the ArgoCD UI can be accessed from the host machine. Understanding of Cert manager and Apisix would be nice but it is not mandatory to follow along.
 
-#### ArgoCD to manage application in any namespace
+#### ArgoCD application in any namespace
 
-The application in any namespace feature in ArgoCD works only when ArgoCD is installed at Cluster-scope level.
+The application in any namespace feature in ArgoCD works only when ArgoCD is installed at Cluster-scope level, so ArgoCD has access to create and list resources.
 
-#### Configuration
+#### Configuration updates
 
 1. The resource tracking method configuration in the argocd-cm config map should be updated either to `annotation` or `annotation+label`. 
 Refer [resource tracking method](https://github.com/thirumurthis/Learnings/blob/master/argocd/Manage_multi_env_with_argocd_apps_in_any_namespace.md#:~:text=resource%20tracking%20method) from ArgoCD documentation. The configuration would look like below.
@@ -57,11 +57,11 @@ Note:-
 3. RBAC permissions for ArgoCD to list and access resources in the KIND cluster. The RBAC installed in this blog is from argocd project example [argoproj/argo-cd/examples](https://github.com/argoproj/argo-cd/tree/master/examples/k8s-rbac/argocd-server-applications). The configuration is added to the kustomization manifest.  
 
 
-#### Implementing application resources
+#### Implementing ArgoCD resources
 
-With the above configuration deployed in the ArgoCD, the next step would be to create AppPorect and Application resources.
+With the above ArgoCD configuration changes deployed in the KinD cluster, next step would be to create AppPorject and Application resources.
 
-1. ArgoCD AppProject manifest the namespace in property `spec.sourceNamespaces` should include the allowed namespaces ArgoCD will be managing in the remote server.  
+1. The namespaces to be managed by ArgoCD controller is configured in the `spec.sourceNamespaces` property of the ArgoCD AppProject manifest.  
 
 ```yaml
 # argocd_app_project.yaml
@@ -87,8 +87,9 @@ spec:
      kind: '*'
 ```
 
-2. ArgoCD application mahifest which includes the destination server and manfiest source (git) to be deployed.
-The application manifest `spec.project` refers to the AppProject defined above.
+2. The `spec.project` in the ArgoCD application manifest uses the AppProject created above. The manifest also includes the destination where the kuberentes resources of application to be deployed.
+
+- Application configuration for resource to be deployed by ArgoCD in one of the remote cluster.
 
 ```yaml
 # argocd_app_in_any_ns_app_1.yaml
@@ -108,6 +109,8 @@ spec:
     namespace: env-dev-0
 ```
 
+- Application configuration for resource to be deployed by ArgoCD in one of the remote cluster.
+
 ```yaml
 # argocd_app_in_any_ns_app_2.yaml
 apiVersion: argoproj.io/v1alpha1
@@ -126,12 +129,8 @@ spec:
     namespace: env-dev-1
 ```
 
-Representation of the ArgoCD and remote cluster with the resources defined above.
 
-![image](https://github.com/user-attachments/assets/d3a901cd-bcca-4795-93ee-8badce530a08)
-
-
-#### Deploying ArgoCD in KinD Cluster
+#### ArgoCD deployment in KinD Cluster
 
 The kustomization manifest in the code below is used to deploy ArgoCD in KIND cluster.
 
@@ -155,7 +154,7 @@ Note:-
    - Place the files - kustomization.yaml, argocd-cm-patch.yaml and argocd-cmd-params-cm-patch.yaml place under argocd_install/kustomize.
    - The Kustomization manifest `patches` property includes patched ArgoCD config map enable application in any namespace will applied automatically.
 
-### Create KIND cluster for ArgoCD
+### KIND cluster configuration for ArgoCD
 
 Below is the Kind configuration to install ArgoCD cluster
 
@@ -176,13 +175,13 @@ nodes:
 - role: worker  # confifgured but worker node not utlized
 ```
 
-Use the above configuration to create Kind cluster with below command, ensure the Docker Desktop is running.
+Below command is used to creaet the Kind cluster, with the above configuration. Ensure the Docker Desktop is running.
 
 ```
 kind create cluster --config kind_argocd_config.yaml
 ```
 
-### Install Kuberentes Gateway
+### Deploy Kuberentes Gateway
 
 To install the Kubernetes Gateway to the cluster, we use below command
 
@@ -190,7 +189,7 @@ To install the Kubernetes Gateway to the cluster, we use below command
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
 ```
 
-### Install cert manager
+### Deploy cert manager
 
 To install cert manager use below command.
 
@@ -198,7 +197,7 @@ To install cert manager use below command.
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
 ```
 
-### Install ArgoCD using Kustomize manifest
+### Deploy ArgoCD using Kustomize manifest
 
 To install the ArgoCD we use the kustomize configurations and the patch files are stored in the argocd_install/kustomize folder and issue below command.
 
@@ -207,7 +206,7 @@ kubectl create ns argocd
 kubectl apply -n argocd  -k argocd_install/kustomize/
 ```
 
-### Install APISIX
+### Deploy APISIX using helm chart
 
 The APISIX deployed with helm chart will be used to create Ingress to access the ArgoCD UI from the host machine. Below set of command is used to install with configuration.
 
@@ -242,7 +241,7 @@ helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set ingress-controller.config.kubernetes.enableGatewayAPI=true
 ```
 
-### Cert manager - Self signed certificate 
+### Deploy Issuer and Certificate (Self-signed certificate) 
 
 Self singed certificate is used here. Since the cert manager is already deployed once the pods are in ready and running state. Use the Issuer and Certificate manifest and deploy to `argocd` namespace.
 
@@ -325,7 +324,7 @@ spec:
               number: 443
 ```
 
-### ArgoCD UI
+### ArgoCD UI Access
 
 The Apisix ingress is configured with comman name `argocd.demo.com`, add this to the host file in Windows like below.
 
@@ -346,7 +345,7 @@ Once logged in the ArgoCD UI if the application are deployed it would looks like
 ![image](https://github.com/user-attachments/assets/56f639a7-51ea-4dde-a399-46af710fd0fa)
 
 
-### Add Git repo to ArgoCD
+### Add Git repo to ArgoCD server
 
 The manifest used to deploy in the remote cluster includes a nginx deployment, configmap and service resources. The manifest is aded to directory `app-in-any-ns/my-backend-app`. The application manifest includes the path of the deployment resource.
 The public Github repo [argocd-app](https://github.com/thirumurthis/argocd-app/) that includes manifest. To add the public Git repo to ArgoCD server first login using ArgoCD CLI. Below is the command to login to argocd server, provide user name and password when prmopted.
@@ -362,7 +361,7 @@ To add the git repo use below command. Note, when using private repo it requires
 argocd repo add https://github.com/thirumurhis/argocd-app
 ```
 
-### Create remote cluster 
+### Create remote KinD cluster 
 
 To create a target Kind cluster use below configuration for ArgoCD to manage 
 
