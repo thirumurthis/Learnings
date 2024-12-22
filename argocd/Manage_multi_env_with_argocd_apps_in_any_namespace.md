@@ -6,13 +6,14 @@ In this blog details ArgoCD installation in KIND cluster using cert manager. Thi
 In this blog the focus is to utilize the ArgoCD application in any namespace feature. ArgoCD can manage any namespace other than the default argocd.
 This feature is not explictly enabled.
 
-
+Pre-requisites:
 To follow along we require below items to be installed 
 
 - Docker desktop
 - KIND CLI
 - Helm CLI
 - Kubectl CLI
+- ArgoCD CLI
 
 Cert manager, Kubernetes Gateway and Apisix are installed in order to access the ArgoCD from the host machine.
 Basic understanding of Cert manager and Apisix will help understand the resource details, but it is not mandatory to try on local Kind cluster.
@@ -243,7 +244,7 @@ kubectl -n argocd apply -f argocd_issuer.yaml
 kubectl -n argocd apply -f argocd_certificate.yaml
 ```
 
-### To access the ArgoCD UI create an ingress with Apisix ingressclass 
+### Create ingress with Apisix to access Argocd UI 
 - The backend service is configured to argocd-server port 443
 
 ```yaml
@@ -297,3 +298,27 @@ Login with the username admin and for password use below command. The password c
 kubectl  -n argocd get secret/argocd-initial-admin-secret -ojsonpath={'.data.password'} | base64 -d; echo
 ```
 
+![image](https://github.com/user-attachments/assets/56f639a7-51ea-4dde-a399-46af710fd0fa)
+
+
+- Adding Git repo using git repo
+Make sure to login to argocd server with argocd cli using `argocd login argocd.demo.com`.
+The git repo with the manifest created [argocd-app](https://github.com/thirumurthis/argocd-app/tree/main). 
+
+
+- Create a target Kind cluster with below configuration for ArgoCD to manage 
+
+```yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: dev-env-0
+   extraPortMappings:
+   - containerPort: 80
+     hostPort: 9005
+     protocol: TCP
+   - containerPort: 443
+     hostPort: 9006
+     protocol: TCP
+```
+
+- Create the namespace `env-dev-0` in the remote cluster, so when the ArgoCD application is created in the argocd server the deploy the application in the remote cluster.
