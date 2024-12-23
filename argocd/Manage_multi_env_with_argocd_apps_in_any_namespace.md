@@ -51,7 +51,7 @@ data:
   server.insecure: "true"
 ```
 
-Note:- 
+** Note:- ** 
  The `application.namespaces` configured with `env-*` in the remote cluster we will be creating the namespace like `env-dev-0`, `env-dev-1`, `env-test-0`, etc.
 
 3. RBAC permissions for ArgoCD to list and access resources in the KIND cluster. The RBAC installed in this blog is from argocd project example [argoproj/argo-cd/examples](https://github.com/argoproj/argo-cd/tree/master/examples/k8s-rbac/argocd-server-applications). The configuration is added to the kustomization manifest.  
