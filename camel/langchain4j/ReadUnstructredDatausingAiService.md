@@ -238,5 +238,6 @@ output
 {"customerSatisfied":true,"customerName":"Jonny II Doe","customerBirthday":"1978-07-04","summary":"Customer provided a review for a recently purchased product and would recommend it to others."}
 ```
 
-![image](https://github.com/user-attachments/assets/8d474088-9512-4767-9a1e-bef285c6f86a)
+![image](https://github.com/user-attachments/assets/91ac3fdb-33ee-433b-b480-f488f2e6cbc4)
+
 
