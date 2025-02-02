@@ -34,15 +34,15 @@ curl -X POST http://localhost:11434/api/generate -d '{
 
 #### Code
 
-- Jbang is used here since it doesn't require the usual java project structure and we can execute java code as script.
+- `Jbang` is used here since it doesn't require the usual java project structure and we can execute java code as script.
 
-- The code below uses Camel routes, the data is sent to the Camel rest route which exposes an POST endpoint using the Camel Jetty server component. This data in the camel exchange is routed to AI service endpoint and the response is printed and sent as response.
+-  The code below uses Camel routes, the data is sent to the Camel rest route which exposes an POST endpoint using the Camel Jetty server component. The data in the camel exchange is routed to AI service endpoint and the response is printed and sent as response.
 
-- The `CustomPojoExtractor` interface defined includes the `@UserMessage` annotation is configured with set of message. AI service uses this message and passed data to extract the necessary details. The response from the AI service would be set to `CustomPojo` object. 
+- The `CustomPojoExtractor` interface defined includes the `@UserMessage` annotation is configured with set of message. AI service uses this message and passed data to extract the necessary details. The response from the AI service is set to `CustomPojo` object. 
 
-- The `extractorService()` method in the `RestAiRouteConfig` class uses the AiService of Langchain4j to create the bean used in the camel route. The AiService uses the   `ChatLanguageModel` defined and `CustomPojoExtractor` interface object to create a bean called `extractionService` which will be registered to the Camel context. This registered bean is used within the routes which will invoke the AI service, Camel automatically invokes the `extractFromText()` method when data is routed.'
+-  The `extractorService()` method in the `RestAiRouteConfig` class uses the `AiServices` of Langchain4j to create the bean used in the camel route. The AiService uses the `ChatLanguageModel` and `CustomPojoExtractor` interface object to create a bean called `extractionService` which is  registered to the Camel context. This registered bean is used in the routes which will invoke the `extractFromText()` method of the interface when data is received.
 
-- The `OllamaChatModel` builder is used to create the ChatLanguageModel which uses the URL of the AI docker service and model name. Refer the Langchain4j documentation for more understanding. 
+ - The `OllamaChatModel` builder is used to create the `ChatLanguageModel` which uses the URL of the AI docker service and model name. Refer the Langchain4j documentation for more understanding. 
 
 - The `CustomPojo` is a simple Java record and the `toString()` is overridden in here to return the object as JSON string.
 
