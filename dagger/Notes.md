@@ -30,3 +30,19 @@ E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-21/open
 
 then issu the command `dagger run ./mvnw spring-boot:run` to view the application running
   With the above command the spring boot build got successful
+
+
+### java sdk
+
+- based on the link https://github.com/dagger/dagger/tree/main/sdk/java
+
+- below creates a project structure for java module
+```
+dagger init --sdk=java my-java-module
+```
+
+- navigate to the parent folder of `my-java-module` and issue below command to list the modules
+
+```
+dagger functions -m my-java-module
+```
