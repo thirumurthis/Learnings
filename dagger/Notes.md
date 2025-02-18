@@ -11,3 +11,10 @@ dagger run mvnw exec:java
 in WSL2 doens't had Java installed in it, so got an JAVA_HOME not found and reqired message
 ```
 In WSL the `mvnw exec:java` command didn't work reporting java_home not set. requires the java_home to set.
+
+-- When installing the java in wsl2, had issue updating below was teh exception message. To fix this had to issue ` sudo apt-get update --fix-missing`.
+
+```
+E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre-headless_21.0.5%2b11-1ubuntu1%7e24.04_amd64.deb  404  Not Found [IP: 91.189.91.81 80]
+E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre_21.0.5%2b11-1ubuntu1%7e24.04_amd64.deb  404  Not Found [IP: 91.189.91.81 80]
+```
