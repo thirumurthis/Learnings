@@ -23,4 +23,10 @@ E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-21/open
   ```
    sudo apt-get install openjdk-21-jdk-headless
   ```
+#### Finally with the above configuration
+  - install java to wsl2, remove the java from windows
+  - make sure the docker is accessible in wsl2
+  - make sure the javac is accessible in wsl2
+
+then issu the command `dagger run ./mvnw spring-boot:run` to view the application running
   With the above command the spring boot build got successful
