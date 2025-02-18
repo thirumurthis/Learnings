@@ -10,3 +10,4 @@ dagger run mvnw exec:java
 
 in WSL2 doens't had Java installed in it, so got an JAVA_HOME not found and reqired message
 ```
+In WSL the `mvnw exec:java` command didn't work reporting java_home not set. requires the java_home to set.
