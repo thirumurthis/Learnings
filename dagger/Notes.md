@@ -18,3 +18,9 @@ In WSL the `mvnw exec:java` command didn't work reporting java_home not set. req
 E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre-headless_21.0.5%2b11-1ubuntu1%7e24.04_amd64.deb  404  Not Found [IP: 91.189.91.81 80]
 E: Failed to fetch http://security.ubuntu.com/ubuntu/pool/main/o/openjdk-21/openjdk-21-jre_21.0.5%2b11-1ubuntu1%7e24.04_amd64.deb  404  Not Found [IP: 91.189.91.81 80]
 ```
+- mvn clean install didn't work as expected, had to install the jdk version since javac is not recognized as command.
+
+  ```
+   sudo apt-get install openjdk-21-jdk-headless
+  ```
+  With the above command the spring boot build got successful
