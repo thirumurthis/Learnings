@@ -9,8 +9,8 @@ Dagger SDK is available in different languages like Go, Python, Typescript, etc.
 
 Key terminologies: 
 
- `Module` - Module is collection of Dagger functions.
- `Functions` - Functions is fundamental unit of computing written in regular code in preferred language using available Dagger SDK. 
+ - `Module` - Module is collection of Dagger functions.
+ - `Functions` - Functions is fundamental unit of computing written in regular code in preferred language using available Dagger SDK. 
  
 For Dagger architecture refer the [dagger.io](https://dagger.io/). 
 
