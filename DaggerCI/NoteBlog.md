@@ -310,6 +310,8 @@ dagger call run --source . up --ports 8081:8080
 
 ![img](https://github.com/user-attachments/assets/ba5542ec-d36f-4104-8b38-2d8cdbe2bafe)
 
+Dagger does the tunneling and the application can be accessed using `http://localhost:8081/api/check`.
+
 #### Invoking the publish function
 
 - Output looks like below with verbose level 2
