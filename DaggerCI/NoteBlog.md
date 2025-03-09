@@ -1,7 +1,6 @@
 ### Dagger CI workflow
 
-In this blog we will see how to use create CI workflow as code using Dagger Java sdk.
-We will initialize dagger to a simple java project and create functions to create environment in container, build jar and publish image to artifactory.
+In this blog have used Dagger Java SDK to create CI workflow as code. In a simple java project we need to initalize using Dagger CLI. We can create modules and functions using the CLI. The functions used to use container, set environment, build jar and publish image to artifactory.
 
 What is Dagger?
 Dagger is an opensource code that enables to define CI/CD workflows as code.
