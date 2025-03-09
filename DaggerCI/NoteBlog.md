@@ -257,9 +257,7 @@ Now lets call the `buildEnv` function from `backend` module using Dagger CLI. Si
 ```
 dagger -m .dagger/backend call build-env --source . terminal
 ```
-
-![image](https://github.com/user-attachments/assets/07a2a2b1-e2a5-414e-a180-569c9e66acac)
-
+![call_backend_module_build](https://github.com/user-attachments/assets/9cfb0c72-d568-4fb6-b0e7-9a960d860323)
 
 ### Install and reuse the backend module functions in parent module
 
