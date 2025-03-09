@@ -1,0 +1,14 @@
+{
+  "name": "sample-app",
+  "engineVersion": "v0.16.2",
+  "sdk": {
+    "source": "java"
+  },
+  "dependencies": [
+    {
+      "name": "backend",
+      "source": ".dagger/backend"
+    }
+  ],
+  "source": ".dagger"
+}
