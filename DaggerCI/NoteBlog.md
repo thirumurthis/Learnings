@@ -55,7 +55,7 @@ dagger develop --sdk=java --source .
 
 After issuing above command, the java project folder structure looks like below.
 
-``` 
+```
 .
 ├── .dagger
 │     ├── .gitattributes
@@ -218,7 +218,7 @@ dagger -m .dagger/backend functions
 ```
 - Output looks like below
 
-```sh
+```
 dagger -m .dagger/backend functions
 ✔ connect 0.7s
 ✔ load module 14.9s
