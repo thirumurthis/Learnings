@@ -2,12 +2,11 @@
 
 In this blog have details how we can create Dagger module and functions using Dagger Java SDK on a simple Java Spring boot project. With Dagger CLI we can run the CI process in our local machine. With the Dagger CLI new modules can be created or use the modules built by community from DaggerVerse. In this example, we initialize the Dagger module with functions to build environment on a container, build jar, test the build and publish the build. With the Dagger CLI we can run the functions in local machine. There is an option to run the Dagger module in Github actions or Jenkins.
 
-#### What is Dagger?
+### What is Dagger?
 
 Dagger is an opensource code that enables to define CI/CD workflows as code. Dagger SDK is available in different languages like Go, Python, Typescript, etc. to develop code. In local the Dagger CLI uses the Dagger enging running in Docker to run the functions. For Dagger architecture refer the [dagger.io](https://dagger.io/) documentation.
 
-
-##### Key terminologies
+#### Key terminologies
 
  - `Module` - Module is collection of Dagger functions.
  - `Functions` - Functions is fundamental unit of computing written in regular code in preferred language using available Dagger SDK. 
@@ -17,7 +16,7 @@ Dagger is an opensource code that enables to define CI/CD workflows as code. Dag
 - Docker desktop
 - Dagger CLI installed. Note, when installing in Windows use Powershell 7+. Dagger CLI will use Docker to run the dagger engine.
 
-##### Initialize dagger in the project
+#### Initialize dagger in the project
 
 - We have a simple Java project and first we initialize the dagger by exeucting below command. This will create `dagger.json` file updates dagger engine version and few other metadata.
 
@@ -29,13 +28,13 @@ dagger init
 
 #### Parent module
 
-We can create modules using Dagger CLI, and implement our functions to perform CI/CD operations. To Dagger module in the project we use Java SDK. By executing below command we will create a dagger module. This will create a `.dagger` folder and simple java class as it uses the maven code genenration. Since the name of the java project was `sample-app`, the java code generated under `.dagger/src/main/java/io/dagger/modules/sampleapp/SampleApp.java`
+We can create modules using Dagger CLI, and implement our functions to perform CI/CD operations. To Dagger module in the project we use Java SDK. By executing below command we will create a dagger module. This will create a `.dagger` folder and simple java class as it uses the maven code genenration. Since the name of the java project was `sample-app`, the java code generated under `.dagger/src/main/java/io/dagger/modules/sample-app/SampleApp.java`
 
 ```shell
 dagger develop --sdk=java
 ```
 
-Note, we will be creating a module under the `.dagger` module, called `backend`. This will be helpful to manage if the same repo has both backend and frontend code and CI process builds them differently. We could have created the functions directly in `.dagger/src/main/java/io/dagger/modules/sampleapp/SampleApp.java` class under the module created in `.dagger` folder, but this will demonstrate on how to create modules under the `.dagger` and use it from the parent module.
+Note, we will be creating a module under the `.dagger` module, called `backend`. This will be helpful to manage if the same repo has both backend and frontend code and CI process builds them differently. We could have created the functions directly in `.dagger/src/main/java/io/dagger/modules/sample-app/SampleApp.java` class under the module created in `.dagger` folder, but this will demonstrate on how to create modules under the `.dagger` and use it from the parent module.
 
 #### Backend module
 
@@ -107,8 +106,7 @@ Till now we have created two modules, parent module under the `.dagger` folder. 
 
 Below is the backend module with simple functions will helps to setup environment on the container, build jar artifact, test, run and publish.
 
-Info :-
- - With the functions added, Dagger CLI can list the functions defined in this module. The function arguments name will be used as parameters when we call the function using Dagger CLI. Next we will see how to use Dagger CLI to list the functions.
+> With the functions added, Dagger CLI can list the functions defined in this module. The function arguments name will be used as parameters when we call the function using Dagger CLI. Next we will see how to use Dagger CLI to list the functions.
 
 ```java
 package io.dagger.modules.backend;
@@ -194,20 +192,6 @@ public class Backend extends AbstractModule {
             .asService()
             .withHostname("localhost");
   }
-  
-  /** Build the jar file*/
-  @Function
-  public File buildJar(Directory directoryArg)
-          throws InterruptedException, ExecutionException, DaggerQueryException {
-
-    return dag.container()
-            .from("maven:3.9.9-amazoncorretto-21")
-            .withMountedDirectory("/src",directoryArg)
-            .withWorkdir("/src")
-            .withExec(List.of("mvn","-DskipTests","clean","install"))
-            .file("target/sample-app-0.0.1-SNAPSHOT.jar");
-  }
-}
 ```
 
 - Below is the Dagger CLI command that lists the backend module functions. The function name `buildEnv` is displayed as `build-env` by Dagger CLI.
@@ -224,12 +208,11 @@ dagger -m .dagger/backend functions
 ✔ load module 14.9s
 
 Name           Description
-build          Build jar artifacts
-build-env      Create environment for build
-build-jar      Build the jar file
-publish        Publish the artifact
-run            Runs as service
-test           Run test
+build             Build jar artifacts
+build-env     Create environment for build
+publish         Publish the artifact
+run                Runs as service
+test               Run test
 ```
 
 To view the arguments info of the functions we can call the function and pass the `--help` like below
@@ -267,7 +250,7 @@ ARGUMENTS
 Use "dagger call build [command] --help" for more information about a command.
 ```
 
-#### Invoke a function in the backend module
+#### Invoke build-env function from the backend module
 
 Now lets call the `buildEnv` function from `backend` module using Dagger CLI. Since `buildEnv` function returns a Container we can use `terminal` option so Dagger CLI will run the command and will exec into the container to workind directory path with the copied source code. 
 
@@ -278,7 +261,7 @@ dagger -m .dagger/backend call build-env --source . terminal
 ![image](https://github.com/user-attachments/assets/07a2a2b1-e2a5-414e-a180-569c9e66acac)
 
 
-#### How to use backend module functions in parent module?
+### Install and reuse the backend module functions in parent module
 
 Till now we created function in the backend module and executed using Dagger CLI with `-m` option. During development for IDE to use the `backend` module from `.dagger` parent module we need to install the backend module. 
 
@@ -294,9 +277,9 @@ After installing the `backend` module with above command, from the root director
 dagger develop
 ```
 
-The `backend` functions can now be used in `.dagger/src/main/java/io/dagger/modules/sampleapp/SampleApp.java` class to build backend, if we have created frontend functions we can reuse those function to build both codes.
+The `backend` functions can now be used in `.dagger/src/main/java/io/dagger/modules/sample-app/SampleApp.java` class to build backend, if we have created frontend functions we can reuse those function to build both codes.
 
-- The `.dagger/src/main/java/io/dagger/modules/sampleapp/SampleApp.java` includes function and reuse the backend module functions.
+- The `.dagger/src/main/java/io/dagger/modules/sample-app/SampleApp.java` includes function and reuse the backend module functions.
 
 ```java
 package io.dagger.modules.sampleapp;
@@ -349,7 +332,7 @@ publish          publish image of the apps
 run              Run the application as service
 ```
 
-#### Calling the run function
+### Call the run function from main module using Dagger CLI
 
 Since the main module is updated now, we can use Dagger CLI just to call the functions instead of referring the modules with `-m` option.
 
@@ -368,7 +351,7 @@ $ curl localhost:8081/api/check && echo
 [{"check": "ok"},{"time": "2025-03-09 17:31:53"}]
 ```
 
-#### Calling the publish function using Dagger cLI
+### Call the publish function from main module using Dagger CLI
 
 ```
 dagger call publish --source .
@@ -378,9 +361,11 @@ dagger call publish --source .
 
 ![image](https://github.com/user-attachments/assets/c814fdfc-2e1b-484b-8950-ca3066dffafb)
 
-#### Custom dagger engine
+#### Using custom dagger engine
 
 In enterprise we have proxy and possibly we might access the private repositories, in this case the dagger images requires some customization like adding enterprise certs, security, etc. Dagger CLI can identify the custom dagger engine running in the docker by configuring the image name in environment variable `_EXPERIMENTAL_DAGGER_RUNNER_HOST`. 
 Refer [Dagger.io](https://docs.dagger.io/configuration/custom-runner#connection-interface) documentation for more details.
 
-The code can be found in [github repo](https://github.com/thirumurthis/Learnings/tree/master/DaggerCI/sample-app). Note, the `.dagger` folder is renamed to dagger since it is treated as hidden folder in git.
+##### Source code
+
+The code can be found in [github repo](https://github.com/thirumurthis/Learnings/tree/master/DaggerCI/sample-app). Note, the `.dagger` folder is renamed to dagger since it is treated as hidden folder in git. This source currently can't be cloned and used directly, just for reference only.
