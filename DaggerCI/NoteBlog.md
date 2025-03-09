@@ -241,7 +241,6 @@ dagger install .dagger/backend
 
 After we install the `backend` module with above command, from the project level below command will generator code and update the backend class function.
 
-
 ```shell
 dagger develop
 ```
@@ -311,6 +310,12 @@ dagger call run --source . up --ports 8081:8080
 
 ![img](https://github.com/user-attachments/assets/ba5542ec-d36f-4104-8b38-2d8cdbe2bafe)
 
+#### Invoking the publish function
+
+- Output looks like below with verbose level 2
+
+![image](https://github.com/user-attachments/assets/c814fdfc-2e1b-484b-8950-ca3066dffafb)
+
 #### Debug options
 
 If the function returns container, we can use terminal command in Dagger CLI to investigate
@@ -322,6 +327,7 @@ dagger -m .dagger/backend call build-env --source . terminal
 - The output would look like below
 
 ![img_1](https://github.com/user-attachments/assets/0b1c56c8-8913-4d28-9256-b54bfe9dbc8d)
+
 
 
 #### Using custom dagger engine image
