@@ -320,7 +320,13 @@ dagger -m .dagger/backend call build-env --source . terminal
 ````
 
 - The output would look like below
+
 ![img_1](https://github.com/user-attachments/assets/0b1c56c8-8913-4d28-9256-b54bfe9dbc8d)
 
+
+#### Using custom dagger engine image
+- In enterprise environment if the system is behind proxy, possibly we might need to customize the dagger images with enterprise certs, etc.
+- If we have custom dagger engine image we can use that image.
+- Create the image and set the image name in an environment variable `_EXPERIMENTAL_DAGGER_RUNNER_HOST`. Refer [Dagger.io](https://docs.dagger.io/configuration/custom-runner#connection-interface) documentation.
 
 The code can be found in [github repo](https://github.com/thirumurthis/Learnings/tree/master/DaggerCI/sample-app). Note, the `.dagger` folder is renamed to dagger since it is treated as hidden folder in git.
