@@ -12,6 +12,21 @@
   jaegertracing/jaeger:2.4.0
   ```
 
+or 
+
+```sh
+docker run --rm --name jaeger \
+  -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 \
+  -p 16686:16686 \
+  -p 4317:4317 \
+  -p 4318:4318 \
+  -p 14250:14250 \
+  -p 14268:14268 \
+  -p 14269:14269 \
+  -p 9411:9411 \
+  jaegertracing/all-in-one:1.67.0
+```
+
 - The pom.xml for the spring boot simple application
 
 ```xml
@@ -96,6 +111,8 @@ package com.tracing;
 
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -106,7 +123,7 @@ import java.util.Random;
 @RequestMapping("/api")
 public class TracingController {
 
-    //private static final Logger logger = LoggerFactory.getLogger(TracingController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TracingController.class);
 
     private final Tracer tracer;
 
@@ -122,37 +139,31 @@ public class TracingController {
     @GetMapping("/execute")
     public String invokeTask() {
 
+        Random random = new Random();
         // new span
         Span span1 = tracer.nextSpan().name("invoker-api-parent");//.start();
+
         //tracer.traceContextBuilder().traceId(UUID.randomUUID().toString());
         // URL for second app app-1 application;
-        //logger.info("tracer invoked app-1 invoked");
-        System.out.println("tracer invoked app-1");
-
-
+        logger.info("tracer invoked app-1 invoked");
 
         try (Tracer.SpanInScope spanInScope = tracer.withSpan(span1.start())) {
-            Random random = new Random();
         //try (Tracer.SpanInScope ws = (Tracer.SpanInScope) this.tracer.startScopedSpan("operation")){
             span1.tag("appName","invokeApi");
-            span1.tag("value",random.nextInt(100));
+            span1.tag("value",random.nextInt(2000));
             span1.event("invoked from invoker api");
-
-           // try (BaggageInScope scope = this.tracer.createBaggageInScope("baggage1", "value1")) {
-
                 Span span0 = tracer.nextSpan(span1);
                 span0.start();
                 span0.event("baggage span");
                 span0.tag("baggage0","test");
                 try{
-                    Thread.sleep(1000);
+
+                    Thread.sleep(random.nextInt(2500));
                 } catch (InterruptedException e) {
-                    // logger.error("Interrupted exception..");
-                    System.out.println("interrupted exception..");
+                     logger.error("Interrupted..");
                 }
                 span0.end();
-           // }
-
+         //}
         }finally {
             span1.end();
         }
@@ -162,16 +173,28 @@ public class TracingController {
         span2.event("completed");
         span2.tag("app","invoker");
         try{
-            Thread.sleep(700);
+            Thread.sleep(random.nextInt(1500));
         } catch (InterruptedException e) {
-           // logger.error("Interrupted exception..");
-            System.out.println("interrupted exception..");
+           logger.error("Interrupted exception..");
+            //System.out.println("interrupted exception..");
         }
         span2.end();
-        return "completed";
+        return """
+            {"status":"completed"}
+            """;
     }
-
 }
+```
 
+- output
+
+```sh
+curl -iv http://localhost:8080/api/execute
+```
+
+- jaeger output
+
+```sh
+http://localhost:16686
 ```
 
