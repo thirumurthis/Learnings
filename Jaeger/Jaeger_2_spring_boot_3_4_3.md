@@ -27,6 +27,27 @@ docker run --rm --name jaeger \
   jaegertracing/all-in-one:1.67.0
 ```
 
+- application.yaml sample
+
+```yaml
+spring.application.name: tracing
+
+management:
+  server.port: 9145
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+       endpoint: 'http://localhost:9411/api/v2/spans'
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%-5level] %logger{36} %X{traceId} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%-5level] %logger{36} %X{traceId} - %msg%n"
+```
+
 - The pom.xml for the spring boot simple application
 
 ```xml
