@@ -6,7 +6,8 @@ Pre-requisites:
 
 This blog details on how to create spans manually in Spring Boot application. This is based on a requirement in a project, to track the flow between application using Jaeger. To create the traces and spans manually so it can visualized in Jaeger UI and helps the business process on how much time it takes.
  
-In order to demonstrate we have two Spring Boot application, use the tracer object configured in Spring boot to create the spans. The spans set with name with additional tags which is key value pair which can be viewed in Jaeger UI. In the example, the application named `invoker-app` exposes a REST API (`/api/v2/execute`), when invoked calls the REST API (`/app/run?traceId=xxx&spanId=yyy`) of second application named `app-1`. The `app-1` application uses the traceId and spanId to create a trace context and adds to the current tracer.
+In order to demonstrate we have two Spring Boot application, the tracer object configured in Spring boot to create the spans manually. The spans set with name and additional tags (key value pair) which can be viewed in Jaeger UI.
+In this example, the application named `invoker-app` exposes a REST API (`/api/v2/execute`), when invoked calls the REST API (`/app/run?traceId=xxx&spanId=yyy`) of second application named `app-1`. The `app-1` application uses the traceId and spanId to create a trace context and adds to the current tracer.
 
 The code snippet below is in app-1 application which creates traceContext with the traceId and spanId. The created traceContext is set to the configured tracer objects current Tracer Context scope. 
 
