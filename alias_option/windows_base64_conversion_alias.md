@@ -7,4 +7,21 @@
 Function Base64-Conv { [Text.Encoding]::Utf8.GetString([Convert]::FromBase64String( $args )) }
 
 Set-Alias -Name base64conv -Value Base64-Conv
+
+# function that encodes
+Function Base64-encode { 
+   param([string]$plainText)
+   [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes($plainText))
+}
+Set-Alias -Name base64encode -Value Base64-encode
+
+```
+
+example 
+
+```
+base64encode hello
+aGVsbG8=
+base64decode aGVsbG8=
+hello
 ```
