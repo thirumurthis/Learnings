@@ -17,9 +17,9 @@ Check links
 
 [3. Saga pattern ](https://microservices.io/patterns/data/saga.html)
 
-[4. Video ] (https://www.youtube.com/watch?v=cpdL73GsM5c&feature=emb_title)
+[4. Video ](https://www.youtube.com/watch?v=cpdL73GsM5c&feature=emb_title)
 
-[5. Presentation] (https://www.slideshare.net/chris.e.richardson/microcph-managing-data-consistency-in-a-microservice-architecture-using-sagas)
+[5. Presentation](https://www.slideshare.net/chris.e.richardson/microcph-managing-data-consistency-in-a-microservice-architecture-using-sagas)
 
 
 ###### Git links for saga details:
