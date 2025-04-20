@@ -6,52 +6,54 @@ import io.dagger.client.DaggerQueryException;
 import io.dagger.client.Directory;
 import io.dagger.client.File;
 import io.dagger.client.Service;
-import io.dagger.module.AbstractModule;
 import io.dagger.module.annotation.Function;
 import io.dagger.module.annotation.Object;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static io.dagger.client.Dagger.dag;
+
 /** Backend main object */
 @Object
-public class Backend extends AbstractModule {
+public class Backend {
   /** Returns a container that echoes whatever string argument is provided */
- /* @Function
+  @Function
   public Container containerEcho(String stringArg) {
-    return dag.container().from("alpine:latest").withExec(List.of("echo", stringArg));
-  }*/
+    return dag().container().from("alpine:latest").withExec(List.of("echo", stringArg));
+  }
 
   /** Returns lines that match a pattern in the files of the provided Directory */
-  /*@Function
+  @Function
   public String grepDir(Directory directoryArg, String pattern)
       throws InterruptedException, ExecutionException, DaggerQueryException {
-    return dag.container()
+    return dag()
+        .container()
         .from("alpine:latest")
         .withMountedDirectory("/mnt", directoryArg)
         .withWorkdir("/mnt")
         .withExec(List.of("grep", "-R", pattern, "."))
         .stdout();
-  }*/
+  }
 
   /** Create environment for build **/
   @Function
   public Container buildEnv(Directory source)
           throws InterruptedException, ExecutionException, DaggerQueryException {
-    CacheVolume mavenCache = dag.cacheVolume("maven-cache");
-    return dag.container()
+    CacheVolume mavenCache = dag().cacheVolume("maven-cache");
+    return dag().container()
             .from("maven:3.9.9-amazoncorretto-21")
             .withMountedCache("root/.m2",mavenCache)
             .withMountedDirectory("/app/backend",source
-                                                 .withoutDirectory(".idea")
-                                                 .withoutDirectory(".dagger"))
+                    .withoutDirectory(".idea")
+                    .withoutDirectory(".dagger"))
             .withWorkdir("/app/backend");
   }
 
   /** Build jar artifacts*/
   @Function
   public File build(Directory source)
-    throws InterruptedException, ExecutionException, DaggerQueryException {
+          throws InterruptedException, ExecutionException, DaggerQueryException {
 
     return buildEnv(source)
             .withExec(List.of("mvn","-DskipTests","clean","install"))
@@ -62,7 +64,7 @@ public class Backend extends AbstractModule {
   /** Run test*/
   @Function
   public String test(Directory source)
-    throws InterruptedException, ExecutionException, DaggerQueryException {
+          throws InterruptedException, ExecutionException, DaggerQueryException {
 
     return buildEnv(source)
             .withExec(List.of("mvn","test"))
@@ -77,7 +79,7 @@ public class Backend extends AbstractModule {
 
     String dockerhub_url = "docker.io/thirumurthi/sample-app:latest";
     String dockerhub_token = "your_dockerhub_personal_access_token";
-    return dag.container()
+    return dag().container()
             .from("openjdk:21-jdk-slim")
             .withFile("/app/sample-app.jar",build(source))
             .withExec(List.of("chmod","777","/app/sample-app.jar"))
@@ -92,9 +94,9 @@ public class Backend extends AbstractModule {
   /** Runs as service*/
   @Function
   public Service run(Directory source)
-    throws InterruptedException, ExecutionException, DaggerQueryException {
+          throws InterruptedException, ExecutionException, DaggerQueryException {
 
-    return dag.container()
+    return dag().container()
             .from("openjdk:21-jdk-slim")
             .withFile("/app/sample-app.jar",build(source))
             .withExec(List.of("chmod","777","/app/sample-app.jar"))
@@ -113,7 +115,7 @@ public class Backend extends AbstractModule {
   @Function
   public Service testRun()
           throws InterruptedException, ExecutionException, DaggerQueryException {
-    return dag.container()
+    return dag().container()
             .from("nginx:latest")
             .withExposedPort(80)
             .asService()
@@ -127,7 +129,7 @@ public class Backend extends AbstractModule {
   public Container buildHelper(Directory directoryArg)
           throws InterruptedException, ExecutionException, DaggerQueryException {
 
-    return dag.container()
+    return dag().container()
             .from("maven:3.9.9-amazoncorretto-21")
             .withMountedDirectory("/src",directoryArg)
             .withWorkdir("/src")
@@ -145,7 +147,7 @@ public class Backend extends AbstractModule {
   public File buildJar(Directory directoryArg)
           throws InterruptedException, ExecutionException, DaggerQueryException {
 
-    return dag.container()
+    return dag().container()
             .from("maven:3.9.9-amazoncorretto-21")
             .withMountedDirectory("/src",directoryArg)
             .withWorkdir("/src")
@@ -157,5 +159,4 @@ public class Backend extends AbstractModule {
             .file("target/sample-app-0.0.1-SNAPSHOT.jar")
             ;
   }
-
 }

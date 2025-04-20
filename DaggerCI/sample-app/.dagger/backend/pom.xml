@@ -4,26 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.dagger.modules.sampleapp</groupId>
-    <artifactId>sample-app</artifactId>
+    <groupId>io.dagger.modules.daggermodule</groupId>
+    <artifactId>backend</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>sample-app</name>
+    <name>backend</name>
 
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dagger.module.deps>0.18.3-backend-module</dagger.module.deps>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.dagger</groupId>
             <artifactId>dagger-java-sdk</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${dagger.module.deps}</version>
         </dependency>
         <dependency>
             <groupId>io.dagger</groupId>
             <artifactId>dagger-java-annotation-processor</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${dagger.module.deps}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -75,7 +76,7 @@
                             <path>
                                 <groupId>io.dagger</groupId>
                                 <artifactId>dagger-java-annotation-processor</artifactId>
-                                <version>1.0.0-SNAPSHOT</version>
+                                <version>${dagger.module.deps}</version>
                             </path>
                         </annotationProcessorPaths>
                         <annotationProcessors>
@@ -129,7 +130,7 @@
                         <configuration>
                             <sources>
                                 <source>${project.build.directory}/generated-sources/dagger-io</source>
-                                <source>${project.build.directory}/generated-sources/sample-app</source>
+                                <source>${project.build.directory}/generated-sources/dagger-module</source>
                                 <source>${project.build.directory}/generated-sources/entrypoint</source>
                             </sources>
                         </configuration>
