@@ -117,49 +117,52 @@ import io.dagger.client.DaggerQueryException;
 import io.dagger.client.Directory;
 import io.dagger.client.File;
 import io.dagger.client.Service;
-import io.dagger.module.AbstractModule;
 import io.dagger.module.annotation.Function;
 import io.dagger.module.annotation.Object;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static io.dagger.client.Dagger.dag;
+
 /** Backend main object */
 @Object
-public class Backend extends AbstractModule {
-    
+public class Backend {
+
   /** Create environment for build **/
   @Function
   public Container buildEnv(Directory source)
           throws InterruptedException, ExecutionException, DaggerQueryException {
-    CacheVolume mavenCache = dag.cacheVolume("maven-cache");
-    return dag.container()
+    CacheVolume mavenCache = dag().cacheVolume("maven-cache");
+    return dag().container()
             .from("maven:3.9.9-amazoncorretto-21")
             .withMountedCache("root/.m2",mavenCache)
             .withMountedDirectory("/app/backend",source
-                                                 .withoutDirectory(".idea")
-                                                 .withoutDirectory(".dagger"))
+                    .withoutDirectory(".idea")
+                    .withoutDirectory(".dagger"))
             .withWorkdir("/app/backend");
   }
 
-  /** Build the jar artifacts*/
+  /** Build jar artifacts*/
   @Function
   public File build(Directory source)
-    throws InterruptedException, ExecutionException, DaggerQueryException {
+          throws InterruptedException, ExecutionException, DaggerQueryException {
 
     return buildEnv(source)
             .withExec(List.of("mvn","-DskipTests","clean","install"))
             .file("target/sample-app-0.0.1-SNAPSHOT.jar");
+
   }
 
-  /** Run test */
+  /** Run test*/
   @Function
   public String test(Directory source)
-    throws InterruptedException, ExecutionException, DaggerQueryException {
+          throws InterruptedException, ExecutionException, DaggerQueryException {
 
     return buildEnv(source)
             .withExec(List.of("mvn","test"))
             .stdout();
+
   }
 
   /** Publish the artifact */
@@ -167,13 +170,16 @@ public class Backend extends AbstractModule {
   public String publish(Directory source)
           throws InterruptedException, ExecutionException, DaggerQueryException {
 
-    return dag.container()
-            .from("openjdk:21-jdk-slim") // we can use the buildEnv function as well
-            .withFile("/app/sample-app.jar",build(source)) //build function is called which will create the jar file and return it
+    String dockerhub_url = "docker.io/thirumurthi/sample-app:latest";
+    String dockerhub_token = "your_dockerhub_personal_access_token";
+    return dag().container()
+            .from("openjdk:21-jdk-slim")
+            .withFile("/app/sample-app.jar",build(source))
             .withExec(List.of("chmod","777","/app/sample-app.jar"))
             .withEntrypoint(List.of("java","-jar","/app/sample-app.jar"))
             .withExposedPort(8080)
-            // publishing to ttl.sh repo
+            //.publish("localhost:5000/simple-app:1.0.0")
+            //.publish("localhost:5000/simple-app-%d".formatted((int) (Math.random() * 10000000)))
             .publish("ttl.sh/simple-dagger-app-%d".formatted((int) (Math.random() * 10000000)))
             ;
   }
@@ -181,17 +187,73 @@ public class Backend extends AbstractModule {
   /** Runs as service*/
   @Function
   public Service run(Directory source)
-    throws InterruptedException, ExecutionException, DaggerQueryException {
+          throws InterruptedException, ExecutionException, DaggerQueryException {
 
-    return dag.container()
+    return dag().container()
             .from("openjdk:21-jdk-slim")
             .withFile("/app/sample-app.jar",build(source))
             .withExec(List.of("chmod","777","/app/sample-app.jar"))
             .withEntrypoint(List.of("java","-jar","/app/sample-app.jar"))
             .withExposedPort(8080)
             .asService()
-            .withHostname("localhost");
+            .withHostname("localhost")
+            //.asService(new Container.AsServiceArguments().withArgs(List.of("")))
+            //.start()
+            //.
+            ;
+    //.withExec(List.of("java","-jar","/app/sample-app.jar")) -- is not working when use as service
   }
+
+  /** simple test container */
+  @Function
+  public Service testRun()
+          throws InterruptedException, ExecutionException, DaggerQueryException {
+    return dag().container()
+            .from("nginx:latest")
+            .withExposedPort(80)
+            .asService()
+            .withHostname("localhost")
+            .start()
+            ;
+  }
+
+  /** Build helper returns container*/
+  @Function
+  public Container buildHelper(Directory directoryArg)
+          throws InterruptedException, ExecutionException, DaggerQueryException {
+
+    return dag().container()
+            .from("maven:3.9.9-amazoncorretto-21")
+            .withMountedDirectory("/src",directoryArg)
+            .withWorkdir("/src")
+            //.withExec(List.of("ls","-lrt"))
+            //.withExec(List.of("mvn","--version"))
+            //.withExec(List.of("mvn","install"))
+            //.stdout();
+            //.withExec(List.of("mvn","-DskipTests","clean","install"))
+            //.file("/src/target/sample-app-0.0.1-SNAPSHOT.jar")
+            ;
+  }
+
+  /** Build the jar file*/
+  @Function
+  public File buildJar(Directory directoryArg)
+          throws InterruptedException, ExecutionException, DaggerQueryException {
+
+    return dag().container()
+            .from("maven:3.9.9-amazoncorretto-21")
+            .withMountedDirectory("/src",directoryArg)
+            .withWorkdir("/src")
+            //.withExec(List.of("ls","-lrt"))
+            //.withExec(List.of("mvn","--version"))
+            .withExec(List.of("mvn","-DskipTests","clean","install"))
+            //.stdout();
+            //.withExec(List.of("mvn","-DskipTests","clean","install"))
+            .file("target/sample-app-0.0.1-SNAPSHOT.jar")
+            ;
+  }
+}
+
 ```
 
 - Below is the Dagger CLI command that lists the backend module functions. The function name `buildEnv` is displayed as `build-env` by Dagger CLI.
@@ -288,30 +350,32 @@ import io.dagger.client.Container;
 import io.dagger.client.DaggerQueryException;
 import io.dagger.client.Directory;
 import io.dagger.client.Service;
-import io.dagger.module.AbstractModule;
 import io.dagger.module.annotation.Function;
 import io.dagger.module.annotation.Object;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static io.dagger.client.Dagger.dag;
+
 /** SampleApp main object */
 @Object
-public class SampleApp extends AbstractModule {
+public class SampleApp {
 
-  /** Publish image to repo */
+  /** publish image of the apps */
   @Function
   public String publish(Directory source)
           throws InterruptedException, ExecutionException, DaggerQueryException {
-     return dag.backend().publish(source);
+    return dag().backend().publish(source);
   }
 
-  /** Run the app as service */
+  /** Run the application as service*/
   @Function
   public Service run(Directory source){
-    return dag.backend().run(source);
+    return dag().backend().run(source);
   }
 }
+
 ```
 
 Since the parent module is updated, by issuing below command we could see those functions listed like in the output of the command below.
