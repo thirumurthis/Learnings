@@ -1,26 +1,28 @@
-### The picocli usage with Jbang
+### Picocli framework with Jbang
+
 -  Picocli is a one-file framework for creating Java command line applications. 
 - In this demonstrated we using picocli framework to java code takes command line arguments and performs some logic.
 - This blog will just demonstrate the usage of Picocli framework with Jbang, for more info refer the [picocli documentation](https://picocli.info/#_introduction).
-- Basic understanding of Jbang will help to execut the code
+- Basic understanding of Jbang will help to execute the code
+- This blog doesn't explains the details of the code, just demonstrate how we can use the Picocli framework and Jbang like script for different usage.
 
-#### Pre-requsites
+#### Pre-requisites
 - Jbang CLI installed 
 
 #### Summary
 - In code example we use Jbang to load the picocli dependency and use that framework to build the simple java application that takes command line arguments.
 - When executing the java application a parameter needs to be passed which is considered as username it can be any random string.
 - The application also takes an optional argument `-r` or `--random-message`, when this argument is passed the code will fetch some random message from internet.
-- The application also takes an optional password argument `-p` or `--password` which is set to be interactive, that is no need to pass the password upon executing the code it will be prompting frome the user.
+- The application also takes an optional password argument `-p` or `--password` which is set to be interactive. There is no need to provide the password value along with the argument, upon execution password prompt will appear for the user input
 - The `-h` or `--help` argument will display the usage of the java application.
-- The Jaway json path dependency used to extract the information from the API.
+- Jayway json dependency is used to extract the information from the API.
 
 
 #### Code
 
- - The `demoappcli.java` is the entry point for the Jbang, for the `-r` option to connect to the API in the internet the code is placed under `support/` folder, which is referred in Jbang class with `//SOURCES suppor/*` and import the package `import support.apihelper`..
+ - The `demoappcli.java` is the entry point for the Jbang, for the `-r` option to connect to the API in the internet the code is placed under `support/` folder, which is referred in Jbang class with `//SOURCES support/*` and import the package `import support.apihelper`.
  
-- To execuet the application we can use the Jbang cli by passing the java class name and command line arguments like below
+- To execute the application we can use the Jbang cli by passing the java class name and command line arguments like below
 
 ```
 $ jbang demoappcli.java testUser -r
