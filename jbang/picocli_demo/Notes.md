@@ -46,9 +46,7 @@ demo app cli example with picocli
   -p, --password         Passphrase
   -r, --random-message   flag will print a random message from internet
 ```
-
-![image](https://github.com/user-attachments/assets/5552cc4d-bb52-407f-8755-16238f76fd36)
-
+![picocli-1](https://github.com/user-attachments/assets/cfa854a9-8caa-4cb3-bb60-005daa81f809)
 
 - The main java class 
 
@@ -225,7 +223,7 @@ alias demoappcli='jbang /c/demo/demoappcli.java'
 
 - output with the alias command
 
-![image](https://github.com/user-attachments/assets/41c98e10-b5c1-46ce-827e-defa552900c2)
+![picocli-2](https://github.com/user-attachments/assets/43c86e23-15cb-48b1-afe9-5c10a2922a9c)
 
 ```
 $ demoappcli user-01 -p
