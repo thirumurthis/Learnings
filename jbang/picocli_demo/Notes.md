@@ -45,6 +45,9 @@ demo app cli example with picocli
   -r, --random-message   flag will print a random message from internet
 ```
 
+![image](https://github.com/user-attachments/assets/5552cc4d-bb52-407f-8755-16238f76fd36)
+
+
 - The main java class 
 
 ```java
@@ -218,7 +221,9 @@ Additionally we can create an alias command and pass just the arguments
 alias demoappcli='jbang /c/demo/demoappcli.java'
 ```
 
-- output 
+- output with the alias command
+
+![image](https://github.com/user-attachments/assets/41c98e10-b5c1-46ce-827e-defa552900c2)
 
 ```
 $ demoappcli user-01 -p
