@@ -1,10 +1,10 @@
 ### Picocli framework with Jbang
 
--  Picocli is a one-file framework for creating Java command line applications. 
-- In this demonstrated we using picocli framework to java code takes command line arguments and performs some logic.
+- Picocli is a one-file framework for creating Java command line applications. 
 - This blog will just demonstrate the usage of Picocli framework with Jbang, for more info refer the [picocli documentation](https://picocli.info/#_introduction).
-- Basic understanding of Jbang will help to execute the code
-- This blog doesn't explains the details of the code, just demonstrate how we can use the Picocli framework and Jbang like script for different usage.
+- In this blog demonstrated how we can use picocli framework with JBang that takes command line arguments and performs some logic.
+- This blog doesn't explains the details of the code, just demonstrate how we can use the Picocli framework and JBang like script for different usage.
+- Basic understanding of JBang will help to execute the code
 
 #### Pre-requisites
 - Jbang CLI installed 
