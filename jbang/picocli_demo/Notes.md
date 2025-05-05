@@ -210,3 +210,18 @@ public class apihelper {
     }   
 }
 ```
+
+Additionally we can create an alias command and pass just the arguments
+
+```
+# assume the the main class is placed in /c/demo/ we use that in the alias command
+alias demoappcli='jbang /c/demo/demoappcli.java'
+```
+
+- output 
+
+```
+$ demoappcli user-01 -p
+Enter value for --password (Passphrase):
+{ "username": "user-01","password-provided": "true" }
+```
