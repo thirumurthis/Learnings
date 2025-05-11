@@ -1,0 +1,38 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaMirrorMaker2
+metadata:
+  name: mm2-target-plain
+spec:
+  version: 4.0.0
+  replicas: 1
+  connectCluster: "kafka-dest" # Must be the target custer
+  clusters:
+  - alias: "kafka-src" # Source cluster
+    bootstrapServers: kafka-src-control-plane:32200
+  - alias: "kafka-dest" # Target cluster
+    bootstrapServers: kafka-dest-kafka-bootstrap:9092
+    config:
+      # -1 means it will use the default replication factor configured in the broker
+      config.storage.replication.factor: -1
+      offset.storage.replication.factor: -1
+      status.storage.replication.factor: -1
+  mirrors:
+  - sourceCluster: "kafka-src"
+    targetCluster: "kafka-dest"
+    sourceConnector:
+      tasksMax: 1
+      config:
+        # -1 means it will use the default replication factor configured in the broker
+        replication.factor: -1
+        offset-syncs.topic.replication.factor: -1
+        sync.topic.acls.enabled: "false"
+        refresh.topics.interval.seconds: 600
+    checkpointConnector:
+      tasksMax: 1
+      config:
+        # -1 means it will use the default replication factor configured in the broker
+        checkpoints.topic.replication.factor: -1
+        sync.group.offsets.enabled: "false"
+        refresh.groups.interval.seconds: 600
+    topicsPattern: ".*"
+    groupsPattern: ".*"

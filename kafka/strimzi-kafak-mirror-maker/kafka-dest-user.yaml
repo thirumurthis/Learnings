@@ -1,0 +1,10 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaUser
+metadata:
+  name: kafka-dest-user
+  namespace: kafka
+  labels:
+    strimzi.io/cluster: kafka-dest
+spec:
+  authentication:
+    type: tls
