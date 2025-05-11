@@ -11,15 +11,17 @@ In this blog demonstrated configuring Strimzi Kafka Mirrormaker 2 with use of ki
 
 ## Summary
 
-We create two Kind cluster `source` and `destination`, the kind cluser configuration exposes the NodePort so the container can be accessed from the host machine. 
+- We create two Kind cluster `source` and `destination`, the kind cluser configuration exposes the NodePort so the container can be accessed from the host machine. 
 
-With the Kind nodeport exposed, we can configure the Kafka Cluster with NodePort. With this configuration we Refer the [Strimzi blog](https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/).
+- With the Kind nodeport exposed, we can configure the Kafka Cluster with NodePort. With this configuration we Refer the [Strimzi blog](https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/).
 
-This blog uses Strimzi version 0.46.0, the operator is installed using Helm chart. Note, from 0.46.0 version onwards Kafka removed the Zookeeper so we have to use Kraft mode. 
+- This blog uses Strimzi version 0.46.0, the operator is installed using Helm chart. Note, from 0.46.0 version onwards Kafka removed the Zookeeper so we have to use Kraft mode. 
 
-The Kafka cluster configuration includes KafkaNodePool with one controller and one broker configured with ephemeral storage.
+- The Kafka cluster configuration includes KafkaNodePool with one controller and one broker configured with ephemeral storage.
 
-The Mirrormaker2 configuration will be deployed to destination cluster, the topic created on the source cluster will be replicatd in the destination server.
+- The Mirrormaker2 configuration will be deployed to destination cluster, the topic created on the source cluster will be replicatd in the destination server.
+
+- This is not production ready configuration, only foe learing and development purpose. 
 
 
 ### Kind cluster configuration
@@ -66,8 +68,9 @@ kind create cluster --config kind-src-config.yaml
 kind create cluster --config kind-dest-config.yaml
 ```
 
-Below diagram provides an overview of the cluster and topics details
-<\<IMAGE - working diagram >>
+- Below diagram provides an overview of the cluster and topics detail
+
+![kafka-strimzi](https://github.com/user-attachments/assets/5a8246aa-3836-4daa-83ce-60e540bdee2b)
 
 
 ### Strimzi operator installation
@@ -101,7 +104,6 @@ $ helm upgrade -i strimzi strimzi/strimzi-kafka-operator --version 0.46.0 -n kaf
 #### Source kafka cluster configuration
 
 - The listener configuration includes container name in the  `advertisedhost`, since we use the NodePort the docker port is exposed and uses the same bridge network we can access using the container name instead of the IP address. With the `docker network inspect kind` command we can get the name of the container cluster and IP address as well.
-- The 
 
 ```yaml
 # file-name: kafka-src-cluster.yaml
@@ -326,7 +328,8 @@ $ kubectl --context kind-kafka-src -n kafka apply -f kafka-src-test-topic.yaml
 
 - Below snapshot lists the pods info on source and destination cluster
 
-<\<IMAGE - kafka pods >>
+![kafka_pods_cluster](https://github.com/user-attachments/assets/7a30b16c-aa3d-441f-a02e-ae1804be343a)
+
 
 
 - With below command we can list the topics created on source kafka cluster, changing the context and pod name we can use the same format to list topics in destination server.
@@ -349,12 +352,15 @@ $ bin/kafka-console-consumer.sh --topic test-topic-1 --group tt1-group-1 --from-
 
 - Below snapshot shows the topics list on source and destination cluster
 
-<\< IMAGE - >>
+![topics_list](https://github.com/user-attachments/assets/d6cba90e-5dc7-48eb-83ea-4c05ad91b295)
+
 
 - After creating a kafka topic named `testing-topic-one` using Strimzi kafka CR resource, we could see that after topic creation the topic on the source reflect on the destination `kafka-src.testing-topic-one`.
 
-<\< IMAGE - >>
+![topic_synced_after_sometime](https://github.com/user-attachments/assets/eab50011-ed64-475c-9fed-dd7abcbb4ef7)
 
-- Below snapshot where we produce message to source kafka cluster topic and could see the messages also available in destination cluster topics when consumed on the replicated topic. 
 
-<\< IMAGE >>
+- Below snapshot where we produce message to source kafka cluster topic and could see the messages also available in destination cluster topics when consumed on the replicated topic.
+ 
+![synced_topic_with_msg_from_src](https://github.com/user-attachments/assets/118ecb92-e193-4caf-8461-24ce3d80e426)
+
