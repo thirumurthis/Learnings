@@ -1,6 +1,6 @@
 # Strimzi kafka Mirrormaker 2 with Kind cluster
 
-In this blog demonstrated configuring Strimzi Kafka Mirrormaker 2 with use of kind cluster.
+In this blog demonstrated configuring Strimzi Kafka Mirrormaker2 using of KinD cluster. Strimzi Mirrormaker2 is used to replicate topics and data from one kafka cluster to another.
 
 ## Prequisite:
 
@@ -9,24 +9,23 @@ In this blog demonstrated configuring Strimzi Kafka Mirrormaker 2 with use of ki
  - Kubectl CLI
  - Helm CLI
 
+Note, this blog doesn't deep dive into the concepts, just demonstrates the basic configuration of Mirrormaker in KinD, the configuration can be updated for further learning in the local machine instead of setting up an actual K8S cluster.
+
 ## Summary
 
-- We create two Kind cluster `source` and `destination`, the kind cluser configuration exposes the NodePort so the container can be accessed from the host machine. 
+- Two Kind cluster created as `source` and `destination`, the NodePort of the KinD container is exposed with the `extraPortMapping` config. So two KinD cluster can communicate with each other without any network customization. 
 
-- With the Kind nodeport exposed, we can configure the Kafka Cluster with NodePort. With this configuration we Refer the [Strimzi blog](https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/).
+- To configure the Kafka cluster to communicate With NodePort refer the [Strimzi blog](https://strimzi.io/blog/2019/04/23/accessing-kafka-part-2/).
 
-- This blog uses Strimzi version 0.46.0, the operator is installed using Helm chart. Note, from 0.46.0 version onwards Kafka removed the Zookeeper so we have to use Kraft mode. 
+- From Kafka veersion 4.0.0 and Strimzi version 0.46.0 Zookeeper is removed to favour Kraft mode. To deploy the Kafka cluster in Kraft mode, the cluster configuration includes KafkaNodePool resource with one controller and one broker. Being a local environment the cluster is configured to use ephemeral storage, the data won't be persisted if the container gets deleted.
 
-- The Kafka cluster configuration includes KafkaNodePool with one controller and one broker configured with ephemeral storage.
+- Mirrormaker2 can be deployed in different patterns, refer the [documentation](https://developers.redhat.com/articles/2023/11/13/demystifying-kafka-mirrormaker-2-use-cases-and-architecture#use_cases) for more details. In this blog we have deployed the Mirrormaker2 at the target or destination where the Kafka topics are to be replicated. The Mirrormaker2 configuration directly uses Plain listener and not TLS so no encryption is done.
 
-- The Mirrormaker2 configuration will be deployed to destination cluster, the topic created on the source cluster will be replicatd in the destination server.
-
-- This is not production ready configuration, only foe learing and development purpose. 
-
+- Note, this is not production ready configuration, mostly to be used for learing and development purpose. 
 
 ### Kind cluster configuration
 
-- The kind kafka source cluster configuration
+- The kind kafka source cluster configuration, the `extraPortMapping` config exposes `32200` port which will be used on the Mirrormaker2 config connects to listener with plain port.
 
 ```yaml
 # file-name: kind-src-config.yaml 
@@ -75,7 +74,7 @@ kind create cluster --config kind-dest-config.yaml
 
 ### Strimzi operator installation
 
-- With the cluster created with above configuration, then we need to deploy the Strimzi operator. We can use helm chart to install the operator the helm command to deploy is shown below 
+- After creating the KinD cluster with above configuration then the Strimzi operator needs to be installed. We can use helm chart or Kubectl to install the operator, in here we use Helm CLI the command to deploy is shown below.
 
 ```
 -- add the helm repo 
@@ -92,16 +91,16 @@ $ kubectl --context kind-kafka-src create ns kafka
 $ helm upgrade -i strimzi strimzi/strimzi-kafka-operator --version 0.46.0 -n kafka --kube-context kind-kafka-src
 ```
 
-- The same should be deployed to destination cluster with below command
+- The Strimzi operator should also be deployed to destination cluster, the context is changed in below command.
 
 ```
 $ kubectl --context kind-kafka-dest create ns kafka
 $ helm upgrade -i strimzi strimzi/strimzi-kafka-operator --version 0.46.0 -n kafka --kube-context kind-kafka-dest
 ```
 
-### Deploy kafka cluster with KRaft mode
+### kafka cluster deployment
 
-#### Source kafka cluster configuration
+#### Source kafka cluster deployment
 
 - The listener configuration includes container name in the  `advertisedhost`, since we use the NodePort the docker port is exposed and uses the same bridge network we can access using the container name instead of the IP address. With the `docker network inspect kind` command we can get the name of the container cluster and IP address as well.
 
@@ -169,7 +168,7 @@ spec:
     userOperator: {}
 ```
 
-### Destination Kafka cluster configuration
+### Destination Kafka cluster deployment
 
 ```yaml
 # file-name: kafka-dest-cluster.yaml
@@ -235,7 +234,7 @@ spec:
     userOperator: {}
 ```
 
-- To deploy the configuration to the kind cluster use following command
+- To deploy the cluster configuration to the KinD cluster use following command.
 
 ```
 -- source kafka cluster 
@@ -249,9 +248,9 @@ $ kubectl --context kind-kafka-dest -n kafka apply -f kafka-dest-cluster.yaml
 
 #### Kafka MirrorMaker2 configuration
 
-- Below is the mirrormaker2 configuration which connects to the plain port. 
+- Mirrormaker2 configuration uses the listener plain port. 
 
-This blog doesn't use TLS port, in order to use the TLS port in Mirrirmaker2 configuration we need to create kafka user on the source and destination. Create secrets on the destination kind cluster with the source kafka cluster ca-certificate and user ca-certificate in the destination cluster. And update the Mirrormaker2 configuration with authentication and secret info. Refer the strimzi documentation for more details. 
+To use TLS listener port Mirrirmaker2 configuration will be different were the we need to create kafka user on the source and destination. The certificates of the should be created as secrets on the destination Kind cluster. The Mirrormaker2 configuration has to be updated with the authentication details. Refer the strimzi documentation for more details. 
 
 ```yaml
 # file-name: mm2-target-plain.yaml
@@ -295,13 +294,13 @@ spec:
     groupsPattern: ".*"
 ```
 
-- To deploy the Mirrormaker2 (MM2) on kafka destination cluster we can use below command
+- With below command the Mirrormaker2 (MM2) can be deployed on kafka destination cluster.
 
 ```
 $ kubectl --context kind-kafka-dest -n kafka apply -f mm2-target-plain.yaml
 ```
 
-#### Create topic using the CRD
+#### KafaTopic creation
 
 ```yaml
 # file-name: kafka-src-test-topic.yaml
@@ -320,25 +319,24 @@ spec:
 
 ```
 
-- To deploy the topic we can use below command
+- Deploy the topics manifest with below command
 
 ```
 $ kubectl --context kind-kafka-src -n kafka apply -f kafka-src-test-topic.yaml
 ```
 
-- Below snapshot lists the pods info on source and destination cluster
+- Below snapshot we could see the pods created and status of those pods in source and destination cluster
 
 ![kafka_pods_cluster](https://github.com/user-attachments/assets/7a30b16c-aa3d-441f-a02e-ae1804be343a)
 
 
-
-- With below command we can list the topics created on source kafka cluster, changing the context and pod name the same command can be reused to list topics from destination kind cluster.
+- To list the topics created on source kafka cluster we can use below command. Same can be used to list topics in destination change the context and pod name.
 
 ```
 $ kubectl --context kind-kafka-dest -n kafka exec pod/kafka-dest-source-0 -c kafka -- sh -c 'bin/kafka-topics.sh --list --bootstrap-server localhost:9092'
 ```
 
-- After executing into the kafka cluster pod on the source or destination kind cluster, we can use below command to produca and consume messages.
+- Below command can be used to produce and consume message on the kafka pod. To execute the below command use `kubectl exec` command to shell into the kafka cluster pod.
 
 ```
 -- exec into the kafka cluster pod to execute 
@@ -350,17 +348,17 @@ $ bin/kafka-console-producer.sh  --topic test-topic-1 --bootstrap-server localho
 $ bin/kafka-console-consumer.sh --topic test-topic-1 --group tt1-group-1 --from-beginning --bootstrap-server localhost:9092
 ```
 
-- In below snapshot we could see the list of topics list that are available on source and destination kafka cluster after deployment of mirrormaker2.
+- In below snapshot we could see the list of topics that are available on source and destination kafka cluster after deploying mirrormaker2.
 
 ![topics_list](https://github.com/user-attachments/assets/d6cba90e-5dc7-48eb-83ea-4c05ad91b295)
 
 
-- A kafka topic named `testing-topic-one` was created using Strimzi KafkaTopic CR manifest, we could see in the below snapshot that after topic creation on the source kafka cluster it is replicated in the destination kafka cluster with name `kafka-src.testing-topic-one` (refer the last command output in the snapshot).
+- Now when we create a kafka topic named `testing-topic-one`, with KafkaTopic CR manifest. Once the topics is created the topic should be available in the destination server. Below snapshot shows the created topic creation on the source kafka cluster first and it is replicated in the destination kafka cluster with name `kafka-src.testing-topic-one` (refer the last command output in below snapshot).
 
 ![topic_synced_after_sometime](https://github.com/user-attachments/assets/eab50011-ed64-475c-9fed-dd7abcbb4ef7)
 
 
-- Below snapshot the first section we produce message on to the topic of source kafka cluster. The message can be consumed on the destination cluster topics which got replicated.
+- Below snapshot the first command produce message on to the topic in source kafka cluster. The message being consumed on the destination cluster replicated topic.
  
 ![synced_topic_with_msg_from_src](https://github.com/user-attachments/assets/118ecb92-e193-4caf-8461-24ce3d80e426)
 
