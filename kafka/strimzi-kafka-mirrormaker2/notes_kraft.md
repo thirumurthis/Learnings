@@ -99,7 +99,7 @@ $ kubectl --context kind-kafka-dest create ns kafka
 $ helm upgrade -i strimzi strimzi/strimzi-kafka-operator --version 0.46.0 -n kafka --kube-context kind-kafka-dest
 ```
 
-### Deploy the kafka cluster with KRaft mode
+### Deploy kafka cluster with KRaft mode
 
 #### Source kafka cluster configuration
 
@@ -251,7 +251,7 @@ $ kubectl --context kind-kafka-dest -n kafka apply -f kafka-dest-cluster.yaml
 
 - Below is the mirrormaker2 configuration which connects to the plain port. 
 
-This blog doesn't use TLS port, in order to use the TLS port we need to create kafka user on the source and destination. Copy the kafka source ca-certificate and user ca-certificate to the destination cluster and update the MM2 configuration. 
+This blog doesn't use TLS port, in order to use the TLS port in Mirrirmaker2 configuration we need to create kafka user on the source and destination. Create secrets on the destination kind cluster with the source kafka cluster ca-certificate and user ca-certificate in the destination cluster. And update the Mirrormaker2 configuration with authentication and secret info. Refer the strimzi documentation for more details. 
 
 ```yaml
 # file-name: mm2-target-plain.yaml
@@ -295,7 +295,7 @@ spec:
     groupsPattern: ".*"
 ```
 
-- To deploy the MM2 kafka destination cluster use below command
+- To deploy the Mirrormaker2 (MM2) on kafka destination cluster we can use below command
 
 ```
 $ kubectl --context kind-kafka-dest -n kafka apply -f mm2-target-plain.yaml
@@ -320,7 +320,7 @@ spec:
 
 ```
 
-- Deploy the topic using below command
+- To deploy the topic we can use below command
 
 ```
 $ kubectl --context kind-kafka-src -n kafka apply -f kafka-src-test-topic.yaml
@@ -332,13 +332,13 @@ $ kubectl --context kind-kafka-src -n kafka apply -f kafka-src-test-topic.yaml
 
 
 
-- With below command we can list the topics created on source kafka cluster, changing the context and pod name we can use the same format to list topics in destination server.
+- With below command we can list the topics created on source kafka cluster, changing the context and pod name the same command can be reused to list topics from destination kind cluster.
 
 ```
 $ kubectl --context kind-kafka-dest -n kafka exec pod/kafka-dest-source-0 -c kafka -- sh -c 'bin/kafka-topics.sh --list --bootstrap-server localhost:9092'
 ```
 
-- After executing into the source or destination pod with below command we can produce message or consume messages on appropriate cluster
+- After executing into the kafka cluster pod on the source or destination kind cluster, we can use below command to produca and consume messages.
 
 ```
 -- exec into the kafka cluster pod to execute 
@@ -350,17 +350,17 @@ $ bin/kafka-console-producer.sh  --topic test-topic-1 --bootstrap-server localho
 $ bin/kafka-console-consumer.sh --topic test-topic-1 --group tt1-group-1 --from-beginning --bootstrap-server localhost:9092
 ```
 
-- Below snapshot shows the topics list on source and destination cluster
+- In below snapshot we could see the list of topics list that are available on source and destination kafka cluster after deployment of mirrormaker2.
 
 ![topics_list](https://github.com/user-attachments/assets/d6cba90e-5dc7-48eb-83ea-4c05ad91b295)
 
 
-- After creating a kafka topic named `testing-topic-one` using Strimzi kafka CR resource, we could see that after topic creation the topic on the source reflect on the destination `kafka-src.testing-topic-one`.
+- A kafka topic named `testing-topic-one` was created using Strimzi KafkaTopic CR manifest, we could see in the below snapshot that after topic creation on the source kafka cluster it is replicated in the destination kafka cluster with name `kafka-src.testing-topic-one` (refer the last command output in the snapshot).
 
 ![topic_synced_after_sometime](https://github.com/user-attachments/assets/eab50011-ed64-475c-9fed-dd7abcbb4ef7)
 
 
-- Below snapshot where we produce message to source kafka cluster topic and could see the messages also available in destination cluster topics when consumed on the replicated topic.
+- Below snapshot the first section we produce message on to the topic of source kafka cluster. The message can be consumed on the destination cluster topics which got replicated.
  
 ![synced_topic_with_msg_from_src](https://github.com/user-attachments/assets/118ecb92-e193-4caf-8461-24ce3d80e426)
 
