@@ -66,6 +66,7 @@ kind create cluster --config kind-src-config.yaml
 kind create cluster --config kind-dest-config.yaml
 ```
 
+Below diagram provides an overview of the cluster and topics details
 <\<IMAGE - working diagram >>
 
 
@@ -323,29 +324,37 @@ spec:
 $ kubectl --context kind-kafka-src -n kafka apply -f kafka-src-test-topic.yaml
 ```
 
+- Below snapshot lists the pods info on source and destination cluster
+
 <\<IMAGE - kafka pods >>
 
 
-- To list the topics created on source use below command
+- With below command we can list the topics created on source kafka cluster, changing the context and pod name we can use the same format to list topics in destination server.
 
 ```
-kubectl --context kind-kafka-dest -n kafka exec pod/kafka-dest-source-0 -c kafka -- sh -c 'bin/kafka-topics.sh --list --bootstrap-server localhost:9092'
+$ kubectl --context kind-kafka-dest -n kafka exec pod/kafka-dest-source-0 -c kafka -- sh -c 'bin/kafka-topics.sh --list --bootstrap-server localhost:9092'
 ```
 
-- To list the topics created on destination use below command
+- After executing into the source or destination pod with below command we can produce message or consume messages on appropriate cluster
 
 ```
-kubectl --context kind-kafka-src -n kafka exec pod/kafka-src-source-0 -c kafka -- sh -c 'bin/kafka-topics.sh --list --bootstrap-server localhost:9092'
+-- exec into the kafka cluster pod to execute 
+$ bin/kafka-console-producer.sh  --topic test-topic-1 --bootstrap-server localhost:9092
 ```
 
-- To produce message in the source exec to the pod and use below command
+```
+-- exec into the kafka cluster pod to execute
+$ bin/kafka-console-consumer.sh --topic test-topic-1 --group tt1-group-1 --from-beginning --bootstrap-server localhost:9092
+```
 
-```
-bin/kafka-console-producer.sh  --topic test-topic-1 --bootstrap-server kafka-src-kafka-bootstrap:9092
-```
+- Below snapshot shows the topics list on source and destination cluster
 
-- To consume the message we can use below command after exec into the source pod
+<\< IMAGE - >>
 
-```
-bin/kafka-console-consumer.sh --topic test-topic-1 --group tt1-group-1 --from-beginning --bootstrap-server kafka-src-kafka-bootstrap:9092
-```
+- After creating a kafka topic named `testing-topic-one` using Strimzi kafka CR resource, we could see that after topic creation the topic on the source reflect on the destination `kafka-src.testing-topic-one`.
+
+<\< IMAGE - >>
+
+- Below snapshot where we produce message to source kafka cluster topic and could see the messages also available in destination cluster topics when consumed on the replicated topic. 
+
+<\< IMAGE >>
