@@ -40,5 +40,6 @@ dependencies {
     implementation "io.grpc:grpc-services:${grpcVersion}" // added for reflection
     runtimeOnly "io.grpc:grpc-netty-shaded${grpcVersion}"
     compileOnly "org.apache.tomcat:annotations-api:6.0.53" // necessary for Java 9+
+    implementation "org.mongodb:mongodb-driver-sync:5.5.0"
 
 }
