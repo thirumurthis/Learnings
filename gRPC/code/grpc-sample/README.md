@@ -4,18 +4,18 @@ Types of API in gRPC
   3. Client Streaming
   4. Bi-directional Streaming 
 
-** Unary:**
+**Unary:**
   - The client will send 1 request and server sends 1 response.
 
-** Server Streaming:**
+**Server Streaming:**
   - The client will send 1 request and server can send 1 or more response.
   - example, client want get something in real time
 
-** Client Streaming:**
+**Client Streaming:**
   - The client sends 1 or multiple request and server sends 1 response.
   - example can be used uploading or updating info
 
-** Bi-directional streaming:** 
+**Bi-directional streaming:** 
   - The client can sends multiple request and server can send multiple response
   - The response can be in any order received in the client side.
 
@@ -392,6 +392,22 @@ Server server = ServerBuilder.forPort(port)
                 .addService(new GreetingServerImpl())
                 .build();
 ```
+
+### To Create Application in the Intellij Idea for running the server or client use below steps
+
+- select edit configuration
+![image](https://github.com/user-attachments/assets/c018b5fe-1e45-47bc-9657-e7b5f3bef24d)
+
+- Select the `+` icon, select the `Application` and fill in the name of the application
+![image](https://github.com/user-attachments/assets/7239bc9a-912c-4237-9572-0e196091b63d)
+
+- The filled in Application looks like below
+![image](https://github.com/user-attachments/assets/44acf822-16b2-45c5-94d0-de527826f400)
+
+- Select `Apply` and `OK`
+- Once Saved, Select the Application name and clock run.
+![image](https://github.com/user-attachments/assets/6f7ec27f-ab2d-46e5-823d-493551bdf977)
+
 
 ### Blog example
 
