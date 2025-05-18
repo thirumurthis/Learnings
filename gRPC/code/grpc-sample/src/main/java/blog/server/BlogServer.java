@@ -1,5 +1,7 @@
 package blog.server;
 
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.example.greeting.server.GreetingServerImpl;
@@ -15,10 +17,13 @@ public class BlogServer {
     public static void main(String[] args) throws IOException, InterruptedException {
         int port = 50051;
 
+        //mango client
+        MongoClient client = MongoClients.create("mongodb://root:root@localhost:27017/");
+
         Server server = ServerBuilder.forPort(port)
                 //to register the implemented idl
                 // we use .addService and add the new impl class
-                .addService(new GreetingServerImpl())
+                .addService(new BlogServiceImpl(client))
                 .build();
 
         server.start();
@@ -35,6 +40,7 @@ public class BlogServer {
         {
             System.out.println("Received Shutdown request");
             server.shutdown();
+            client.close();
             System.out.println("Server stopped");
         }));
 
