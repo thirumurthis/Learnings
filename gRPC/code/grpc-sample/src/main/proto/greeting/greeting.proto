@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package greeting;
+
+option java_package = "com.proto.greeting";
+option java_multiple_files = true;
+
+message GreetingRequest {
+  string first_name = 1;
+}
+
+message GreetingResponse {
+   string result = 1;
+}
+
+service GreetingService {
+  //Step 1 - unary
+  rpc greet(GreetingRequest) returns (GreetingResponse);
+  //Step 2 - server streaming
+  rpc greetManyTimes(GreetingRequest) returns (stream GreetingResponse);
+  //Step 3 - client streaming
+  rpc longGreet(stream GreetingRequest) returns (GreetingResponse);
+  //Step 4 - bi-directional streaming
+  rpc greetEveryone(stream GreetingRequest) returns (stream GreetingResponse);
+
+  // deadline
+  rpc greetWithDeadline(GreetingRequest) returns (GreetingResponse);
+}
