@@ -2,9 +2,9 @@ Once the WSL2 service.d/override.conf is updated and restarted. As mentioned in 
 
 
 Settings > Build, Execution, Deployment > Docker 
- Set the Docker executable: /usr/bin/docker
- Set the Docker Compose executable: /usr/bin/docker-compose
- Select the `Connect to docker daemon with:` set the `WSL` and select appropriate WSL distribution.
+-  Set the `Docker executable:` /usr/bin/docker
+-  Set the `Docker Compose executable:` /usr/bin/docker-compose
+-  Select the `Connect to docker daemon with:` set the `WSL` and select appropriate WSL distribution.
 
 ![image](https://github.com/user-attachments/assets/1795bc37-22e2-45fc-bdfb-bfb55c553bd1)
 
