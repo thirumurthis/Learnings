@@ -1,5 +1,6 @@
 Once the WSL2 service.d/override.conf is updated and restarted. As mentioned in the `docker/Notes...md` follow below step
 
+Refer doc - https://docs.docker.com/engine/daemon/remote-access/
 
 Settings > Build, Execution, Deployment > Docker 
 -  Set the `Docker executable:` /usr/bin/docker
