@@ -4,7 +4,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import org.example.greeting.server.GreetingServerImpl;
 
 import java.io.IOException;
 

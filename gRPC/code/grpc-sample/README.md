@@ -59,45 +59,49 @@ In Intellij Idea we create a simple gradle project with java.
 2. Add the plugins for protobuf from the same in build.gradle under the existing plugin with id.
 3. Add id with idea plugin with which we can use shutdown hook refer the project
 
-- Create a directory under the created project called `proto` with a package `greeting`
-- add a file greeting.proto and add the protobuf version with required config and definition
+a. Create a directory under the created project called `proto` with a package `greeting`
+ 
+b. Add a file `greeting.proto` add the protobuf version with config for code generation in package.
 
-- Create a greeting.server package and create a simple code for server
-- Create a greeting.client package with a simple code for client.
-- The Client will use channel.
+c. Create a `greeting.server` package under `src/main/java` and create a server class.
 
-- In the intellij IDEA after adding the plugin and dependencies info, the gradle opion on right IDE includes generateProtobuff option under the others.
-- Clicking it will generate the code under the build/ folder.
-- The stub code will be created.
+d. Create a `greeting.client` package under `src/main/java` and create a client class.
 
-Steps:
-  - Define the protobuf
-  - Generate the stub code
-  - Server side 
-     - Create the Server side implementation with the stubcode
-     - register that implemntation to the server using addService
+e. The Client uses channel created with `ManagedChannel` to communicate with the server.
+
+- In IntelliJ IDEA after adding the plugin and dependencies info in `build.gradle`.
+- Use the Gradle option and use generateProtobuf option under the `others` to generate the code.
+- The generated stub code will be under the `build/generated` folder.
+
+Steps for implementation:
+  - Define the protobuf with message and service
+  - Use the Gradle (or equivalent) plugin to generate the stub code
+  - Implement the Server side 
+     - Create a class for Server, in the `main()` method and define a server.
+     - Create a Service implementation with the generated stub code
+     - Register the Service implementation to the server using `addService()`
   - Client side 
-     - The arguments of the main method will be used in the client to send info to server and get response
-     - For sync call, use the GreetingServiceGrpc.GreetingServiceBlockingStub
-     - For async call, use the GreetingServiceGrpc.GreetingServiceFutureStub
-     - The above two stub is more like calling the function directly on the server side, code looks like below
-     ```
-     GreetingServiceGrpc.GreetingServiceBlockingStub stub =
-                 GreetingServiceGrpc.newBlockingStub(channel);
-        GreetingResponse response = stub.greet(GreetingRequest.newBuilder().setFirstName("User").build());
-     ```
+     - Implement the client using the stub code, in the `main()` method we use the arguments to perform different calls to the server
+     - For sync call, use the `GreetingServiceGrpc.GreetingServiceBlockingStub`
+     - For async call, use the `GreetingServiceGrpc.GreetingServiceStub`
+     - The stub's is most like calling the function directly on the server side. Code example below.
+    
+       ```java
+         GreetingServiceGrpc.GreetingServiceBlockingStub stub = GreetingServiceGrpc.newBlockingStub(channel);
+         GreetingResponse response = stub.greet(GreetingRequest.newBuilder().setFirstName("User").build());
+       ```
 
+## Implementation 
+
+- The implementation of the stub for different types is listed below
 
 ### Unary
-
-- After updating the proto buf and the generated code the server implementation looks like below
 
 ```java
 //server implementation
 
 @Override
 public void sum(SumRequest request, StreamObserver<SumResponse> streamObserver){
-
     int result = request.getFirstNumber()+request.getSecondNumber();
     streamObserver.onNext(SumResponse.newBuilder().setResult(result).build());
     streamObserver.onCompleted();
@@ -107,7 +111,6 @@ public void sum(SumRequest request, StreamObserver<SumResponse> streamObserver){
 ```java
 // client implementation
 private static void doAdd(ManagedChannel channel, int num1, int num2){
-
     SumRequest addRequest = SumRequest.newBuilder().setFirstNumber(num1).setSecondNumber(num2).build();
     CalculatorServiceGrpc.CalculatorServiceBlockingStub stub =CalculatorServiceGrpc.newBlockingStub(channel);
     SumResponse response = stub.sum(addRequest);
@@ -122,7 +125,6 @@ private static void doAdd(ManagedChannel channel, int num1, int num2){
 //server implementation
 @Override
 public void prime(PrimeRequest request, StreamObserver<PrimeResponse> responseStreamObserver){
-
     int primeNumber = request.getInputNumber();
     int factor=2 ;
     while ( primeNumber > 1){
@@ -141,7 +143,6 @@ public void prime(PrimeRequest request, StreamObserver<PrimeResponse> responseSt
 ```java
 // java implementation
 private static void doPrimeFactor(ManagedChannel channel, int inputPrime) throws InterruptedException {
-
     CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
     stub.prime(PrimeRequest.newBuilder().setInputNumber(inputPrime).build())
         .forEachRemaining(primeResponse -> { System.out.println(primeResponse.getResult()); });
@@ -154,7 +155,6 @@ private static void doPrimeFactor(ManagedChannel channel, int inputPrime) throws
 //server implementation
 @Override
 public StreamObserver<AverageRequest> average(StreamObserver<AverageResponse> responseObserver) {
-
   return  new StreamObserver<AverageRequest>() {
       int sum=0;
       int numOfInput=0;
@@ -205,7 +205,6 @@ private static void doAverage(ManagedChannel channel, String[] numbers) throws I
     latch.await(3, TimeUnit.SECONDS);
 
 }
-
 ```
 
 ### Bi-directional streaming 
@@ -223,13 +222,10 @@ private static void doAverage(ManagedChannel channel, String[] numbers) throws I
                responseObserver.onNext(MaxResponse.newBuilder().setResult(previousMax).build());
            }
          }
-
          @Override
          public void onError(Throwable throwable) {
              responseObserver.onError(throwable);
-
          }
-
          @Override
          public void onCompleted() {
              responseObserver.onCompleted();
@@ -300,7 +296,7 @@ private static void dpSqrt(ManagedChannel channel,String[] args){
 
 ### Using Deadline context
 
-Note the protobuf itself is different service
+Note a new service is created and the example looks like below 
 
 ```java
 //server implementation
@@ -343,7 +339,7 @@ private static void doGreetWithDeadline(ManagedChannel channel){
 ```
 
 ### Secure grpc communication with SSL
- The SSL certificates are available
+ The SSL certificates are available, refer the ssl.sh certificate
 
  ```java
  //server defintion
@@ -373,7 +369,8 @@ ManagedChannel channel = Grpc
         
  ```
 
- ### server reflection
+### server reflection
+
 check link https://github.com/grpc/grpc-java/blob/master/documentation/server-reflection-tutorial.md
 
 With the below configuration change we can use grpcCurl or evans cli to connect to grpc server
@@ -393,7 +390,7 @@ Server server = ServerBuilder.forPort(port)
                 .build();
 ```
 
-### To Create Application in the Intellij Idea for running the server or client use below steps
+### Create an Application in Intellij Idea for running the server or client use below steps
 
 - select edit configuration
 ![image](https://github.com/user-attachments/assets/c018b5fe-1e45-47bc-9657-e7b5f3bef24d)
@@ -409,11 +406,12 @@ Server server = ServerBuilder.forPort(port)
 ![image](https://github.com/user-attachments/assets/6f7ec27f-ab2d-46e5-823d-493551bdf977)
 
 
-### Blog example
+### Blog code 
 
 - The docker compose is copied, configure the Intellij to talk with the WSL2 docker deamon (optional), check the Learnings/WSL2/ directory for notes.
 
-- Create a protobuf package named blog, add the services for the blog to perform CRUD operation. Use the Gradle tool to generateProtobuf code
-- Create a blog pacakge in the src/main/java path, with two client and server package
+- Create a protobuf package named blog, add the services for the blog to perform CRUD operation. Use the Gradle tool to generateProtobuf code.
+- Create a blog pacakge in the src/main/java path, with two client and server package.
 - Create a Server class `BlogServer.java` and Service implementation `BlogServiceImpl.java` class. 
-- The server class includes Server configuration, which also requires mongodb connections
+- The server class includes Server configuration, which also requires mongodb connections.
+- The mongodb client section should be closed at the end.
