@@ -415,3 +415,8 @@ Server server = ServerBuilder.forPort(port)
 - Create a Server class `BlogServer.java` and Service implementation `BlogServiceImpl.java` class. 
 - The server class includes Server configuration, which also requires mongodb connections.
 - The mongodb client section should be closed at the end.
+
+
+For more realtime project refer 
+ - https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto
+ - https://github.com/googleapis/googleapis/blob/master/google/spanner/v1/spanner.proto
