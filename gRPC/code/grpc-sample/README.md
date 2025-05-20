@@ -420,3 +420,36 @@ Server server = ServerBuilder.forPort(port)
 For more realtime project refer 
  - https://github.com/googleapis/googleapis/blob/master/google/pubsub/v1/pubsub.proto
  - https://github.com/googleapis/googleapis/blob/master/google/spanner/v1/spanner.proto
+
+
+### Adding build.gradle with plugins
+
+```groovy
+
+buildScript{
+    repostiories{
+        mavenCentral()
+    }
+    dependencies{
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'com.google.protobuf'
+
+group 'org.protobuf.example'
+version '1.0-SNAPSHOT'
+
+repositories{
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.protobuf:protobuf-java:3.11.4'
+}
+// clicking the jar task will create the jar under build folder
+```
