@@ -19,9 +19,27 @@ public class HelloClientService {
         this.clientStub = clientStub;
     }
 
-    @GetMapping("/call")
+    @GetMapping("/greet")
     public String sayHello(){
        HelloReply reply = clientStub.sayHello(HelloRequest.newBuilder().setName("ClientUser1").build());
         return String.format("{ \"serverResponse\" : \"%s\"}",reply.getMessage() );
+    }
+
+    @GetMapping("/greetings")
+    public String sayGreetings(){
+
+        StringBuffer result = new StringBuffer();
+
+        result.append("[");
+        clientStub.streamHello(HelloRequest.newBuilder().setName("User1").build())
+                .forEachRemaining(response -> {
+                    result.append(response.getMessage());
+                    result.append(",");
+                });
+        if(result.length() > 0){
+            result.deleteCharAt(result.length() - 1);
+        }
+        result.append("]");
+        return String.format("{\"serverResponse\": \"%s\"",result);
     }
 }

@@ -32,7 +32,7 @@ public class HelloServiceImpl extends SimpleGrpc.SimpleImplBase {
         log.info("Hello " + req.getName());
         int count = 0;
         while (count < 10) {
-            HelloReply reply = HelloReply.newBuilder().setMessage("Hello(" + count + ") ==> " + req.getName()).build();
+            HelloReply reply = HelloReply.newBuilder().setMessage("{ Hello(" + count + ") ==> " + req.getName()+" }").build();
             responseObserver.onNext(reply);
             count++;
             try {

@@ -7,6 +7,7 @@
         <groupId>org.spring.grpc</groupId>
         <artifactId>grpc-multi-module</artifactId>
         <version>0.1.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>com.spring.grc</groupId>
@@ -61,6 +62,9 @@
     </dependencyManagement>
 
     <build>
+        <!-- After adding the proto folder under the src/main, set the proto folder
+         also to be the root directory for source. then add sourceDirectory like below
+         this will create the jar artifact with no additional plugins -->
         <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
         <plugins>
             <plugin>
@@ -100,6 +104,42 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Below is another approach to use maven plugin to generate jar for the protobuf generated source -->
+            <!--
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>include-source</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated/protobuf/java</source>
+                                <source>${project.build.directory}/generated/protobuf/grpc-java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>include-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            -->
         </plugins>
     </build>
 </project>

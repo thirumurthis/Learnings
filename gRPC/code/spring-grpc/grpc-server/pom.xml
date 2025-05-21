@@ -2,16 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<!--<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.5</version>
-		<relativePath/>
-	</parent>-->
+
 	<parent>
 		<groupId>org.spring.grpc</groupId>
 		<artifactId>grpc-multi-module</artifactId>
 		<version>0.1.0</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<groupId>com.spring.grc</groupId>
 	<artifactId>grpc-server</artifactId>
@@ -92,6 +88,7 @@
 
 	<build>
 		<plugins>
+			<!--
 			<plugin>
 				<groupId>kr.motd.maven</groupId>
 				<artifactId>os-maven-plugin</artifactId>
@@ -128,6 +125,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
