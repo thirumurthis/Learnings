@@ -13,7 +13,7 @@ $ ./mvnw --version
 - With the wrapper uploaded to the git repo, now when this repo is cloned. 
 - The wrapper can use the mvn wrapper instead of mvn cli. This should work even without internet just java to be installed.
 
-- To complie use
+- To compile use
 ```shell
 $ ./mvnw compile
 ```
