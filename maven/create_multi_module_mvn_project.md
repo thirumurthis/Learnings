@@ -13,7 +13,7 @@
 ```
 
 #### Step 3:
-  - Navigate to the kafak-parent created part of the above command and edit the pom.xml file
+  - Navigate to the kafka-parent created part of the above command and edit the pom.xml file
   - Add the packaging tag with pom.xml
 
 ```
@@ -40,3 +40,5 @@
 ```
 
   - Above command will create an sub module named kafka-ex1.
+
+Refer the gRPC folder to see an spring example of multi-module maven project.
