@@ -1,0 +1,159 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.sample.mvn</groupId>
+  <artifactId>sample-mvn-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
+
+  <name>sample-mvn-plugin</name>
+  <url>http://maven.apache.org</url>
+  <description>Simple custom mvn plugin for learning</description>
+
+  <organization>
+    <name>Self</name>
+    <url>https://no-domain.com</url>
+  </organization>
+
+  <prerequisites>
+    <maven>3.9.9</maven>
+  </prerequisites>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mvn-plugin-api.version>3.8.4</mvn-plugin-api.version>
+    <mvn-core.version>3.9.8</mvn-core.version>
+    <mvn-plugin-annotation.version>3.15.1</mvn-plugin-annotation.version>
+    <junit-jupiter.version>5.11.4</junit-jupiter.version>
+    <mvn-plugin-plugin.version>3.13.1</mvn-plugin-plugin.version>
+    <mvn-site-plugin.version>3.12.1</mvn-site-plugin.version>
+    <jakarta-inject.version>2.0.0</jakarta-inject.version>
+    <sisu-mvn-plugin.version>0.9.0.M3</sisu-mvn-plugin.version>
+    <!--<mvn-complier-plugin.version>3.13.0</mvn-complier-plugin.version>-->
+    <mvn-report-impl.version>4.0.0</mvn-report-impl.version>
+    <mvn-report-api.version>4.0.0-M11</mvn-report-api.version>
+    <maven.compiler.release>23</maven.compiler.release>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${mvn-plugin-api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>${mvn-core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>${mvn-plugin-annotation.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- reporting API -->
+    <dependency>
+      <groupId>org.apache.maven.reporting</groupId>
+      <artifactId>maven-reporting-impl</artifactId>
+      <version>${mvn-report-impl.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.reporting</groupId>
+      <artifactId>maven-reporting-api</artifactId>
+      <version>${mvn-report-api.version}</version>
+    </dependency>
+    <!--
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <version>1</version>
+      <scope>provided</scope>
+    </dependency>
+    -->
+  </dependencies>
+
+  <build>
+    <!-- Defining plugin for the project
+         And updating the version over here-->
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <!-- plugin used to build plugin -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>${mvn-plugin-plugin.version}</version>
+          <configuration>
+            <goalPrefix>sample-plugin</goalPrefix>
+            <!--<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>-->
+            <outputDirectory>target/dir</outputDirectory>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${mvn-site-plugin.version}</version>
+        </plugin>
+        <!--
+        <plugin>
+          <groupId>org.eclipse.sisu</groupId>
+          <artifactId>sisu-maven-plugin</artifactId>
+          <version>${sisu-mvn-plugin.version}</version>
+          <executions>
+            <execution>
+              <id>generate-index</id>
+              <goals>
+                <goal>main-index</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        -->
+      </plugins>
+    </pluginManagement>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.9.0</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>team</report>
+              <report>mailing-lists</report>
+              <report>ci-management</report>
+              <report>issue-management</report>
+              <report>licenses</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.13.1</version>
+        <!--<reportSets>
+          <reportSet>
+            <reports>
+              <report>report</report>
+            </reports>
+          </reportSet>
+        </reportSets>-->
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
