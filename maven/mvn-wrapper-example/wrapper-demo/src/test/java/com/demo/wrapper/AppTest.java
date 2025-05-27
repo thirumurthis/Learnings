@@ -1,38 +1,33 @@
 package com.demo.wrapper;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
+
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for simple App.
  */
-public class AppTest
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public AppTest( String testName )
-    {
-        super( testName );
+public class AppTest {
+    @Test
+    public void testApp(){
+        App app = new App();
+        assertEquals("app message",app.getMessage());
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
+    @Test
+    void streamSum() {
+        assertTrue(Stream.of(1, 2, 3)
+                .mapToInt(i -> i)
+                .sum() > 5, () -> "Sum should be greater than 5");
     }
 
-    /**
-     * Rigourous Test :-)
-     */
-    public void testApp()
-    {
-        assertTrue( true );
+    @RepeatedTest(value=2, name = "{displayName} {currentRepetition}/{totalRepetitions}")
+    void streamSumRepeated() {
+        assert Stream.of(1, 2, 3).mapToInt(i -> i).sum() == 6;
     }
+
 }
