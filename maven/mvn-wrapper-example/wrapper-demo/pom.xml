@@ -81,10 +81,10 @@
           <version>3.13.0</version><!-- 3.6.2 is the minimum -->
           <configuration>
             <compilerId>groovy-eclipse-compiler</compilerId>
-            <compilerArguments>
-              <indy/><!-- optional; supported by batch 2.4.12-04+ -->
+            <!--<compilerArguments>-->
+              <!--<indy/>--><!-- optional; supported by batch 2.4.12-04+ -->
               <!--<configScript>config.groovy</configScript>--><!-- optional; supported by batch 2.4.13-02+ -->
-            </compilerArguments>
+            <!--</compilerArguments>-->
             <failOnWarning>true</failOnWarning><!-- optional; supported by batch 2.5.8-02+ -->
             <fork>true</fork><!-- optional; enables Parrot Parser by default for Groovy 3+ -->
           </configuration>
@@ -104,6 +104,22 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.5.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.5.2</version>
+          <!--<configuration>
+            <argLine>${failsafeArgLine}</argLine>
+          </configuration>-->
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -133,7 +149,14 @@
   <reporting>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.9.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>3.5.1</version>
       </plugin>
     </plugins>
   </reporting>
