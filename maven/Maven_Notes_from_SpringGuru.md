@@ -379,5 +379,35 @@ class AppGroovySpockTest extends Specification {
         println "result = ${result}"
     }
 }
-
 ```
+
+### Generating Test reports with maven surefire plugin
+
+- Add below dependency to the pom.xml. Refer the project wrapper-demo project in git.
+```xml
+<project>
+<!--... -->
+<reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>3.5.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
+```
+- Once updated run `mvn site` should render the site info. The `surefire.html` should have the test details.
+
+
+### Maven failsafe plugin
+- maven-failsafe-plugin is used to run integration tests. Refer the Maven documentation.
+- For integration test it requires to load the context, other configuration, etc.
+- This plugin will check for test case end with *it.
+- After adding the dependency, issue `mvn verify` command to perform integration test.
+
+### Maven Jacoco
+ - Jacoco is used for code coverage
+ - This is verstaile at the same time its raw.
+ - Refer the documentation to configure the Jacoco
