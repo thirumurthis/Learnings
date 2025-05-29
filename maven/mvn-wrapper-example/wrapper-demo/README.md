@@ -19,3 +19,20 @@ $ ./mvnw compile
 ```
 
 - Using wrapper is recommended since it is self-containing and portable. 
+
+#### To execute the integration test with failsafe plugin use below
+ - Below command will run the test case that follow the pattern *IT.java or *ITcase.java
+
+```shell
+$ mvn failsafe:integration-test
+```
+
+#### To list goals under phase use below 
+
+```shell
+$ mvn help:describe -Dcmd=verify
+```
+
+> IMPORTANT!!
+> - In order for jacoco plugin to generate reports by default on `mvn verify`
+> - move the plugin from `<pluginManagement>` to `<plugins>.
