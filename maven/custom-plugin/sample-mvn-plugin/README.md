@@ -73,6 +73,7 @@ public class SampleMvnPlugin extends AbstractMojo {
 ```
 - Build the project using `mvn clean install`
 - Use below command to execute the project first one uses the defaultValue from the command
+- If using the `outputDirectory` in the configuration of `maven-plugin-plugin` plugin make sure to package it in jar
 
 ```shell
 $ mvn org.sample.mvn:sample-mvn-plugin:echo
@@ -88,9 +89,9 @@ $ mvn org.sample.mvn:sample-mvn-plugin:echo -Dgit.command="git rev-parse --short
 
 The latest code in the project can be executed similar to above.
 
-Note, currently with the java 23 or java 11 the `@Inject` is not working as expected.
-- So have creating a new class in the constructor and updating it.
-- Check [maven documentation](https://maven.apache.org/maven-jsr330.html) 
+Note, based on this documentation [maven documentation](https://maven.apache.org/maven-jsr330.html) 
+- Add the dependency for `javax.inject`, and add the plugin `sisu-maven-plugin`.
+- The `@Inject` annotation should be applied on the constructor so it works in conjunction with`@Named` and `@Singleton`
 
 ### Testing with the pom.xml
 

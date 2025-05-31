@@ -2,6 +2,8 @@ package org.sample.mvn;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,8 +11,8 @@ import java.util.concurrent.Executors;
 
 // inject from jsr-330
 // note this is equivalent to spring @Component
-//@Named
-//@Singleton
+@Named
+@Singleton
 public class EchoHelperImpl implements EchoHelper{
 
     @Override

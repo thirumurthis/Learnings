@@ -8,7 +8,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.eclipse.sisu.Nullable;
 
 import javax.inject.Inject;
 
@@ -44,11 +43,14 @@ public class SampleMvnPlugin extends AbstractMojo {
     @Parameter(property = "project",readonly = true)
     private MavenProject project;
 
+
     private EchoHelper echoHelper;
 
+    @Inject
     public SampleMvnPlugin(){
         this.echoHelper = new EchoHelperImpl();
     }
+    //*/
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

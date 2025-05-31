@@ -62,25 +62,12 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- reporting API -->
-    <dependency>
-      <groupId>org.apache.maven.reporting</groupId>
-      <artifactId>maven-reporting-impl</artifactId>
-      <version>${mvn-report-impl.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.reporting</groupId>
-      <artifactId>maven-reporting-api</artifactId>
-      <version>${mvn-report-api.version}</version>
-    </dependency>
-    <!--
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
       <version>1</version>
       <scope>provided</scope>
     </dependency>
-    -->
   </dependencies>
 
   <build>
@@ -96,7 +83,7 @@
           <configuration>
             <goalPrefix>sample-plugin</goalPrefix>
             <!--<skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>-->
-            <outputDirectory>target/dir</outputDirectory>
+            <!--<outputDirectory>target/dir</outputDirectory>-->
           </configuration>
         </plugin>
         <plugin>
@@ -104,7 +91,6 @@
           <artifactId>maven-site-plugin</artifactId>
           <version>${mvn-site-plugin.version}</version>
         </plugin>
-        <!--
         <plugin>
           <groupId>org.eclipse.sisu</groupId>
           <artifactId>sisu-maven-plugin</artifactId>
@@ -118,7 +104,6 @@
             </execution>
           </executions>
         </plugin>
-        -->
       </plugins>
     </pluginManagement>
   </build>

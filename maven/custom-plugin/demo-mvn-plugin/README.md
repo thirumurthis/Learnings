@@ -2,7 +2,7 @@
 
 - In this approach, we use IntelliJ IDEA IDE to create a java project with maven.
 - Then create a module within that project, remove the src folder from outer project.
-- Update the pom.xml with the four basic dependency maven-plugin-api, maven-plugin-annotation, maven-core, maven-project
+- Update pom.xml with the four basic dependency maven-plugin-api, maven-plugin-annotation, maven-core, maven-project
 
 - Add the plugin override with `AbstratMojo`, in `execute()` method
 - Issue `mvn install`
