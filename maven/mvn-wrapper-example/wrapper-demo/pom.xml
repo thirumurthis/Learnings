@@ -85,7 +85,7 @@
             </goals>
             <configuration>
               <!-- set path where execution data exists -->
-              <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
+              <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
               <!-- set output directory for reporting jacoco reports -->
               <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
             </configuration>
@@ -109,7 +109,7 @@
               <goal>report</goal>
             </goals>
             <configuration>
-              <destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+              <dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
               <outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
             </configuration>
           </execution>
