@@ -46,13 +46,13 @@ adminapi.failed_events
 
 - To list the tables that are not part of default postgres
 
-```
+```sql
 SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';
 ```
 
 - Below is the the list of tables that are owned by zitadel table owner
 
-```
+```sql
 select * from pg_catalog.pg_tables where tableowner = 'zitadel';
 ```
 
