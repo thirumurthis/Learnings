@@ -237,7 +237,7 @@ helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set service.tls.nodePort=30443 \
 --set dashboard.enabled=true \
 --set ingress-controller.enabled=true \
---set ingress-controller.config.apisix.serviceNamespace=ingress-apisix \
+--set ingress-controller.config.apisix.serviceNamespace=apisix \
 --set ingress-controller.config.kubernetes.enableGatewayAPI=true
 ```
 
