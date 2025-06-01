@@ -186,7 +186,7 @@ kind create cluster --config kind_argocd_config.yaml
 To install the Kubernetes Gateway to the cluster, we use below command
 
 ```
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.0/standard-install.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
 ```
 
 ### Deploy cert manager
@@ -194,7 +194,7 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 To install cert manager use below command.
 
 ```
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
 ```
 
 ### Deploy ArgoCD using Kustomize manifest
