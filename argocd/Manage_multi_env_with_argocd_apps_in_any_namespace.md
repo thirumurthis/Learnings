@@ -383,7 +383,7 @@ Before applying the ArgoCD resource to the ArgoCD server create the namespace `e
 
 ### Add remote cluster to ArgoCD server
 
-In Windows WSL for ArgoCD to access the remote KIND cluster, the remote cluster endpoint URL should be configured in the server property in the `~/.kube/config`. To get the endpoint for the remote cluster use `kubectl get endpoint --context <context-name-of-remote-cluster>`. Note, when creating the kind cluster the kube config will be updated automatically with context info.
+In Windows WSL for ArgoCD to access the remote KIND cluster, the remote cluster endpoint URL should be configured in the server property in the `~/.kube/config`. To get the endpoint for the remote cluster use `kubectl get endpoints --context <context-name-of-remote-cluster>`. Note, when creating the kind cluster the kube config will be updated automatically with context info.
 
 ```yaml
 - cluster:
