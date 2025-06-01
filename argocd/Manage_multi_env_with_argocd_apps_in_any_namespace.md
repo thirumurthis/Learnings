@@ -177,7 +177,7 @@ nodes:
 
 Below command is used to creaet the Kind cluster, with the above configuration. Ensure the Docker Desktop is running.
 
-```
+```sh
 kind create cluster --config kind_argocd_config.yaml
 ```
 
@@ -185,7 +185,7 @@ kind create cluster --config kind_argocd_config.yaml
 
 To install the Kubernetes Gateway to the cluster, we use below command
 
-```
+```sh
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
 ```
 
@@ -193,7 +193,7 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 
 To install cert manager use below command.
 
-```
+```sh
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
 ```
 
@@ -201,7 +201,7 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 To install the ArgoCD we use the kustomize configurations and the patch files are stored in the argocd_install/kustomize folder and issue below command.
 
-```
+```sh
 kubectl create ns argocd
 kubectl apply -n argocd  -k argocd_install/kustomize/
 ```
@@ -212,7 +212,7 @@ The APISIX deployed with helm chart will be used to create Ingress to access the
 
 Add the helm repo for Apisix 
 
-```
+```sh
 helm repo add apisix https://charts.apiseven.com
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
