@@ -371,3 +371,9 @@ spec:
 8. From browser issue `https://zitadel.demo.com` should see the zitadel console page prompting for password.
 Note, the user name is `zitadel-admin@zitadel.zitadel.demo.com`, change the default password `Password1!`.
 
+After login the page looks like below 
+![image](https://github.com/user-attachments/assets/47543c52-650a-4ab5-8bb6-9a6e2dd7934c)
+
+Configuration creates an machine user sysuser1 for reference
+![image](https://github.com/user-attachments/assets/3e16bb51-3019-4e78-838d-2d63122a2abc)
+
