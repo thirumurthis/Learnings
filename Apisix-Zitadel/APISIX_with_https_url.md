@@ -120,3 +120,6 @@ spec:
 ```
 http_ssl_client_hello_phase(): failed to match any SSL certificate by SNI: apisix.demo.com, context: ssl_client_hello_by_lua*, client: 10.244.0.1, server: 0.0.0.0:9443
 ```
+
+![image](https://github.com/user-attachments/assets/ab658088-8bc2-46cd-9e65-bc3d7803704d)
+
