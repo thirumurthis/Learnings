@@ -1,7 +1,7 @@
 Experience on handling SSO in one of the project.
 
 - Create a proxy url, this url will be used by the user in the browser. 
-    - This url will thi the SSO proxy server.
+    - This url will be the SSO proxy server.
     - The proxy server, will prompt the user with login/certificate based authentication.
     - After successful authentication, the user is routed to the registered application (backend url) with the organization.
     - The application server, then gets the logon user information from the request header or certifcate from proxy.
