@@ -305,13 +305,17 @@ $ mvn help:describe -Dplugin=compiler -Dmojo=compile -Ddetail
 $ mvn help:effective-pom 
 ```
 > Note: 
-> - To output effective pom to specific directory use `mvn help:effective-pom --Doutput=target/effective-pom.xml`
+> - To output effective pom to specific directory use 
+```
+mvn help:effective-pom -Dverbose=true -Doutput=target/effective-pom.xml
+```
 
 - Effective POM details
   - The effective POM starts with coordinates of our project and then goes on to define Maven central and plugin repositories. Next, in build section, it defines project and build directories.
   - In the plugins section, Maven binds default goals for lifecycle phases. Though we have not defined build section in the project pom.xml, Maven constructs the effective POM with all sections which are essential to build the project.
 
 #### Resource plugin
+
 - Resources are non source files of the project such as properties files, XML configuration files, shell scripts files and also, binary files like images etc.
 
 Maven Resources Plugin (plugin prefix resources) copies resource files from source directories to output directory.
@@ -457,7 +461,7 @@ db.test.password=
 
 ### Directories
 
-- A set of directory elements live in the build element of Super POM, which defines the directories for source, test, scripts and build files etc.
+- A set of directory elements live in the build element of `Super POM`, which defines the directories for source, test, scripts and build files etc.
 
 ```xml
   <build>  
@@ -738,6 +742,7 @@ java -cp target/sample-app-1.0.jar:$HOME/.m2/repository/org/apache/commons/commo
 ```
 
 #### Mavent surefire plugin:
+
   - The surefire plugin loads the `/src/main/java/*java` classes and `/src/main/resources` under `/target/classes`.
   - The `/src/test/java` test classes and `/src/test/resources` are loaded under `/target/test-classes`
   - For maven testing, the class path of the config is set to use the `/target/test-classes`. 
