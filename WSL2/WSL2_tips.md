@@ -11,6 +11,20 @@ $ sudo visudo
 ```
 -----------------
 
+## If behind proxy probably un comment below 
+- set the `http_proxy` and `https_proxy` with the proxy url.
+- Also note, some app expected to be lower case. Set this in `~/.bashrc`.
+
+```
+sudo visudo
+```
+
+```
+#Defaults:%sudo env_keep += "http_proxy https_proxy ftp_proxy all_proxy no_proxy"
+```
+
+-----------
+
 ## How to enable systemd in the WSL configuration
 
 - edit the /etc/wsl.conf file (which is empty if not configured for other.
