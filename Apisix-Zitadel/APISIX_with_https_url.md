@@ -17,12 +17,19 @@ nodes:
     protocol: TCP
 ```
 
-2. Install the `cert-manager` and `Kubernetes gateway API` with below command
+2. Install `Kubernetes gateway API` _(not used for routing)_ and `Cert manager` with below command
 
  - Note, the Kuberentess gateway API is not used to create route here.
 
+_Kuberentes Gateway API_
+
 ```bash
 kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+```
+ 
+ _cert manager_
+ 
+```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
 ```
 
@@ -30,7 +37,9 @@ kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/
 
 ```bash
 kubectl create ns apisix
+```
 
+```bash
 helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set apisix.ssl.enabled=true \
 --set service.type=NodePort \
@@ -50,6 +59,7 @@ helm upgrade -i apisix apisix/apisix --namespace apisix \
 4. Install Issuer and Certificate in the apisix namespace
 
 ```yaml
+1_apisix_cert_issuer.yaml
 # deploy in zitadel namespace
 apiVersion: cert-manager.io/v1
 kind: Issuer
@@ -76,12 +86,16 @@ spec:
 ---
 ```
 
+```bash
+kubectl -n apisix apply -f 1_apisix_cert_issuer.yaml
+```
+
 5. Add the entry `127.0.0.1 apisix.demo.com` in the hostname.
 
 6. Create `ApisixTls` and `ApisixRoute` 
 
 ```yaml
-# dashboard_apisix_tls.yaml
+# 2_dashboard_apisix_tls.yaml
 apiVersion: apisix.apache.org/v2
 kind: ApisixTls
 metadata:
@@ -94,8 +108,14 @@ spec:
     namespace: apisix
 ```
 
+- apply the resource
+
+```bash
+kubectl -n apisix apply -f 2_dashboard_apisix_tls.yaml
+```
+
 ```yaml
-# dashboard_apisix_route.yaml
+# 3_dashboard_apisix_route.yaml
 apiVersion: apisix.apache.org/v2
 kind: ApisixRoute
 metadata:
@@ -111,6 +131,10 @@ spec:
       backends:
         - serviceName: apisix-dashboard
           servicePort: 80
+```
+
+```
+kubectl -n apisix apply -f 3_dashboard_apisix_route.yaml
 ```
 
 7. Once all the apps are deployed and running in the kind cluster, then issue `https://apisix.demo.com` to access the dashboard.
