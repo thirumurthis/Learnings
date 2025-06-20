@@ -67,3 +67,11 @@ kubectl -n tenant-0 apply -f 3_minio_route.yaml # if the tenant name is differen
 ``` 
 
 add the `minio.demo.com` in the hosts file and issue `https://minio.demo.com`
+
+![image](https://github.com/user-attachments/assets/a9932885-15f3-47ba-a635-0e2e76b4a7c4)
+
+For user name and password use 
+
+```
+k -n tenant-0 get secrets/myminio-env-configuration -ojsonpath='{.data.config\.env}' | base64 -d && echo
+```
