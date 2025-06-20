@@ -43,6 +43,9 @@ helm upgrade -i \
 tenant-0 minio-operator/tenant
 ```
 
+ The custom values file includes some certificate and autogeneration certifacte disabled.
+ - we can create serviceaccount as well
+
 - optional to override the values from helm chart example
 ```
 helm upgrade -i \
