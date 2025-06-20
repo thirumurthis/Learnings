@@ -1,0 +1,11 @@
+# tls.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: minio-tls
+spec:
+  hosts:
+    - minio.demo.com
+  secret:
+    name: selfsigned-minio-cert-secret
+    namespace: tenant-0

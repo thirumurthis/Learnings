@@ -1,0 +1,28 @@
+---
+# tenant-1-ca-issuer.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: tenant-0-ca-issuer
+  namespace: tenant-0
+spec:
+  selfSigned: {}
+---
+# tenant-1-minio-certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: minio-tenant-cert
+  namespace: tenant-0
+spec:
+  dnsNames:
+    - "minio.demo.com"
+    - "minio.tenant-0"
+    - "minio.tenant-0.svc"
+    - 'minio.tenant-0.svc.cluster.local'
+    - '*.tenant-0.svc.cluster.local'
+    - '*.tenant-0-hl.tenant-0.svc.cluster.local'
+    - '*.minio.minio.tenant-0.svc.cluster.local'
+  secretName: app-minio-tls
+  issuerRef:
+    name: tenant-0-ca-issuer

@@ -1,0 +1,25 @@
+# route.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: minio-route
+spec:
+  http:
+    - name: minio-hl
+      match:
+        hosts:
+          - minio.demo.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: tenant-0-console
+          servicePort: 9090
+      #plugins:
+      #  - name: proxy-rewrite
+      #    enable: true
+      #    config:
+      #       host: "minio.app-tenant.svc.cluster.local"
+        #- name: redirect
+        #  config:
+        #    http_to_https: true
+        #    https_port: 9443
