@@ -144,7 +144,55 @@
 
 #### Job outputs to be available to other jobs
 
-- Say the artifact name of a file created in build job to be available in deploy job below.
+- Say the artifact name of a file created in `build` job to be available in `deploy` job below.
+
+   - To do this we can use the feature, in the `build` job after the building we meed to get the javascript name.
+     ```
+     ...
+     - name: Publish JS name
+       run: find dist/assets/*.js -type -f -execdir echo '{}' ';' # ouputs the file name
+     ```
+     - The above only get the file name, it is still not usable by other job
+     - To configure the filename in an variable, we first need to define a section under the `build` job called `outputs`
+    
+     ```
+     ...
+     build:
+       needs: test
+       runs-on: ubuntu-latest
+       outputs:  # this section should be added 
+          script-file:   # variable in which the filename value to be stored
+     ```
+     - With the output defined we need to set the `script-file` value
+    
+     ```
+     ...
+     - name: Publish JS name
+       run: find dist/assets/*.js -type -f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';' # the script-file=<file-name> will be send to special github output  variable 
+     ```
+     - The `outputs` section value should get the value from the context, here we use `steps` context and  the output of that steps. But note we can't access directly with the name of the step in this case `Publish Js Filename`, we need to add a id for the step.
+    
+     ```
+     ...
+     build:
+       ...
+       outputs:
+          script-file: ${{ steps.publish.outputs.script-file }}
+       steps:
+         ...
+         - name: Publush JS filename
+           id: publish  # step id for output info 
+           run: find dist/assets/*.js -type -f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'   # note the script-file name can be anything but match the section in the output fetched from step.
+     ```
+     - Till above we have published the output from `step` to the `job`. Now to access the output of `build` job in `deploy` job
+
+     ```
+     deploy:
+       ....
+       - name: ouput filename
+         run: echo "${{ needs.build.outputs.script-file }}"  # we can use jobs context as well to get the output value in here we use needs (check the doc) [needs.<job-name>.outputs.<output-variable-defined-in-build-job>]
+     ```
+       
 
   ```yaml
   name: Deploy website
