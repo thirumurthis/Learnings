@@ -647,4 +647,443 @@
            run: npm run build
   ```
 
-   
+#### Reusable workflow
+
+- Using the workflow_call 
+
+  ```yaml
+  name: Reusable workflow deploy
+  on: workflow_call
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+      - name: Output info
+        run: echo "deploy & upload"
+  ```
+
+  The above code can be used in the deploy job as defined above sample workflow
+
+
+```yaml
+  
+  name: Deploy website
+  on: 
+    push: 
+      branches:
+        - main
+  jobs:
+    lint: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint          
+    test: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint
+        - name: test code
+          id: run-test
+          run: npm run test  
+        - name: Upload test report
+          if: failure() && steps.run-test.outcome == 'failure'
+          uses: actions/upload-artifact@v4
+          with:
+            name: test-report
+            path: test.json
+    build:
+      needs: test
+      runs-on: ubuntu-latest
+      # outputs 
+      outputs:
+         script-file: ${{ steps.publish.outputs.script-file }}
+      steps:
+       - name: checkout code
+         uses: action/checkout@v4
+       - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}         
+       - name: Install dependencies
+         run: npm ci
+       - name: build source
+         run: npm run build
+       # start of custom actions
+       - name: Publish javascript filename
+         id: publish 
+         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'       
+         - name: upload artifact
+         uses: actions/upload-artifact@v4 # check the doc
+         with:
+           name: distribute-files
+           path: |
+             dist
+    deploy:
+      needs: build
+      uses: ./.github/workflows/resusable.yaml # reference workflow in same repo or can be different repo
+
+    report:
+      needs: [lint, deploy]
+      if: failure()
+      runs-on: ubuntu-latest
+      steps:
+       - name: Output report
+         run: |
+           echo "something went wrong"
+           echo "${{ github }}"
+```
+
+#### Adding inputs to reusable workflows
+
+- The inputs section
+
+  ```yaml
+  name: Reusable workflow deploy
+  on: 
+    workflow_call:
+      inputs:
+         artifact-name: 
+            description: Name of the artifacts to deploy
+            required: false  # value is optional
+            default: dist  # if the input not provided uses this
+            type: string # type of input
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+      - name: get code
+        uses: actions/download-artifact@v4
+        with:
+          # we use inputs context object to fetch
+          name: ${{ inputs.artifact-name }}
+      - name: List files
+        run: ls -lrt
+      - name: Output info
+        run: echo "deploy & upload"
+  ```
+
+  - To override the default value in the calling reusable workflow. Check the `deploy` job section
+```yaml
+  
+  name: Deploy website
+  on: 
+    push: 
+      branches:
+        - main
+  jobs:
+    lint: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint          
+    test: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint
+        - name: test code
+          id: run-test
+          run: npm run test  
+        - name: Upload test report
+          if: failure() && steps.run-test.outcome == 'failure'
+          uses: actions/upload-artifact@v4
+          with:
+            name: test-report
+            path: test.json
+    build:
+      needs: test
+      runs-on: ubuntu-latest
+      # outputs 
+      outputs:
+         script-file: ${{ steps.publish.outputs.script-file }}
+      steps:
+       - name: checkout code
+         uses: action/checkout@v4
+       - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}         
+       - name: Install dependencies
+         run: npm ci
+       - name: build source
+         run: npm run build
+       # start of custom actions
+       - name: Publish javascript filename
+         id: publish 
+         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'       
+         - name: upload artifact
+         uses: actions/upload-artifact@v4 # check the doc
+         with:
+           name: distribute-files
+           path: |
+             dist
+    deploy:
+      needs: build
+      uses: ./.github/workflows/resusable.yaml # reference workflow in same repo or can be different repo
+      with:
+        artifact-name: distribute-files  # in above upload we do this in under this name
+    report:
+      needs: [lint, deploy]
+      if: failure()
+      runs-on: ubuntu-latest
+      steps:
+       - name: Output report
+         run: |
+           echo "something went wrong"
+           echo "${{ github }}"
+```
+
+#### We can also use secrets like inputs
+
+- with the secrets section. secrets can't have default
+
+
+```yaml
+  name: Reusable workflow deploy
+  on: 
+    workflow_call:
+      inputs:
+         artifact-name: 
+            description: Name of the artifacts to deploy
+            required: false  # value is optional
+            default: dist  # if the input not provided uses this
+            type: string # type of input
+      secrets:
+         some-secret:
+           required: false
+  jobs:
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+      - name: get code
+        uses: actions/download-artifact@v4
+        with:
+          # we use inputs context object to fetch
+          name: ${{ inputs.artifact-name }}
+      - name: List files
+        run: ls -lrt
+      - name: Output info
+        run: echo "deploy & upload"
+  ```
+
+- using in the calling reusable workflow
+
+```yaml
+#...
+    deploy:
+      needs: build
+      uses: ./.github/workflows/resusable.yaml # reference workflow in same repo or can be different repo
+      with:
+        artifact-name: distribute-files  # in above upload we do this in under this name
+      secrets:
+        some-secret: ${{ secrets.some-secret }}
+```
+
+#### Outputs with reusable workflows
+ - if we assume the reusable workflows as function input would be like argument, output would be like return value.
+
+```yaml
+  name: Reusable workflow deploy
+  on: 
+    workflow_call:
+      inputs:
+         artifact-name: 
+            description: Name of the artifacts to deploy
+            required: false  # value is optional
+            default: dist  # if the input not provided uses this
+            type: string # type of input
+      outputs:  #1
+        result:
+          description: The result of deployment
+          # with the job outputs is defined t oreturn output we can finally define this here
+          value: ${{ jobs.deploy.outputs.deploy-job-outcome }} # 3 this is taken from the output of step jobs.<job_name>.outputs.<variable-name>
+  jobs:
+    deploy:
+      # to use the output in workflow_call above in reusable workflow we need to add below section to the job
+      outputs: # finally this section is added which indicates the output of the job
+        deploy-job-outcome: ${{ steps.set-result.outputs.step-result }} # this can be any name,  
+      runs-on: ubuntu-latest
+      steps:
+      - name: get code
+        uses: actions/download-artifact@v4
+        with:
+          # we use inputs context object to fetch
+          name: ${{ inputs.artifact-name }}
+      - name: List files
+        run: ls -lrt
+      - name: Output info
+        run: echo "deploy & upload"
+      - name: Set result output  #2
+        run: echo "::set-output name=step-result::success" # this is like pushing the variable to github output variable.
+  ```
+
+- using within the reusable workflow
+
+```yaml
+#...
+    deploy:
+      needs: build
+      uses: ./.github/workflows/resusable.yaml # reference workflow in same repo or can be different repo
+      with:
+        artifact-name: distribute-files  # in above upload we do this in under this name
+    print-deploy-result:
+      needs: deploy
+      runs-on: ubuntu-latest
+      steps:
+       - name: Print deploy output
+         run: echo "${{ needs.deploy.outputs.result }} # the result is the output name variable in worflow_call section
+```
+
+#### Using Containers for running the workflow
+
+- We define a Docker for the deployment
+
+```yaml
+#...
+
+jobs:
+  test:
+    environment: testing # this is used when using git repo environment variable in settings
+    runs-on: ubuntu-latest # we are using runner.
+    container:
+        image: mcr.micorsoft.com/playwright:v1.25.0-focal # open different browser and tests it. doing this we can avoid manuall installation.
+```
+
+```yaml
+#...
+
+jobs:
+  test:
+    environment: testing # this is used when using git repo environment variable in settings
+    runs-on: ubuntu-latest # we are using runner.
+    container: node:16
+```
+
+- passing the image and environment for container
+
+```yaml
+#...
+
+jobs:
+  test:
+    environment: testing # this is used when using git repo environment variable in settings
+    runs-on: ubuntu-latest # we are using runner.
+    container: 
+      image: node:16
+      #env: # pass env for the container if required to configure
+  # ....
+```
+
+##### service containers
+
+ - In above we used a container to create on a job.
+ - In some case if the database needs to be created for testing, then we can use service containers.
+ - host the testing database as service containers.
+
+
+```yaml
+#...
+
+jobs:
+  test:
+    environment: testing # this is used when using git repo environment variable in settings
+    runs-on: ubuntu-latest # we are using runner.
+    container: 
+      image: node:16
+    services: # one service per job, service runs on its own image
+      mongodb: # name for the service, there can be more service
+        image: mongo
+        env:
+          MONOGO_INITDB_ROOT_USERNAME: root #update the same cred in env of the jobs that connect to the db
+          MONOGO_INITDB_ROOT_PASSWORD: example
+    steps:
+      - name: get code
+        uses: #...
+        
+```
+
+#### communicating with service and containers
+
+- we can use the service name of the connection
+
+- Below approach works only the container is used to run the test job which will connect to the service db.
+
+```yaml
+#...
+jobs:
+  test:
+    runs-on: ubuntu-latest # we are using runner.
+    container: 
+      image: node:16
+    env:
+     MONGODB_CONNECTION_PROTOCOL: monogdb  # name of the service
+     MONGODB_CLUSTER_ADDRESS: monogdb      # name of the service
+     MONGODB_USERNAME: root
+     MONGODB_PASSWORD: example
+    services: # one service per job, service runs on its own image
+      mongodb: # name for the service, there can be more service
+        image: mongo
+        env:
+          MONOGO_INITDB_ROOT_USERNAME: root #update the same cred in env of the jobs that connect to the db
+          MONOGO_INITDB_ROOT_PASSWORD: example
+    steps:
+      - name: get code
+        #...
+```
+
+ - Note if the test is not using teh container option, then we need to manually configure the network etc.
+ - still we can connect using the localhost, the service should port-froward to some port
+
+ ```yaml
+ #...
+     env:
+      MONGODB_CONNECTION_PROTOCOL: monogdb # name of the  service
+      MONGODB_CLUSTER_ADDRESS: 127.0.0.1:27017
+     service:
+       mongodb:
+         image: mongo
+         ports:
+           - 727017:27017  # port forwarding the service
+         env:
+           #....
+  
+ ```
