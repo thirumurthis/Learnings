@@ -332,8 +332,319 @@
        - name: list the content
          run: ls -lrth
        - name: Output the filename from build job
-         # we use needs object check doc, since this contains ouput of all the jobs needs.<job-name>.output.<variable>
+         # we use needs object check doc, since this contains output of all the jobs needs.<job-name>.output.<variable>
          run: echo "${{ needs.build.outputs.script-file }}
        - name: deploy
          run: echo "deploy.."
 ```
+
+### Conditional in jobs & Steps
+
+- Adding condition to the steps, lets add a test report upload step. The test.json generation is configured in the npm build within the code.
+   - If the `test code` step fails the `upload test report` step is not required to be executed.
+
+```
+   - **NOTE**: In general, the default behaviour is the dependent jobs (that uses "needs") would be cancelled/aborted if the previous job fails.
+```
+
+   - To add the condition and refer the steps execution state we can add an `id` field for the step that we will be using in the if condition.
+
+``` 
+   - **Note**, in if condition we can ommit the use of `${{ }}`. This is applicable only for `if`
+```
+
+    - The `steps.<step_id>.conclusion` or `steps.<step_id>.outcome` can be used in the `if` condition. Refer the document. The `outcome` returns the string with the status.
+
+    - condition example below the `upload test report` will be enabled only when the `test code` fails.
+    - with just the `if: steps.run-test.outcome == 'failure'` condition the default behaviour will not be override. That is if the steps failed following steps and dependent job will fail.
+    - In order to override the default behaviour we use a function `failure()` like in below
+
+    `if: failure() && steps.run-test.outcome == 'failure'`
+ 
+  **NOTE:** Github action has four function to be used within the if condition. 
+    - `failure()` => returns true if previous step or job failed
+    - `success()` => returns true if previous step or job complete
+    - `always()` => causes the step to always execute even when cancelled
+    - `cancelled()` => returns true if workflow cancelled
+
+```yaml
+   #...
+        - name: test code
+          id: run-test
+          run: npm run test  
+        - name: Upload test report
+          if: failure() && steps.run-test.outcome == 'failure'
+          uses: actions/upload-artifact@v4
+          with:
+            name: test-report
+            path: test.json
+```
+
+```yaml
+  name: Deploy website
+  on: 
+    push: 
+      branches:
+        - main
+  jobs:
+    test: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint
+        - name: test code
+          id: run-test
+          run: npm run test  
+        - name: Upload test report
+          if: failure() && steps.run-test.outcome == 'failure'
+          uses: actions/upload-artifact@v4
+          with:
+            name: test-report
+            path: test.json
+    build:
+      needs: test
+      runs-on: ubuntu-latest
+      # outputs 
+      outputs:
+         script-file: ${{ steps.publish.outputs.script-file }}
+      steps:
+       - name: checkout code
+         uses: action/checkout@v4
+       - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}         
+       - name: Install dependencies
+         run: npm ci
+       - name: build source
+         run: npm run build
+       # start of custom actions
+       - name: Publish javascript filename
+         id: publish 
+         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'       
+         - name: upload artifact
+         uses: actions/upload-artifact@v4 # check the doc
+         with:
+           name: distribute-files
+           path: |
+             dist
+    deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+       - name: Get build artifacts
+         uses: actions/download-artifacts@v4
+         with:
+           name: distrbute-files
+       - name: list the content
+         run: ls -lrth
+       - name: Output the filename from build job
+         run: echo "${{ needs.build.outputs.script-file }}
+       - name: deploy
+         run: echo "deploy.."
+```
+
+  - The `if` condition can also be added at the job level
+  - refer the `report` job added to the end. which will run when there is failure.
+  - If the job is executed in parallel, then the `report` job will be skipped.
+  - we need to add dependency of `report` to the `lint` and `deploy`. which will wait for the previous job to start and complete.
+  - Note the `test` and `lint` job starts parallel. 
+
+  ```yaml
+  
+  name: Deploy website
+  on: 
+    push: 
+      branches:
+        - main
+  jobs:
+    lint: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint          
+    test: 
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout code
+          uses: actions/checkout@v4
+        - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}
+        - name: Install dependencies
+          run: npm ci
+        - name: Lint code
+          run: npm run lint
+        - name: test code
+          id: run-test
+          run: npm run test  
+        - name: Upload test report
+          if: failure() && steps.run-test.outcome == 'failure'
+          uses: actions/upload-artifact@v4
+          with:
+            name: test-report
+            path: test.json
+    build:
+      needs: test
+      runs-on: ubuntu-latest
+      # outputs 
+      outputs:
+         script-file: ${{ steps.publish.outputs.script-file }}
+      steps:
+       - name: checkout code
+         uses: action/checkout@v4
+       - name: cache dependencies
+          uses: actions/cache@v4
+          with:
+             path: ~/.npm  # this is the path used by npm in ubuntu
+             key: deps-node-modules-${{ hashFiles('**/package-lock.json) }}         
+       - name: Install dependencies
+         run: npm ci
+       - name: build source
+         run: npm run build
+       # start of custom actions
+       - name: Publish javascript filename
+         id: publish 
+         run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'       
+         - name: upload artifact
+         uses: actions/upload-artifact@v4 # check the doc
+         with:
+           name: distribute-files
+           path: |
+             dist
+    deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+       - name: Get build artifacts
+         uses: actions/download-artifacts@v4
+         with:
+           name: distrbute-files
+       - name: list the content
+         run: ls -lrth
+       - name: Output the filename from build job
+         run: echo "${{ needs.build.outputs.script-file }}
+       - name: deploy
+         run: echo "deploy.."
+
+    report:
+      needs: [lint, deploy]
+      if: failure()
+      runs-on: ubuntu-latest
+      steps:
+       - name: Output report
+         run: |
+           echo "something went wrong"
+           echo "${{ github }}"
+  ```
+
+  #### Running job with matrix
+
+  - The idea of matrix, is the run the same job with different configuration. Like different `runners` and different `node versions` referring to below example workflow.
+   - The key under the `matrix` is totally arbitary it can be any name.
+
+  ```
+  ...
+          strategy:
+          matrix:
+             node-version: [12,14,16]
+             operating-system: [ubuntu-latest, windows-latest]
+  ```
+
+  - The `runs-on: ${{ matrix.operating-system }}` will run the job on different values on the `matrix` variable. These job will be executed in parallel by default.
+  - This matrix can be used in steps and jobs
+
+  - Scenario, if we need to run the test in different os.
+
+  ```yaml 
+  name: Matrix demo
+  on: push
+  jobs:
+     build:
+        strategy:
+          matrix:
+             node-version: [12,14,16]
+             operating-system: [ubuntu-latest, windows-latest]
+        #runs-on: ubuntu-latest # <--- this will change to 
+        runs-on: ${{ matrix.operating-system }}
+        steps:
+         - name: get code
+           uses: actions/checkout@v4
+         - name: Install nodeJS
+           uses: actions/setup-node@v4
+           with:
+              # node-version: 16  # <-- this will change 
+              node-version: ${{ matrix.node-version }} 
+         - name: Install dependencies
+           run: npm ci
+         - name: Build project
+           run: npm run build
+  ```
+
+**NOTE**: The jobs will start in parallel and if any job fails then it will skip or abort the other jobs. In order to overcome this behaviour we can add `continue-on-error: true` under the job `build` like below.
+
+```yaml
+  name: Matrix demo
+  on: push
+  jobs:
+     build:
+        continue-on-error: true
+        strategy:
+```
+#### includes and excludes in matrix
+
+  - Along with the set of combination say in below example we are runign the `node-version` and `operating-system` we need to include one more combination then we can use the `include` key like below. Allows to provide standalone combination.
+  - `exclude` the combination in below example will exclude the node 12 with windows job to be executed.
+  
+  ```yaml 
+  name: Matrix demo
+  on: push
+  jobs:
+     build:
+        strategy:
+          matrix:
+             node-version: [12,14,16]
+             operating-system: [ubuntu-latest, windows-latest]
+             include:
+               - node-version: 18
+                 operating-system: ubuntu-latest
+             exclude:
+                - node-version: 12
+                  operating-system: windows-latest
+        runs-on: ${{ matrix.operating-system }}
+        steps:
+         - name: get code
+           uses: actions/checkout@v4
+         - name: Install nodeJS
+           uses: actions/setup-node@v4
+           with:
+              # node-version: 16  # <-- this will change 
+              node-version: ${{ matrix.node-version }} 
+         - name: Install dependencies
+           run: npm ci
+         - name: Build project
+           run: npm run build
+  ```
+
+   
