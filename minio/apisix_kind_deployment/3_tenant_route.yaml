@@ -1,0 +1,17 @@
+# route.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: tenant-route
+spec:
+  http:
+    - name: tenant-console
+      websocket: true
+      match:
+        hosts:
+          - minio.demo.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: tenant-0-console
+          servicePort: 9090

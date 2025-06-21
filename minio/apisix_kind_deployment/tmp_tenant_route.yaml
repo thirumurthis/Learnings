@@ -1,0 +1,46 @@
+# Not being used but a reference of apisix route configuration
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: minio-route
+spec:
+  http:
+    - name: minio-hl
+      match:
+        hosts:
+          - minio.demo.com
+        paths:
+          - "/tenant"
+      backends:
+        - serviceName: tenant-0-console
+          servicePort: 9090
+      plugins:
+        - name: redirect
+          enable: true
+          config:
+            uri: /tenant/
+    - name: minio-hl-r
+      match:
+        hosts:
+          - minio.demo.com
+        paths:
+          - "/tenant/*"
+      backends:
+        - serviceName: tenant-0-console
+          servicePort: 9090
+      plugins:
+        - name: proxy-rewrite
+          enable: true
+          config:
+            uri: "/"
+            #regex_uri:
+            #  - ^/(.*)
+           #  - /$1
+        - name: response-rewrite
+          enable: true
+          config:
+            headers:
+              X-Original-Path: "$request_uri"
+            #body:  '{"request_path": "$request_uri", "data": "$response_body"}'
+            #vars:
+            #    - ["status", "==", 200]

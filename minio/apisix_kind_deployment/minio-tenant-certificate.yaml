@@ -15,12 +15,19 @@ metadata:
   name: minio-tenant-cert
   namespace: tenant-0
 spec:
+  # minio.<namespace>
+  # minio.<namespace>.svc
+  # cluster domain = local
+  # minio.<namespace>.svc.<cluster domain>
+  # *.<tenant-name>-hl.<namespace>.svc.<cluster domain>
+  # *.<namespace>.svc.<cluster domain>
+  # *.<tenant-name>.minio.<namespace>.svc.<cluster domain>
   dnsNames:
     - "minio.demo.com"
     - "minio.tenant-0"
     - "minio.tenant-0.svc"
     - 'minio.tenant-0.svc.cluster.local'
-    - '*.tenant-0.svc.cluster.local'
+    - '*.minio.tenant-0.svc.cluster.local'
     - '*.tenant-0-hl.tenant-0.svc.cluster.local'
     - '*.minio.minio.tenant-0.svc.cluster.local'
   secretName: app-minio-tls
