@@ -1085,5 +1085,678 @@ jobs:
            - 727017:27017  # port forwarding the service
          env:
            #....
-  
  ```
+
+ #### Custom Actions
+- community built actions can be used, but under some circumstense we require our own action to be built. That is where we create custom actions.
+
+ Types of custom actions approaches that can be used to build custom action is listed below
+   - Javascript actions => ths is simply writting action in JS
+   - Docker actions => create a dockerfile with required configuration.
+   - Compisite actions => combine multiple workflow in single compostie actions. Used for grouping and allows for reusing steps. Combine run command and uses.
+
+###### Compisite action (custom actions)
+ 
+
+- in the below workflow action there are multiple duplicate steps.
+  - Option 1: we can create a new repository and build it there and refer it here.
+  - Options 2: we can create a actions in local. 
+       - Create a folder under the `.github`, the folder can be any name. In this case we create it as `action`.
+       - Create another folder under the `action` called `cached-deps`.
+       - we need to create an `action.yml` file which will contains the actions.
+       
+       ```yaml
+       # action.yml
+
+       name: 'Get & Cache dependencies'
+       description: 'Gets the dependencies 
+       (using npm) and caches it'
+       runs:
+         using: 'composite'  # this must be composite <- tells github action this is a composite 
+         steps:
+            - name: Cache dependencies
+              id: cache
+              uses: actions/cache@v3
+              with:
+                path: node_modules
+                key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+            - name: Install dependencies
+              if: steps.cache.outputs.cache-hit != 'true'
+              run: npm ci
+              shell: bash  # we need to specify this for composite
+       ```
+        - The above snippet of the custom action extracted the cache and dependencies.
+        - To use the above custom action (created part of the same repo, we can use the uses)
+
+        ```yaml
+        jobs:
+          lint:
+            runs-on: ubuntu-latest
+            steps:
+              - name: get code
+                uses: actions/checkout@v4
+              - name: load cache and dependencies
+                uses: ./.github/actions/cached-deps # file since local file, this can be different repo
+        ```
+
+- The actual workflow where we can extract the cache into its own custom actions. To create that refer the above steps.
+ ```yaml
+ name: Deployment
+on:
+  push:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Test code
+        id: run-tests
+        run: npm run test
+      - name: Upload test report
+        if: failure() && steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - name: Build website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-files
+          path: ./dist
+      - name: Output contents
+        run: ls
+      - name: Deploy site
+        run: echo "Deploying..."
+ ```
+
+- after applying the composite actions to the above snippet, would look like below
+ 
+ ```yaml
+ name: Deployment
+on:
+  push:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        uses: ./.github/actions/cached-deps      
+      - name: Lint code
+        run: npm run lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        uses: ./.github/actions/cached-deps        
+      - name: Test code
+        id: run-tests
+        run: npm run test
+      - name: Upload test report
+        if: failure() && steps.run-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: test.json
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        uses: ./.github/actions/cached-deps        
+      - name: Build website
+        run: npm run build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: Get build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-files
+          path: ./dist
+      - name: Output contents
+        run: ls
+      - name: Deploy site
+        run: echo "Deploying..."
+ ```
+
+##### Adding inputs to the composite actions custom actions
+
+- To add input to the composite actions, 
+
+  ```yaml
+  # action.yml
+
+  name: 'Get & Cache dependencies'
+  description: 'Gets the dependencies (using npm) and caches it'
+  inputs:
+    caching: # name can be anything
+      description: 'enable or disable cache dependencies'
+      requires: true # to be provided by the user/calller 
+      default: `true`
+  runs:
+    using: 'composite'  # this must be composite <- tells github action this is a composite 
+    steps:
+      - name: Cache dependencies
+        if: inputs.caching == 'true'  # we are checking the input
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true' || input.caching != 'true'
+        run: npm ci
+        shell: bash  # we need to specify this for composite
+  ```
+
+Example on passing input
+
+```yaml
+#...
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        uses: ./.github/actions/cached-deps   
+        with:
+          caching: 'false' #disable the caching for this job
+# ...
+```
+  
+##### Adding outputs to the composite action custom actions
+
+- we will add the outputs field
+
+  ```yaml
+  # action.yml
+
+  name: 'Get & Cache dependencies'
+  description: 'Gets the dependencies (using npm) and caches it'
+  inputs:
+    caching: # name can be anything
+      description: 'enable or disable cache dependencies'
+      requires: true # to be provided by the user/calller 
+      default: `true`
+  outputs:
+    used-cache:
+       description: 'cache usage'
+       value: ${{ steps.install.outputs.cache }}  # cache is the output using echo
+  runs:
+    using: 'composite'  # this must be composite <- tells github action this is a composite 
+    steps:
+      - name: Cache dependencies
+        if: inputs.caching == 'true'  # we are checking the input
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        id: install  #added to identify by the toutputs
+        if: steps.cache.outputs.cache-hit != 'true' || input.caching != 'true'
+        run: | 
+          npm ci
+          echo "::set-output name=cache::'${{ inputs.caching }}'"
+        shell: bash  # we need to specify this for composite
+  ```
+
+Example of using the outputs in steps
+
+```yaml
+#...
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        id: cache-deps  # id added for getting the output of this step
+        uses: ./.github/actions/cached-deps   
+        with:
+          caching: 'false' #disable the caching for this job
+      - name: Output info
+        run: echo "cache usage: ${{ steps.cache-deps.outputs.used-cache }} # steps.<step-id>.outputs.<composite-action-outputs-variable>
+# ...
+```
+
+### Creating Javascript custom actions
+
+- Create a folder under `.github`, and as we created `actions` folder for composite, we add new folder `deploy-s3-javascript`.
+- under the folder
+   - Create an file called `action.yml`
+   - Create a file called `main.js` (this can be anything)
+- 
+```yaml
+#action.yml
+name: 'deploy to AWS s3'
+description: 'deploy the content to aws s3'
+runs:
+  using: 'node16' #node version, refer doc metadata syntax
+                  #github action will identify this as js action
+  main: 'main.js' # we add main field here which is different where we specified 'composite'
+                  # the file name main.js is specified here
+                  # github action will run the js command frm the main.js
+                  # we have pre and post field we might need to execut before and after main field.
+```
+
+- In order to perform the local development we need to install nodejs and npm. once installed we can use below steps
+- navigate to the `<repo>/.github/actions/deploy-s3-javascript` and issue `npm init -y`. 
+- we need this step since to output the data in github action we need the github js function to do it. which is fetched from the npm. Issue `npm install @actions/core @actions/github @actions/exec`. all these dependencies are part of the tool-kit of github action.
+- We can see the `pacakge.json` and see the version added
+
+
+```js
+//main.js
+const core= require('@actions/core')
+const github = require('@actions/github')
+const exec = require('@actions/exec')
+
+//create a function the name can be different
+function run(){
+  //main code
+  //log a message
+  core.notice('this is printed from javascript action')
+
+}
+run();
+```
+
+- To use the javascript custom action in the workfow
+
+```yaml
+# ./.github/workflow/
+#...
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        id: cache-deps  # id added for getting the output of this step
+        uses: ./.github/actions/cached-deps   
+        with:
+          caching: 'false' #disable the caching for this job
+      - name: Output info
+        run: echo "cache usage: ${{ steps.cache-deps.outputs.used-cache }} # steps.<step-id>.outputs.<composite-action-outputs-variable>
+   # ...
+   deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     steps: 
+      - name: get code
+        uses: actions/checkout@v4
+      #...
+   information:
+      runs-on: ubnutu-latest
+      steps:
+        - name: Get code
+          uses: actions/checkout@v3 # this step is required since without this the build will fail
+        - name: Run custom action javascript
+          uses: ./.github/actions/deploy-s3-javascript
+```
+
+commit the changes to the github. note that node_modules needs to be include the dependencies to the git hub. The gitghub requrires all the dependencies for proper functioning.
+
+##### Adding inputs to the javascript custom actions
+
+```yaml
+# action.yml
+name: 'deploy to AWS s3'
+description: 'deploy the content to aws s3'
+inputs:
+  bucket:
+    description: 'The s3 bucket name'
+    required: true
+  bucket-region:
+    description: 'The region of S3'
+    required: false
+    default: 'us-east-1'
+runs:
+  using: 'node16'
+  main: 'main.js'
+
+```
+
+- The main.js update
+
+```js
+//main.js
+const core= require('@actions/core')
+const github = require('@actions/github')
+const exec = require('@actions/exec')
+
+//create a function the name can be different
+function run(){
+  //main code
+  // get input values
+
+  const bucket = core.getInput('bucket', {required: true});
+  const bucketRegion = core.getInput('bucket-region',{required: true});
+  const distFolder = core.getInput('dist-folder',{required: true});
+
+  //upload file
+  // we can use the aws sdk or github exec package
+  exec.exec('echo "executing command"');
+  //exec command has aws cli
+  //exec.exec('aws s3 sync <local-folder> <s3-bucket>');
+  const s3uri=`s3://${bucket}`; //js dynamic string template
+  exec.exec(`aws s3 sync ${distFolder} ${s3uri} --region ${bucketRegion}` );
+
+  //the github variable provide lib to upload data to github
+  // using github rest api
+  //github.getOctokit().auth
+  //github.context() //some of the context info can be fetched
+  //log a message
+  core.notice('this is printed from javascript action')
+
+}
+run();
+```
+
+- Using the javascript actions
+
+```yaml
+# ./.github/workflow/
+#...
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+      - name: load cache and dependencies
+        id: cache-deps  # id added for getting the output of this step
+        uses: ./.github/actions/cached-deps   
+        with:
+          caching: 'false' #disable the caching for this job
+      - name: Output info
+        run: echo "cache usage: ${{ steps.cache-deps.outputs.used-cache }} # steps.<step-id>.outputs.<composite-action-outputs-variable>
+   # ...
+   deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     steps: 
+      - name: get code
+        uses: actions/checkout@v4
+      - name: deply site
+        uses: ./.github/actions/deploy-s3-javascript
+        env: # step specific env variable
+          AWS_ACCESS_KEY_ID: ${{ secret.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secret.AWS_ACCESS }}
+        with:
+          bucket: bucket-name
+          dist-folder: ./dist
+          bucket-region: us-east-1
+```
+
+- Note with the `aws s3 sync` can't upload the files, we need to create accesskey. How to set this variable, we can set it as an environment variable. The AWS CLI will look for the environment variable. `AWS_ACCESS_KEY_ID`.
+
+#### Adding output to the javascript custom actions
+
+- They dynamic url to be generated as output in the github action logs.
+
+```yaml
+# action.yml
+name: 'deploy to AWS s3'
+description: 'deploy the content to aws s3'
+inputs:
+  bucket:
+    description: 'The s3 bucket name'
+    required: true
+  bucket-region:
+    description: 'The region of S3'
+    required: false
+    default: 'us-east-1'
+outputs:
+  website-url: 
+    description: 'The url of the deployed website'
+    # Note we are not setting the output from the steps
+    # like how we set in composite actions
+runs:
+  using: 'node16'
+  main: 'main.js'
+```
+
+- The output is set in the main.js code
+
+```js
+//main.js
+const core= require('@actions/core')
+const github = require('@actions/github')
+const exec = require('@actions/exec')
+
+//create a function the name can be different
+function run(){
+  //main code
+  // get input values
+
+  const bucket = core.getInput('bucket', {required: true});
+  const bucketRegion = core.getInput('bucket-region',{required: true});
+  const distFolder = core.getInput('dist-folder',{required: true});
+
+  //upload file
+  // we can use the aws sdk or github exec package
+  exec.exec('echo "executing command"');
+  //exec command has aws cli
+  //exec.exec('aws s3 sync <local-folder> <s3-bucket>');
+  const s3uri=`s3://${bucket}`; //js dynamic string template
+  exec.exec(`aws s3 sync ${distFolder} ${s3uri} --region ${bucketRegion}` );
+
+   const websiteDynamicUrl = `http://${bucket}.s3-website-${bucketRegion}.amazonaws.com`;
+   core.setOutput('website-url',websitDynamicUrl);
+}
+run();
+```
+- To print the info in the step and show how to use it
+
+
+```yaml
+   # ...
+   deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     steps: 
+      - name: get code
+        uses: actions/checkout@v4
+      - name: deply site
+        id: deploy  # added to get the output
+        uses: ./.github/actions/deploy-s3-javascript
+        env: # step specific env variable
+          AWS_ACCESS_KEY_ID: ${{ secret.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secret.AWS_ACCESS }}
+        with:
+          bucket: bucket-name
+          dist-folder: ./dist
+          bucket-region: us-east-1
+     - name: Output url info
+       run: |
+         echo "website url: ${{ steps.deploy.outputs.website-url }}
+```
+
+### Docker action custom action
+
+- Create a folder under the `.github`, then `actions` (like in the above example)
+- Create a folder `deploy-s3-docker`, then create a file 
+- we use a python code to update the logic. 
+- Create python file `deployment.py` in the `deploy-s3-docker` folder
+
+- deployment.py
+```py
+import os
+import boto3
+import mimetypes
+from botocore.config import Config
+
+
+def run():
+    bucket = os.environ['INPUT_BUCKET']
+    bucket_region = os.environ['INPUT_BUCKET-REGION']
+    dist_folder = os.environ['INPUT_DIST-FOLDER']
+
+    configuration = Config(region_name=bucket_region)
+
+    s3_client = boto3.client('s3', config=configuration)
+
+    for root, subdirs, files in os.walk(dist_folder):
+        for file in files:
+            s3_client.upload_file(
+                os.path.join(root, file),
+                bucket,
+                os.path.join(root, file).replace(dist_folder + '/', ''),
+                ExtraArgs={"ContentType": mimetypes.guess_type(file)[0]}
+            )
+
+    website_url = f'http://{bucket}.s3-website-{bucket_region}.amazonaws.com'
+    # The below code sets the 'website-url' output (the old ::set-output syntax isn't supported anymore - that's the only thing that changed though)
+    with open(os.environ['GITHUB_OUTPUT'], 'a') as gh_output:
+        print(f'website-url={website_url}', file=gh_output)
+
+
+if __name__ == '__main__':
+    run()
+
+```
+
+- we have a Dockerfile that uses the deployment.py 
+
+```Dockerfile
+FROM python:3
+
+COPY requirements.txt /requirements.txt
+
+RUN pip install -r requirements.txt
+
+COPY deployment.py /deployment.py
+
+CMD ["python", "/deployment.py"]
+```
+
+- The `action.yml` the action details would be same as the `javascript custom action`
+
+```yaml
+# action.yml
+name: 'deploy to AWS s3'
+description: 'deploy the content to aws s3'
+inputs:
+  bucket:
+    description: 'The s3 bucket name'
+    required: true
+  bucket-region:
+    description: 'The region of S3'
+    required: false
+    default: 'us-east-1'
+outputs:
+  website-url: 
+    description: 'The url of the deployed website'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'  # this is not main like in javascript
+```
+ **NOTE:** The input and output definition is same as the javascript custom action. The way these outputs are used in the python code is different. They are configured as environment variables.
+ - To access environment variables in the python, the github generates the input as environment variable. The variable name of the env will be upper case, `INPUT_<upper-case-input-variable-name>`. Example, `INPUT_BUCKET`, `INPUT_BUCKET-REGION`, etc.
+- In python, we use `os.environ['INPUT_BUCKET]`.
+
+- The output in the python is similar to the action where we use the `print(f'::set-output name=website-url::{websut_url}')`. Refer the deployment.py in the above code snippet.
+
+
+- How to use the custom actions in workflow
+
+```yaml
+   # ...
+   deploy:
+     needs: build
+     runs-on: ubuntu-latest
+     steps: 
+      - name: get code
+        uses: actions/checkout@v4
+      - name: deply site
+        id: deploy  # added to get the output
+        uses: ./.github/actions/deploy-s3-docker
+        env: # step specific env variable
+          AWS_ACCESS_KEY_ID: ${{ secret.AWS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secret.AWS_ACCESS }}
+        with:
+          bucket: bucket-name
+          dist-folder: ./dist
+          bucket-region: us-east-1
+     - name: Output url info
+       run: |
+         echo "website url: ${{ steps.deploy.outputs.website-url }}
+```
