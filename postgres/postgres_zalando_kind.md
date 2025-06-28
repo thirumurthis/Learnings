@@ -100,3 +100,7 @@ spec:
         - serviceName: postgres-operator-ui
           servicePort: 80
 ```
+
+- The localhost `https://postgres.demo.com`, postgres ui
+
+![image](https://github.com/user-attachments/assets/79e427c1-fae8-4356-9c70-e752f05d95e9)
