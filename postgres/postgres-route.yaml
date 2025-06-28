@@ -1,0 +1,15 @@
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: postgres-op-ui-route
+spec:
+  http:
+    - name: postgres-op-ui
+      match:
+        hosts:
+          - postgres.demo.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: postgres-operator-ui
+          servicePort: 80
