@@ -101,6 +101,31 @@ spec:
           servicePort: 80
 ```
 
+- Database manifest
+
+```yaml
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: acid-minimal-cluster
+spec:
+  teamId: "acid"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  users:
+    zalando:  # database owner
+    - superuser
+    - createdb
+    foo_user: []  # role for application foo
+  databases:
+    foo: zalando  # dbname: owner
+  preparedDatabases:
+    bar: {}
+  postgresql:
+    version: "17"
+```
+
 - The localhost `https://postgres.demo.com`, postgres ui
 
 ![image](https://github.com/user-attachments/assets/79e427c1-fae8-4356-9c70-e752f05d95e9)
