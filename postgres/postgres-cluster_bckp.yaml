@@ -1,0 +1,94 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: pg-a-cluster
+spec:
+  teamId: "pg-a-cluster"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  users:
+    zalando:  # database owner
+    - superuser
+    - createdb
+    foo_user: []  # role for application foo
+  databases:
+    foo: zalando  # dbname: owner
+  preparedDatabases:
+    bar: {}
+  postgresql:
+    version: "17"
+    parameters:
+      max_connections: "50"
+      max_standby_archive_delay: "-1"
+      max_standby_streaming_delay: "-1"
+      #http://postgresql.org/docs/current/runtime-config-logging.html
+      logging_collector: "off"
+      log_checkpoints: "off"
+      archive_timeout: "1500s"
+      # DEBUG5, DEBUG4, DEBUG3, DEBUG2, DEBUG1, INFO, NOTICE, WARNING, ERROR, LOG, FATAL, and PANIC.
+      log_min_messages: debug2
+      log_min_error_statement: debug1
+      # https://www.postgresql.org/docs/current/runtime-config-logging.html#GUC-LOG-LINE-PREFIX
+      log_line_prefix: "%t [%p]: [%l] %c %b %u %h %x %a %e "
+      pgaudit.log: "write, ddl, role" #pgaudit.log = 'read, write, ddl, role' 
+      #pgaudit.log_level: "log" #default
+      pgaudit.log_relation: "on"
+      shared_preload_libraries: "bg_mon,pg_stat_statements,pgextwlist,pg_auth_mon,set_user,timescaledb,pg_cron,pg_stat_kcache,pgaudit"
+  # https://github.com/zalando/postgres-operator/issues/2197
+  # https://github.com/patroni/patroni/blob/master/docs/replica_bootstrap.rst#standby-cluster
+  # https://github.com/zalando/postgres-operator/issues/1391
+  env:
+   - name: AWS_ACCESS_KEY_ID
+     valueFrom:
+       secretKeyRef:
+         name: s3-minio-secret
+         key: username
+   - name: AWS_SECRET_ACCESS_KEY
+     valueFrom:
+       secretKeyRef:
+         name: s3-minio-secret
+         key: credential
+   - name: AWS_REGION
+     value: "us-east-1"  # check minio default values yaml
+   - name: AWS_ENDPOINT
+     value: "http://tenant-0-hl.tenant-0:9090"
+     #value: "https://minio.tenant-0:80"
+   #- name: CLONE_METHOD
+   #  value: CLONE_WITH_WALG
+   - name: USE_WALG_RESTORE
+     value: "true"
+   - name: WAL_S3_BUCKET
+     value: pgdb-bckp
+   - name: WALG_S3_PREFIX
+     value: s3://pgdb-bckp/backups
+   - name: BACKUP_SCHEDULE
+     value: "*/5 * * * *"
+     #value: "2023-01-29T10:04:06+00:00"
+   - name: AWS_S3_FORCE_PATH_STYLE
+     value: "true"
+   - name: BACKUP_NUM_TO_RETAIN
+     value: "2"
+   - name: WALG_S3_CA_CERT_FILE
+     value: /tmp/crt/tls.crt
+  # https://github.com/zalando/postgres-operator/blob/master/charts/postgres-operator/crds/postgresqls.yaml
+  # use kubectl explain
+  patroni:
+    synchronous_mode: true
+    synchronous_mode_strict: true
+  additionalVolumes:
+    - mountPath: /tmp/crt/tls.crt
+      subPath: tls.crt
+      name: app-minio-tls
+      targetContainers:
+        - postgres
+      volumeSource:
+        secret:
+          secretName: app-minio-tls
+  resources:
+     limits:
+       cpu: "1"
+       memory: "5G"
+     requests:
+       cpu: 50m
+       memory: 500Mi

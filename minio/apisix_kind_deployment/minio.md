@@ -7,33 +7,79 @@ helm repo add minio-operator https://operator.min.io
 ```
 helm search repo minio-operator
 ```
-- create the operator
+
+- Before installing we create the namespace and create certificate since we use cert-manager to issue certificates
+ - Follow - https://min.io/docs/minio/kubernetes/upstream/operations/cert-manager.html
+
+-1. Create cluster issuer certificate
+
 ```
-helm install \
-  --namespace minio-operator \
-  --create-namespace \
-  --values custom-minio-operator-values.yaml \
-  minio-operator minio-operator/operator
+kubectl apply -f 00_clusterissuer_cert.yaml
 ```
 
-- Create certificates before issuing the tenant helm deployment
+-2. Create minio operator namepsace
+```
+kubectl create ns minio-operator
+```
+
+```
+ kubectl apply -f 01_operator_cert.yaml
+```
+
+-3. Create cert issuer for operator namespace
+
+```
+kubectl apply -f 02_operator_ns_cert_issuer.yaml
+```
+
+-4. Create a certificate secret for statefulset. Note the cluster DNS needs to be verified
+- The secretname should be same
+
+```
+ kubectl apply -f 03_operator_sts_cert_secret.yaml
+```
+
+-5. install operator with TLS disabled - Instead, Operator relies on cert-manager to issue the TLS certificate.
+```yaml
+              env:
+                - name: OPERATOR_STS_AUTO_TLS_ENABLED
+                  value: "off"
+                - name: OPERATOR_STS_ENABLED
+                  value: "on"
+```
+
+-5.i. create the operator with helm chart 
+```
+helm upgrade -i \
+  --namespace minio-operator \
+  --create-namespace \
+  --set replicaCount=2 \
+  minio-operator minio-operator/operator
+```
+  #--values custom-minio-operator-values.yaml \ <---- there is some error 
+
+-6. Create certificates before issuing the tenant helm deployment
 
 ```
 kubectl create ns tenant-0
 ```
+-7. Apply the certificate from clusterissuer to tenant-0 namespace
 
 ```
-- note if the tenant-0 is not the namespace of tenant name then the dns names should be updated
-kubectl -n tenant apply -f minio-tenant-certificate.yaml
+kubectl -n tenant-0 apply -f 04_tenant_ns_cert.yaml
 ```
--- download values 
--- use that to create tenant
 
- `cd /mnt/c/thiru/edu/minio/`
+-8. Note, if the tenant-0 is not the namespace of tenant name then the dns names should be updated
+
+```
+kubectl -n tenant-0 apply -f 05_minio-tenant-certIssuer_cert.yaml
+```
+
+-- download values froim the chart, update the custom values to create tenant `cd /mnt/c/thiru/edu/minio/`
 
 - deploy the tenant
-  - note the auto certificate is disabled
-  - also due to that the service port is not 443 (need to check why it is so)
+  - note the requestAutoCert flag is disabled
+
 ```
 helm upgrade -i \
 --namespace tenant-0 \
@@ -66,8 +112,15 @@ app-tenant-0 minio-operator/tenant
 # make sure to update the namespace correctly
 kubectl -n tenant-0 apply -f 1_minio_cert_issuer.yaml
 kubectl -n tenant-0 apply -f 2_minio_tls.yaml
-kubectl -n tenant-0 apply -f 3_minio_route.yaml # if the tenant name is different check the backend service name
+kubectl -n tenant-0 apply -f 3_tenant_route.yaml # if the tenant name is different check the backend service name
 ``` 
+
+- We need to create apisix upstream with https scheme and that name of the upstream should match the service to be associated with. Currently there are bunch of error message
+- Also we need to add plugin to the route with redirect, proxy-rewrite
+
+```
+kubeclt -n tenant-0 apply -f upstream_service.yaml
+```
 
 add the `minio.demo.com` in the hosts file and issue `https://minio.demo.com`
 

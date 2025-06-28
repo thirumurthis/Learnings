@@ -1,0 +1,10 @@
+# apisix-upstream.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixUpstream
+metadata:
+  name: tenant-https-upstream # Name of your upstream
+spec:
+  nodes:
+  - host: tenant-0-console # Replace with your backend service domain/IP
+    port: 9443
+  scheme: https # Specify HTTPS protocol for the upstream

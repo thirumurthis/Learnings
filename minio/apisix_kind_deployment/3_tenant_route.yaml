@@ -14,4 +14,21 @@ spec:
           - "/*"
       backends:
         - serviceName: tenant-0-console
-          servicePort: 9090
+          servicePort: 9443
+      #plugins:
+      # - name: proxy-rewrite
+      #   enable: true
+      plugins:
+       - name: proxy-rewrite
+         enable: true
+         config:
+            scheme: https
+       - name: redirect
+         enable: true
+         config:
+            http_to_https: true
+            https_port: 9443
+       #     uri: ${uri}
+
+
+          

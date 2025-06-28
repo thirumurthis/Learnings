@@ -42,6 +42,7 @@ kubectl create ns apisix
 ```bash
 helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set apisix.ssl.enabled=true \
+--set apisix.nginx.logs.errorLogLevel=info \
 --set service.type=NodePort \
 --set service.http.enabled=true \
 --set service.http.servicePort=80 \

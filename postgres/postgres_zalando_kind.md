@@ -104,3 +104,65 @@ spec:
 - The localhost `https://postgres.demo.com`, postgres ui
 
 ![image](https://github.com/user-attachments/assets/79e427c1-fae8-4356-9c70-e752f05d95e9)
+
+
+Document for manifest - https://github.com/zalando/postgres-operator/blob/master/manifests/minimal-postgres-manifest.yaml
+
+https://adrian-varela.com/postgres-operator/
+
+example:
+https://github.com/zalando/postgres-operator/issues/1466 = chart config
+
+copy the secret of minio tls
+```
+kubectl get secrets app-minio-tls -o yaml -n tenant-0| sed "s/namespace: .*/namespace: postgres-op/" | kubectl apply -f -
+```
+create secert for minio access credentials
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-minio-secret
+data:
+  username: minio
+  credential: minio123
+```
+
+- With the above configuration we have created
+
+```
+k -n postgres-op exec -it  pod/acid-minimal-cluster-1 -- bash
+root@acid-minimal-cluster-1:/home/postgres# psql -d foo -U zalando
+psql (17.2 (Ubuntu 17.2-1.pgdg22.04+1))
+Type "help" for help.
+
+foo=#CREATE TABLE links (
+  id SERIAL PRIMARY KEY,
+  url VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  description VARCHAR (255),
+  last_update DATE
+);
+CREATE TABLE
+foo=# select * from links;
+id | url | name | description | last_update
+----+-----+------+-------------+-------------
+(0 rows)
+
+foo=# INSERT INTO links (url, name)
+VALUES('https://neon.com/postgresql','PostgreSQL Tutorial');
+INSERT 0 1
+```
+
+logs:
+
+```
+2025-06-28 08:51:46 UTC [86]: [3] 685facd5.56 checkpointer   0  00000 DEBUG:  performing replication slot checkpoint
+wal_e.worker.upload INFO     MSG: begin archiving a file
+        DETAIL: Uploading "pg_wal/000000010000000000000001" to "s3://pgdb-bckp/spilo/postgres-op-tstdb-cluster/wal/17/wal_005/000000010000000000000001.lzo".
+        STRUCTURED: time=2025-06-28T08:51:46.470146-00 pid=185 action=push-wal key=s3://pgdb-bckp/spilo/postgres-op-tstdb-cluster/wal/17/wal_005/000000010000000000000001.lzo prefix=spilo/postgres-op-tstdb-cluster/wal/17/ seg=000000010000000000000001 state=begin
+2025-06-28 08:51:47 UTC [87]: [5] 685facd5.57 background writer   0  00000 DEBUG:  snapshot of 0+0 running transaction ids (lsn 0/2000080 oldest xid 956 latest complete 955 next xid 956)
+2025-06-28 08:51:47 UTC [92]: [1] 685facd5.5c walwriter   0  00000 DEBUG:  creating and filling new WAL file
+2025-06-28 08:51:47 UTC [92]: [2] 685facd5.5c walwriter   0  00000 DEBUG:  done creating and filling new WAL file
+```

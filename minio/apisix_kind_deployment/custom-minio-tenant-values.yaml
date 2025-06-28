@@ -132,7 +132,7 @@ tenant:
       volumesPerServer: 2
       ###
       # The capacity per volume requested per MinIO Tenant Pod.
-      size: 4Gi
+      size: 2Gi
       # annotations:
       #   traffic.sidecar.istio.io/excludeOutboundPorts: 443
       ###
@@ -245,10 +245,8 @@ tenant:
     # This is used by MinIO to verify TLS connections from clients using those CAs
     # If you omit this and have clients using TLS certificates minted by an external CA, those connections may fail with warnings around certificate verification.
     # See `Operator CRD: TenantSpec <https://min.io/docs/minio/kubernetes/upstream/reference/operator-crd.html#tenantspec>`__.
-    #externalCaCertSecret: [ ]
-    externalCaCertSecret:
-     - name: app-minio-tls
-       type: cert-manager.io/v1
+    externalCaCertSecret: [ ]  # <no external CA cert>
+
     ###
     # Specify an array of Kubernetes secrets, where each entry corresponds to a secret contains the TLS private key and public certificate pair.
     #
@@ -265,7 +263,9 @@ tenant:
     #    You can pass the CA to the Operator to allow it to trust that cert.
     #    See `Self-Signed, Internal, and Private Certificates <https://min.io/docs/minio/kubernetes/upstream/operations/network-encryption.html#self-signed-internal-and-private-certificates>`__ for more information.
     #    This step may also be necessary for globally trusted CAs where you must provide intermediate certificates to the Operator to help build the full chain of trust.
-    externalCertSecret: [ ]
+    externalCertSecret:
+     - name: app-minio-tls
+       type: cert-manager.io/v1
     ###
     # Enable automatic Kubernetes based `certificate generation and signing <https://kubernetes.io/docs/tasks/tls/managing-tls-in-a-cluster>`__
     requestAutoCert: false  #not to create automatically

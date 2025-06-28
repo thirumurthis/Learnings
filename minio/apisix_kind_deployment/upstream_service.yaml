@@ -1,0 +1,17 @@
+# https://api7.ai/blog/proxy-services-in-apisix-ingress-controller
+apiVersion: apisix.apache.org/v2
+kind: ApisixUpstream
+metadata:
+  name: tenant-0-console
+  # added label to match the service tenatn-0-console selector
+  #labels:
+  #  v1.min.io/tenant: tenant-0
+spec:
+  scheme: https
+  #portLevelSettings:
+  #- port: 9443
+  #  scheme: http
+  # https://apisix.apache.org/docs/ingress-controller/references/apisix_upstream/
+  #discovery:
+  #   type: kuberentes
+  #   serviceName: tenant-0-console.tenant-0

@@ -1,12 +1,13 @@
 ---
-# tenant-1-ca-issuer.yaml
+# tenant-0-ca-issuer.yaml
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: tenant-0-ca-issuer
   namespace: tenant-0
 spec:
-  selfSigned: {}
+  ca:
+    secretName: tenant-0-ca-tls
 ---
 # tenant-1-minio-certificate.yaml
 apiVersion: cert-manager.io/v1
