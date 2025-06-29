@@ -62,7 +62,7 @@ kubectl create ns apisix
 To deploy the Apisix with helm chart, use below command. The `serviceNamespace` should match the namespace unless using different one. Most of the configuration is default we enabled the `apisix.ssl.enabled` in the chart. If we need to display the info logs use the setting `--set apisix.nginx.logs.errorLogLevel=info` in the command.
 
 
-```bash
+```sh
 helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set apisix.ssl.enabled=true \
 --set service.type=NodePort \
@@ -697,4 +697,7 @@ kubectl -n tenant-0 exec -it $(kubectl -n tenant-0 get pod -l'app=minio-client' 
 ```
 
 Log into minio we could see the bucket created if the deployment is successful.
+
+![image](https://github.com/user-attachments/assets/c033dc3c-2679-4d84-aa7e-842bb02745a2)
+
 
