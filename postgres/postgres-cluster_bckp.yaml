@@ -1,9 +1,9 @@
 apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
-  name: pg-a-cluster
+  name: pgdb-3-cluster
 spec:
-  teamId: "pg-a-cluster"
+  teamId: "pgdb-3-cluster"
   volume:
     size: 1Gi
   numberOfInstances: 2
@@ -38,6 +38,7 @@ spec:
   # https://github.com/zalando/postgres-operator/issues/2197
   # https://github.com/patroni/patroni/blob/master/docs/replica_bootstrap.rst#standby-cluster
   # https://github.com/zalando/postgres-operator/issues/1391
+  # env - https://github.com/zalando/spilo/blob/master/ENVIRONMENT.rst
   env:
    - name: AWS_ACCESS_KEY_ID
      valueFrom:
@@ -52,11 +53,12 @@ spec:
    - name: AWS_REGION
      value: "us-east-1"  # check minio default values yaml
    - name: AWS_ENDPOINT
-     value: "http://tenant-0-hl.tenant-0:9090"
+     value: "https://minio.tenant-0.svc.cluster.local:443"
      #value: "https://minio.tenant-0:80"
    #- name: CLONE_METHOD
    #  value: CLONE_WITH_WALG
-   - name: USE_WALG_RESTORE
+   # https://postgres-operator.readthedocs.io/en/latest/administrator/#wal-archiving-and-physical-basebackups
+   - name: USE_WALG_BACKUP  #setting this will override use of both AWS_ENDPOINT and AWS_REGION
      value: "true"
    - name: WAL_S3_BUCKET
      value: pgdb-bckp
@@ -70,25 +72,28 @@ spec:
    - name: BACKUP_NUM_TO_RETAIN
      value: "2"
    - name: WALG_S3_CA_CERT_FILE
-     value: /tmp/crt/tls.crt
+     value: /tmp/crt/ca.crt
+    # https://github.com/zalando/postgres-operator/issues/845 - below not working
+   - name: S3_SSL_VERIFY
+     value: "false"
   # https://github.com/zalando/postgres-operator/blob/master/charts/postgres-operator/crds/postgresqls.yaml
   # use kubectl explain
   patroni:
     synchronous_mode: true
     synchronous_mode_strict: true
   additionalVolumes:
-    - mountPath: /tmp/crt/tls.crt
-      subPath: tls.crt
-      name: app-minio-tls
+    - mountPath: /tmp/crt/ca.crt
+      subPath: ca.crt
+      name: app-minio-tls # tenant-0-ca-tls 
       targetContainers:
         - postgres
       volumeSource:
         secret:
-          secretName: app-minio-tls
+          secretName: app-minio-tls # tenant-0-ca-tls 
   resources:
      limits:
        cpu: "1"
-       memory: "5G"
+       memory: "3G"
      requests:
-       cpu: 50m
+       cpu: 150m
        memory: 500Mi

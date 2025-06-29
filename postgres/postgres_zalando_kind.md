@@ -18,7 +18,8 @@ helm install postgres-operator postgres-operator-charts/postgres-operator -n pos
 ```
 
 1.i Installing the operator ui
-```bash
+
+```sh
 
 # add repo for postgres-operator-ui
 helm repo add postgres-operator-ui-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator-ui
@@ -27,7 +28,7 @@ helm repo add postgres-operator-ui-charts https://opensource.zalando.com/postgre
 helm install postgres-operator-ui postgres-operator-ui-charts/postgres-operator-ui -n postgres-op
 ```
 
-- check 
+- check the status 
 
 ```sh
  kubectl --namespace=postgres-op get pods -l "app.kubernetes.io/name=postgres-operator-ui"
@@ -104,6 +105,7 @@ spec:
 - Database manifest
 
 ```yaml
+# postgresql.yaml
 apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
@@ -126,6 +128,7 @@ spec:
     version: "17"
 ```
 
+
 - The localhost `https://postgres.demo.com`, postgres ui
 
 ![image](https://github.com/user-attachments/assets/79e427c1-fae8-4356-9c70-e752f05d95e9)
@@ -139,9 +142,25 @@ example:
 https://github.com/zalando/postgres-operator/issues/1466 = chart config
 
 copy the secret of minio tls
+
+
+Refering - https://github.com/zalando/postgres-operator/issues/845
+adding the ca.crt to mount
 ```
+$$$ NOTE BELOW DIDN'T WORK since there was certificate error
+ssl.SSLCertVerificationError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self-signed certificate (_ssl.c:1007)
+```
+
+```sh
 kubectl get secrets app-minio-tls -o yaml -n tenant-0| sed "s/namespace: .*/namespace: postgres-op/" | kubectl apply -f -
 ```
+
+using the tenant-o tls itself part of the minio deployment - tls.crt mount didn't work
+
+```sh
+kubectl get secrets tenant-0-ca-tls -o yaml -n tenant-0| sed "s/namespace: .*/namespace: postgres-op/" | kubectl apply -f -
+```
+
 create secert for minio access credentials
 
 ```yaml
@@ -153,6 +172,15 @@ data:
   username: minio
   credential: minio123
 ```
+
+```sh
+kubectl -n postgres-op apply -f postgres-cluster_bckp.yaml
+```
+
+Note, the Minio url `"https://minio.tenant-0.svc.cluster.local:443"` note the app-minio-tls cert has the dns list confifgured.
+
+- For now the `pgdb-bckp` bucket is created using the mc client.
+
 
 - With the above configuration we have created
 

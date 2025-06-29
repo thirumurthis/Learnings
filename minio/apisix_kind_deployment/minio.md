@@ -126,8 +126,22 @@ add the `minio.demo.com` in the hosts file and issue `https://minio.demo.com`
 
 ![image](https://github.com/user-attachments/assets/a9932885-15f3-47ba-a635-0e2e76b4a7c4)
 
-For user name and password use 
+For user name and password use below command 
 
 ```
 k -n tenant-0 get secrets/myminio-env-configuration -ojsonpath='{.data.config\.env}' | base64 -d && echo
+```
+
+- To verify the minio using client from the same kubernetes cluster, we use the deployment with the minio/mc image
+
+```
+kubectl -n tenant-0 apply -f minio_client.yaml
+```
+
+- The deployment is configured with the environment variable, so exec to the pod and use the mc alias command
+
+```
+ kubectl -n tenant-0 exec -it $(kubectl -n tenant-0 get pod -l'app=minio-client' --no-headers -o custom-columns=":metadata.name") -- bash
+# mc --insecure alias set myminio https://${MINIO_ENDPOINT} ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}
+# mc mb myminio/test-000
 ```
