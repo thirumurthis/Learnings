@@ -13,33 +13,35 @@ helm search repo minio-operator
 
 -1. Create cluster issuer certificate
 
-```
+```sh
 kubectl apply -f 00_clusterissuer_cert.yaml
 ```
 
 -2. Create minio operator namepsace
-```
+
+```sh
 kubectl create ns minio-operator
 ```
 
-```
+```sh
  kubectl apply -f 01_operator_cert.yaml
 ```
 
 -3. Create cert issuer for operator namespace
 
-```
+```sh
 kubectl apply -f 02_operator_ns_cert_issuer.yaml
 ```
 
 -4. Create a certificate secret for statefulset. Note the cluster DNS needs to be verified
 - The secretname should be same
 
-```
+```sh
  kubectl apply -f 03_operator_sts_cert_secret.yaml
 ```
 
 -5. install operator with TLS disabled - Instead, Operator relies on cert-manager to issue the TLS certificate.
+
 ```yaml
               env:
                 - name: OPERATOR_STS_AUTO_TLS_ENABLED
@@ -49,7 +51,8 @@ kubectl apply -f 02_operator_ns_cert_issuer.yaml
 ```
 
 -5.i. create the operator with helm chart 
-```
+
+```sh
 helm upgrade -i \
   --namespace minio-operator \
   --create-namespace \
@@ -60,18 +63,18 @@ helm upgrade -i \
 
 -6. Create certificates before issuing the tenant helm deployment
 
-```
+```sh
 kubectl create ns tenant-0
 ```
 -7. Apply the certificate from clusterissuer to tenant-0 namespace
 
-```
+```sh
 kubectl -n tenant-0 apply -f 04_tenant_ns_cert.yaml
 ```
 
 -8. Note, if the tenant-0 is not the namespace of tenant name then the dns names should be updated
 
-```
+```sh
 kubectl -n tenant-0 apply -f 05_minio-tenant-certIssuer_cert.yaml
 ```
 
@@ -80,7 +83,7 @@ kubectl -n tenant-0 apply -f 05_minio-tenant-certIssuer_cert.yaml
 - deploy the tenant
   - note the requestAutoCert flag is disabled
 
-```
+```sh
 helm upgrade -i \
 --namespace tenant-0 \
 --create-namespace \
@@ -93,7 +96,7 @@ tenant-0 minio-operator/tenant
  - we can create serviceaccount as well
 
 - optional to override the values from helm chart example
-```
+```sh
 helm upgrade -i \
 --namespace app-tenant-0 \
 --create-namespace \

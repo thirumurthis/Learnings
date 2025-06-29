@@ -28,7 +28,4 @@ spec:
          config:
             http_to_https: true
             https_port: 9443
-       #     uri: ${uri}
-
-
-          
+            # uri: ${uri}

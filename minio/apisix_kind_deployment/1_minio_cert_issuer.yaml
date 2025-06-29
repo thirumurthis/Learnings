@@ -19,5 +19,5 @@ spec:
   issuerRef:
     name: selfsigned-minio-ca-issuer # issuer resource name
     kind: Issuer
-  dnsNames:
+  dnsNames: minio.demo.com
 ---

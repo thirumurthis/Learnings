@@ -1,44 +1,44 @@
-     apiVersion: apps/v1
-     kind: Deployment
-     metadata:
-       name: minio-client
-     spec:
-       replicas: 1
-       selector:
-         matchLabels:
-           app: minio-client
-       template:
-         metadata:
-           labels:
-             app: minio-client
-         spec:
-          containers:
-          - name: mc
-            image: minio/mc
-            command: ["/bin/sh", "-c", "--"]
-            args: ["sleep infinity"] # Keep the container running
-            env:
-              - name: MINIO_ENDPOINT
-                value: "minio.tenant-0.svc.cluster.local:443"  # Replace with your MinIO service endpoint
-              - name: MINIO_ACCESS_KEY
-                value: "minio" # Replace with your MinIO access key
-              - name: MINIO_SECRET_KEY
-                value: "minio123" # Replace with your MinIO secret key
-            #volumeMounts:
-            #  - name: secret-crt-vol
-            #    readOnly: true
-            #    mountPath: "/.mc/certs/"             
-            resources:
-              limits: 
-                cpu: 250m
-                memory: 524Mi
-              requests:
-                cpu: 100m
-                memory: 254Mi
-          #volumes:
-          #  - name: secret-crt-vol
-          #    secret:
-          #      secretName: prod-db-secret  
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minio-client
+  template:
+    metadata:
+      labels:
+        app: minio-client
+    spec:
+     containers:
+     - name: mc
+       image: minio/mc
+       command: ["/bin/sh", "-c", "--"]
+       args: ["sleep infinity"] # Keep the container running
+       env:
+         - name: MINIO_ENDPOINT
+           value: "minio.tenant-0.svc.cluster.local:443"  # Replace with your MinIO service endpoint
+         - name: MINIO_ACCESS_KEY
+           value: "minio" # Replace with your MinIO access key
+         - name: MINIO_SECRET_KEY
+           value: "minio123" # Replace with your MinIO secret key
+       #volumeMounts:
+       #  - name: secret-crt-vol
+       #    readOnly: true
+       #    mountPath: "/.mc/certs/"             
+       resources:
+         limits: 
+           cpu: 250m
+           memory: 524Mi
+         requests:
+           cpu: 100m
+           memory: 254Mi
+     #volumes:
+     #  - name: secret-crt-vol
+     #    secret:
+     #      secretName: prod-db-secret  
 
 ###
 # kubectl -n tenant-0 exec -it $(kubectl -n tenant-0 get pod -l'app=minio-client' --no-headers -o custom-columns=":metadata.name") -- bash
