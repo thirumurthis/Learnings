@@ -48,7 +48,7 @@ Once deployed, check if the `kubectl get nodes` to see if the cluster is created
 To deploy the _cert manager_ use below command. 
 
 **Note:**
-  - if there are any new version availalbe check cert manager [documentation](https://cert-manager.io/docs/usage/certificate/) on instruction to deploy to cluster 
+  - if there are any new version available check cert manager [documentation](https://cert-manager.io/docs/usage/certificate/) on instruction to deploy to cluster 
 
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
