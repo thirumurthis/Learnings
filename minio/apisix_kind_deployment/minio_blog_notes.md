@@ -7,8 +7,8 @@ Only the configuration and deployment instruction is explained here for concepts
 #### Pre-requsities 
  - Docker desktop or Docker daemon process running in WSL2
  - Kind CLI installed
- - Kubectl 
- - Helm
+ - Kubectl CLI installed
+ - Helm CLI installed
 
 
  #### Summary
@@ -35,7 +35,7 @@ nodes:
     protocol: TCP
 ```
 
- To deploy the kind configuration use below command
+To create kind cluster deploy the kind configuration using below command
 
 ```
 kind create cluster --config kind-cluster.yaml
@@ -45,8 +45,11 @@ Once deployed, check if the `kubectl get nodes` to see if the cluster is created
 
 ### Deploying Certificate manager
 
-To deploy the _cert manager_ use below command. Note, if there are any new version availalbe check cert manager [documentation](https://cert-manager.io/docs/usage/certificate/) on instruction to deploy to cluster.
- 
+To deploy the _cert manager_ use below command. 
+
+**Note:**
+  - if there are any new version availalbe check cert manager [documentation](https://cert-manager.io/docs/usage/certificate/) on instruction to deploy to cluster 
+
 ```bash
 kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
 ```
@@ -187,7 +190,7 @@ http_ssl_client_hello_phase(): failed to match any SSL certificate by SNI: apisi
 
 ### Deploying Minio
 
-  The Minio Operator is installed first, then we deploy the template. To configure the Minio with self-signed certificate (Strictly not recommended for production) created by the Certificate manager for more details refer [minio documentation](https://min.io/docs/minio/kubernetes/upstream/operations/cert-manager.html).
+  The Minio Operator is installed first, then we deploy the tenant. To configure the Minio with self-signed certificate (Strictly not recommended for production) created by the Certificate manager for more details refer [minio documentation](https://min.io/docs/minio/kubernetes/upstream/operations/cert-manager.html).
 
   Once the Minio operator is installed, the tenants can be deployed using the charts. Before deploying the operator and tenants the namespace and certificates needs to be deployed first.
 
