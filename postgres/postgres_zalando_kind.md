@@ -219,3 +219,88 @@ wal_e.worker.upload INFO     MSG: begin archiving a file
 2025-06-28 08:51:47 UTC [92]: [1] 685facd5.5c walwriter   0  00000 DEBUG:  creating and filling new WAL file
 2025-06-28 08:51:47 UTC [92]: [2] 685facd5.5c walwriter   0  00000 DEBUG:  done creating and filling new WAL file
 ```
+
+
+For Backup use below env 
+
+```yaml
+  env:
+   - name: AWS_ACCESS_KEY_ID
+     valueFrom:
+       secretKeyRef:
+         name: s3-minio-secret
+         key: username
+   - name: AWS_SECRET_ACCESS_KEY
+     valueFrom:
+       secretKeyRef:
+         name: s3-minio-secret
+         key: credential
+   - name: AWS_REGION
+     value: "us-east-1"  # check minio default values yaml
+   - name: AWS_ENDPOINT
+     value: "https://minio.tenant-0.svc.cluster.local:443"
+   # https://postgres-operator.readthedocs.io/en/latest/administrator/#wal-archiving-and-physical-basebackups
+   - name: USE_WALG_BACKUP  #setting this will override use of both AWS_ENDPOINT and AWS_REGION
+     value: "true"
+   - name: WAL_S3_BUCKET
+     value: pgdb-bckp
+   - name: WALG_S3_PREFIX
+     value: s3://pgdb-bckp/backups
+   - name: BACKUP_SCHEDULE
+     value: "*/5 * * * *"
+     #value: "2023-01-29T10:04:06+00:00"
+   - name: AWS_S3_FORCE_PATH_STYLE
+     value: "true"
+   - name: BACKUP_NUM_TO_RETAIN
+     value: "2"
+   - name: WALG_S3_CA_CERT_FILE
+     value: /tmp/crt/ca.crt
+    # https://github.com/zalando/postgres-operator/issues/845 - below not working
+   - name: S3_SSL_VERIFY
+     value: "false"
+```
+
+To restore we need to add below to postgres cluster yaml
+
+```yaml
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: pgdb-restore-cluster #to clone to new instance of the db provide different name
+spec:
+  teamId: "pgdb-3-cluster"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  env:
+    - name: CLONE_AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+            name: s3-minio-secret
+            key: username
+    - name: CLONE_AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+            name: s3-minio-secret
+            key: credential
+    - name: CLONE_AWS_ENDPOINT
+      value: "https://minio.tenant-0.svc.cluster.local:443"
+    - name: WAL_S3_BUCKET
+      value: pgdb-bckp
+    - name: CLONE_AWS_REGION
+      value: "us-east-1"
+    - name: CLONE_WALG_S3_PREFIX
+      value: "s3://pgdb-bckp/backups"
+    - name: CLONE_AWS_S3_FORCE_PATH_STYLE
+      value: "true"
+    - name: CLONE_USE_WALG_RESTORE
+      value: "true"
+    - name: WALG_DISABLE_HISTORY_FETCH
+      value: "true"
+    - name: CLONE_WALG_s3_CA_CERT_FILE
+      value: "/tmp/crt/ca.crt"
+
+  clone:
+    cluster: pgdb-3-cluster #posrgres cluster db name that the backup was enabled
+    timestamp: 2025-05-27T00:00:23+00:00  # the timestamp closes fetched using backup_list of wal command
+```
