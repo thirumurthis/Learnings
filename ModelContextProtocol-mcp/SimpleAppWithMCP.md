@@ -38,6 +38,8 @@ docker exec -it ollama ollama run llama3.2
 
 ##### Application info
 
+<img width="1439" height="1075" alt="image" src="https://github.com/user-attachments/assets/abb2b633-c5c5-4106-a672-50c38d3606d2" />
+
 For learning, the MCP server expose a service layer which uses set of functionality that manages the in-memory list of item. The Item object is a Java record, with name and quantity fields.
 There service includes functionality to get the list of items from the in-memory list, another service to add one item and get only one item.
 
