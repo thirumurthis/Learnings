@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: item-mcp-client
+  main:
+    banner-mode: off
+    #web-application-type: none
+  ai:
+    mcp:
+      client:
+        enabled: true
+        name: item-mcp-client
+        version: 1.0.0
+        toolcallback:
+          enabled: true
+        stdio:
+          servers-configuration: classpath:mcp-servers-config.json
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: llama3.2
+logging:
+  level:
+     io:
+        modelcontextprotocol:
+          client: trace
+          spec: trace
+
+
+#spring.ai.openai.api-key: ${OPENAI_API_KEY}
+#spring.ai.anthropic.api-key: ${ANTHROPIC_API_KEY}
+
+#spring.ai.mcp.client.sse.connections.server1.url: http://localhost:8080
+
+#spring.ai.mcp.client.stdio.connections.brave-search.command: npx
+#spring.ai.mcp.client.stdio.connections.brave-search.args: -y,@modelcontextprotocol/server-brave-search
+# spring.ai.mcp.client.stdio.connections.brave-search.env.FOO=BAAR
