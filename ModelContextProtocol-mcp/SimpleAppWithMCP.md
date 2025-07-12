@@ -1,23 +1,30 @@
-### Application with MCP protocol with local LLM
+Application with MCP protocol with local LLM
 
-With the AI being popular, recently came accross the Model Context Protocol (MCP) in this blog have documented my learning with a sample application.
+With the AI being buzz word in the IT industry recently came across the work Model Context Protocol (MCP) and wanted to learn and understand about the protocol. This blog doesn’t details much about the MCP, please refer the MCP documentation. This would like a quick start with MCP using Spring AI and captures my learnings of using different tools.
 
-### What is MCP?
+Pre-requisites:
 
-Model Context Protocol (MCP) is an open standard developed by Anthropic. MCP is an open protocol that standardizes how applications provide context to LLMs. MCP helps you build agents and complex workflows on top of LLMs.
-MCP standardize how AI applications, particularly large language models (LLMs), access and utilize external tools, data, and resources. For more details refer [MCP documentation](https://modelcontextprotocol.io/introduction).
+Docker Desktop
 
+Java
 
-### Summary of the local application
+Any IDE for Java development
 
-The MCP Server and Client is build using Spring AI and communicates with STDIO. MCP supports different transport like STDIO, SSE (Server-Sent Event).
+What is MCP?
 
-`STDIO` - Standard input and output (stdio) is the simplest and most universal transport for MCP
-`SSE` - Server-sent events (SSE) provide a persistent connection for server-to-client streaming, while client-to-server messages are sent using HTTP POST.
+Model Context Protocol (MCP) is an open standard developed by Anthropic. MCP is an open protocol that standardizes how applications provide context to LLMs. MCP helps you build agents and complex workflows on top of LLMs. MCP standardize how AI applications, particularly large language models (LLMs), access and utilize external tools, data, and resources. For more details refer MCP documentation.
 
-The functionality of the server is exposed using `Tools`. With the `spring-ai-starter-mcp-server` supports `@Tool` annotation which includes `name` and `description`. The LLM uses the `description` to understand the functionality. The `spring-ai-starter-mcp-server` supports simple STDIO transport. 
+Sample Application
 
-`Tools` - Tools are a powerful primitive in the Model Context Protocol (MCP) that enable servers to expose executable functionality to clients. Through tools, LLMs can interact with external systems, perform computations, and take actions in the real world. 
+Have build a simple MCP Server and Client using Spring AI. There are different transports provided by MCP but have used STDIO transport since it is simple to start with. MCP supports different transport like STDIO, SSE (Server-Sent Event).
+
+STDIO - Standard input and output (stdio) is the simplest and most universal transport for MCP 
+
+SSE - Server-sent events (SSE)- provide a persistent connection for server-to-client streaming, while client-to-server messages are sent using HTTP POST.
+
+The MCP server code includes a service layer which has bunch of functionality to manage an in-memory Item list. The methods in the service layer are annotated with @Tools. For Spring AI this annotation is imported from  spring-ai-starter-mcp-server dependency. The tools annotation includes name and description field. With the description LLM will be able to set context and understand the methods functionality.
+
+Tools - Tools are a powerful primitive in the Model Context Protocol (MCP) that enable servers to expose executable functionality to clients. Through tools, LLMs can interact with external systems, perform computations, and take actions in the real world.
 
 
 ##### Local Olama LLM in docker container
