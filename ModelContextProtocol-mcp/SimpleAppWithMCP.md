@@ -354,6 +354,40 @@ Clicking the Connect should see the screen like below
 Select the Tools tab and click the list resources, which would list the service tool list 
 <img width="2467" height="1561" alt="image" src="https://github.com/user-attachments/assets/950421c8-4d8d-4da5-a961-707bbf84eb4e" />
 
+`Claude` desktop to connect to the server 
+
+<img width="1996" height="973" alt="image" src="https://github.com/user-attachments/assets/d5002cf9-5850-4722-a6cb-e6d604822721" />
+
+- The Claude config looks like below, the server configuration below aslo includes a filesystem mcp server. 
+  
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\thiru\\edu\\AI-mcp\\data"
+      ]
+    },
+    "item-mcp": {
+      "command": "java",
+      "args": [
+        "-jar",
+        "C:\\thiru\\edu\\AI-mcp\\jar\\mcp-server-0.0.1-SNAPSHOT.jar"
+      ]
+    }
+  }
+}
+```
+
+From Claude, when request to list all the items, will prompt to allow access, which looks like below
+
+<img width="1950" height="1285" alt="image" src="https://github.com/user-attachments/assets/5e944e76-d34d-4e2c-b3b6-62dba41377e8" />
+
+The response will look like below 
+<img width="1420" height="1144" alt="image" src="https://github.com/user-attachments/assets/0080c818-29f1-416a-ac7d-8e954df10d51" />
 
 ### MCP Client Code
 
