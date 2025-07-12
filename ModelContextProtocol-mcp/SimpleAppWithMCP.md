@@ -306,6 +306,7 @@ public class McpServerApplication {
 #### Testing the Server code with MCP Inspector
 
 - Already some of the REST clients like Postman supportws MCP, but in this case Antropic community has inspector tool which requires node js to be installed in local.
+- Make sure to generate the server Jar generated, as we are using maven it would be `mvn clean install`, the generated jar will be moved to the path specified in the pom.xml maven plugin.
 
 - To start the application we can use below command
 
@@ -330,11 +331,30 @@ Starting MCP inspector...
 🌐 Opening browser...
 ```
 
-The browser will look like below 
+The browser will look like below to start with.
 
-<IMAGE>
+<img width="2471" height="1591" alt="image" src="https://github.com/user-attachments/assets/eeaaf827-f590-411b-9caa-19d44b9495a1" />
+
+In the UI, we could select and update below configuration 
+ - Note, the java should be accessible in the path, and the arguments we pass the path of the mce-server jar. Make sure
+
+```
+Transport Type: STDIO
+Command: java
+Arguments "-Dspring.ai.mcp.server.stdio=true" "-jar" "C:\\AI-mcp\\jar\\mcp-server-0.0.1-SNAPSHOT.jar"
+```
+
+<img width="1822" height="1470" alt="image" src="https://github.com/user-attachments/assets/4d3f93b8-8cb7-4bff-aa77-39f14d08f966" />
+
+Clicking the Connect should see the screen like below 
+
+<img width="2643" height="1569" alt="image" src="https://github.com/user-attachments/assets/50c024ea-1e3a-4676-a100-955e63180d5a" />
+
+Select the Tools tab and click the list resources, which would list the service tool list 
+<img width="2467" height="1561" alt="image" src="https://github.com/user-attachments/assets/950421c8-4d8d-4da5-a961-707bbf84eb4e" />
 
 
+#### MCP Client Code
 
 Output:
 
