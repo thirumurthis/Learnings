@@ -306,6 +306,7 @@ public class McpServerApplication {
 #### Testing the Server code with MCP Inspector
 
 - Already some of the REST clients like Postman supportws MCP, but in this case Antropic community has inspector tool which requires node js to be installed in local.
+- We can use `Cluade`, `Cursor`, etc. desktop tool to connect to the MCP server as well.
 - Make sure to generate the server Jar generated, as we are using maven it would be `mvn clean install`, the generated jar will be moved to the path specified in the pom.xml maven plugin.
 
 - To start the application we can use below command
@@ -354,9 +355,230 @@ Select the Tools tab and click the list resources, which would list the service 
 <img width="2467" height="1561" alt="image" src="https://github.com/user-attachments/assets/950421c8-4d8d-4da5-a961-707bbf84eb4e" />
 
 
-#### MCP Client Code
+### MCP Client Code
 
-Output:
+The MCP Client code is also generated using Spring Starter io, with the MCP client dependency.
+
+Below lists the code for MCP Client
+ - The MCP Client java dependency `spring-ai-starter-mcp-client`
+ - Since we use Ollama we add the spring dependency `spring-ai-starter-model-ollama`
+ - `spring-boot-starter-web` dependency is added to expose an POST endpoint to get use prompt
+
+```xml
+<!-- file-name: pom.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.4-SNAPSHOT</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.mcp.demo</groupId>
+	<artifactId>mcp-client</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>mcp-client</name>
+	<description>Sample project MCP server</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>24</java.version>
+		<spring-ai.version>1.0.0</spring-ai.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-mcp-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-model-ollama</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-bom</artifactId>
+				<version>${spring-ai.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-snapshots</id>
+			<name>Spring Snapshots</name>
+			<url>https://repo.spring.io/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
+</project>
+```
+
+- We include the input controller, note that Spring AI MCP Client autowires the MCP client, would recommend to refer the [spring documentation](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+
+```java
+package com.mcp.demo.client.controller;
+
+import io.modelcontextprotocol.client.McpSyncClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.definition.ToolDefinition;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/input")
+public class InputController {
+    private static final Logger log = LoggerFactory.getLogger(InputController.class);
+
+
+    private final ChatClient chatClient;
+    private final List<McpSyncClient> mcpSyncClients;
+
+    public InputController(ChatClient.Builder chatClientBuilder,
+                           ToolCallbackProvider toolCallbackProvider,
+                           List<McpSyncClient> mcpSyncClients){
+        this.chatClient = chatClientBuilder.build();
+        this.mcpSyncClients = mcpSyncClients;
+
+        // This prints the tools list mostly used for debugging
+        // This is optional
+        printToolInfoFromServer(toolCallbackProvider);
+
+    }
+
+    @PostMapping("/in")
+    public String input(@RequestBody String inputData){
+        log.info("input data received - {}",inputData);
+        return chatClient.prompt()
+                .user(inputData)
+                .toolCallbacks(new SyncMcpToolCallbackProvider(mcpSyncClients))
+                .call()
+                .content();
+    }
+
+    private static void printToolInfoFromServer(ToolCallbackProvider toolCallbackProvider) {
+        List<ToolCallback> toolCallbacks = List.of(toolCallbackProvider.getToolCallbacks());
+        if(toolCallbacks.isEmpty()){
+            log.warn("No tools found");
+        } else {
+            System.out.println("**************************************");
+            for (ToolCallback toolCallback : toolCallbacks){
+                ToolDefinition toolDefinition = toolCallback.getToolDefinition();
+                System.out.println("Tool Name: "+toolDefinition.name());
+                System.out.println(" |___ Description: "+toolDefinition.description());
+                System.out.println(" |___ Input Schem: "+toolDefinition.inputSchema());
+                System.out.println("__________________________________");
+            }
+            System.out.println("**************************************");
+        }
+    }
+}
+```
+
+- The `resources/application.yaml` configuration looks below
+
+```yaml
+spring:
+  application:
+    name: item-mcp-client
+  main:
+    banner-mode: off
+  ai:
+    mcp:
+      client:
+        enabled: true
+        name: item-mcp-client
+        version: 1.0.0
+        toolcallback:
+          enabled: true
+        stdio:
+          servers-configuration: classpath:mcp-servers-config.json # mcp server config
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: llama3.2
+logging:
+  level:
+     io:
+        modelcontextprotocol:
+          client: trace
+          spec: trace
+```
+
+- The `mcp-servers-config.json`, this includes the command to start the server jar
+
+```json
+{
+  "mcpServers": {
+    "item-mcp-client": {
+      "command": "java",
+      "args": [
+        "-Dspring.ai.mcp.server.stdio=true",
+        "-jar",
+        "C:\\thiru\\edu\\AI-mcp\\jar\\mcp-server-0.0.1-SNAPSHOT.jar"
+      ]
+    }
+  }
+}
+```
+
+### Output:
 
 - With the MCP client and MCP server running, below output section shows using cURL command to access functionality we had created to manage the items.
 
