@@ -19,8 +19,7 @@ The basic idea is to use natural language to manage the Item list using the func
 
 <img width="1439" height="1075" alt="image" src="https://github.com/user-attachments/assets/abb2b633-c5c5-4106-a672-50c38d3606d2" />
 
-
-Have build a simple MCP Server and Client using Spring AI. There are different transports provided by MCP but have used STDIO transport since it is simple to start with. MCP supports different transport like STDIO, SSE (Server-Sent Event).
+The MCP Server and Client built with Spring AI uses STDIO transport since it is simple to start with. MCP supports different transport like STDIO, SSE (Server-Sent Event).
 
 STDIO - Standard input and output (stdio) is the simplest and most universal transport for MCP 
 
