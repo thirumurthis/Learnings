@@ -506,7 +506,11 @@ The Client code includes below dependencies
 </project>
 ```
 
-- We include the input controller, note that Spring AI MCP Client autowires the MCP client, would recommend to refer the [spring documentation](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+- Below is the InputController code, we use SyncMcpToolCallbackProvider,
+
+> Note:
+> Spring AI MCP Client autowires required beans, would recommend to refer the - We include the input controller, note that Spring AI MCP Client autowires the MCP client, would recommend to refer the [spring documentation](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+
 
 ```java
 package com.mcp.demo.client.controller;
@@ -626,7 +630,7 @@ logging:
 
 ### Output:
 
-- With the MCP client and MCP server running, below output section shows using cURL command to access functionality we had created to manage the items.
+With the MCP client and MCP server running, below are sample outputs that was generated for testing using cURL command
 
 
 ```sh
@@ -640,7 +644,8 @@ Here is the list of items from the server:
 * Box: 600 items, ID: 5
 ```
 
-- Note: When we need to add an item to the list, with the provided simple instruction we could see we get error message repsonse. This is because, the LLM is not able to infer and Create the Item object before accessing the specific tools functionality. On the MCP client we could see below message in this case.
+> Note: 
+> When we need to add an item to the list, if the user input is simple instruction noticed error message response like below. This is because the LLM is not able to infer and create the Item object before accessing the specific tools functionality. On the MCP client we could see below message in this case
 
 ```
 java.lang.IllegalStateException: Error calling tool: [TextContent[audience=null, priority=null, text=Conversion from JSON to com.mcp.demo.server.data.Item failed]]
