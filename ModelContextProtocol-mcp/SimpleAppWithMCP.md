@@ -13,6 +13,13 @@ Model Context Protocol (MCP) is an open standard developed by Anthropic. MCP is 
 
 ### Sample Application
 
+The basic idea is to use natural language to manage the Item list using the functionality created on the MCP server. The MCP Client will use the LLM running in local to infer the context and call the Tools to render the response.
+
+### Overall flow
+
+<img width="1439" height="1075" alt="image" src="https://github.com/user-attachments/assets/abb2b633-c5c5-4106-a672-50c38d3606d2" />
+
+
 Have build a simple MCP Server and Client using Spring AI. There are different transports provided by MCP but have used STDIO transport since it is simple to start with. MCP supports different transport like STDIO, SSE (Server-Sent Event).
 
 STDIO - Standard input and output (stdio) is the simplest and most universal transport for MCP 
@@ -38,9 +45,6 @@ docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 docker exec -it ollama ollama run llama3.2
 ```
 
-### Overall flow
-
-<img width="1439" height="1075" alt="image" src="https://github.com/user-attachments/assets/abb2b633-c5c5-4106-a672-50c38d3606d2" />
 
 The MCP server include bunch of methods to manage the in-memory item list in the service layer. The Item is defined as Java record, with id, name and quantity fields. There service layer methods will list all the items from in-memory list, add and find item by name. Note, after deploying MCP Client noticed when adding the item, the LLM requires explicit instruction to create the Item object with name and quantity fields explicitly else get text to json conversion error. Refer the Output section below.
 
