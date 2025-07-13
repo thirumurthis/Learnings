@@ -38,14 +38,16 @@ Tools - Tools are a powerful primitive in the Model Context Protocol (MCP) that 
 docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 ```
 
-- Once the Ollama docker container starts running in detached mode, we execute below command which will exec to the container and issue below command. The command will run the llama3.2 model. The command will download the model, note the volume in the above docker command the model will be downloaded to local storage at that path. After downloading the model will starts display the prompt. You can quit out of the prompt by typing /bye. By dropping the -it option in below command there won’t be any prompt displayed when running the model in ollama container.
+-Once Ollama docker container starts running in detached mode, we need to execute below command to start the llama3.2 model. The command will download the model. Note the volume in the above docker command -v is where the model will saved in local storage. Below command will run the llama3.2 model and stops in a prompt. Type /bye to quit the prompt.
 
 ```sh
 docker exec -it ollama ollama run llama3.2
 ```
 
 
-The MCP server include bunch of methods to manage the in-memory item list in the service layer. The Item is defined as Java record, with id, name and quantity fields. There service layer methods will list all the items from in-memory list, add and find item by name. Note, after deploying MCP Client noticed when adding the item, the LLM requires explicit instruction to create the Item object with name and quantity fields explicitly else get text to json conversion error. Refer the Output section below.
+The MCP server include bunch of methods to manage the in-memory item list in the service layer. The Item is defined as Java record, with id, name and quantity fields. There service layer methods will list all the items from in-memory list, add and find item by name.
+
+> Note when testing with the natural language to add a item to the in-memory list there was an exception in the client this was due to text to json conversion where when the method was invoked the argument expected is to be Item. Refer the Output section below.
 
 For initial code generation have used the start.spring.io, and included only MCP server dependency.
 
