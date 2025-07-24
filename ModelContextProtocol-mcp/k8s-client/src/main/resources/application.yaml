@@ -1,0 +1,31 @@
+spring:
+   application:
+     name: k8s-client
+   ai:
+     mcp:
+       client:
+         enabled: true
+         toolcallback:
+           enabled: true
+         name: k8s-mcp-client
+         version: 1.0.0
+         request-timeout: 30s
+         type: SYNC  # or ASYNC for reactive applications
+         sse:
+           connections:
+             server1:
+               url: http://localhost:8080
+     ollama:
+       base-url: http://localhost:11434
+       chat:
+         options:
+           model: llama3.2
+logging:
+  level:
+    io:
+      modelcontextprotocol:
+        client: trace
+        spec: trace
+
+server:
+   port: 8085

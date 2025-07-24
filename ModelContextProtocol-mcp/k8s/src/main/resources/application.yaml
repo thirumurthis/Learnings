@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: k8s-mcp-server
+  main:
+    #web-application-type: none
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        name: k8s-mcp-server
+        version: 1.0.0
+
+logging:
+  #pattern:
+  #  console:
+  level:
+    root: info
