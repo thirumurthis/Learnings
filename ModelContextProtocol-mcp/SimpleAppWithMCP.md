@@ -1,53 +1,60 @@
 ### Application with MCP protocol with local LLM
 
-With the AI being popular, recently came accross the Model Context Protocol (MCP) in this blog have documented my learning with a sample application.
+With the AI being buzz word in the IT industry recently came across the work Model Context Protocol (MCP) and wanted to learn and understand about the protocol. This blog doesn’t details much about the MCP, please refer the MCP documentation. This would like a quick start with MCP using Spring AI and captures my learnings of using different tools.
+
+#### Pre-requisites:
+- Docker Desktop
+- Java
+- Any IDE for Java development
 
 ### What is MCP?
 
-Model Context Protocol (MCP) is an open standard developed by Anthropic. MCP is an open protocol that standardizes how applications provide context to LLMs. MCP helps you build agents and complex workflows on top of LLMs.
-MCP standardize how AI applications, particularly large language models (LLMs), access and utilize external tools, data, and resources. For more details refer [MCP documentation](https://modelcontextprotocol.io/introduction).
+Model Context Protocol (MCP) is an open standard developed by Anthropic. MCP is an open protocol that standardizes how applications provide context to LLMs. MCP helps you build agents and complex workflows on top of LLMs. MCP standardize how AI applications, particularly large language models (LLMs), access and utilize external tools, data, and resources. For more details refer MCP documentation.
+
+### Sample Application
+
+The basic idea is to use natural language to manage the Item list using the functionality created on the MCP server. The MCP Client will use the LLM running in local to infer the context and call the Tools to render the response.
+
+### Overall flow
+
+<img width="1439" height="1075" alt="image" src="https://github.com/user-attachments/assets/abb2b633-c5c5-4106-a672-50c38d3606d2" />
+
+The MCP Server and Client built with Spring AI uses STDIO transport for communication since it is simple to start with. MCP supports different transport like STDIO, SSE (Server-Sent Event).
+
+STDIO - Standard input and output (stdio) is the simplest and most universal transport for MCP 
+
+SSE - Server-sent events (SSE)- provide a persistent connection for server-to-client streaming, while client-to-server messages are sent using HTTP POST.
+
+The MCP server code includes a service layer which has bunch of functionality to manage an in-memory Item list. The methods in the service layer are annotated with @Tools. For Spring AI this annotation is imported from  spring-ai-starter-mcp-server dependency. The tools annotation includes name and description field. With the description LLM will be able to set context and understand the methods functionality.
+
+Tools - Tools are a powerful primitive in the Model Context Protocol (MCP) that enable servers to expose executable functionality to clients. Through tools, LLMs can interact with external systems, perform computations, and take actions in the real world.
 
 
-### Summary of the local application
-
-The MCP Server and Client is build using Spring AI and communicates with STDIO. MCP supports different transport like STDIO, SSE (Server-Sent Event).
-
-`STDIO` - Standard input and output (stdio) is the simplest and most universal transport for MCP
-`SSE` - Server-sent events (SSE) provide a persistent connection for server-to-client streaming, while client-to-server messages are sent using HTTP POST.
-
-The functionality of the server is exposed using `Tools`. With the `spring-ai-starter-mcp-server` supports `@Tool` annotation which includes `name` and `description`. The LLM uses the `description` to understand the functionality. The `spring-ai-starter-mcp-server` supports simple STDIO transport. 
-
-`Tools` - Tools are a powerful primitive in the Model Context Protocol (MCP) that enable servers to expose executable functionality to clients. Through tools, LLMs can interact with external systems, perform computations, and take actions in the real world. 
-
-
-##### Local Olama LLM in docker container
+### Running Ollama LLM in local docker container
  
-For my learning, the Ollama LLM runs local docker container, with llama3.2 model.
-
 - To run the Ollama container in local docker use below command
 
 ```sh
 docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 ```
 
-- Once the Ollama docker container starts running, we exec into the container and issue below command to run the llama3.2 model. Below command will start downloading the model to the container and starts it, once it started a prompt will be displayed. To quit the prompt type `/bye`. If jsut need execut the command drop the `-it` option from the command.
+-Once Ollama docker container starts running in detached mode, we need to execute below command to start the llama3.2 model. The command will download the model. Note the volume in the above docker command -v is where the model will saved in local storage. Below command will run the llama3.2 model and stops in a prompt. Type /bye to quit the prompt.
 
 ```sh
 docker exec -it ollama ollama run llama3.2
 ```
 
-##### Application info
 
-<img width="1439" height="1075" alt="image" src="https://github.com/user-attachments/assets/abb2b633-c5c5-4106-a672-50c38d3606d2" />
+The MCP server include bunch of methods to manage the in-memory item list in the service layer. The Item is defined as Java record, with id, name and quantity fields. There service layer methods will list all the items from in-memory list, add and find item by name.
 
-For learning, the MCP server expose a service layer which uses set of functionality that manages the in-memory list of item. The Item object is a Java record, with name and quantity fields.
-There service includes functionality to get the list of items from the in-memory list, another service to add one item and get only one item.
+> Note when testing with the natural language to add a item to the in-memory list there was an exception in the client this was due to text to json conversion where when the method was invoked the argument expected is to be Item. Refer the Output section below.
 
-The server code looks like below, we can use the `start.spring.io`, to include `MCP server` dependency and configure the generated zip file to any IDE.
+For initial code generation have used the start.spring.io, and included only MCP server dependency.
 
-The Server code details
+### Server code details
 
-- Pom.xml - Includes a maven plugin to copy the generated jar to a different path. This is done because in the MCP Client configuration for STDIO we will configure the jar to start the server. We could see that in the MCP client code application yaml, were the mcp-server-config.json will be included. 
+- pom.xml
+The pom.xml also includes maven plugin to copy the generated jar to a different path. This is optional, I just wanted to keep the server jar that will be executed by the client mcp-server configuration in different folder. In the MCP Client code application.yaml we could see the classpath reference to the mcp-server-config.json which includes the java command to start the server. This is done as we are using STDIO transport
 
 ```xml
 <!-- file name: pom.xml -->
@@ -151,8 +158,10 @@ The Server code details
 </project>
 ```
 
-- The `resources/application.yaml` looks like below. The `loggging.pattern.console` is set to empty since when the MCP Client communicates to the MCP Server with STDIO transport we don't wan't the log message being logged in the console. 
-- Note with the `logging.patter.console` empty, when the MCP server application is started to run on the IDE, should see below message but the application is running as expected. 
+The resources/application.yaml looks like below. The loggging.pattern.console is set to empty since when the MCP Client communicates to the MCP Server with STDIO transport we don't wan't the log message being logged in the console.
+
+> Note:
+> With the logging.patter.console empty, when starting the MCP server application in the IDE, you might see below message. This is fine the actual application is running as expected.
 
 ```
 ERROR in ch.qos.logback.classic.PatternLayout("") - Empty or null pattern.
@@ -199,6 +208,8 @@ public record Item(String name, int quantity, int id) {
 ```
 
 The Core service code that manages the Items in in-memory list
+
+Refer the @Tools annotation in the service layer, the description includes information about the methods functionality. If the description is detailed enough with example, the LLM could better associate with the context.
 
 ```java
 package com.mcp.demo.server.service;
@@ -264,7 +275,7 @@ public class ItemService {
 }
 ```
 
-- Below code is the how to register the service with tools functionality to the ToolCallBackProvider. So client can easily list the tools.
+- Below code shows how to register the item service with tools functionality to the ToolCallBackProvider. The MCP Client would be able to list the tools in the client side.
 
 ```java
 package com.mcp.demo.server.config;
@@ -307,9 +318,11 @@ public class McpServerApplication {
 
 #### Testing the Server code with MCP Inspector
 
-- Already some of the REST clients like Postman supportws MCP, but in this case Antropic community has inspector tool which requires node js to be installed in local.
-- We can use `Cluade`, `Cursor`, etc. desktop tool to connect to the MCP server as well.
-- Make sure to generate the server Jar generated, as we are using maven it would be `mvn clean install`, the generated jar will be moved to the path specified in the pom.xml maven plugin.
+There are different options to test the MCP server code. 
+
+Like using Postman with MCP, Claude, Cursor, etc. In here have details testing using MCP Inspector which is from Anthropic community. To run the MCP Inspector we need node js to be installed in local machine.
+
+Make sure to generate the server Jar, before testing with the tool, use mvn clean install to generate the jar. Jar will be copied to the path specified in the pom.xml maven plugin.
 
 - To start the application we can use below command
 
@@ -338,8 +351,8 @@ The browser will look like below to start with.
 
 <img width="2471" height="1591" alt="image" src="https://github.com/user-attachments/assets/eeaaf827-f590-411b-9caa-19d44b9495a1" />
 
-In the UI, we could select and update below configuration 
- - Note, the java should be accessible in the path, and the arguments we pass the path of the mce-server jar. Make sure
+> Note:
+> Java should be accessible and update the UI with below command and arguments info
 
 ```
 Transport Type: STDIO
@@ -349,18 +362,18 @@ Arguments "-Dspring.ai.mcp.server.stdio=true" "-jar" "C:\\AI-mcp\\jar\\mcp-serve
 
 <img width="1822" height="1470" alt="image" src="https://github.com/user-attachments/assets/4d3f93b8-8cb7-4bff-aa77-39f14d08f966" />
 
-Clicking the Connect should see the screen like below 
+Click the Connect button which should display the screen as seen below
 
 <img width="2643" height="1569" alt="image" src="https://github.com/user-attachments/assets/50c024ea-1e3a-4676-a100-955e63180d5a" />
 
-Select the Tools tab and click the list resources, which would list the service tool list 
+Select the Tools tab and click the list Tools, which would list the service tool list
 <img width="2467" height="1561" alt="image" src="https://github.com/user-attachments/assets/950421c8-4d8d-4da5-a961-707bbf84eb4e" />
 
 `Claude` desktop to connect to the server 
 
 <img width="1996" height="973" alt="image" src="https://github.com/user-attachments/assets/d5002cf9-5850-4722-a6cb-e6d604822721" />
 
-- The Claude config looks like below, the server configuration below aslo includes a filesystem mcp server. 
+- The Claude config looks like below, the server configuration below it also includes a filesystem mcp server which is optional.
   
 ```json
 {
@@ -384,21 +397,23 @@ Select the Tools tab and click the list resources, which would list the service 
 }
 ```
 
-From Claude, when request to list all the items, will prompt to allow access, which looks like below
+From Claude, when we request to list all the items from the in-memory list, it will prompt to allow access, which looks like below
 
 <img width="1950" height="1285" alt="image" src="https://github.com/user-attachments/assets/5e944e76-d34d-4e2c-b3b6-62dba41377e8" />
 
 The response will look like below 
 <img width="1420" height="1144" alt="image" src="https://github.com/user-attachments/assets/0080c818-29f1-416a-ac7d-8e954df10d51" />
 
-### MCP Client Code
+### MCP Client Code details
 
-The MCP Client code is also generated using Spring Starter io, with the MCP client dependency.
 
-Below lists the code for MCP Client
- - The MCP Client java dependency `spring-ai-starter-mcp-client`
- - Since we use Ollama we add the spring dependency `spring-ai-starter-model-ollama`
- - `spring-boot-starter-web` dependency is added to expose an POST endpoint to get use prompt
+The MCP Client code is also generated using Spring Starter io and with the MCP Client dependency.
+
+The Client code includes below dependencies
+
+ - The MCP Client java dependency spring-ai-starter-mcp-client
+ - Ollama spring dependency spring-ai-starter-model-ollama
+ - spring-boot-starter-web dependency expose an POST endpoint to send message using cURL
 
 ```xml
 <!-- file-name: pom.xml -->
@@ -496,7 +511,11 @@ Below lists the code for MCP Client
 </project>
 ```
 
-- We include the input controller, note that Spring AI MCP Client autowires the MCP client, would recommend to refer the [spring documentation](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+- Below is the InputController code, we use SyncMcpToolCallbackProvider,
+
+> Note:
+> Spring AI MCP Client autowires required beans, would recommend to refer the - We include the input controller, note that Spring AI MCP Client autowires the MCP client, would recommend to refer the [spring documentation](https://docs.spring.io/spring-ai/reference/api/mcp/mcp-client-boot-starter-docs.html)
+
 
 ```java
 package com.mcp.demo.client.controller;
@@ -616,7 +635,7 @@ logging:
 
 ### Output:
 
-- With the MCP client and MCP server running, below output section shows using cURL command to access functionality we had created to manage the items.
+With the MCP client and MCP server running, below are sample outputs that was generated for testing using cURL command
 
 
 ```sh
@@ -630,7 +649,8 @@ Here is the list of items from the server:
 * Box: 600 items, ID: 5
 ```
 
-- Note: When we need to add an item to the list, with the provided simple instruction we could see we get error message repsonse. This is because, the LLM is not able to infer and Create the Item object before accessing the specific tools functionality. On the MCP client we could see below message in this case.
+> Note: 
+> When we need to add an item to the list, if the user input is simple instruction noticed error message response like below. This is because the LLM is not able to infer and create the Item object before accessing the specific tools functionality. On the MCP client we could see below message in this case
 
 ```
 java.lang.IllegalStateException: Error calling tool: [TextContent[audience=null, priority=null, text=Conversion from JSON to com.mcp.demo.server.data.Item failed]]
