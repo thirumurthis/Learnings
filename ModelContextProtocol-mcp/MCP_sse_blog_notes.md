@@ -23,7 +23,7 @@ Info:
 
 #### Server code 
 
-- pom.xml 
+The `pom.xml` for the project is listed below, the `spring-ai-starter-mcp-server-webmvc` dependency is added. Please refer the Spring documentation for production grade implementations.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -127,7 +127,7 @@ Info:
 </project>
 ```
 
-- Service layer with set of functionality that commuincates to the KinD cluster
+- The code with functionality annotated with `@Tool` in Service layer. The code logic is self-explanatory. As mentioned in the previous blog, the Tools annotation requires `name` and `description` which is used by the MCP to detetmine the context when using the local LLM in this case.
 
 ```java
 //# filename: K8sService.java 
@@ -272,7 +272,7 @@ public class K8sService {
 }
 ```
 
-- Registering the service with the functionality to the spring context
+- Spring Bean configuration to registering the service to the spring context.
 
 ```java
 package com.k8s.mcp.k8s.config;
@@ -296,7 +296,7 @@ public class McpServerToolConfig {
 }
 ```
 
-- Pojo classes to hold the information part of response
+- Pojo classes used to hold the resource information form the cluster which will be sent part of response
 
 ```java
 //# filename: K8sNamespaceInfo.java
@@ -315,7 +315,7 @@ import java.util.List;
 
 public record K8sPodInfo(String namespace, List<String> podNames) {}
 ```
-- Entry point SpringApplicatino
+- Entry point Spring Application
 
 ```java
 package com.k8s.mcp.k8s;
@@ -332,7 +332,7 @@ public class K8sApplication {
 }
 ```
 
-- Resource values
+- `application.yaml` file of server. The properties in below commented default can be removed for the code to work 9it is optional).
 
 ```yaml
 spring:
@@ -347,15 +347,15 @@ spring:
         enabled: true
         name: k8s-mcp-server
         version: 1.0.0
-        resource-change-notification: true #default
-        tool-change-notification: true     #default
-        prompt-change-notification: true   #default
+        resource-change-notification: true # default
+        tool-change-notification: true     # default
+        prompt-change-notification: true   # default
         type: sync                         # default
-        capabilities:
-          completion: true
-          prompt: true
-          resource: true
-          tool: true
+        capabilities:                      # default
+          completion: true                 # default
+          prompt: true                     # default
+          resource: true                   # default
+          tool: true                       # default
 
 logging:
   level:
