@@ -8,7 +8,7 @@ Pre-requisites:
   - Docker Desktop
   - Kind CLI
       - KinD cluster created using `kind create cluster --name sample`
-  - Java IDE (InteliJ Idea community edition)
+  - Java IDE (IntelliJ Idea community edition)
 
 ### Overview
 
@@ -18,7 +18,7 @@ With `STDIO` transport when running the MCP client the server is configured to r
 
 Info:
   - With KinD CLI, the kube config file will be updated and placed in default .kube folder. This kube config file is reqired by the Kubernetes Java client to connect and manage the resources. When running the MCP Server from IDE like IntelliJ Idea set the kube config path in environment variable `KUBECONFIG`. Also note, if there are more than one KinD cluster set appropriate context for the server to access. Refer the kubernetes documentation for this specific details. 
-  - In my local machine, the docker daemon is configured in WSL2 with Ubuntu-24.04 distro. So the environment configured looks like `KUBECONFIG=\\wsl.localhost\Ubuntu-24.04\home\<user-name>\.kube\config`. When runnign the Spring Application class in InteliJ IDE set the environment variables using `Modify Run configuration`.
+  - In my local machine, the docker daemon is configured in WSL2 with Ubuntu-24.04 distro. So the environment configured looks like `KUBECONFIG=\\wsl.localhost\Ubuntu-24.04\home\<user-name>\.kube\config`. When running the Spring Application class in IntelliJ IDE set the environment variables using `Modify Run configuration`.
 
 <img width="300" height="332" alt="image" src="https://github.com/user-attachments/assets/92c8d463-be72-4759-b3be-6bc7cf71a560" />
 
@@ -734,7 +734,7 @@ server:
 - with `curl http://localhost:8085/input/in -d 'get me the pods from apisix namespace'` the output snapshot looks like below
 <img width="500" height="335" alt="image" src="https://github.com/user-attachments/assets/a47b402d-268c-4d30-b233-e87ff4c92faf" />
 
-- with `curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster'` the output looks like below
-  Note, the response from the functionality is list of namespace after created but the client displays a message only. This probably the description can be more explicitly defined.
+- with curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster' the output looks like below.
+  - Note, the response from the functionality returns list of namespace after namespace is created but the here client displays the message not the list of namespaces. This probably the description test in the @Tool annotation. Which can be modified to be more explicit if needed.
 <img width="550" height="80" alt="image" src="https://github.com/user-attachments/assets/98d25ead-017a-47b4-8bc1-19934369e69d" />
 
