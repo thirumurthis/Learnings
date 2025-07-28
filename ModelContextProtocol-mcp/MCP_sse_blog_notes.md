@@ -12,10 +12,9 @@ Pre-requisites:
 
 ### Overview
 
+With `STDIO` transport when running the MCP client the server is configured to run with java command, but in case of `SSE` transport the MCP server runs as standalone application (or accessed using HTTP). Spring provides OAuth configuration to secure the MCP server which is not explained here. For `SSE` Spring AI by default exposes the endpoint at `/sse`.
+
 <img width="1140" height="651" alt="image" src="https://github.com/user-attachments/assets/97970942-1bd5-4b8d-834e-1434c7909da4" />
-
-In `STDIO`, the client is configured with teh server jar to be invoked with java command, but for `SSE` transport the MCP server will be runs as standalone application (or accessed using HTTP). Spring AI by default uses the endpoint  `/sse` for SSE.
-
 
 Info:
   - The KinD CLI upon creating the cluster in Docker will update the kube config to access the cluster in default kube path. To run the MCP Server from IDE, the kube config path should be set in environment variable `KUBECONFIG`. If there are more than one KinD cluster set appropriate default context in the config. Refer the kubernetes documentation for this. 
