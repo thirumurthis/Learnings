@@ -305,6 +305,41 @@ import java.util.List;
 public record K8sPodInfo(String namespace, List<String> podNames) {}
 ```
 
+- Resource values
+
+```yaml
+spring:
+  application:
+    name: k8s-mcp-server
+  main:
+    #web-application-type: none
+    banner-mode: off
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: k8s-mcp-server
+        version: 1.0.0
+        resource-change-notification: true #default
+        tool-change-notification: true     #default
+        prompt-change-notification: true   #default
+        type: sync                         # default
+        capabilities:
+          completion: true
+          prompt: true
+          resource: true
+          tool: true
+
+logging:
+  #pattern:
+  #  console:
+  level:
+    #root: INFO
+    io.modelcontextprotocol: TRACE
+    org.springframework.ai.mcp: TRACE
+
+```
+
 ### Testing the server
 
 #### Curl command
@@ -446,3 +481,10 @@ Transport type: SSE
 URL: http://localhost:8080/sse
 ```
 
+<img width="2651" height="1264" alt="image" src="https://github.com/user-attachments/assets/527283c6-0464-4823-b495-ab41f159717f" />
+
+Select Tools, and list the tools, if the curl command to sse is enabled terminate that connection else you might receive timeout message in case of sync connection.
+
+<img width="2684" height="1442" alt="image" src="https://github.com/user-attachments/assets/4e4fb757-8187-4020-8ee3-0cb7a91a0747" />
+
+### MCP client
