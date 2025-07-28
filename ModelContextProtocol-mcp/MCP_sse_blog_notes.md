@@ -304,6 +304,22 @@ import java.util.List;
 
 public record K8sPodInfo(String namespace, List<String> podNames) {}
 ```
+- Entry point SpringApplicatino
+
+```java
+package com.k8s.mcp.k8s;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class K8sApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(K8sApplication.class, args);
+	}
+}
+```
 
 - Resource values
 
@@ -331,13 +347,9 @@ spring:
           tool: true
 
 logging:
-  #pattern:
-  #  console:
   level:
-    #root: INFO
     io.modelcontextprotocol: TRACE
     org.springframework.ai.mcp: TRACE
-
 ```
 
 ### Testing the server
@@ -488,3 +500,210 @@ Select Tools, and list the tools, if the curl command to sse is enabled terminat
 <img width="2684" height="1442" alt="image" src="https://github.com/user-attachments/assets/4e4fb757-8187-4020-8ee3-0cb7a91a0747" />
 
 ### MCP client
+
+- pom.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.3</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.k8s.client</groupId>
+	<artifactId>k8s-client</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>k8s-client</name>
+	<description>Demo project for Spring Boot</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>24</java.version>
+		<spring-ai.version>1.0.0</spring-ai.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-mcp-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-starter-model-ollama</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-bom</artifactId>
+				<version>${spring-ai.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+```
+- The controller class
+
+```java
+package com.k8s.client.k8s_client;
+
+import io.modelcontextprotocol.client.McpSyncClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.ai.tool.ToolCallback;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.definition.ToolDefinition;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/input")
+public class InputController {
+
+    private static final Logger log = LoggerFactory.getLogger(InputController.class);
+
+    private final ChatClient chatClient;
+    private final List<McpSyncClient> mcpSyncClients;
+
+    public InputController(ChatClient.Builder chatClientBuilder,
+                           ToolCallbackProvider toolCallbackProvider,
+                           List<McpSyncClient> mcpSyncClients){
+        this.chatClient = chatClientBuilder.build();
+        this.mcpSyncClients = mcpSyncClients;
+
+        printToolInfoFromServer(toolCallbackProvider);
+
+    }
+
+    @PostMapping("/in")
+    public String input(@RequestBody String inputData){
+        log.info("input data received - {}",inputData);
+        return chatClient.prompt()
+                .user(inputData)
+                .toolCallbacks(new SyncMcpToolCallbackProvider(mcpSyncClients))
+                .call()
+                .content();
+    }
+
+    private static void printToolInfoFromServer(ToolCallbackProvider toolCallbackProvider) {
+        List<ToolCallback> toolCallbacks = List.of(toolCallbackProvider.getToolCallbacks());
+        if(toolCallbacks.isEmpty()){
+            log.warn("No tools found");
+        } else {
+            System.out.println("**************************************");
+            for (ToolCallback toolCallback : toolCallbacks){
+                ToolDefinition toolDefinition = toolCallback.getToolDefinition();
+                System.out.println("Tool Name: "+toolDefinition.name());
+                System.out.println(" |___ Description: "+toolDefinition.description());
+                System.out.println(" |___ Input Schem: "+toolDefinition.inputSchema());
+                System.out.println("__________________________________");
+            }
+            System.out.println("**************************************");
+        }
+    }
+}
+```
+
+- Entrypoint of the class
+
+```java
+package com.k8s.client.k8s_client;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class K8sClientApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(K8sClientApplication.class, args);
+	}
+}
+```
+
+- Resource configuration
+
+```yaml
+#application.yaml
+spring:
+   application:
+     name: k8s-client
+   ai:
+     mcp:
+       client:
+         enabled: true
+         toolcallback:
+           enabled: true
+         name: k8s-mcp-client
+         version: 1.0.0
+         request-timeout: 30s
+         type: SYNC  # or ASYNC for reactive applications
+         sse:
+           connections:
+             server1:
+               url: http://localhost:8080
+     ollama:
+       base-url: http://localhost:11434
+       chat:
+         options:
+           model: llama3.2
+logging:
+  level:
+    io:
+      modelcontextprotocol:
+        client: trace
+        spec: trace
+
+server:
+   port: 8085
+```
+
+#### Output 
+
