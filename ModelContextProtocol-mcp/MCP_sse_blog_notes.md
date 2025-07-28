@@ -247,14 +247,22 @@ public class K8sService {
             " and return the list of namespace available in the cluster as response with created namespace")
     public K8sNamespaceInfo K8sCreateNamespace(String namespace){
 
+        LOGGER.info("Creating namespace named : {}",namespace);
+
         if(namespace == null || namespace.isBlank()){
             throw new RuntimeException("namespace can't be empty or blank");
         }
         V1Namespace nsObject = new V1Namespace();
         V1ObjectMeta nsMetadata = new V1ObjectMeta();
-        nsMetadata.setNamespace(namespace);
+        nsMetadata.setName(namespace);
         nsObject.setMetadata(nsMetadata);
-        api.createNamespace(nsObject);
+        CoreV1Api.APIcreateNamespaceRequest nsRequest =  api.createNamespace(nsObject);
+        try {
+            nsRequest.execute();
+        } catch (ApiException e) {
+            LOGGER.error("error creating namespace ",e);
+            throw new RuntimeException(e);
+        }
 
         return getNamespaces();
     }
@@ -720,8 +728,6 @@ server:
 <img width="1324" height="335" alt="image" src="https://github.com/user-attachments/assets/a47b402d-268c-4d30-b233-e87ff4c92faf" />
 
 - with `curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster'` the output looks like below
+  Note, the response from the functionality is list of namespace after created but the client displays a message only. This probably the description can be more explicitly defined.
 <img width="2142" height="80" alt="image" src="https://github.com/user-attachments/assets/98d25ead-017a-47b4-8bc1-19934369e69d" />
-
-
-
 
