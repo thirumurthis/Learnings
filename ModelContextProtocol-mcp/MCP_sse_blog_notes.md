@@ -707,3 +707,19 @@ server:
 
 #### Output 
 
+- List of pods from the kind cluster `kubectl get pods -A`
+<img width="1933" height="1132" alt="image" src="https://github.com/user-attachments/assets/0b9e41e7-452a-4097-91e3-6d9695f09ca1" />
+
+- List of namespace from the kind cluster `kubectl get namespace`
+<img width="622" height="399" alt="image" src="https://github.com/user-attachments/assets/354e2e36-e28c-48e8-bb23-2fa26280e0fd" />
+
+- With `curl http://localhost:8085/input/in -d 'get me the list of pods from all namespace'` the output snapshot looks like below
+<img width="1400" height="1621" alt="image" src="https://github.com/user-attachments/assets/da88faa4-54ed-4f4a-b2ea-c57c709736e1" />
+
+- with `curl http://localhost:8085/input/in -d 'get me the pods from apisix namespace'` the output snapshot looks like below
+<img width="1324" height="335" alt="image" src="https://github.com/user-attachments/assets/a47b402d-268c-4d30-b233-e87ff4c92faf" />
+
+- with `curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster'` the output looks like below
+
+
+
