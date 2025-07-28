@@ -14,7 +14,7 @@ Pre-requisites:
 
 With `STDIO` transport when running the MCP client the server is configured to run with java command, but in case of `SSE` transport the MCP server runs as standalone application (or accessed using HTTP). Spring provides OAuth configuration to secure the MCP server which is not explained here. For `SSE` Spring AI by default exposes the endpoint at `/sse`.
 
-<img width="1140" height="651" alt="image" src="https://github.com/user-attachments/assets/97970942-1bd5-4b8d-834e-1434c7909da4" />
+<img width="550" height="600" alt="image" src="https://github.com/user-attachments/assets/97970942-1bd5-4b8d-834e-1434c7909da4" />
 
 Info:
   - With KinD CLI, the kube config file will be updated and placed in default .kube folder. This kube config file is reqired by the Kubernetes Java client to connect and manage the resources. When running the MCP Server from IDE like IntelliJ Idea set the kube config path in environment variable `KUBECONFIG`. Also note, if there are more than one KinD cluster set appropriate context for the server to access. Refer the kubernetes documentation for this specific details. 
