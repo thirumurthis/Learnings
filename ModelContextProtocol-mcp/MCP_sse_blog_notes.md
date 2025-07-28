@@ -720,6 +720,8 @@ server:
 <img width="1324" height="335" alt="image" src="https://github.com/user-attachments/assets/a47b402d-268c-4d30-b233-e87ff4c92faf" />
 
 - with `curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster'` the output looks like below
+<img width="2142" height="80" alt="image" src="https://github.com/user-attachments/assets/98d25ead-017a-47b4-8bc1-19934369e69d" />
+
 
 
 
