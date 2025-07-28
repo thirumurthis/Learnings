@@ -1,22 +1,21 @@
 ## Spring AI MCP Client Server communication with SSE transport 
 
-In this blog have created a Spring AI MCP server which will expose simple functionality to manage a kubernetes cluster. This is with reference to my previous [blog Spring AI MCP Client Server using STDIO transport](https://www.linkedin.com/pulse/mcp-client-server-use-local-llm-thirumurthi-s-5uc5c/) which manages an in-memory list of items. 
+In this blog have tried to use Spring AI MCP with SSE transport to manage local KinD Kubernetes cluster. This is a follow up of previous blog [Spring AI MCP Client Server using STDIO transport](https://www.linkedin.com/pulse/mcp-client-server-use-local-llm-thirumurthi-s-5uc5c/). 
 
-The MCP Server includes a set of tools to manage the local kind cluster using the Kuberentes Java client API. The tool functionality creates list and creates few resources in the kind cluster for demonstration purpose. The MCP Client uses the local Ollama service running in docker with llama-3.2 model.
+The Spring AI MCP Server code shown below includes set of functionality annotated with `@Tool` in service layer. These functionality will use Kubernetes Java client to manage the local KinD cluster resources. Like in previous blog have used the Ollama service running in docker with llama-3.2 model. And accessible in `http://localhost:11434`.
 
 
 Pre-requisites:
   - Docker Desktop
   - Kind CLI
+      - KinD cluster created using `kind create cluster --name sample`
+  - Java IDE (InteliJ Idea community edition)
 
+Info:
+  - The KinD CLI upon creating the cluster in Docker will update the kube config to access the cluster in default kube path. To run the MCP Server from IDE, the kube config path should be set in environment variable `KUBECONFIG`. If there are more than one KinD cluster set appropriate default context in the config. Refer the kubernetes documentation for this. 
+  - In my local machine, the docker is runnning as daemon process in WSL2 with Ubuntu-24.04 distro. In the IDE the environment variable `KUBECONFIG` is set with the path like `KUBECONFIG=\\wsl.localhost\Ubuntu-24.04\home\<user>\.kube\config`. From IDE when running the MCP Server Spring entry point class the environment variable can be set by clicking the `Modify Run configuration` and adding the above `KUBECONFIG` key value in `Environment Variables` text box.
 
-Create a kind cluster using Kind cli using `kind create cluster --name sample`. 
-Once the Kind cluster is running in Docker, the kube config of cluster needs to be configured in IDE so the MCP server code can connect to the cluster. 
-In my case, running the docker in WSL2 with Ubuntu-24.04 distroand set the environment variable `KUBECONFIG` with the path, which looks like `KUBECONFIG=\\wsl.localhost\Ubuntu-24.04\home\<user>\.kube\config`. 
-In IntelliJ it would be clicking the `Modify Run configuration` and setting the `Environment Variables`.
-
-
-With the SSE transport, the MCP server runs as standalone application and the MCP client access to it using `/sse` path.
+In `STDIO`, the client is configured with teh server jar to be invoked with java command, but for `SSE` transport the MCP server will be runs as standalone application (or accessed using HTTP). Spring AI by default uses the endpoint  `/sse` for SSE.
 
 #### Server code 
 
