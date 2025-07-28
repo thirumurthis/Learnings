@@ -1,28 +1,26 @@
 package com.k8s.mcp.k8s.service;
 
-import com.k8s.mcp.k8s.K8sController;
 import com.k8s.mcp.k8s.data.K8sNamespaceInfo;
 import com.k8s.mcp.k8s.data.K8sPodInfo;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
+import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1NamespaceList;
+import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.util.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class K8sService {
@@ -43,7 +41,8 @@ public class K8sService {
     }
 
     @Tool(name="get_pods_from_given_namespace",
-            description = "This function will return the list of pods for a given namespace from the kubernetes cluster")
+            description = "This function will return the list of pods for a given namespace " +
+                    "from the kubernetes cluster")
     public K8sPodInfo getPods(String namespace){
 
 
@@ -101,6 +100,7 @@ public class K8sService {
         try {
             V1NamespaceList namespaceList = api.listNamespace().execute();
             List<String> nameSpaces = namespaceList.getItems().stream()
+                    .filter(ns -> ns.getMetadata() != null)
                     .map( ns -> ns.getMetadata().getName())
                     .toList();
             k8sNamespaceInfo = new K8sNamespaceInfo(nameSpaces);
@@ -109,5 +109,31 @@ public class K8sService {
             throw new RuntimeException(e);
         }
         return k8sNamespaceInfo;
+    }
+
+
+    @Tool(name="create_namespace",
+    description = "This function will create a namespace in the kubernetes cluster" +
+            " and return the list of namespace available in the cluster as response with created namespace")
+    public K8sNamespaceInfo K8sCreateNamespace(String namespace){
+
+        LOGGER.info("Creating namespace named : {}",namespace);
+
+        if(namespace == null || namespace.isBlank()){
+            throw new RuntimeException("namespace can't be empty or blank");
+        }
+        V1Namespace nsObject = new V1Namespace();
+        V1ObjectMeta nsMetadata = new V1ObjectMeta();
+        nsMetadata.setName(namespace);
+        nsObject.setMetadata(nsMetadata);
+        CoreV1Api.APIcreateNamespaceRequest nsRequest =  api.createNamespace(nsObject);
+        try {
+            nsRequest.execute();
+        } catch (ApiException e) {
+            LOGGER.error("error creating namespace ",e);
+            throw new RuntimeException(e);
+        }
+
+        return getNamespaces();
     }
 }

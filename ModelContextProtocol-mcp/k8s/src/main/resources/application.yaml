@@ -7,11 +7,25 @@ spring:
   ai:
     mcp:
       server:
+        enabled: true
         name: k8s-mcp-server
         version: 1.0.0
+        resource-change-notification: true #default
+        tool-change-notification: true     #default
+        prompt-change-notification: true   #default
+        #sse-endpoint: /v1/sse              # custom endpoint definition
+        #sse-message-endpoint: /vi/mcp      # default is /mcp/message?sessionId=<session-id>
+        type: sync
+        capabilities:
+          completion: true
+          prompt: true
+          resource: true
+          tool: true
 
 logging:
   #pattern:
   #  console:
   level:
-    root: info
+    #root: INFO
+    io.modelcontextprotocol: TRACE
+    org.springframework.ai.mcp: TRACE
