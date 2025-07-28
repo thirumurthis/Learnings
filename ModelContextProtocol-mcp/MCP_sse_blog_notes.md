@@ -4,18 +4,22 @@ In this blog have tried to use Spring AI MCP with SSE transport to manage local 
 
 The Spring AI MCP Server code shown below includes set of functionality annotated with `@Tool` in service layer. These functionality will use Kubernetes Java client to manage the local KinD cluster resources. Like in previous blog have used the Ollama service running in docker with llama-3.2 model. And accessible in `http://localhost:11434`.
 
-
 Pre-requisites:
   - Docker Desktop
   - Kind CLI
       - KinD cluster created using `kind create cluster --name sample`
   - Java IDE (InteliJ Idea community edition)
 
+### Overview
+
+<img width="1140" height="651" alt="image" src="https://github.com/user-attachments/assets/97970942-1bd5-4b8d-834e-1434c7909da4" />
+
+In `STDIO`, the client is configured with teh server jar to be invoked with java command, but for `SSE` transport the MCP server will be runs as standalone application (or accessed using HTTP). Spring AI by default uses the endpoint  `/sse` for SSE.
+
+
 Info:
   - The KinD CLI upon creating the cluster in Docker will update the kube config to access the cluster in default kube path. To run the MCP Server from IDE, the kube config path should be set in environment variable `KUBECONFIG`. If there are more than one KinD cluster set appropriate default context in the config. Refer the kubernetes documentation for this. 
   - In my local machine, the docker is runnning as daemon process in WSL2 with Ubuntu-24.04 distro. In the IDE the environment variable `KUBECONFIG` is set with the path like `KUBECONFIG=\\wsl.localhost\Ubuntu-24.04\home\<user>\.kube\config`. From IDE when running the MCP Server Spring entry point class the environment variable can be set by clicking the `Modify Run configuration` and adding the above `KUBECONFIG` key value in `Environment Variables` text box.
-
-In `STDIO`, the client is configured with teh server jar to be invoked with java command, but for `SSE` transport the MCP server will be runs as standalone application (or accessed using HTTP). Spring AI by default uses the endpoint  `/sse` for SSE.
 
 #### Server code 
 
