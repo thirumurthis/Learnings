@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: deployment-replica-demo
+spec:
+  validationFailureAction: Enforce   # Block resource creation if validation fails
+  background: true
+  rules:
+    - name: require-demo-label-on-pods
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      validate:
+        message: "Deployment must have at least 3 replicas"
+        pattern:
+          spec:
+            replicas: ">=3" 

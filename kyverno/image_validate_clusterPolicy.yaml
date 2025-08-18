@@ -1,0 +1,20 @@
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: update-image-pullpolicy
+spec:
+  validationFailureAction: Enforce   # Block resource creation if validation fails
+  background: true
+  rules:
+    - name: set-image-pullpolicy-pods
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      mutate:
+       patchStrategicMerge:
+         spec:
+           containers:
+              - (image) : "*:latest"  # match images end with :latest
+                imagePullPolicy: "IfNotPresent" # set the imagepullpolicy if the above matches
