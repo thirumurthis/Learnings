@@ -1,0 +1,33 @@
+apiVersion: kyverno.io/v2beta1
+kind: ClusterPolicy
+metadata:
+  name: require-demo-label
+spec:
+  validationFailureAction: Enforce   # Block resource creation if validation fails
+  background: true
+  rules:
+    - name: require-demo-label-on-pods
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "All Pods must have the label 'demo'."
+        pattern:
+          metadata:
+            labels:
+              demo: "?*"
+
+    #- name: require-demo-label-on-deployments
+    #  match:
+    #    any:
+    #      - resources:
+    #          kinds:
+    #            - Deployment
+    #  validate:
+    #    message: "All Deployments must have the label 'demo'."
+    #    pattern:
+    #      metadata:
+    #        labels:
+    #          demo: "?*"

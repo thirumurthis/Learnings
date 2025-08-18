@@ -1,0 +1,17 @@
+apiVersion: kyverno.io/v2
+kind: PolicyException
+metadata:
+  name: allow-without-label-demo
+spec:
+  exceptions:
+    - policyName: require-demo-label
+      ruleNames:
+        - require-demo-label-on-pods
+        #- require-demo-label-on-deployments
+  match:
+    any:
+      - resources:
+          kinds:
+            - Pod
+          namespaces:
+            - test-demo-0
