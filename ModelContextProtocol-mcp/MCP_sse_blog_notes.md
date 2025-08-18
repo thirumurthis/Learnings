@@ -371,9 +371,7 @@ logging:
 
 #### Curl command
 
-- Once the server application is up and running, we can access using cURL command 
-
- - execute the curl command below to check the sse endpoint 
+- Once the server application is up and running, the server endpoint can access using cURL command. Execute below curl command we would connect to the server sse endpoint and continuously listens for event. 
 
 ```sh
 $ curl http://localhost:8080/sse
@@ -384,8 +382,8 @@ data:/mcp/message?sessionId=f087df6d-795d-472c-8313-80f41ed76c56
 
 The lifecycle of MCP connection can be found in [Model Context protocol documentation](https://modelcontextprotocol.io/specification/2025-03-26/basic/lifecycle)
 
-- To connect to the server with curl command, we use the below url, which is part of the response from the above
-  - Open another git bash instance to initialize the transaction
+- From the above response data property we obtain the URL which can be used to initialize connection, list tools, communicate with tools to the MCP server, etc. Open another git bash/ command prompt and execute below cURL command with method initialize
+
 ```sh
 curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-80f41ed76c56   -H "Content-Type: application/json" -d '{
   "jsonrpc": "2.0",
@@ -407,7 +405,7 @@ curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-
 }'
 ```
 
-- Upon executing above intialize method on the endpoint, we could see repsone on the sse endpoint prompt like below few lines
+- Upon executing above  cURL command with initialize method, we could see the response on the previous command prompt which connected to /sse endpoint. The response will look like below. The lines with id was the response from the server on initalization
 
 ```sh
 $ curl http://localhost:8080/sse
@@ -420,7 +418,7 @@ event:message
 data:{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"completions":{},"logging":{},"prompts":{"listChanged":true},"resources":{"subscribe":false,"listChanged":true},"tools":{"listChanged":true}},"serverInfo":{"name":"k8s-mcp-server","version":"1.0.0"}}}
 ```
 
-- Upon executing below comand, since below is a notification to the cluster there won't be any repsonse just the 200 OK
+- Below cURL command is used to notification, upon executing below command the notification initialized to the cluster there won't be any response for this execution just the status 200 OK
 
 ```sh
 curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-80f41ed76c56 -H "Content-Type: application/json" -d '{
@@ -429,7 +427,7 @@ curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-
 }'
 ```
 
-- with the curl command we can try to list the tools
+- Below is the curl command which uses the method `tools/list` to list the functionality annotated with `@Tools` annotation, could see the response on the command prompt with `/sse` endpoint.
 
 ```sh
 curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-80f41ed76c56 -H "Content-Type: application/json" -d '{
@@ -456,7 +454,7 @@ event:message
 data:{"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"get_all_namespace","description":"This function will return list of the namespaces from the kubernetes cluster","inputSchema":{"type":"object","properties":{},"required":[],"additionalProperties":false}},{"name":"get_all_pods_in_cluster","description":"This function will list all the pods from the cluster","inputSchema":{"type":"object","properties":{},"required":[],"additionalProperties":false}},{"name":"create_namespace","description":"This function will create a namespace in the kubernetes cluster and return the list of namespace available in the cluster as response with created namespace","inputSchema":{"type":"object","properties":{"namespace":{"type":"string"}},"required":["namespace"],"additionalProperties":false}},{"name":"get_pods_from_given_namespace","description":"This function will return the list of pods for a given namespace from the kubernetes cluster","inputSchema":{"type":"object","properties":{"namespace":{"type":"string"}},"required":["namespace"],"additionalProperties":false}}]}}
 ```
 
-- To call the functionality we can execute below command in different git bash
+- Executing above curl command with tools/list method we could see the list of tools in the prompt where we executed /sse endpoint, refer the last few lines in below snippet with id which is the response. 
 
 ```sh
 curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-80f41ed76c56 -H "Content-Type: application/json" -d '{
@@ -472,7 +470,7 @@ curl -XPOST http://localhost:8080/mcp/message?sessionId=f087df6d-795d-472c-8313-
 }'
 ```
 
-- Executing the command above we could see repsonse on the bash where we executed sse endpint
+- Executing the command above we could see response on the prompt where we executed the /sse endpoint. Below is the response, refer the last id property below which lists the pods in apisix namespace
 
 ```sh
 $ curl http://localhost:8080/sse
@@ -722,19 +720,38 @@ server:
 
 #### Output 
 
-- List of pods from the kind cluster `kubectl get pods -A`
+- List of pods from the kind cluster
+```
+kubectl get pods -A
+```
 <img width="450" height="1132" alt="image" src="https://github.com/user-attachments/assets/0b9e41e7-452a-4097-91e3-6d9695f09ca1" />
 
-- List of namespace from the kind cluster `kubectl get namespace`
+- List of namespace from the kind cluster
+```
+kubectl get namespace
+```
 <img width="250" height="399" alt="image" src="https://github.com/user-attachments/assets/354e2e36-e28c-48e8-bb23-2fa26280e0fd" />
 
-- With `curl http://localhost:8085/input/in -d 'get me the list of pods from all namespace'` the output snapshot looks like below
+- Using the MCP Client endpoint and request to list all pods from all namespaces, the cURL command looks like below
+
+```
+$ curl http://localhost:8085/input/in -d 'get me the list of pods from all namespace'
+```
+The output is listed like below
 <img width="450" height="1621" alt="image" src="https://github.com/user-attachments/assets/da88faa4-54ed-4f4a-b2ea-c57c709736e1" />
 
-- with `curl http://localhost:8085/input/in -d 'get me the pods from apisix namespace'` the output snapshot looks like below
+- From the MCP Client endpoint to get the pods from the apisix namespace with curl command, the command looks like below 
+```
+$ curl http://localhost:8085/input/in -d 'get me the pods from apisix namespace' the output snapshot looks like below
+```
+The output looks like in below snapshot
 <img width="500" height="335" alt="image" src="https://github.com/user-attachments/assets/a47b402d-268c-4d30-b233-e87ff4c92faf" />
 
-- with curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster' the output looks like below.
-  - Note, the response from the functionality returns list of namespace after namespace is created but the here client displays the message not the list of namespaces. This probably the description test in the @Tool annotation. Which can be modified to be more explicit if needed.
+- From MCP Client endpoint to create the namespace, we can use below cURL command  
+```
+$ curl http://localhost:8085/input/in -d 'create a new namespace named test-k8s-mcp in the cluster'
+```
+Note, the response from the functionality returns list of namespace after namespace is created but the here client displays the message not the list of namespaces. This probably the description test in the @Tool annotation. Which can be modified to be more explicit if needed.
+
 <img width="550" height="80" alt="image" src="https://github.com/user-attachments/assets/98d25ead-017a-47b4-8bc1-19934369e69d" />
 
