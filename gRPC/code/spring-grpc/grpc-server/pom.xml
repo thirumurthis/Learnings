@@ -33,7 +33,7 @@
 		<protobuf-java.version>4.30.2</protobuf-java.version>
 		<spring-grpc.version>0.8.0</spring-grpc.version>
 		<org.springframework.version>6.2.7</org.springframework.version>
-		<org.springframework.boot.version>3.4.5</org.springframework.boot.version>
+		<org.springframework.boot.version>3.4.8</org.springframework.boot.version>
 	</properties>
 	<dependencies>
 		<dependency>
