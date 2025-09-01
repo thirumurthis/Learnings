@@ -184,7 +184,7 @@ Note, the Minio url `"https://minio.tenant-0.svc.cluster.local:443"` note the ap
 
 - With the above configuration we have created
 
-```
+```bash
 k -n postgres-op exec -it  pod/acid-minimal-cluster-1 -- bash
 root@acid-minimal-cluster-1:/home/postgres# psql -d foo -U zalando
 psql (17.2 (Ubuntu 17.2-1.pgdg22.04+1))

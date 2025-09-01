@@ -134,7 +134,7 @@ spec:
           servicePort: 80
 ```
 
-```
+```sh
 kubectl -n apisix apply -f 3_dashboard_apisix_route.yaml
 ```
 
