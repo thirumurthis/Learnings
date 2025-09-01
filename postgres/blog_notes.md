@@ -286,6 +286,17 @@ spec:
 kubectl get secrets app-minio-tls -o yaml -n tenant-0| sed "s/namespace: .*/namespace: postgres-op/" | kubectl apply -f -
 ```
 
+- Create secret
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: s3-minio-secret
+data:
+  username: minio
+  credential: minio123
+```
 - The backup configuration is configured with environemnt variables in the manfiest. Also the configuration is not production ready in terms of DB user and password. Refer to the documentation for more details.
 
 ```yaml
