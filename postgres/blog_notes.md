@@ -403,6 +403,10 @@ After installation we could connect to Minio and see the backup configuration
 
 <img width="2232" height="1195" alt="image" src="https://github.com/user-attachments/assets/0059261e-6e08-42a8-b5fa-10a4d3772fb3" />
 
+From the postgres pod we could see the backedup files with `envdir $WALE_ENV_DIR wal-g backup-list`
+<img width="1425" height="240" alt="1" src="https://github.com/user-attachments/assets/82111205-dec1-4390-89d5-ac373bdb09da" />
+
+
 ### Restore the backup into different Postgres DB
 
 There are different options to restore the backed up data, 
