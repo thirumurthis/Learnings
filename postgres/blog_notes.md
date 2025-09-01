@@ -431,3 +431,8 @@ spec:
     cluster: pgdb-3-cluster #posrgres cluster db name that the backup was enabled
     timestamp: 2025-05-27T00:00:23+00:00  # the timestamp closes fetched using backup_list of wal command
 ```
+
+
+#### Minio with backup info
+
+<img width="2711" height="1106" alt="image" src="https://github.com/user-attachments/assets/72de01f0-0ef0-43b0-b3ae-f88e449481aa" />
