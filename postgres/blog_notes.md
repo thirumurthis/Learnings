@@ -395,8 +395,24 @@ spec:
        memory: 500Mi
 ```
 
+After installation we could connect to Minio and see the backup configuration
 
-- To restore we can use different database name and the configuration looks like below. Note the timestamp in the clone which is important to be updated with the closest backup time stamp.
+<img width="2232" height="643" alt="image" src="https://github.com/user-attachments/assets/3bc897ec-9dcb-47af-9612-c62913aa85ff" />
+
+<img width="2232" height="843" alt="image" src="https://github.com/user-attachments/assets/42dfbf39-6dbf-49fd-aa3a-a709f84833d1" />
+
+<img width="2232" height="1195" alt="image" src="https://github.com/user-attachments/assets/0059261e-6e08-42a8-b5fa-10a4d3772fb3" />
+
+### Restore the backup into different Postgres DB
+
+There are different options to restore the backed up data, 
+
+1. Restore data in the same instance, but this requires to delete the existing instance and re-creating it.
+2. Restore data to different database, this is easy to perform. Below configuration shows the Postgres db name is different.
+
+> Important: Use the wal-g backup-list from the leader postgres db to find the timestamp info which would be the starting point from where the data should be restored. This should be close the the backup timestamp, else the backup might fail. To troubleshoot check the postgres db logs from the pod.
+ 
+> The Postgres DB manifest with the restore configuration where the env values will be different than the backup. Once the below manifest is deployed, use patronictl command to find the status of the Postgres database. Exec to the postgres db cluster pod, issue patronictl list
 
 ```yaml
 apiVersion: "acid.zalan.do/v1"
@@ -440,8 +456,3 @@ spec:
     cluster: pgdb-3-cluster #posrgres cluster db name that the backup was enabled
     timestamp: 2025-05-27T00:00:23+00:00  # the timestamp closes fetched using backup_list of wal command
 ```
-
-
-#### Minio with backup info
-
-<img width="2711" height="1106" alt="image" src="https://github.com/user-attachments/assets/72de01f0-0ef0-43b0-b3ae-f88e449481aa" />
