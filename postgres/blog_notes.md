@@ -1,32 +1,30 @@
-### Installing Postgres DB with Backup configured in minio in KIND cluster
+## Deploy Postgres DB with Backup data to Minio configured in KIND cluster
 
-- This article have included the information to install Postgres db in KinD cluster. The configuration enabled backup and to back the Postgres DB we use Minio (s3 compliant) service.
+This article details deploying Postgres DB in KinD cluster with Backup configuration enabled. The data will be backed up in S3 compatible store in this case Minio.
 
-- In order to access the Minio from host machine with self-signed certificate we also install Cert manager and Apisix. the Apisix acts as a Gateway API. 
+Along with Postgres DB, additionally cert-manager and Apisix is deployed so the APIs could be accessed from the host machine. With cert-manger self-signed certificate is configured so APIs could be accessible with `https`.
 
+Note:- The Postgres operator UI is configured but but it is not used for cluster creation, we use the manifest to deploy the Postgres DB cluster.
 
-- The Postgres operator UI is also deployed but it is not used for cluster creation, we use the manfiest to install the Postgres DB cluster in KIND.
+### Pre-requisites:
 
+* Docker Desktop
+* KIND CLI
+* Helm CLI
+* Kubectl CLI
 
-Pre-requisities:
-  - Docker Desktop
-  - KIND CLI
-  - Helm CLI
-  - Kubectl CLI
+### Steps to deploy different component
 
+* Create Kind Cluster
+* Deploy the cert manager
+* Deploy the Apisix
+* Deploy the Minio
+* Deploy the Postgres    
 
-#### Summary
-  - Create Kind Cluster
-  - Deploy the cert manager
-  - Deploy the Apisix 
-  - Deploy the Minio
-  - Deploy the Postgres 
+### Create KinD cluster
 
-
-### KIND cluster
-
-- Below is the configuration of KinD cluster used, 
-
+* Below is the KinD cluster configuration used to deploy in Docker desktop
+    
 ```yaml
 # file name: kind-cluster.yaml
 kind: Cluster
@@ -43,7 +41,7 @@ nodes:
     protocol: TCP
 ```
 
-With the Docker Desktop running with kind cli we can crewate the clustrer using below command
+With kind cli create the cluster using below command
 
 ```sh
 kind create cluster --config kind-cluster.yaml
