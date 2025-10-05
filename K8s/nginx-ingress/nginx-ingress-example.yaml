@@ -1,0 +1,105 @@
+---
+#ingress for www redirect
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: redirect-www-ingress
+  annotations:
+     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+spec:
+   rules:
+   - host: domain.com
+     http:
+       paths:
+       - backend:
+            serviceName: <backend-service-name>
+            servicePort: 9090
+---
+# http to https redirect with ssl
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+   name: ssl-ingress
+   annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/preserve-trailing-slash: "true"
+spec:
+  rules:
+  - http:
+    paths:
+    - path: /input
+      backend:
+         serviceName: <backend-server-name>
+         servicePort: 80
+---
+# rate limiting config
+# rps - requests per second
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+   name: ssl-ingress
+   annotations:
+      nginx.ingress.kubernetes.io/limit-rps: "5"
+      nginx.ingress.kubernetes.io/limit-rpm: "300"
+      nginx.ingress.kubernetes.io/limit-connections: "10"
+spec:
+  rules:
+  - http:
+    paths:
+    - path: /input
+      backend:
+         serviceName: <backend-server-name>
+         servicePort: 80
+---
+# custom size of max body size
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+   name: ssl-ingress
+   annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: 8m
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /input
+        backend: 
+           serviceName: test
+---
+# whilelist source range or deny list source range
+# with this configuration possible to whitelist the allowed IPs from the client
+# only allow requests from a particular IP.
+# this can prevent unknown or unauthorized requests from reaching cluster
+# create a denylist to keep traffic from range of IP addresses from hitting the service
+
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+   name: ssl-ingress
+   annotations:
+      nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/24,172.10.0.1"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /input
+        backend: 
+           serviceName: test
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+   name: ssl-ingress
+   annotations:
+      nginx.ingress.kubernetes.io/denylist-source-range: "10.0.0.0/24,172.10.0.1"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /input
+        backend: 
+           serviceName: test
+---
