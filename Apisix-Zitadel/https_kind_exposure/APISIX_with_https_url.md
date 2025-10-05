@@ -60,7 +60,7 @@ helm upgrade -i apisix apisix/apisix --namespace apisix \
 4. Install Issuer and Certificate in the apisix namespace
 
 ```yaml
-1_apisix_cert_issuer.yaml
+# file name: 1_apisix_cert_issuer.yaml
 # deploy in zitadel namespace
 apiVersion: cert-manager.io/v1
 kind: Issuer
