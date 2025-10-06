@@ -1,7 +1,7 @@
 
-To install the latest version if nodejs 
+To install the latest version of nodejs 
 
-- I used below command 
+- used below command 
 ```
 curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
 ```
