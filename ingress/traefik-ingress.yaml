@@ -1,0 +1,14 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nginx-traefic-ingress
+  namespace: default # or your application's namespace
+spec:
+  entryPoints:
+    - web # or websecure for HTTPS
+  routes:
+    - match: Host(`demo.svc.ingress`)
+      kind: Rule
+      services:
+        - name: nginx-svc
+          port: 80 # or the port your service listens on
