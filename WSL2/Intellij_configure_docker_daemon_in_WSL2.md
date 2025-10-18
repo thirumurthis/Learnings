@@ -6,7 +6,9 @@ Refer doc - https://docs.docker.com/engine/daemon/remote-access/
 ```
 \\wsl$\Ubuntu-24.04\usr\bin\docker
 ```
-
+```
+\\wsl$\Ubuntu-24.04\home\<user-name>\.kube\
+```
 
 
 Settings > Build, Execution, Deployment > Docker 
