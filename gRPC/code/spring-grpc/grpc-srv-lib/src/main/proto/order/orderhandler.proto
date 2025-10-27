@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package com.grpc.order.server.lib;
+
+//option java_package = "com.order.handler";
+option java_multiple_files = true;
+//option java_outer_classname = "event";
+
+service OrderHandler {
+  rpc GetOrderStatus(OrderRequest) returns (OrderInfo) {};
+  rpc SubmitOrder(OrderRequest) returns (OrderInfo) {};
+  rpc UpdateOrderStatus(OrderRequest) returns (OrderInfo) {};
+  rpc OrderStatusSubscriber(OrderStatusSubscription) returns (stream OrderInfo) {};
+}
+
+message OrderRequest{
+  User user = 1;
+  int64 id = 2;
+  OrderStatusCode statusCode = 3;
+  OrderInfo orderInfo = 4;
+}
+
+message User{
+  string userId = 1;
+  string userFirstName = 2;
+  string userLastName = 3;
+}
+
+message OrderInfo{
+  string userId = 1;
+  string itemName = 2;
+  string quantity = 3;
+  int64 createTime = 4;
+  int64 updateTime = 5;
+  string description = 6;
+  map<string,string> metadata = 7;
+  int64 id = 8;
+  OrderStatusCode statusCode = 9;
+}
+
+message UpdateOrderStatus{
+}
+
+enum OrderStatusCode{
+    RECEIVED = 0;
+    IN_PROGRESS = 1;
+    COMPLETED = 2;
+    CANCELLED = 3;
+}
+
+message OrderStatusSubscription{
+}
+
+/* To hold empty order */
+message EmptyOrderInfo {
+  oneof emptyOrderInfo{
+     EmptyOrderInfo orderInfo = 1;
+     bool null = 2;
+  }
+}

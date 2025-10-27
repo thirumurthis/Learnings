@@ -1,0 +1,5 @@
+spring.application.name: grpc-srv-lib
+
+#spring.profiles.active: orderhandler
+
+#spring.grpc.server.port: 9099

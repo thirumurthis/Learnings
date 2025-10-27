@@ -1,0 +1,12 @@
+spring:
+   application:
+     name: grpc-order-server
+   profiles:
+      active: orderhandler
+   grpc:
+     server:
+       port: 9095
+
+logging:
+  level:
+    root: debug

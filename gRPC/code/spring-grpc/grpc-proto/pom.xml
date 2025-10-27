@@ -10,18 +10,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.spring.grc</groupId>
+    <groupId>com.spring.grpc</groupId>
     <artifactId>grpc-proto</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>grpc-proto</name>
 
     <properties>
-        <java.version>24</java.version>
-        <protobuf-java.version>4.30.2</protobuf-java.version>
-        <grpc.version>1.72.0</grpc.version>
-        <spring-grpc.version>0.8.0</spring-grpc.version>
-        <org.springframework.version>6.2.7</org.springframework.version>
-        <org.springframework.boot.version>3.4.8</org.springframework.boot.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -29,6 +23,11 @@
     <dependency>
         <groupId>io.grpc</groupId>
         <artifactId>grpc-services</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf-java.version}</version>
     </dependency>
     <dependency>
         <groupId>org.springframework.grpc</groupId>
@@ -40,14 +39,14 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-framework-bom</artifactId>
-                <version>${org.springframework.version}</version>
+                <version>${springframework.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${org.springframework.boot.version}</version>
+                <version>${springframework.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -68,9 +67,35 @@
         <sourceDirectory>${project.basedir}/src/main/proto</sourceDirectory>
         <plugins>
             <plugin>
+                <groupId>io.github.ascopes</groupId>
+                <artifactId>protobuf-maven-plugin</artifactId>
+                <version>${protobuf-mvn-plugin.version}</version>
+                <configuration>
+                    <protocVersion>${protobuf-java.version}</protocVersion>
+                    <binaryMavenPlugins>
+                        <binaryMavenPlugin>
+                            <groupId>io.grpc</groupId>
+                            <artifactId>protoc-gen-grpc-java</artifactId>
+                            <version>${grpc.version}</version>
+                            <options>@generated=omit</options>
+                        </binaryMavenPlugin>
+                    </binaryMavenPlugins>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- using the latest spring provided plugin for proto code generation -->
+            <!--
+            <plugin>
                 <groupId>kr.motd.maven</groupId>
                 <artifactId>os-maven-plugin</artifactId>
-                <version>1.7.1</version>
+                <version>${os-mvn-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>initialize</id>
@@ -84,7 +109,7 @@
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
+                <version>${protobuf.mvn.plugin.version}</version>
                 <configuration>
                     <protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
                     <pluginId>grpc-java</pluginId>
@@ -104,6 +129,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <!-- Below is another approach to use maven plugin to generate jar for the protobuf generated source -->
             <!--
             <plugin>

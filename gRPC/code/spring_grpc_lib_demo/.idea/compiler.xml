@@ -6,15 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="grpc-srv-lib" />
-        <module name="grpc-client" />
-        <module name="grpc-proto" />
-        <module name="grpc-server" />
+        <module name="grpc-order-client" />
+        <module name="grpc-order-server" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="grpc-order-client" target="24" />
-      <module name="grpc-order-server" target="24" />
-    </bytecodeTargetLevel>
   </component>
 </project>

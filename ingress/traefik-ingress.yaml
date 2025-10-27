@@ -1,3 +1,12 @@
+## Ingress for rancher desktop
+# Note, add the 127.0.0.1 demo.traefik.com in hosts file
+# when connecting with the git bash use below command
+# curl --resolve "http://demo.traefik.com:80:127.0.0.1" http://demo.traefix.com
+# or 
+# curl http://127.0.0.1 -H 'Host: demo.traefik.com'
+# from browser use http://demo.traefik.com
+# from powershell use below command
+# Invoke-WebRequest -Uri "http://127.0.0.1" -Headers @{"Host" = "demo.traefik.com"} -Method Get
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -7,7 +16,7 @@ spec:
   entryPoints:
     - web # or websecure for HTTPS
   routes:
-    - match: Host(`demo.svc.ingress`)
+    - match: Host(`demo.traefik.com`)
       kind: Rule
       services:
         - name: nginx-svc
