@@ -34,14 +34,43 @@
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-services</artifactId>
 		</dependency>
-		<dependency>
+       <!-- <dependency>
+            <groupId>org.springframework.grpc</groupId>
+            <artifactId>spring-grpc-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-netty</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>-->
+<!--        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.grpc</groupId>
+            <artifactId>spring-grpc-server-spring-boot-starter</artifactId>
+        </dependency>
+       <!-- <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>-->
+   		<dependency>
 			<groupId>org.springframework.grpc</groupId>
-			<artifactId>spring-grpc-spring-boot-starter</artifactId>
+			<artifactId>spring-grpc-server-web-spring-boot-starter</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+        <dependency>
+            <groupId>com.grpc.server.lib</groupId>
+            <artifactId>grpc-server-lib</artifactId>
+            <version>${grpc.server.lib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.grpc.proto.lib</groupId>
+            <artifactId>grpc-order-proto-idl</artifactId>
+            <version>${grpc.proto.idl.version}</version>
+        </dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -52,15 +81,14 @@
 			<artifactId>spring-grpc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.grpc.srv.lib</groupId>
-			<artifactId>grpc-srv-lib</artifactId>
-            <version>${grpc.order.lib.version}</version>
-		</dependency>
-        <dependency>
+       <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>${protobuf-java.version}</version>
+            <version>${protobuf.java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -82,7 +110,7 @@
 			<dependency>
 				<groupId>org.springframework.grpc</groupId>
 				<artifactId>spring-grpc-dependencies</artifactId>
-				<version>${spring-grpc.version}</version>
+				<version>${spring.grpc.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -111,7 +139,7 @@
 				<artifactId>protobuf-maven-plugin</artifactId>
 				<version>0.6.1</version>
 				<configuration>
-					<protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
+					<protocArtifact>com.google.protobuf:protoc:${protobuf.java.version}:exe:${os.detected.classifier}</protocArtifact>
 					<pluginId>grpc-java</pluginId>
 					<pluginArtifact>io.grpc:protoc-gen-grpc-java:${grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
 				</configuration>

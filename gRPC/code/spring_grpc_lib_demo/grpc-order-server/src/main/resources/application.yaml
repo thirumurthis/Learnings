@@ -3,10 +3,9 @@ spring:
      name: grpc-order-server
    profiles:
       active: orderhandler
-   grpc:
-     server:
-       port: 9095
 
+server:
+  port: 9099
 logging:
   level:
-    root: debug
+    root: info

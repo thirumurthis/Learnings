@@ -1,6 +1,19 @@
-spring.application.name: grpc-client
-
-spring.grpc.client.channels.local.address: 0.0.0.0:9099
-
+spring:
+  application:
+    name: grpc-client
+  #profiles:
+  #  active: orderhandler
+  grpc:
+    client:
+      channels:
+         local:
+            address: static://0.0.0.0:9099
+    server:
+      enabled: false
+#"spring.grpc.client.default-channel.address=static://0.0.0.0:9090"
 # client app logs indicate that server started so used below
-spring.grpc.server.enabled: false
+#spring.grpc.server.enabled: false
+
+app:
+  grpc:
+    negotiationType: PLAINTEXT

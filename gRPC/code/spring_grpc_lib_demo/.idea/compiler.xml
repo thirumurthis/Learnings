@@ -7,7 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="grpc-order-client" />
+        <module name="grpc-order-proto-idl" />
         <module name="grpc-order-server" />
+        <module name="grpc-server-lib" />
       </profile>
     </annotationProcessing>
   </component>

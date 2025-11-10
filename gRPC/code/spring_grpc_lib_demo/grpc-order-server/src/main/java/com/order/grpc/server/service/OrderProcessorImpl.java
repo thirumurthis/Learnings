@@ -1,9 +1,9 @@
 package com.order.grpc.server.service;
 
-import com.grpc.order.server.lib.OrderInfo;
-import com.grpc.order.server.lib.OrderRequest;
-import com.grpc.order.server.lib.OrderStatusCode;
-import com.grpc.order.server.lib.service.OrderProcessor;
+import com.grpc.order.lib.OrderInfo;
+import com.grpc.order.lib.OrderRequest;
+import com.grpc.order.lib.OrderStatusCode;
+import com.grpc.order.lib.service.OrderProcessor;
 
 import java.util.function.Consumer;
 

@@ -1,6 +1,6 @@
 package com.spring.grpc.client;
 
-import com.grpc.order.server.lib.OrderRequest;
+import com.grpc.order.lib.OrderRequest;
 
 public interface OrderGrpcClient {
 
@@ -8,5 +8,7 @@ public interface OrderGrpcClient {
 
     void getOrderStatus(OrderRequest orderRequest);
 
-    void subscribe();
+    void subscribeForStatus();
+
+    void updateOrderStatus(OrderRequest orderRequest);
 }

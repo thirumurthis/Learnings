@@ -1,13 +1,13 @@
-package com.order.grpc.server;
+package com.grpc.order.lib;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GrpcOrderServerApplication {
+public class GrpcServerLibApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GrpcOrderServerApplication.class, args);
+		SpringApplication.run(GrpcServerLibApplication.class, args);
 	}
 
 }

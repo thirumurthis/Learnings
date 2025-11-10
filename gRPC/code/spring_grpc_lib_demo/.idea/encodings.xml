@@ -3,7 +3,11 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/grpc-order-client/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grpc-order-client/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grpc-order-proto-idl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grpc-order-proto-idl/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grpc-order-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/grpc-order-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grpc-server-lib/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/grpc-server-lib/src/main/resources" charset="UTF-8" />
   </component>
 </project>

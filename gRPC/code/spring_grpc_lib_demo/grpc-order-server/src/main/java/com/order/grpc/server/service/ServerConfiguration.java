@@ -1,6 +1,6 @@
 package com.order.grpc.server.service;
 
-import com.grpc.order.server.lib.service.OrderProcessor;
+import com.grpc.order.lib.service.OrderProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

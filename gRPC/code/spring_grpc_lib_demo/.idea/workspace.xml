@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="22a0eb34-79aa-4422-8f07-904d69abfe01" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-client/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/ClientManagedChannelBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/ClientManagedChannelBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClientImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClientImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-client/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-client/src/test/java/com/spring/grpc/client/GrpcClientApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-client/src/test/java/com/spring/grpc/client/GrpcClientApplicationTests.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-server/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/src/main/java/com/order/grpc/server/GrpcOrderServerApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/src/main/java/com/order/grpc/server/service/OrderProcessorImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-server/src/main/java/com/order/grpc/server/service/OrderProcessorImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/src/main/java/com/order/grpc/server/service/ServerConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-server/src/main/java/com/order/grpc/server/service/ServerConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grpc-order-server/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/grpc-order-server/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="35FtDXzzfuKDb6Eq9XQl6phpDh0" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="flattenModules" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.GrpcOrderClientApplication.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.GrpcOrderServerApp.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.grpc-server-lib [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.grpc-server-lib [verify].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Application.GrpcOrderClientApplication">
+    <configuration name="GrpcOrderClientApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.spring.grpc.client.GrpcOrderClientApplication" />
+      <module name="grpc-order-client" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.spring.grpc.client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GrpcOrderServerApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.order.grpc.server.GrpcOrderServerApp" />
+      <module name="grpc-order-server" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.order.grpc.server.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="spring_grpc_lib_demo" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="spring_grpc_lib_demo" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.GrpcOrderClientApplication" />
+        <item itemvalue="Application.GrpcOrderServerApp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="22a0eb34-79aa-4422-8f07-904d69abfe01" name="Changes" comment="" />
+      <created>1762717529697</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1762717529697</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderController.java</url>
+          <line>46</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderController.java</url>
+          <line>51</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderController.java</url>
+          <line>34</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClientImpl.java</url>
+          <line>105</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClientImpl.java</url>
+          <line>169</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderGrpcClientImpl.java</url>
+          <line>145</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderController.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/grpc-order-client/src/main/java/com/spring/grpc/client/OrderController.java</url>
+          <line>42</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
