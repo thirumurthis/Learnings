@@ -18,10 +18,13 @@ $ sudo visudo
 ```
 sudo visudo
 ```
-
+ - below only for exposing the proxy
 ```
 #Defaults:%sudo env_keep += "http_proxy https_proxy ftp_proxy all_proxy no_proxy"
 ```
+
+Note: 
+  - when using `visudo` to save and exist use `Ctrl + o` and `Ctrl + x`.
 
 -----------
 
