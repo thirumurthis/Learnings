@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package app;
+
+option java_package = "com.proto.app";
+option java_multiple_files = true;
+
+import "app/order.proto";
+
+service OrderService {
+
+  rpc createOrderByUser(OrderRequest) returns (OrderResponse) {};
+  rpc createOrderByEmployee(OrderRequest) returns (OrderResponse) {};
+  rpc updateOrderStatus(OrderRequest) returns (OrderStatus) {};
+  rpc getOrderStatus(OrderKey) returns (stream OrderStatus) {};
+}
+

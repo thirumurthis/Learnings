@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.grpc.app</groupId>
+    <artifactId>grpc-app</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>grpc-app-parent</name>
+    <url>http://www.example.com</url>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>24</maven.compiler.release>
+        <spring.boot.version>3.5.7</spring.boot.version>
+        <spring.framework.version>6.2.12</spring.framework.version>
+        <spring.grpc.version>0.11.0</spring.grpc.version>
+        <protobuf.java.version>4.33.0</protobuf.java.version>
+        <protobuf.mvn.plugin.version>3.8.0</protobuf.mvn.plugin.version>
+        <protoc.gen.grpc.java.version>1.76.0</protoc.gen.grpc.java.version>
+        <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
+        <builder.helper.mvn.plugin.version>3.6.0</builder.helper.mvn.plugin.version>
+        <mvn.compile.plugin.version>3.14.0</mvn.compile.plugin.version>
+        <proto.idl.version>1.0.0-SNAPSHOT</proto.idl.version>
+    </properties>
+
+    <modules>
+        <module>proto-idl</module>
+        <module>grpc-app-server</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.grpc</groupId>
+                <artifactId>spring-grpc-dependencies</artifactId>
+                <version>${spring.grpc.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+  	 <build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${mvn.compile.plugin.version}</version>
+            </plugin>
+		</plugins>
+	 </build>
+</project>

@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: grpc-server
+  datasource:
+    #name: orders
+    platform: h2
+    data: classpath:schema.sql,classpath:data.sql
+    #INIT=CREATE SCHEMA IF NOT EXISTS ./data/order
+    #MODE=PostgreSQL;
+    #url: jdbc:h2:file:./data/order;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;TRACE_LEVEL_FILE=3;TRACE_LEVEL_SYSTEM_OUT=3;AUTO_RECONNECT=TRUE;
+    url: jdbc:h2:file:./data/order;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_RECONNECT=TRUE;
+    #url: jdbc:h2:mem:orders;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+    driverClassName: org.h2.Driver
+    username: test
+    password: orderSystem
+    generate-unique-name: false
+  jpa:
+    #database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+    show-sql: true
+  properties:
+    hibernate:
+      format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: true
+        web-allow-others: false
+  sql:
+    init:
+      platform: h2
+      mode: always
+logging:
+  level:
+   org:
+     hibernate:
+      SQL: DEBUG

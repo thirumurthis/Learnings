@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package app;
+
+option java_package = "com.proto.app";
+option java_multiple_files = true;
+
+message OrderRequest{
+  string userName = 1;
+  int64 orderId = 2;
+  string itemName = 3;
+  int64 quantity = 4;
+  int64 creationTime = 5;
+  int64 updateTime = 6;
+  string description = 7;
+  string userType = 8;
+}
+
+message OrderDetails{
+  string createdBy = 1;
+  string itemName = 2;
+  int64 quantity = 3;
+  int64 creationTime = 4;
+  int64 updateTime = 5;
+  string description = 6;
+  map<string,string> metadata = 7;
+  int64 orderId = 8;
+  string updatedBy = 9;
+  string orderTag = 10;
+  string userName = 11;
+}
+
+message OrderResponse{
+  repeated OrderDetails orderResponse = 1;
+}
+
+message OrderKey{
+  string userName = 1;
+  int64 orderId = 2;
+}
+
+message OrderStatus{
+  string userName = 1;
+  int64 orderId = 2;
+  OrderStatusCode statusCode = 3;
+  string updatedBy = 4;
+  int64 eventTime = 5;
+}
+
+enum OrderStatusCode{
+  RECEIVED = 0;
+  CREATED = 1;
+  IN_PROGRESS = 2;
+  DELIVERED = 3;
+  COMPLETED = 4;
+  CANCELLED = 5;
+  DELETED = 6;
+}
