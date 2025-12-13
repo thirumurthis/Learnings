@@ -21,6 +21,8 @@ EOF
 
 sudo apt update
 
+sudo apt upgrade -y
+
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 sudo groupadd docker
@@ -32,3 +34,8 @@ newgrp docker
 sudo systemctl status docker
 
 sudo systemctl start docker
+
+# Still faced issue with the docker pull without sudo
+# Error :docker: error getting credentials - err: exit status 1, 
+# out: `GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.secrets was not provided by any .service files`
+sudo apt install gnome-keyring
