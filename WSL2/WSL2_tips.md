@@ -151,3 +151,23 @@ $ minikube start
 ```
 
 
+In case to use some of the bash alias, add below content to `vi ~/.bashrc`
+
+```sh
+# configure windows executable
+#alias java="/mnt/c/Program\ Files/Java/jdk-23/bin/java.exe"
+#alias javac="/mnt/c/Program\ Files/Java/jdk-23/bin/javac.exe"
+#export JAVA_HOME="/mnt/c/Program\ Files/Java/jdk-23/"
+
+alias k=kubectl
+source <(kubectl completion bash)
+complete -o default -F __start_kubectl k
+
+#export PATH="$PATH:/mnt/c/Program Files/Java/jdk-23/bin"
+
+export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+
+alias run-ollama-in-docker='echo "docker run -d -v /mnt/c/thiru/edi/ai-models/ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama"; read -p "Do you want to execute the command? (y/n): " usrInput; if [[ "$usrInput" =~ ^[Yy]$ ]]; then docker run -d -v /mnt/c/thiru/edi/ai-models/ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama; else echo "skipped execution..."; fi'
+
+alias run-llama-model-in-ollama='echo "docker exec -it ollama ollama run llama3.2"; read -p "Do you want to execute the command? (y/n): " usrInput; if [[ "$usrInput" =~ ^[Yy]$ ]]; then docker exec ollama ollama run llama3.2; else echo "skipped execution..."; fi'
+```
