@@ -9,6 +9,10 @@ import java.util.List;
 public interface OrderHandler {
 
     List<OrderInfo> findOrderInfoForUser(String userName);
+
     OrderInfo addOrderInfo(OrderInfo orderInfo);
     List<OrderStatus> getOrderStatusByUserNameOrOrderId(String userName, long orderId);
+    OrderInfo findOrderInfoByUserNameAndOrderId(String userName, long orderId);
+    OrderStatus addOrderStatus(OrderStatus status);
+    OrderInfo updateOrderInfo(OrderInfo info);
 }

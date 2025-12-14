@@ -37,3 +37,6 @@ logging:
    org:
      hibernate:
       SQL: DEBUG
+      orm:
+        jdbc:
+          bind: TRACE

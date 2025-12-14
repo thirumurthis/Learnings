@@ -33,3 +33,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+data/
+./data/**
+gRPC/code/grpc-app/data/**

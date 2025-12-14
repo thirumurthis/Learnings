@@ -28,6 +28,7 @@
     <modules>
         <module>proto-idl</module>
         <module>grpc-app-server</module>
+		<module>grpc-client-one</module>
     </modules>
 
     <dependencyManagement>

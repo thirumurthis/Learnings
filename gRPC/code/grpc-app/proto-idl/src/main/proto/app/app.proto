@@ -11,7 +11,7 @@ service OrderService {
 
   rpc createOrderByUser(OrderRequest) returns (OrderResponse) {};
   rpc createOrderByEmployee(OrderRequest) returns (OrderResponse) {};
-  rpc updateOrderStatus(OrderRequest) returns (OrderStatus) {};
+  rpc updateOrder(OrderRequest) returns (OrderStatus) {};
   rpc getOrderStatus(OrderKey) returns (stream OrderStatus) {};
 }
 

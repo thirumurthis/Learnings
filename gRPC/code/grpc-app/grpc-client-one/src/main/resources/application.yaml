@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: grpc-client
+  #profiles:
+  #  active: orderhandler
+  grpc:
+    client:
+      channels:
+         local:
+            address: 0.0.0.0:9090
+    server:
+      enabled: false
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+#"spring.grpc.client.default-channel.address=static://0.0.0.0:9090"
+# client app logs indicate that server started so used below
+#spring.grpc.server.enabled: false
+
+server:
+  port: 8085
+app:
+  grpc:
+    negotiationType: PLAINTEXT

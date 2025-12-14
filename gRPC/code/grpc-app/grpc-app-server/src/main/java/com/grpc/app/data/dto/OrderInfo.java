@@ -42,6 +42,8 @@ public class OrderInfo {
         this.createdBy = createdBy;
     }
 
+    public OrderInfo(){}
+
     @Id
     //@GeneratedValue(strategy = GenerationType.AUTO)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ORDER_INFO_SEQ")
@@ -104,7 +106,7 @@ public class OrderInfo {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(long quantity) {
         this.quantity = quantity;
     }
 

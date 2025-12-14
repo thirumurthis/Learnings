@@ -14,6 +14,8 @@ message OrderRequest{
   int64 updateTime = 6;
   string description = 7;
   string userType = 8;
+  OrderStatusCode status = 9;
+  map<string,string> metadata = 10;
 }
 
 message OrderDetails{
@@ -28,6 +30,7 @@ message OrderDetails{
   string updatedBy = 9;
   string orderTag = 10;
   string userName = 11;
+  OrderStatusCode currentStatus = 12;
 }
 
 message OrderResponse{
@@ -55,4 +58,6 @@ enum OrderStatusCode{
   COMPLETED = 4;
   CANCELLED = 5;
   DELETED = 6;
+  EDITED = 7;
+  NO_STATUS = 8;
 }

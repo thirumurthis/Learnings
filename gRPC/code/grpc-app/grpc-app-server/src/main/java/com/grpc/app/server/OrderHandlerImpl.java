@@ -38,10 +38,28 @@ public class OrderHandlerImpl implements OrderHandler{
         return orderInfoService.save(orderInfo);
     }
 
+
+
     @Override
     public List<OrderStatus> getOrderStatusByUserNameOrOrderId(String userName, long orderId) {
        return orderStatusService.findByUserNameOrOrderId(userName,orderId);
     }
+
+    @Override
+    public OrderInfo findOrderInfoByUserNameAndOrderId(String userName, long orderId) {
+        return orderInfoService.findByUserNameAndOrderId(userName,orderId);
+    }
+
+    @Override
+    public OrderStatus addOrderStatus(OrderStatus status) {
+        return orderStatusService.save(status);
+    }
+
+    @Override
+    public OrderInfo updateOrderInfo(OrderInfo info){
+        return orderInfoService.updateOrInsert(info);
+    }
+
 /*
     @Override
     public List<OrderInfo> getOrderInfoByUserName(String userName) {
