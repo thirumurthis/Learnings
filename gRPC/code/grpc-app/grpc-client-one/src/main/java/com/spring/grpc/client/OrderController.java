@@ -1,10 +1,12 @@
 package com.spring.grpc.client;
 
 
+import com.proto.app.Order;
 import com.proto.app.OrderResponse;
 import com.proto.app.OrderServiceGrpc;
 import com.proto.app.OrderStatus;
 import com.proto.app.OrderStatusCode;
+import com.spring.grpc.client.data.OrderInfo;
 import com.spring.grpc.client.data.OrderKey;
 import com.spring.grpc.client.data.OrderRequest;
 import jakarta.annotation.Nonnull;
@@ -16,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -67,8 +70,35 @@ public class OrderController {
         return new ResponseEntity<>(response, HttpStatus.CREATED).getBody();
     }
 
+    @PutMapping("/update")
+    public com.proto.app.OrderStatus updateOrder(@RequestBody OrderRequest orderRequest){
+
+        logger.info("order update request received...");
+        if(orderRequest.getUserName() == null){
+            com.proto.app.OrderStatus response = com.proto.app.OrderStatus
+                    .newBuilder()
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST)
+                    .getBody();
+        }
+        com.proto.app.OrderRequest req = com.proto.app.OrderRequest
+                .newBuilder()
+                .setDescription(orderRequest.getDescription()==null?"":orderRequest.getDescription())
+                .setQuantity(orderRequest.getQuantity())
+                .setOrderId(orderRequest.getOrderId())
+                .setItemName(orderRequest.getItemName()==null?"":orderRequest.getItemName())
+                .setStatus(getStatusCode(orderRequest.getOrderStatus()==null?"RECEIVED":orderRequest.getOrderStatus()))
+                .setUserName(orderRequest.getUserName())
+                .setUserType(orderRequest.getUserType()==null?"by_user":orderRequest.getUserType())
+                .build();
+
+        com.proto.app.OrderStatus resStatus = clientBlockingStub.updateOrder(req);
+
+        return new ResponseEntity<>(resStatus, HttpStatus.CREATED).getBody();
+    }
+
     @GetMapping("/status")
-    public ResponseEntity<StreamingResponseBody> updateStatus(
+    public ResponseEntity<StreamingResponseBody> getStatuses(
             @RequestParam(name="userName") Optional<String> userName ,
             @RequestParam(name="orderId") Optional<Long> orderId){
 

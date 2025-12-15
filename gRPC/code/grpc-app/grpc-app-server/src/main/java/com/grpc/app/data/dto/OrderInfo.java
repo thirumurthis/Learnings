@@ -25,6 +25,7 @@ public class OrderInfo {
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
         this.createdBy = builder.createdBy;
+
     }
 
     public OrderInfo(long orderId,String userName, String orderTag, String itemName,
@@ -68,6 +69,10 @@ public class OrderInfo {
     private Date updatedAt;
     @Column(name= "created_by")
     private String createdBy;
+    @Column(name= "updated_by")
+    private String updateBy;
+    @Column(name= "current_status")
+    private String currentStatus;
 
 
     public long getOrderId() {
@@ -150,6 +155,22 @@ public class OrderInfo {
         this.createdBy = createdBy;
     }
 
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public String getCurrentStatus() {
+        return currentStatus;
+    }
+
+    public void setCurrentStatus(String currentStatus) {
+        this.currentStatus = currentStatus;
+    }
+
     public static class OrderInfoBuilder{
 
         private long orderId;
@@ -162,6 +183,8 @@ public class OrderInfo {
         private Date createdAt;
         private Date updatedAt;
         private String createdBy;
+        private String updatedBy;
+        private String currentStatus;
 
         public OrderInfoBuilder orderId(long orderId) {
             this.orderId = orderId;
@@ -210,6 +233,16 @@ public class OrderInfo {
 
         public OrderInfoBuilder createdBy(String createdBy) {
             this.createdBy = createdBy;
+            return this;
+        }
+
+        public OrderInfoBuilder currentStatus(String currentStatus){
+            this.currentStatus = currentStatus;
+            return this;
+        }
+
+        public OrderInfoBuilder updatedBy(String updatedBy){
+            this.updatedBy = updatedBy;
             return this;
         }
 

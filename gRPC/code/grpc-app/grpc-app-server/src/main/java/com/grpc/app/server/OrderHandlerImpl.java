@@ -11,16 +11,6 @@ import java.util.List;
 @Component
 public class OrderHandlerImpl implements OrderHandler{
 
-    /*
-    private static final Logger log = LoggerFactory.getLogger(OrderHandlerImpl.class.getName());
-
-    Map<String, OrderStore> orderList = new HashMap<>();
-
-    Map<String, User> userInfoList = new HashMap<>();
-
-    AtomicInteger indexCounter = new AtomicInteger(0);
-*/
-
     private final OrderInfoService orderInfoService;
     private final OrderStatusService orderStatusService;
     public OrderHandlerImpl(OrderInfoService orderInfoService, OrderStatusService orderStatusService) {

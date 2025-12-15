@@ -11,7 +11,6 @@ import com.proto.app.OrderServiceGrpc;
 import com.proto.app.OrderStatusCode;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.grpc.server.service.GrpcService;
@@ -62,6 +61,7 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         } else {
             log.error("User Name and Item Name are mandatory");
             responseObserver.onError(new OrderException("user name and item name can't be empty!!"));
+            responseObserver.onCompleted();
         }
     }
 
@@ -98,6 +98,8 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
             .orderTag(userType)
             .itemName(request.getItemName())
             .quantity(request.getQuantity())
+            .currentStatus(request.getStatus().name())
+            .updatedBy(request.getUserName())
             .createdAt(new Date())
             .createdBy(request.getUserName())
             .userName(request.getUserName())
@@ -146,6 +148,7 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         } else {
             log.error("[by user] User Name and Item Name are mandatory");
             responseObserver.onError(new OrderException("user name and item name can't be empty!!"));
+            responseObserver.onCompleted();
         }
     }
 
@@ -155,24 +158,31 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         //super.updateOrderStatus(request, responseObserver);
 
         try {
-            if (!request.getUserName().isEmpty() && request.getOrderId() > 0) {
+
+                if(!request.getUserName().isEmpty()) {
+                    log.info("UserName : {}",request.getUserName());
+                }
+                if(request.getOrderId() > 0){
+                    log.info("OrderId: {}",request.getOrderId());
+                }
                 log.info("order update request received ...");
                 //build order info to store to db
                 OrderInfo orderInfo = buildOrderInfo(request, "by_user");
 
                 OrderInfo savedOrderInfo = orderHandler
-                        .findOrderInfoByUserNameAndOrderId(request.getUserName(),request.getOrderId());
+                        .findOrderInfoByUserNameAndOrderId(request.getUserName(), request.getOrderId());
                 //insert to the db if not present
                 if (savedOrderInfo == null) {
-                    log.info("order not found adding it...");
-                     savedOrderInfo = orderHandler.addOrderInfo(orderInfo);
+                    log.info("order NOT found saving to database ...");
+                    savedOrderInfo = orderHandler.addOrderInfo(orderInfo);
                 } else {
-                    log.info("order found updating it...");
+                    log.info("order found updating in database ... username: {}, orderId: {}",
+                            savedOrderInfo.getUserName(),savedOrderInfo.getOrderId());
                     orderInfo.setOrderId(savedOrderInfo.getOrderId());
-                    mergeOrderInfoDetails(orderInfo,savedOrderInfo);
+                    mergeOrderInfoDetails(orderInfo, savedOrderInfo);
                     savedOrderInfo = orderHandler.updateOrderInfo(savedOrderInfo);
                 }
-                OrderDetails orderDetails = buildOrderDetails(savedOrderInfo);
+                //OrderDetails orderDetails = buildOrderDetails(savedOrderInfo);
 
                 //construct the status to be saved to db
                 com.proto.app.OrderStatus statusCode = statusTransition(request.getStatus().name());
@@ -194,21 +204,15 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
                         .setOrderId(savedOrderStatus.getOrderId())
                         .setEventTime(savedOrderStatus.getEventTime().getTime())
                         .build();
-                OrderResponse response = OrderResponse.newBuilder()
-                        .addOrderResponse(orderDetails)
-                        .build();
                 responseObserver.onNext(statusResponse);
                 responseObserver.onCompleted();
-            } else {
-                log.error("User Name and orderId are mandatory");
-                responseObserver.onError(new OrderException("user name and item name can't be empty!!"));
-            }
         }catch (Exception e){
             log.error("Error occurred",e);
-            responseObserver.onError(Status.NOT_FOUND
-                    .withDescription("User Name and order Id is mandatory")
+            responseObserver.onError(Status.INTERNAL
+                    .withDescription("[Update Order] failed with exception")
                     .withCause(e)
                     .asException());
+            responseObserver.onCompleted();
         }
     }
 
@@ -243,7 +247,7 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         }
 
          return com.proto.app.OrderStatus.newBuilder()
-                .setStatusCode(getStatusCode(AppConstants.INPROGRESS))
+                .setStatusCode(getStatusCode(name))
                 .build();
     }
 
@@ -279,6 +283,7 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
                     .withDescription("status data not found for "+request.getUserName()+"|"+request.getOrderId())
                                             ;
             responseObserver.onError(grpcErrorResponse.asException());
+            responseObserver.onCompleted();
         }
     }
 

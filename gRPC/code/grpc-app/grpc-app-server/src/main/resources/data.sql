@@ -10,9 +10,9 @@ commit;
 --VALUES
 --(nextval('ORDER_SEQ'), 'demo1','only_demo','pencil',20,'admin',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'metadata','demo order info');
 
-INSERT INTO ORDER_INFO (order_id, user_name, order_tag, item_name,item_quantity,created_by, created_at,updated_at, metadata, description)
+INSERT INTO ORDER_INFO (order_id, user_name, order_tag, item_name,item_quantity,created_by, created_at,updated_at, metadata, description, updated_by, current_status)
 -- VALUES (ORDER_SEQ.nextval(), 'only_demo','pencil',20,'admin',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'metadata','demo order info')
- SELECT nextval('ORDER_SEQ'), 'demo1','only_demo','pencil',20,'admin',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'metadata','demo order info'
+ SELECT nextval('ORDER_SEQ'), 'demo1','only_demo','pencil',20,'admin',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP(),'metadata','demo order info','admin','RECEIVED'
  WHERE NOT EXISTS (SELECT 1 FROM ORDER_INFO WHERE user_name = 'demo1' and order_tag = 'only_demo' and created_by = 'admin' and item_name = 'pencil' and item_quantity=20);
 
 --INSERT INTO USER_INFO (user_id, user_name, first_name, last_name, user_type)
