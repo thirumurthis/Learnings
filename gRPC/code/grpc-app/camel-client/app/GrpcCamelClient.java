@@ -21,6 +21,8 @@ import org.apache.camel.spi.*;
 import static org.apache.camel.builder.PredicateBuilder.*;
 import com.proto.app.OrderKey;
 import com.proto.app.OrderStatus;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import static java.lang.System.*;
 
@@ -31,6 +33,8 @@ public class GrpcCamelClient{
         setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         Main main = new Main();
 
+        String outputFormat = "[OrderId: %s, StatusCode: %s, UserName: %s, UpdatedBy: %s, EventTime: %s]";
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         main.configure().addRoutesBuilder(new RouteBuilder(){
             public void configure() throws Exception{
               OrderKey orderKey = com.proto.app.OrderKey.newBuilder()
@@ -45,7 +49,10 @@ public class GrpcCamelClient{
                   .process(exchange -> {
                     OrderStatus status = exchange.getIn().getBody(OrderStatus.class);
                       if(status != null){
-                            System.out.println(status);
+                          System.out.println(
+                              String.format(outputFormat, status.getOrderId(),status.getStatusCode(),status.getUserName(),
+                                   status.getUpdatedBy(),dateFormat.format(new Date(status.getEventTime())))
+                          );
                       }
                   });
 

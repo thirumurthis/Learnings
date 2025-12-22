@@ -274,6 +274,7 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
                             .setOrderId(ordStatus.getOrderId())
                             .setEventTime(ordStatus.getEventTime().getTime())
                             .setUpdatedBy(ordStatus.getUpdatedBy())
+                            .setUserName(ordStatus.getUserName())
                             .setStatusCode(getStatusCode(ordStatus.getStatus()))
                             .build();
                     responseObserver.onNext(st);
