@@ -333,15 +333,33 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         }
 
         if(simulateServerInterruption){
-            Status status = Status.UNAVAILABLE.withDescription("Service Temporary unavailable");
-            try {
-                delayThread(3000L);
-            }catch (Exception e){
-                responseObserver.onError(Status.UNAVAILABLE
-                        .withDescription("Interrupted exception occurred")
-                        .asException());
+            if (new Random().nextBoolean()) {
+                log.info("service unavailable block");
+                Status status = Status.UNAVAILABLE.withDescription("Service unavailable");
+                try {
+                    delayThread(3000L);
+                } catch (Exception e) {
+                    responseObserver.onError(Status.UNAVAILABLE
+                            .withDescription("Interrupted exception occurred")
+                            .asException());
+                }
+                responseObserver.onError(status.asRuntimeException());
+                log.info("server retry request...");
+            }else{
+                log.info("delayed request flow");
+                try {
+                    delayThread(5000L);
+                } catch (Exception e) {
+                    responseObserver.onError(Status.UNAVAILABLE
+                            .withDescription("Interrupted exception occurred")
+                            .asException());
+                }
+                SimResponse simResponse = SimResponse.newBuilder()
+                        .setSimulatorResponse("Completed simulator")
+                        .build();
+                responseObserver.onNext(simResponse);
+                responseObserver.onCompleted();
             }
-            responseObserver.onError(status.asRuntimeException());
         }
     }
 

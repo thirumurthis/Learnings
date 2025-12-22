@@ -65,6 +65,12 @@
 			<artifactId>proto-idl</artifactId>
             <version>${proto.idl.version}</version>
 		</dependency>
+		<!-- testing only -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.11.0</version>
+		</dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
