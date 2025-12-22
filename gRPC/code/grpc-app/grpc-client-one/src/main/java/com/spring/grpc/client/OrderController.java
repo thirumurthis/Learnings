@@ -1,15 +1,13 @@
 package com.spring.grpc.client;
 
 
-import com.proto.app.Order;
 import com.proto.app.OrderResponse;
 import com.proto.app.OrderServiceGrpc;
 import com.proto.app.OrderStatus;
 import com.proto.app.OrderStatusCode;
-import com.spring.grpc.client.data.OrderInfo;
-import com.spring.grpc.client.data.OrderKey;
+import com.proto.app.SimRequest;
+import com.proto.app.SimResponse;
 import com.spring.grpc.client.data.OrderRequest;
-import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -27,14 +25,16 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
 public class OrderController {
 
-    private static Logger logger = LoggerFactory.getLogger(OrderController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
 
     private final OrderServiceGrpc.OrderServiceBlockingStub clientBlockingStub;
     OrderController(OrderServiceGrpc.OrderServiceBlockingStub clientBlockingStub) {
@@ -122,7 +122,51 @@ public class OrderController {
         return  ResponseEntity.ok()
                 .header(HttpHeaders.CACHE_CONTROL,"no-cache")
                 .body(responseBody);
+    }
 
+    @GetMapping("/delay")
+    public ResponseEntity<?> simulateDelay(){
+
+        logger.info("request simulate delay");
+
+        Map<String, String> reqMap = new HashMap<>();
+
+        reqMap.put("simType","networkDelay");
+        reqMap.put("delay","18000L");
+
+        SimRequest req = SimRequest.newBuilder().putAllSimulatorRequest(reqMap)
+                .build();
+
+        SimResponse resp = clientBlockingStub.specialCaseSimulator(req);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(resp.getSimulatorResponse());
+    }
+
+    @GetMapping("/network")
+    public ResponseEntity<?> simulateServerNetwork(){
+
+        logger.info("simulate server network based retry");
+        Map<String, String> reqMap = new HashMap<>();
+
+        reqMap.put("simType","serverException");
+
+        SimRequest req = SimRequest.newBuilder().putAllSimulatorRequest(reqMap)
+                .build();
+
+        SimResponse resp = SimResponse.newBuilder().setSimulatorResponse("").build();
+        try {
+            resp = clientBlockingStub.specialCaseSimulator(req);
+        } catch(Exception exe){
+            logger.error("Exception throw during api access",exe);
+            return ResponseEntity.internalServerError()
+                    .body(resp);
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
+                .body(resp.getSimulatorResponse());
     }
 
     private static com.proto.app.OrderStatusCode getStatusCode(String orderStatus ){

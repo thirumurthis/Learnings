@@ -13,5 +13,15 @@ service OrderService {
   rpc createOrderByEmployee(OrderRequest) returns (OrderResponse) {};
   rpc updateOrder(OrderRequest) returns (OrderStatus) {};
   rpc getOrderStatus(OrderKey) returns (stream OrderStatus) {};
+  rpc specialCaseSimulator(SimRequest) returns (SimResponse){};
 }
 
+message Empty {}
+
+message SimRequest{
+  map<string,string> simulatorRequest = 1;
+}
+
+message SimResponse{
+  string simulatorResponse = 1;
+}

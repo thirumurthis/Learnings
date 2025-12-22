@@ -6,7 +6,7 @@ spring:
   grpc:
     client:
       channels:
-         local:
+         local: #use this to fetch for default client
             address: 0.0.0.0:9090
     server:
       enabled: false
@@ -19,8 +19,26 @@ spring:
 # client app logs indicate that server started so used below
 #spring.grpc.server.enabled: false
 
+#logging.level.root: info
+logging:
+  level:
+    io:
+      grpc: DEBUG
+
 server:
   port: 8085
 app:
   grpc:
-    negotiationType: PLAINTEXT
+    client:
+      methodConfig:
+        enabled: true
+        name:
+          - service: "app.OrderService"
+            method: specialCaseSimulator
+        retryPolicy:
+          maxAttempts: 5.0
+          initialBackoff: "0.5s"
+          maxBackoff: "30s"
+          backoffMultiplier: 2.0
+          retryableStatusCodes: ["UNAVAILABLE","DEADLINE_EXCEEDED"]
+        negotiationType: PLAINTEXT

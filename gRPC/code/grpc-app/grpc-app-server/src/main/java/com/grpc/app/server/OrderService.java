@@ -9,7 +9,10 @@ import com.proto.app.OrderRequest;
 import com.proto.app.OrderResponse;
 import com.proto.app.OrderServiceGrpc;
 import com.proto.app.OrderStatusCode;
+import com.proto.app.SimRequest;
+import com.proto.app.SimResponse;
 import io.grpc.Status;
+import io.grpc.StatusException;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +21,8 @@ import org.springframework.grpc.server.service.GrpcService;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 @GrpcService
 public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
@@ -287,17 +292,78 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         }
     }
 
+    @Override
+    public void specialCaseSimulator(SimRequest request, StreamObserver<SimResponse> responseObserver) {
+
+        Map<String,String> simReqMap = request.getSimulatorRequestMap();
+
+        boolean simulateNetworkDelay = (simReqMap.entrySet().stream()
+                .filter(entry->
+                     entry.getKey().equals("simType")
+                     && entry.getValue() != null
+                     && entry.getValue().equalsIgnoreCase("networkDelay")
+                )
+                .count() >= 1.0);
+        boolean simulateServerInterruption = (simReqMap.entrySet().stream()
+                .filter(entry->
+                        entry.getKey().equals("simType")
+                                && entry.getValue() != null
+                                && entry.getValue().equalsIgnoreCase("serverException")
+                ).count() >= 1.0);
+        if(simulateNetworkDelay){
+            long delayValue;
+            if(simReqMap.get("delay") == null){
+                delayValue = Long.parseLong(simReqMap.get("delay"));
+            } else{
+                delayValue = 10000L;
+            }
+            try {
+                delayThread(delayValue);
+            }catch (Exception e){
+                responseObserver
+                   .onError(Status.ABORTED.withDescription("Interrupted exception occurred")
+                   .asException());
+            }
+            SimResponse simResponse = SimResponse.newBuilder()
+                    .setSimulatorResponse("Completed simulator")
+                    .build();
+            responseObserver.onNext(simResponse);
+            responseObserver.onCompleted();
+        }
+
+        if(simulateServerInterruption){
+            Status status = Status.UNAVAILABLE.withDescription("Service Temporary unavailable");
+            try {
+                delayThread(3000L);
+            }catch (Exception e){
+                responseObserver.onError(Status.UNAVAILABLE
+                        .withDescription("Interrupted exception occurred")
+                        .asException());
+            }
+            responseObserver.onError(status.asRuntimeException());
+        }
+    }
+
+    private static void delayThread(long delayInMillis){
+        try {
+            Thread.sleep(delayInMillis);
+        } catch (InterruptedException e) {
+            log.error("Interrupted exception occurred ",e);
+            throw new RuntimeException("Exception in thread",e);
+        }
+    }
+
     private static com.proto.app.OrderStatusCode getStatusCode(String orderStatus ){
        return switch (orderStatus){
            case AppConstants.CREATED -> OrderStatusCode.valueOf(AppConstants.CREATED);
-            case AppConstants.RECEIVED -> OrderStatusCode.valueOf(AppConstants.RECEIVED);
-            case AppConstants.INPROGRESS -> OrderStatusCode.valueOf(AppConstants.INPROGRESS);
-            case AppConstants.DELIVERED -> OrderStatusCode.valueOf(AppConstants.DELIVERED);
-            case AppConstants.COMPLETED -> OrderStatusCode.valueOf(AppConstants.COMPLETED);
-            case AppConstants.CANCELLED -> OrderStatusCode.valueOf(AppConstants.CANCELLED);
-            case AppConstants.DELETED -> OrderStatusCode.valueOf(AppConstants.DELETED);
-            case AppConstants.EDITED -> OrderStatusCode.valueOf(AppConstants.EDITED);
-            default -> OrderStatusCode.valueOf(AppConstants.NOSTATUS);
+           case AppConstants.RECEIVED -> OrderStatusCode.valueOf(AppConstants.RECEIVED);
+           case AppConstants.INPROGRESS -> OrderStatusCode.valueOf(AppConstants.INPROGRESS);
+           case AppConstants.DELIVERED -> OrderStatusCode.valueOf(AppConstants.DELIVERED);
+           case AppConstants.COMPLETED -> OrderStatusCode.valueOf(AppConstants.COMPLETED);
+           case AppConstants.CANCELLED -> OrderStatusCode.valueOf(AppConstants.CANCELLED);
+           case AppConstants.DELETED -> OrderStatusCode.valueOf(AppConstants.DELETED);
+           case AppConstants.EDITED -> OrderStatusCode.valueOf(AppConstants.EDITED);
+           default -> OrderStatusCode.valueOf(AppConstants.NOSTATUS);
         };
     }
 }
