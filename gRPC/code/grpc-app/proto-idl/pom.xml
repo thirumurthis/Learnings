@@ -10,7 +10,6 @@
     </parent>
     <groupId>com.grpc</groupId>
     <artifactId>proto-idl</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
     <name>proto-idl</name>
     <description>gRPC app for simple</description>
     <url/>

@@ -2,7 +2,6 @@ package com.grpc.app.server;
 
 import com.grpc.app.data.dto.OrderInfo;
 import com.grpc.app.data.dto.OrderStatus;
-import com.proto.app.OrderResponse;
 
 import java.util.List;
 

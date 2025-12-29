@@ -1,6 +1,7 @@
 
 package com.spring.grpc.client;
 
+import com.google.gson.Gson;
 import com.proto.app.OrderServiceGrpc;
 import com.proto.app.SimRequest;
 import com.proto.app.SimResponse;
@@ -9,10 +10,6 @@ import io.grpc.ManagedChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +31,9 @@ public class ClientManagedChannelBuilder {
                         }
                       ],
                       "retryPolicy": {
-                        "maxAttempts": 5,
-                        "initialBackoff": "0.5s",
-                        "maxBackoff": "30s",
+                        "maxAttempts": 4,
+                        "initialBackoff": "0.1s",
+                        "maxBackoff": "1s",
                         "backoffMultiplier": 2,
                         "retryableStatusCodes": [
                           "UNAVAILABLE",
@@ -59,6 +56,9 @@ public class ClientManagedChannelBuilder {
                 //.defaultServiceConfig(buildServiceConfig())
                 .defaultServiceConfig(serviceConfig)
                 .enableRetry()
+                .keepAliveTime(30,TimeUnit.SECONDS)
+                .keepAliveTimeout(10, TimeUnit.SECONDS)
+                .keepAliveWithoutCalls(true)
                 .build();
 
         OrderServiceGrpc.OrderServiceBlockingStub stub =
@@ -71,13 +71,20 @@ public class ClientManagedChannelBuilder {
 
         ForkJoinPool executor = new ForkJoinPool();
 
-        for (int i = 0; i < 14; i++) {
+
+        for (int i = 0; i < 1; i++) {
             executor.execute(
                     new Runnable() {
                         @Override
                         public void run() {
+                            try {
+                                Thread.sleep(4_000);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                             Map<String, String> reqMap = new HashMap<>();
                             reqMap.put("simType","serverException");
+                            reqMap.put("num","2");
                             SimRequest req = SimRequest.newBuilder().putAllSimulatorRequest(reqMap).build();
                             SimResponse resp = stub.specialCaseSimulator(req);
                             logger.info("response :- {}",resp);

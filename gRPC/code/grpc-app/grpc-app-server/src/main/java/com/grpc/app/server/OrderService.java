@@ -12,17 +12,17 @@ import com.proto.app.OrderStatusCode;
 import com.proto.app.SimRequest;
 import com.proto.app.SimResponse;
 import io.grpc.Status;
-import io.grpc.StatusException;
 import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.grpc.server.service.GrpcService;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @GrpcService
 public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
@@ -293,6 +293,8 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         }
     }
 
+    AtomicInteger counter = new AtomicInteger(0);
+
     @Override
     public void specialCaseSimulator(SimRequest request, StreamObserver<SimResponse> responseObserver) {
 
@@ -333,7 +335,15 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         }
 
         if(simulateServerInterruption){
-            if (new Random().nextBoolean()) {
+            int num = Integer.parseInt(simReqMap.entrySet().stream()
+                    .filter(entry->
+                                    entry.getKey().equals("num"))
+                    .map(Map.Entry::getValue)
+                            .findFirst().orElse("0"));
+            log.info("integer generated - {}%2 != 0? {}",counter.addAndGet(1),counter.get() % 2 != 0);
+            int nwNum = ++num;
+            log.info("num from request: {} ",nwNum);
+            if (nwNum % 2 != 0) {
                 log.info("service unavailable block");
                 Status status = Status.UNAVAILABLE.withDescription("Service unavailable");
                 try {
@@ -343,10 +353,12 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
                             .withDescription("Interrupted exception occurred")
                             .asException());
                 }
+                log.info("Error thrown - {}", Arrays.asList(status.asRuntimeException().getStackTrace()));
+
                 responseObserver.onError(status.asRuntimeException());
                 log.info("server retry request...");
             }else{
-                log.info("delayed request flow");
+                log.info("server exception - delayed request flow");
                 try {
                     delayThread(5000L);
                 } catch (Exception e) {
