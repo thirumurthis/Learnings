@@ -116,7 +116,8 @@ service GreetService{
 - Once the server application is started we can use `gRPCUI` as a client to connect to the server.
 
 ### Complete Code
-TODO - Add URL link
+
+The complete code to the Spring application with gRPC link [grpc-app git repo](https://github.com/thirumurthis/projects/tree/main/grpc-app).
 
 ### proto-idl app
 
@@ -609,13 +610,13 @@ public class GrpcCamelClient{
 }
 ```
 
-To execute the above code, install JBang in the system and use the below command
+To run the Camel gRPC client code, install [JBang](https://www.jbang.dev/) and use below command
 
 ```sh
 jbang run camel-client/app/GrpcCamelClient.java
 ```
 
-Output
+Output would look like below once the client connects to the server
 
 <img width="2649" height="1255" alt="image" src="https://github.com/user-attachments/assets/e5b82360-59e2-4e34-a89d-c29777929849" />
 
