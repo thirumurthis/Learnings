@@ -1,10 +1,8 @@
 # Spring Native gRPC 
 
-In this article have demonstrated the use of native Spring gRPC to create a simple Client Server application with Spring Boot. There are different third-party libraries but in here the application uses the native spring gRPC starter. 
+In this article have demonstrated the use of native Spring gRPC to create a simple Client Server application with Spring Boot. There are different third-party libraries but in here the application uses the native Spring gRPC starter. For more details on Spring gRPC refer the [Spring documentation](https://docs.spring.io/spring-grpc/reference).
 
-For more details on Spring gRPC refere the [Spring documentation](https://docs.spring.io/spring-grpc/reference).
-
-gRPC is efficient and high performant framework, enables transparent communication between client server using HTTP/2. It is schema based, uses protobuf IDL achives fast and compact data serialization. This article doesn't explain the gRPC protocol in details basic understanding of gRPC protocol would be helpful to follow the code. For more info refer the [gRPC introduction and overview](https://grpc.io/docs/what-is-grpc/introduction). 
+gRPC is efficient and high performant framework, enables transparent communication between client server using HTTP/2. It is schema based, uses protobuf IDL so achieves fast and compact data serialization. This article doesn't explain the gRPC protocol in details basic understanding of gRPC protocol would be helpful to follow the code. For more info refer the [gRPC introduction and overview](https://grpc.io/docs/what-is-grpc/introduction). 
 
 gRPC supports different APIs patterns which are listed below,
 
@@ -32,27 +30,31 @@ service GreetService{
 }
 ```
 
-### About the application
+### Full Source Code
 
-- The Spring gRPC usage demonstrated in the project is an client server application which doesn't use any third-party gRPC library.
-- The project is a multi-module maven project, it contains below child modules. The parent pom.xml properties includes the jar dependencies version.
-    1. proto-idl - This module defines the service in the protobuf that will be uses by the server and client. The maven build will generate java stub code and generates the code as jar.
-    2. grpc-server - This module implements the service stubs to handle the client requests. The proto-idl jar dependency addedin the pom.xml. The `@GrpcService` annotated class will register the services when server application starts.
+The complete code to the Spring application with gRPC link [grpc-app git repo](https://github.com/thirumurthis/projects/tree/main/grpc-app).
+
+
+### About The Client Server Application
+
+- The Client Server application uses the native Spring gRPC starter and doesn't utilize third-party libraries.
+- The project is a multi-module maven project, all the dependency versions are grouped in the properties section of parent pom.xml. Below are the list of child modules
+    1. proto-idl - This module includes protobuf files with the service defined which will be used by the server and client. This sub-module will be packaged to the jar when the project is built with maven command.
+    2. grpc-server - This module includes the implementation of generated stubs to handle the client requests. The proto-idl jar is added as dependency in the pom.xml. The class that implements the server stub is annotated with `@GrpcService` this will be scanned by the Spring auto-configuration and service will be registerd to Spring context when the application starts.
     3. grpc-client-one - This module creates the clients using the stubs, created a blocking or synchronized client. The proto-idl jar dependency is added in the pom.xml. The client is configured with retrypolicy configuration defined in application.yaml.
  
-#### Modules in the project
-- proto-idl service:
+### Modules in the project
+- proto-idl module:
     - This service defined in the protobuf file creates an order, update the order, streams the order status and also includes a method to simulate netowrk delay and random exception.
     - The maven build `mvn clean install` will package the generated code to jar file. This generated code includes stubs to be implemented by server/client.
     - Along with the protobug generated code, a java AppConstants class is also packaged in the jar and used in client and server module.
 
-- grpc-server application:
-    - The order state is stored in a H2 database which is configured to store the data in file under `data` folder in the project root. The database schema and ddl script with sample data is placed under the `resource` folder.
-    - The gRPC application server starts in 9090 port which is default port. If the H2 console is enabled the console is accessible using 8080 port.
-    - When the application starts the H2 db will be created if the database doesn't exist, and the script will load some sample data. The database script is idompotent.
-    - The DTO layer under the `com.spring.grpc.dto` defines the entity for order and status which also includes simple builder pattern.
+- grpc-server module:
+    - The server uses H2 database to store the order state. The H2 database is configured to store the state in file once the application starts the file will be created under `data` folder of the project root. The database schema and ddl script with sample data is placed under the `resource` folder. When the application starts the sample data can be used for testing the server response. The database script is idompotent, so the application be restarted multiple times.
+    - The server starts in default gRPC port 9090. The H2 console can be enabled and UI can be accessed in 8080 port.
+    - The DTO layer under the `com.spring.grpc.dto` defines the entity for order and status, it aslo includes simple builder pattern for easy usage.
     - The `OrderHandler` component class has the necessary service to access the database and it is used in the service impmentation.
-    - The service implementation is defined in `com.spring.grpc.service.OrderService`. This class is annotated with `@GrpcService`, which will load the service to the spring context on startup. The implementation looks like below
+    - The generated stub service code is implemented in `com.spring.grpc.service.OrderService`. Since this class is annotated with `@GrpcService` this service will be registered to the Spring context by Spring auto-configuration on startup. The service defined in the protobuf is generated as stub and the method is override in the service like in below code snippet.
       
      ```java
        @GrpcService
@@ -73,10 +75,10 @@ service GreetService{
      ``` 
 
 - grpc-client-one application:
-    - A REST API is used to access the client application, which under the hood uses the gRPC client created using the stub.
-    - The client application starts in 8085 port, configuration updated in application.yaml.
-    - The `com.spring.grpc.client.OrderController` defines the entry point using the `@RestController`.
-    - The class `com.spring.grpc.client.OrderClientConfig` creates client with `ManagedchannelBuilder` only to configure the retrypolicy.
+    - The client application includes REST endpoints to access the server. Each endpoint utilizes the gRPC client created from the stub to get the server response.
+    - The server url is defined in the `application.yaml` file `spring.grpc.client.channels.local.address: 0.0.0.0:9090` and `spring.grpc.server.enabled: false`. Also the client application starts in 8085 port which is defined in `server.port: 8085` property.
+    - The controller `com.spring.grpc.client.OrderController` class defines GET, POST and PUT mapping to access the server endpoint respectively.
+    - The client bean is defined in `com.spring.grpc.client.OrderClientConfig` class using `ManagedChannelBuilder` to create a channel. The ManagedChannelBuilder is used to include custom configuration to the client channel like loadbalancer type, retryPolicy, etc. The java bean definition code snippet will look like below.
 
      ```java
       @Bean
@@ -103,7 +105,7 @@ service GreetService{
       }
      ```
       
-    - To use the default gRPC client configuration provided by the Spring gRPC we can define the `@Bean` configuration like below
+    - If we don't want to customize the configuration and use the default config the gRPC client `@Bean` configuration will like below code snippet. The `local` is defined in the `application.yaml`, the local in the property `spring.grpc.client.channels.local.address` were the gRPC server url is defined.
 
       ```java
           @Bean
@@ -112,20 +114,19 @@ service GreetService{
          }
       ```
 
-    - The `ChannelBuilderClient.java` class is an example to use `ManagedChannelBuilder` client which is without using Spring gRPC.
-    - There are additional bean configured to support the protobuf de-serialization.
-- The project also includes a JBang based client which uses Apache Camel gRPC to connect to the server. The example to stream the order status is demonstrated in the code.
-- Once the server application is started we can use `gRPCUI` as a client to connect to the server.
+    - The `ChannelBuilderClient.java` class is standlone java example of gRPC client also uses  `ManagedChannelBuilder` to create channel to access the server.
+    - Since the stub client is accessed via REST, there are additional bean configuration added to support protobuf de-serialization. Refer the client code snippet below.
+ 
 
-### Complete Code
+The project also includes `camel-client` folder which uses JBang and Apache Camel gRPC to connect to the Spring gRPC server. The sample code access the status endpoint of the server and prints the streamed status response for the request.
 
-The complete code to the Spring application with gRPC link [grpc-app git repo](https://github.com/thirumurthis/projects/tree/main/grpc-app).
+During development we can use tools like `Postman`, `gRPCUI` or other clients to connect to the server. In here have used `grpcui`, refer below for details with snapshot.
 
-### proto-idl app
+### proto-idl module
 
-- Below code snippet is the rpc service used to manage the order for the application. The protobug supports inheritance so the files is split into different protobuf file and the protobuf files are imported. This is an example shows how to group messages based on domain or functionality.
+- Code snippet below shows the rpc service defined in proto file that are used to manage the order. In the below snippet we could see The protobuf file is split into different files if needed we can use import statement to import protobuf file, this helps to group messages based on domain or functionality.
 
-app.proto file
+app.proto file snippet
 
 ```
 syntax = "proto3";
@@ -147,7 +148,7 @@ service OrderService {
 }
 ```
 
-sim.proto file
+sim.proto file snippet
 
 ```
 syntax = "proto3";
@@ -168,9 +169,11 @@ message SimResponse{
 }
 ```
 
-#### grpc-server
+The `mvn clean install` command with the full source code will package the stub code to the jar file. Since this jar file is availabe in local maven `.m2` directory, the server and client can identify it since respective sub-modules includes this dependency.
 
- - Below is the server implementation for a create order and update order service using the generated stub
+### grpc-server
+
+ - Code snippet below is the server implementation to create and update order. The generated code from the protobuf module is extend and necessary service method is override with the implementation, below we could see the `createOrder` and `updateOrder` implementation. For full source code refer the git repo mentioned above.
 
 ```java
 @GrpcService
@@ -280,12 +283,11 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
 }
 ```
 
-#### grpc-client-one
+### grpc-client-one
 
-Below is the code snippet of the client code 
+Code snippet below are client side code. 
 
-OrderClientConfig.java - This client stub is created using ManagedChannelBuilder which sets custom configuration in this case retryPolicy, etc.
-The bean will be registered in the Spring context when the client starts.
+OrderClientConfig.java - This class actually creates the blocking client with the stub, the `ManagedChannelBuilder` is used set custom client configuration like retryPolicy, etc. This class is defined as configuration and the bean will be registered in the Spring context when the client starts.
 
 ```java
 @Configuration
@@ -318,7 +320,7 @@ public class OrderClientConfig {
 }
 ```
 
-Additionally we set the message converter configuration, as we use RestController under the hood this message converter configuration de-serialize the response without any exception.
+Additionally, the message converter configuration is included this is added since the REST endpoint uses gRPC client under the hood it requires message converter to be configured to support protobuf de-serialize otherwise will report exception when rendering the server response.
 
 ```java
 @Configuration
@@ -342,7 +344,7 @@ public class WebProtoConfig extends WebMvcConfigurationSupport {
 }
 ```
 
-The controller that uses the client stub to fetch the response, the `getStatuses()` method receives the streamed gRPC response.
+The controller code snippet below maps the HTTP request to gRPC client stub to fetch the server response. Note the `getStatuses()` method receives the streamed gRPC response and displays that in HTTP response.
 
 ```java
 @RestController
@@ -444,15 +446,16 @@ public class OrderController {
 }
 ```
 
-The Client application starts at 8085 port, we can get the status of the sample data loaded during the server startup using below command
+The Client application starts at 8085 port, following are request and response info with the data rendered from gRPC server 
 
-To get the status of order created by demo1 user, the response will be stream of data
+Below is the example to get the status for the order created by demo1 user this data is loaded during the start of server application. The server will stream the response.
 
 ```sh
 curl  "http://localhost:8085/api/status?userName=demo1"
 ```
 
 The output would look like below 
+
 <img width="1049" height="832" alt="image" src="https://github.com/user-attachments/assets/9f968f2d-883c-4c64-aeec-5ebb7d64fa6c" />
 
 To create the order 
@@ -476,9 +479,9 @@ The output would look like below
 <img width="2839" height="267" alt="image" src="https://github.com/user-attachments/assets/98cb7944-2369-4d04-9b5c-42fbafcde467" />
 
 
-#### ManagedChannelBuilder client
+### ManagedChannelBuilder client
 
-Below is the code snippet to connect to the gRPC server with standard java. The below uses a executor service to call the server simulator service multiple times.
+Code snippet below to connect to the gRPC server with java. The code below uses the executor service to call the server simulator service multiple times.
 
 ```java
 public class ChannelBuilderClient {
@@ -546,9 +549,9 @@ public class ChannelBuilderClient {
 ```
 
 
-#### JBang - Apache Camel gRPC client
+### JBang - Apache Camel gRPC client
 
-Below code snippet is example of Camel gRPC client that gets the order status the streaming response.
+Code snippet below is an example of Camel gRPC client with JBang that requests the response from the server for status of order which will stream the response.
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
@@ -618,20 +621,19 @@ To run the Camel gRPC client code, install [JBang](https://www.jbang.dev/) and u
 jbang run camel-client/app/GrpcCamelClient.java
 ```
 
-Output would look like below once the client connects to the server
+Output would look like below
 
 <img width="2649" height="1255" alt="image" src="https://github.com/user-attachments/assets/e5b82360-59e2-4e34-a89d-c29777929849" />
 
-#### grpcui client
+### grpcui client
 
-To install the gRPC UI follow the instruction from the [gRPCUI git repo](https://github.com/fullstorydev/grpcui). 
-with the gRPCUI executable we can use below command to connect to the server. 
+To install the gRPC UI follow the instruction from the [gRPCUI git repo](https://github.com/fullstorydev/grpcui). with the gRPCUI executable we can use below command to connect to the server. 
 
 ```sh
 grpcui --plaintext localhost:9090
 ```
 
-- Once the client is connected the UI looks like below listing the service.
+Once the client is connected the UI looks like below listing the service.
 
 <img width="1642" height="1609" alt="image" src="https://github.com/user-attachments/assets/7b2bc50d-b43b-4f67-a331-26cc4ee90138" />
 
