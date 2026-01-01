@@ -170,7 +170,11 @@ message SimResponse{
 @GrpcService
 public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
 
-    public OrderService(OrderHandler orderHandler) {
+   //.... supporting methods are skipped in this class for complete code refer the git repo
+   // https://github.com/thirumurthis/projects
+   // grpc-app folder
+
+    public OrderService(OrderHandler orderHandler)
         this.orderHandler = orderHandler;
     }
 
@@ -271,7 +275,6 @@ public class OrderService extends OrderServiceGrpc.OrderServiceImplBase {
         }
     }
 
-//.... there are supporting methods in this class refer the git repo for complete implementation
 }
 ```
 
