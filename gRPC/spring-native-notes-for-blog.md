@@ -4,7 +4,7 @@ In this article have created simple Client Server application with Spring boot a
 
 As a pre-requsites recommend basic understanding of gRPC protocol to follow. For more info refer the [gRPC introduction and overview](https://grpc.io/docs/what-is-grpc/introduction). 
 
-The rRPC supports different APIs which are listed below,
+gRPC supports different APIs which are listed below,
 
 1. Unary - For single client request server sends single response. 
 2. Server Streaming - For single client request server send one or more response. 
