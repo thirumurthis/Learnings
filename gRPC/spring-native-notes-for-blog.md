@@ -40,7 +40,7 @@ The complete code to the Spring application with gRPC link [grpc-app git repo](h
 - The Client Server application uses the native Spring gRPC starter and doesn't utilize third-party libraries.
 - The project is a multi-module maven project, all the dependency versions are grouped in the properties section of parent pom.xml. Below are the list of child modules
     1. proto-idl - This module includes protobuf files with the service defined which will be used by the server and client. This sub-module will be packaged to the jar when the project is built with maven command.
-    2. grpc-server - This module includes the implementation of generated stubs to handle the client requests. The proto-idl jar is added as dependency in the pom.xml. The class that implements the server stub is annotated with `@GrpcService` this will be scanned by the Spring auto-configuration and service will be registerd to Spring context when the application starts.
+    2. grpc-server - This module includes the implementation of generated stubs to handle the client requests. The proto-idl jar is added as dependency in the pom.xml. The class that implements the server stub is annotated with `@GrpcService` this will be scanned by the Spring auto-configuration and service will be registered to Spring context when the application starts.
     3. grpc-client-one - This module creates the clients using the stubs, created a blocking or synchronized client. The proto-idl jar dependency is added in the pom.xml. The client is configured with retrypolicy configuration defined in application.yaml.
  
 ### Modules in the project
@@ -50,10 +50,10 @@ The complete code to the Spring application with gRPC link [grpc-app git repo](h
     - Along with the protobug generated code, a java AppConstants class is also packaged in the jar and used in client and server module.
 
 - grpc-server module:
-    - The server uses H2 database to store the order state. The H2 database is configured to store the state in file once the application starts the file will be created under `data` folder of the project root. The database schema and ddl script with sample data is placed under the `resource` folder. When the application starts the sample data can be used for testing the server response. The database script is idompotent, so the application be restarted multiple times.
+    - The server uses H2 database to store the order state. The H2 database is configured to store the state in file once the application starts the file will be created under `data` folder of the project root. The database schema and ddl script with sample data is placed under the `resource` folder. When the application starts the sample data can be used for testing the server response. The database script is idempotent, so the application be restarted multiple times.
     - The server starts in default gRPC port 9090. The H2 console can be enabled and UI can be accessed in 8080 port.
-    - The DTO layer under the `com.spring.grpc.dto` defines the entity for order and status, it aslo includes simple builder pattern for easy usage.
-    - The `OrderHandler` component class has the necessary service to access the database and it is used in the service impmentation.
+    - The DTO layer under the `com.spring.grpc.dto` defines the entity for order and status, it also includes simple builder pattern for easy usage.
+    - The `OrderHandler` component class has the necessary service to access the database and it is used in the service implementation.
     - The generated stub service code is implemented in `com.spring.grpc.service.OrderService`. Since this class is annotated with `@GrpcService` this service will be registered to the Spring context by Spring auto-configuration on startup. The service defined in the protobuf is generated as stub and the method is override in the service like in below code snippet.
       
      ```java
