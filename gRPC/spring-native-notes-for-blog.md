@@ -114,7 +114,7 @@ The complete code to the Spring application with gRPC link [grpc-app git repo](h
          }
       ```
 
-    - The `ChannelBuilderClient.java` class is standlone java example of gRPC client also uses  `ManagedChannelBuilder` to create channel to access the server.
+    - The `ChannelBuilderClient.java` class is standalone java example of gRPC client also uses  `ManagedChannelBuilder` to create channel to access the server.
     - Since the stub client is accessed via REST, there are additional bean configuration added to support protobuf de-serialization. Refer the client code snippet below.
  
 
@@ -169,7 +169,7 @@ message SimResponse{
 }
 ```
 
-The `mvn clean install` command with the full source code will package the stub code to the jar file. Since this jar file is availabe in local maven `.m2` directory, the server and client can identify it since respective sub-modules includes this dependency.
+The `mvn clean install` command with the full source code will package the stub code to the jar file. Since this jar file is available in local maven `.m2` directory, the server and client can identify it since respective sub-modules includes this dependency.
 
 ### grpc-server
 
