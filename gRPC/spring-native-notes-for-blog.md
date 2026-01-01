@@ -1,10 +1,12 @@
 # Spring Native gRPC 
 
-In this article have created simple Client Server application with Spring boot and useing only native Spring gRPC.
+In this article have demonstrated the use of native Spring gRPC to create a simple Client Server application with Spring Boot. There are different third-party libraries but in here the application uses the native spring gRPC starter. 
 
-As a pre-requsites recommend basic understanding of gRPC protocol to follow. For more info refer the [gRPC introduction and overview](https://grpc.io/docs/what-is-grpc/introduction). 
+For more details on Spring gRPC refere the [Spring documentation](https://docs.spring.io/spring-grpc/reference).
 
-gRPC supports different APIs which are listed below,
+gRPC is efficient and high performant framework, enables transparent communication between client server using HTTP/2. It is schema based, uses protobuf IDL achives fast and compact data serialization. This article doesn't explain the gRPC protocol in details basic understanding of gRPC protocol would be helpful to follow the code. For more info refer the [gRPC introduction and overview](https://grpc.io/docs/what-is-grpc/introduction). 
+
+gRPC supports different APIs patterns which are listed below,
 
 1. Unary - For single client request server sends single response. 
 2. Server Streaming - For single client request server send one or more response. 
