@@ -260,3 +260,11 @@ When we patch the configmap we could see the pods are getting restarting automat
     }
   }'
 ```
+
+#### Output gif
+
+On the right side we patch the config map, and the pods auto restarts
+
+![recording_output](https://github.com/user-attachments/assets/cbe49eb0-31da-49a1-8cbd-b277e4c7c17c)
+
+After pod restart if we port-forward we could see the patched message from configmap will be rendered.
