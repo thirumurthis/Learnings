@@ -222,6 +222,13 @@ kubectl create ns reloader
 kubectl -n reloader apply -f k8s/app_resource_manfiest.yaml
 ```
 
+Note, the application might now start reporting the Error pulling image. We can manually push the local image to the KinD cluster using below command
+
+```sh
+# test is the name of the kind cluster
+kind load docker-image jbang-spring-app:latest --name test
+```
+
 Once the application is deployed we could verify the application is deployed and working by checking the logs.
 
 ```sh
