@@ -137,7 +137,7 @@ Below is the list of the Kuberentes manifest for Deployment, ConfigMap and Servi
 The Deployment and ConfigMap includes the Stakater annoation when we patch the config map the pods will reload itself.
 
 ```yaml
-# file-name: <root directory>/k8s/app_resource_manfiest.yaml
+# file-name: <project-parent-folder>/k8s/app_resource_manfiest.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
