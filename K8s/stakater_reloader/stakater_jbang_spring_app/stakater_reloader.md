@@ -15,6 +15,11 @@ For more details refer the [Stakater reloader git repo](https://github.com/staka
     reloader.stakater.com/auto: "true"
 ```
 
+#### Pre-requesites
+- KinD CLI installed
+- JBang installed
+- Docker Desktop or Daemon running
+
 ### Complete source code
 
 The complete source code with the structure could be found in my [git-repo](https://github.com/thirumurthis/projects/tree/main/stakater-jbang-spring-app)
