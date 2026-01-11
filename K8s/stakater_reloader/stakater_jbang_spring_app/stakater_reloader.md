@@ -1,14 +1,14 @@
 ## Stakater reloader usage
 
-In this article have demonstrated the use of Stakater reloader to reload the pod whenever the ConfigMap or Secret is updated. 
+In this article have detailed the use of open source project Stakater reloader to reload the pod whenever the ConfigMap or Secret is updated. 
 
-To demonstrate the usecase have used a simple Spring Boot application with JBang, the application displays the data from the application.yaml property via GET endpoint. JBang is used since the we can just create the applciation in a single file.
+To understand the use case a simple Spring Boot application is created with JBang, this application exposes an API endpoint which renders the value of a key from a application.yaml file. When deploying the application to the Kubernetes cluster the ConfigMap defines the application yaml file and mounted as volume in deployment manifest. JBang is used to avoid the whole project structure and start application with single file. This is not a production ready code.
 
-The container image is created for the application with Jbang base container using Dockerfile. The resource are deployed to the a KinD cluster.
+Have created the application container image with the Dockerfile that uses the JBang base image. The resource are deployed to the a KinD cluster for demonstration.
 
-Have used KinD cluster installed with Stakater reloader to deploy the application with Deployment and ConfigMap manifest annotated with Stakater reloader specific annotation based on which the pods reloads whenever the ConfigMap or Secret is updated. 
+The Stakater reloader manifests are deploy to the KinD cluster, the Deployment and ConfigMap manifest are annotated with Stakater reloader specific annotation based on which the pods reloads whenever the ConfigMap or Secret is updated. There are few additional options to ignore the change, for more details refer the [Stakater reloader git repo](https://github.com/stakater/Reloader).
 
-For more details refer the [Stakater reloader git repo](https://github.com/stakater/Reloader).
+Below is the annotation to be defined in Deployment for Stakater reloader to use for reloading scenarios
 
 ```yaml
   annotations:
