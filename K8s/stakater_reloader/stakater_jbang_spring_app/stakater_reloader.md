@@ -20,25 +20,27 @@ Below is the annotation to be defined in Deployment for Stakater reloader to use
 - JBang installed
 - Docker Desktop or Daemon running
 
-### Complete source code
+### Full source code
 
-The complete source code with the structure could be found in my [git-repo](https://github.com/thirumurthis/projects/tree/main/stakater-jbang-spring-app)
-
+The full source code with the simple folder structure could be found in my [git-repo](https://github.com/thirumurthis/projects/tree/main/stakater-jbang-spring-app)
 
 ### Spring Boot code
 
-The JBang Spring boot application code is shown below. 
-The files require to be placed under project structure. Say, we have the root project folder `stakater-jbang-spring-app` the below code is placed under the `app/` folder with file named `App.java`. The Dockerfile uses this path in the CMD soe when we run the container it can start the application.
+The JBang Spring boot application code is shown below. We have the root project folder `stakater-jbang-spring-app` and placed the below file under the `app/` folder as `App.java`. The Dockerfile uses this path in the CMD, so when the container runs it uses this path the start the application.
 
-The spring config location is used to specify the path of the application.yaml since it is placed under `config` folder. We could see the `RUNTIME_OPTIONS` in the below code which applies the options as java runtime argument, in this case `spring.config.location=file:./config/application.yaml`.
+The application.yaml is placed under `config` folder different from `app` folder . The path is specified in the `RUNTIME_OPTIONS` so when the spring application starts in local or container it could scan the config file. The java runtime options in this case looks like `spring.config.location=file:./config/application.yaml`.
 
-When we deploy the application to the Kubernetes cluster we use the Deployment manfiest and the `application.yaml` data is defined in the ConfigMap.
+Note, the `application.yaml` is placed under `config` directory, this is because when the ConfigMap is mounted as volume in to the pod all the existing files will replaced with application.yaml. The mount path is `/src/config` since the Dockerfile defines WORKDIR as `/src`. When exec to the container image we could see the property `message: "default-from-app"` but when we deploy this would be `message: "message-from-k8s-configmap"`
 
- Note, the `application.yaml` is placed under `config` directory different from the `app` directory itself, this is because when the ConfigMap is mounted as volume in the POD manifest with existing path like `/src/config` the exiting content in the container image will be override by the data in ConfigMap manfiest. When exec to the container image we could see the property `message: "default-from-app"` but when we deploy this would be `message: "message-from-k8s-configmap"`
+ We could check this once the docker image is created, exec to the container using below 
 
- We could check this once the docker image is created, exec to the container using below `docker run -it --entrypoint sh jbang-spring-app` and check `cat config/application.yaml`.
+```
+docker run -it --entrypoint sh jbang-spring-app` and check `cat config/application.yaml
+```
 
- This will cause issue when application starts in Kubernetes.
+By using the `app` folder which has the application code and application.yaml, if the mount path is /src/app the ConfigMap would replace all the file within the container when deployed to Kubernetes.
+
+Below is the JBang Spring application complete code snippet
 
 ```java
 ///usr/bin/env jbang "$0" "$@" ; exit $?
