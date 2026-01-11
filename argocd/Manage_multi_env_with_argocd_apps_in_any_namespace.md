@@ -276,6 +276,7 @@ spec:
     kind: Issuer
   dnsNames:
     - argocd.demo.com  # dns name add this to hosts file for loopback address
+    - argocd.localhost
 ```
 
 To deploy to the argocd cluster use below command.
