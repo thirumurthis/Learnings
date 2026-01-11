@@ -238,7 +238,8 @@ helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set dashboard.enabled=true \
 --set ingress-controller.enabled=true \
 --set ingress-controller.config.apisix.serviceNamespace=apisix \
---set ingress-controller.config.kubernetes.enableGatewayAPI=true
+--set ingress-controller.config.kubernetes.enableGatewayAPI=true \
+--set ingress-controller.gatewayProxy.createDefault=true
 ```
 
 ### Deploy Issuer and Certificate (Self-signed certificate) 
@@ -286,7 +287,7 @@ kubectl -n argocd apply -f argocd_certificate.yaml
 
 ### Install Apisix ingress  
 
-Below is the ingress manifest used to access the argocd server. The Apisix ingressClassName is used to pass the traffic to argocd-server service on the port 443.
+Below is the ingress manifest used to access the argocd server. The Apisix ingressClassName is used to pass the traffic to argocd-server service on the port 443. Apply this ingress to argocd namespace.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
