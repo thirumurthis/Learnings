@@ -15,7 +15,7 @@ Below is the annotation to be defined in Deployment for Stakater reloader to use
     reloader.stakater.com/auto: "true"
 ```
 
-#### Pre-requesites
+#### Pre-requisites
 - KinD CLI installed
 - JBang installed
 - Docker Desktop or Daemon running
