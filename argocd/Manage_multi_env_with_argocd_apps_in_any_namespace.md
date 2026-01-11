@@ -186,7 +186,7 @@ kind create cluster --config kind_argocd_config.yaml
 To install the Kubernetes Gateway to the cluster, we use below command
 
 ```sh
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
 ```
 
 ### Deploy cert manager
@@ -194,7 +194,7 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 To install cert manager use below command.
 
 ```sh
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
 ```
 
 ### Deploy ArgoCD using Kustomize manifest
@@ -311,9 +311,20 @@ spec:
   tls:
     - hosts:
         - argocd.demo.com
+        - argocd.localhost
       secretName: argocd-cert-manager-tls # cert-manager will store the created certificate in this secret.
   rules:
   - host: argocd.demo.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
+  - host: argocd.localhost
     http:
       paths:
       - path: /
@@ -332,6 +343,9 @@ The Apisix ingress is configured with comman name `argocd.demo.com`, add this to
 ```
 127.0.0.1 argocd.demo.com
 ```
+
+**Info:**
+ - If using a laptop behind the proxy, the argocd.demo.local might throw `DNS resolution error`. That is the reason we include argocd.localhost. in the hosts file also add `127.0.0.1 argocd.localhost`
 
 From browser use the URL `http://argocd.demo.com` which will redirect to `https` and allow unverified access since self signed certificate.
 
