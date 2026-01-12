@@ -150,7 +150,7 @@ patches:
   - path: argocd-cmd-params-cm-patch.yaml
 ```
 
-Note:- 
+** Note:- ** 
    - Place the files - kustomization.yaml, argocd-cm-patch.yaml and argocd-cmd-params-cm-patch.yaml place under argocd_install/kustomize.
    - The Kustomization manifest `patches` property includes patched ArgoCD config map enable application in any namespace will applied automatically.
 
@@ -346,7 +346,7 @@ The Apisix ingress is configured with comman name `argocd.demo.com`, add this to
 ```
 
 **Info:**
- - If using a laptop behind the proxy, the argocd.demo.local might throw `DNS resolution error`. That is the reason we include argocd.localhost. in the hosts file also add `127.0.0.1 argocd.localhost`
+ - Accessing the local argocd behind the proxy with the `argocd.demo.local` might throw `DNS resolution error`. In this case add `argocd.localhost` in the hosts file like  `127.0.0.1 argocd.localhost` and access `http://argocd.localhost` to access the app.
 
 From browser use the URL `http://argocd.demo.com` which will redirect to `https` and allow unverified access since self signed certificate.
 
