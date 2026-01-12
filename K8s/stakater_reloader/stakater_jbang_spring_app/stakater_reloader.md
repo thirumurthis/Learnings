@@ -137,9 +137,9 @@ To run the docker image in the docker use below command
  docker run -d -p 8080:8085 jbang-spring-app
 ```
 
-#### Kuberentes resources
+#### Kubernetes resources
 
-Below is the list of the Kuberentes manifest for Deployment, ConfigMap and Service to deploy into the KinD cluster with the generated image.
+Below is the list of the Kubernetes manifest for Deployment, ConfigMap and Service to deploy into the KinD cluster with the generated image.
 
 The Deployment and ConfigMap includes the Stakater annoation when we patch the config map the pods will reload itself.
 
