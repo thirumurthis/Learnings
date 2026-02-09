@@ -1,20 +1,22 @@
 ## Docker nexus registry backed with SSL and using image in kind cluster
 
-In this article have deployed nexus sonatype in a docker container and showed how to configure to access the image from the private repository.
+In this article have deployed Nexus Sonatype in docker with docker compose to demonstrate publishing images and deploying to kind cluster. The motivation behind this is an approach to copy container images from one artifactory to another. This setup can be used for development activities. The process of downloading and uploading the image can also be automated with languages like python or go program.
 
-The motivation for this is was wanted to copy container images from one artifactory to another. This blog would help in development activities.
-We can also automate the process of copying container using use python or go program to download and upload the images between repository.
-
-The nexus sonatype is deployed and secured behind ngnix proxy with SSL termination at the proxy. The SSL certificate includes SAN instead of Comman name.
+The Nexus3 Sonatype image is used to run in the docker container, have used the nginx reverse proxy terminating the SSL traffic before accessing the nexus backend. During implementation noticed an exception using SSL certificate that uses CN (common name) which is legacy approach so have generated the SSL certificate with SAN (subject alternative name).
 
 Pre-requisites:
   - Docker daemon installed in WSL2
   - Kind CLI
-  - Git Bash for openssl for certificate generation
+  - Git Bash - for certificate generation with openSSL CLI
 
 Summary:
- - The nexus and nginx container are deployed using docker compose
- - The Kind Cluster is updated with the private repo config in containerd so the image could be pulled from the private repo.
+
+- Docker compose is used to deploy the nexus service and nginx proxy with the necessary configuration mounted as volume. In order to persist the data the nexus-data is mounted, we use docker volume instead of host directory mount. To access content of the nexus-data file use the docker volume command. With the nexus service running, we can use the UI to create the repo and use docker to publish the image to private repo.
+
+- We can use the docker daemon process within another docker container which include docker CLI to push and pull image, in order to achieve this we have to mount the host docker unix socket when running the container.
+
+- To deploy the pod manifest to use the image from the private nexus regustiry, the Kind cluster containerd configuration is updated to use the private registry which is detailed below. After deploying the pod, we could describe and view the status of the image being pulled successfully.
+
 
 The docker compose file content is shown below and save the content to file docker-compose.yaml.
 
@@ -234,6 +236,13 @@ curl -s --unix-socket /var/run/docker.sock http://nexus/images/json | jq .[].Rep
 
 The kind cluster configuration includes the containerd config with private registry and we create a pod in cluster to fetch image from private registry.
 
+Connect the kind network to the service running with docker compose
+
+```
+docker network connect "kind" ssl-nexus-proxy-1
+docker network connect "kind" ssl-nexus-nexus-1	
+```
+
 To create the kind cluster to access the private SSL registry, we use below configuration 
   - The configuration updates the containerd configuration
   - Mount the certificates from `/etc/docker/certs.d/nexus.local/server.crt` which was added as truststore earlier
@@ -327,13 +336,5 @@ Command to create the pod directly is listed below
 kubectl run test --image=nexus.local/my-docker/busybox:020826 -- sleep 3600
 ```
 
-```
-...
-Events:
-  Type    Reason     Age   From               Message
-  ----    ------     ----  ----               -------
-  Normal  Scheduled  15s   default-scheduler  Successfully assigned default/test to private-repo-control-plane
-  Normal  Pulled     14s   kubelet            Container image "nexus.local/my-docker/busybox:020826" already present on machine and can be accessed by the pod
-  Normal  Created    14s   kubelet            Container created
-  Normal  Started    14s   kubelet            Container started
-```
+<img width="2592" height="223" alt="image" src="https://github.com/user-attachments/assets/cd446d6a-1d41-4463-86dd-596ab977daa1" />
+
