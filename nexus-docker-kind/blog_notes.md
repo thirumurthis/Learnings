@@ -17,7 +17,6 @@ Pre-requisites:
 
 Deploy the nexus and nginx using docker compose, below is the docker compose file
 
-
 ```
 services:
   nexus:
@@ -178,7 +177,6 @@ After login, navigate to the below screen as in snapshot
    - Then, click on Create Repositories
    - Then, click on the docker (hosted)
        
-
 <img width="2872" height="1282" alt="image" src="https://github.com/user-attachments/assets/4e70fc69-c20e-4202-a0c6-fbd9a3a87c2d" />
 
  - After selecting the docker (hosted) should see the screen like below, provide a name my case i used `my-docker`, which is the repo name.
@@ -284,8 +282,11 @@ Additionaly, if the artifactory is deployed in an seperate VM then we can create
 ```
 docker exec -it private-repo-control-plane sh
 
-echo "172.17.0.3 nexus.local"
+echo "172.17.0.3 nexus.local" >> /etc/hosts
 ```
+
+Note, the above host update for the kind cluster to pull the image but this might not be needed which I am not concrete about. No need to restart the container after updating this hosts.
+
 - Once the ip and dns update, try to use `curl -kiv https://nexus.local` to see if 200 response is received.
 
 With the above updates, now we can create the manfiest with the private registry, like below
