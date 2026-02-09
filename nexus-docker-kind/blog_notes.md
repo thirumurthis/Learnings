@@ -5,19 +5,16 @@ In this article have deployed nexus sonatype in a docker container and showed ho
 The motivation for this is an use case where had to copy container images from one artifactory to another. This setup we could help in development activities.
 This also provides option to use python or go program to automate the process of download and upload the images between repository.
 
-
 To secure the Nexus Sonatype we use ngnix proxy and configure an certificate with SAN included, the SSL traffic terminates in the nginx proxy.
-
 
 Pre-requisites:
   - Docker daemon installed in WSL2
   - Kind CLI
   - Git Bash for openssl to generate certificate
 
-
 Deploy the nexus and nginx using docker compose, below is the docker compose file
 
-```
+```yaml
 services:
   nexus:
     image: "sonatype/nexus3"
@@ -80,7 +77,7 @@ subjectAltName = @alt_names
 - Using the git bash navigate to the base path where the docker compose and config folder created. Execute below command
 The command will create server.crt and server.key. This will be mounted to the nginx proxy in docker compose
 
-```
+```sh
 openssl req -x509 -nodes -days 365 \
  -newkey rsa:2048 \
  -keyout config/ssl/server.key \
@@ -91,7 +88,7 @@ openssl req -x509 -nodes -days 365 \
 
 Add the certificate to the truststore of the docker daemon and restart the docker process 
 
-```
+```sh
 sudo mkdir -p /etc/docker/certs.d/nexus.local
 sudo cp .config/ssl/server.crt /etc/docker/certs.d/nexus.local/
 
@@ -151,13 +148,11 @@ http {
 
 - With the above configuration in place, run the docker container using 
 
-```
+```sh
 docker compose up
 ```
 
-- Browser access
-- With the hosts file updated, and accessing `https://nexus.local`, when prompted to update the password find the inital password using below steps.
-Change the password during the first setup, user name is `admin` by default
+- From browser access `https://nexus.local` update the hosts file with loopback ip to dns. The screen prompts for user name and password. Username is admin by default, for inital password use below steps. 
 
 ```
 ## from the wsl use below command to find the path of the volume that is mounted
