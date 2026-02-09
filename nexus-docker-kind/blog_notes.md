@@ -2,17 +2,21 @@
 
 In this article have deployed nexus sonatype in a docker container and showed how to configure to access the image from the private repository.
 
-The motivation for this is an use case where had to copy container images from one artifactory to another. This setup we could help in development activities.
-This also provides option to use python or go program to automate the process of download and upload the images between repository.
+The motivation for this is was wanted to copy container images from one artifactory to another. This blog would help in development activities.
+We can also automate the process of copying container using use python or go program to download and upload the images between repository.
 
-To secure the Nexus Sonatype we use ngnix proxy and configure an certificate with SAN included, the SSL traffic terminates in the nginx proxy.
+The nexus sonatype is deployed and secured behind ngnix proxy with SSL termination at the proxy. The SSL certificate includes SAN instead of Comman name.
 
 Pre-requisites:
   - Docker daemon installed in WSL2
   - Kind CLI
-  - Git Bash for openssl to generate certificate
+  - Git Bash for openssl for certificate generation
 
-Deploy the nexus and nginx using docker compose, below is the docker compose file
+Summary:
+ - The nexus and nginx container are deployed using docker compose
+ - The Kind Cluster is updated with the private repo config in containerd so the image could be pulled from the private repo.
+
+The docker compose file content is shown below and save the content to file docker-compose.yaml.
 
 ```yaml
 services:
@@ -45,12 +49,8 @@ networks:
     driver: bridge
 ```
 
+Create folder `config/ssl/` and generate the certificate using below command. During testing encountered certificate error so had to include SAN (subject alternative name) in certificate instead of legacy CN (common name) added in certificate.
 
-- Save the above content in a file named docker-compose.yaml.
-
-- Create folder `config/ssl/` and generate the certificate using below command 
-
-- When testing the configuration noticed there was certificate error to use SAN instead of legacy common name in certificate. 
 Below is the content for SAN configuration, save it as nexus.local.conf
 
 ```
@@ -74,8 +74,7 @@ DNS.1 = nexus.local
 subjectAltName = @alt_names
 ```
 
-- Using the git bash navigate to the base path where the docker compose and config folder created. Execute below command
-The command will create server.crt and server.key. This will be mounted to the nginx proxy in docker compose
+- In Git Bash navigate to the path were the docker compose file exists and create `config` folder. Follow below steps, the command will create `server.crt` and `server.key`. These files will be mounted to the nginx proxy configured in docker compose.
 
 ```sh
 openssl req -x509 -nodes -days 365 \
@@ -86,19 +85,23 @@ openssl req -x509 -nodes -days 365 \
  -extensions ext
 ```
 
-Add the certificate to the truststore of the docker daemon and restart the docker process 
+The certificate needs to be added to docker truststore, below commadn will add the certificate to docker, and restart the docker. 
 
 ```sh
 sudo mkdir -p /etc/docker/certs.d/nexus.local
+
 sudo cp .config/ssl/server.crt /etc/docker/certs.d/nexus.local/
 
 sudo systemctl restart docker
 ```
 
-The nginx.conf is below which is also mounted in the docker-compose file
+Below is the content of `nginx.conf` which is also mounted via docker-compose file, place the file in the `config` folder.
 
-- The `proxy_pass http://nexus:8081` is the backend nexus service in this case. The service name could be found in the docker compose file.
-- The `server_name nexus.local` is the URL used from the browser. Also, when using windows host, update the hosts file `127.0.0.1 nexus.local`
+- Note:
+  - The `proxy_pass http://nexus:8081`, the `nexus` is the backend service name defined in the docker compose file.
+  - The `server_name nexus.local` includes dns name choosed on the certificate. This will be used in the browser to access.
+  - Add the IP address and dns in the hosts file like this `127.0.0.1 nexus.local`
+
 
 ```
 worker_processes 1;
@@ -146,13 +149,14 @@ http {
 }
 ```
 
-- With the above configuration in place, run the docker container using 
+With the above configuration in place, run the docker compose container using below command, use `-d` option to run in detached mode.
 
 ```sh
 docker compose up
 ```
 
-- From browser access `https://nexus.local` update the hosts file with loopback ip to dns. The screen prompts for user name and password. Username is admin by default, for inital password use below steps. 
+From browser access `https://nexus.local`. Make sure to update the hosts file. 
+The nexus application prompts for user name and password. `admin` is the default user, for inital password use below steps. 
 
 ```
 ## from the wsl use below command to find the path of the volume that is mounted
@@ -165,34 +169,34 @@ sudo ls -lrt /var/lib/docker/volumes/ssl-nexus_nexus-data/_data
 sudo cat /var/lib/docker/volumes/ssl-nexus_nexus-data/_data/admin.password
 ```
 
-After login, navigate to the below screen as in snapshot
-   - click on the person icon
-   - Then, click the Settings option
-   - Then, click on Repositories
-   - Then, click on Create Repositories
-   - Then, click on the docker (hosted)
-       
+To create a new repo login to nexus admin account, follow below step
+   - Click on the user icon
+   - Click the Settings option
+   - Click on Repositories
+   - Click on Create Repositories
+   - Click on the `docker (hosted)` option
+
+Below screenshot shows the screen after login to nexus application
+
 <img width="2872" height="1282" alt="image" src="https://github.com/user-attachments/assets/4e70fc69-c20e-4202-a0c6-fbd9a3a87c2d" />
 
- - After selecting the docker (hosted) should see the screen like below, provide a name my case i used `my-docker`, which is the repo name.
+Selecting the docker (hosted) as seen in the screenshot below. Provide a repo name in my case used `my-docker`.
 
 <img width="2566" height="1393" alt="image" src="https://github.com/user-attachments/assets/167b16a5-7020-4cd4-b4e6-458fbb87cfe2" />
 
-- After creation should see the repo listed in the browse screen
+After repo creation selecting the browse option should list the created repo
 
 <img width="2879" height="1171" alt="image" src="https://github.com/user-attachments/assets/5378ac52-027c-41e1-b216-a3aaafbfc1be" />
 
-Thats all is needed to set up the repo.
+With the repo now available use docker to login. The command looks like below when prompted provide the admin user and password created earlier.
 
-Lets login to the the repo from the docker, use below command to login to the repo when prompted provide the admin user and password updated earlier.
-
-```
+```sh
 docker login nexus.local
 ```
 
-To check if the repo is working we can push an image to the docker repo.
+With below commands we can pull the image from docker.io and push to the private nexus registry.
 
-```
+```sh
 docker pull nginx:alpine
 
 docker tag busybox nexus.local/my-docker/busybox:02082026
@@ -202,28 +206,33 @@ docker push nexus.local/my-docker/busybox:02082026
 
 <img width="2493" height="742" alt="image" src="https://github.com/user-attachments/assets/e10633c2-5e82-44a1-bdcf-e90111db0d4b" />
 
-Once the docker images is pushed we could see the manifest in nexus ui
+The nexus UI after publishing the docker images looks like below
 
 <img width="1273" height="975" alt="image" src="https://github.com/user-attachments/assets/79bbd130-8a77-489a-9913-bccff98c7a03" />
 
 
-We can also access the docker repo from an container running in docker, we mount the docker.sock unix socket to the docker container
+We can mount the local docker socket to the docker container with docker CLI and pull and push the image to the private repository. The command looks like below.
 
 ```
 docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock docker:latest sh
 ```
 
-- screen shot of how the command execution within the docker container looks
+Below screenshot shows the command executed in WSL2 within the docker container
+
 <img width="2854" height="720" alt="image" src="https://github.com/user-attachments/assets/078bb1d4-7e9b-4355-8ffc-4b5eb2f5eb80" />
 
-Additionally, we can access the version details of the docker using socket in curl command like below
-- Note, the nexus is the docker service which is being accessed by the socket
+curl provides option to use unix socket and we can use it to fetch the list of images from the nexus registry the command is shown below.
 
 ```sh
-curl --unix-socket /var/run/docker.sock http://nexus/images/json | jq .
+curl -s --unix-socket /var/run/docker.sock http://nexus/images/json | jq .[].RepoTags
 ```
 
-- Configuring the kind cluster with the configuration of containerd with registry.
+<img width="2208" height="803" alt="image" src="https://github.com/user-attachments/assets/1a0a06bb-ce41-467d-b46f-78cc50fd9c43" />
+
+
+### Deploy kind cluster and use the image from private registry
+
+The kind cluster configuration includes the containerd config with private registry and we create a pod in cluster to fetch image from private registry.
 
 To create the kind cluster to access the private SSL registry, we use below configuration 
   - The configuration updates the containerd configuration
@@ -262,29 +271,29 @@ containerdConfigPatches:
     config_path = "/etc/containerd/certs.d"
 ```
 
-- Save the configutation to afile as `kind-private-repo.yaml`, then use below command to create the cluster
+Save above configutation to afile as `kind-private-repo.yaml`, then use below command to create the cluster in docker daemon
 
 ```sh
 kind create cluster --config kind-private-repo.yaml
 ```
 
-Note, if the containerd configuration is not updated, the image from the private repository couldn't be pulled by the kind cluster. Since we have updated the certs and containerd config we don't need to create secrets like mentioned below.
-Additionaly, if the artifactory is deployed in an seperate VM then we can create secret with the docker config.json and use `imagePullsecrets` config in pod manifest to pull image. Refer [kuberentes.io documentation](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
+Note, if the containerd configuration is not updated, kind cluster would not pull the image from the private repository.  Since the hosts and certs updated for containerd config we don't need to create secrets like mentioned below. Additionaly, if the artifactory is deployed in an seperate VM then we can create secret with the docker config.json and use `imagePullsecrets` config in pod manifest to pull image. Refer [kuberentes.io documentation](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/)
 
-- The above command will create a kind cluster, now we need to update the docker container `/etc/hosts` file with the hosts value.
-- Use the `docker network inspect bridge` and find the gateway for ssl-nexus-nexus-1 container and update that ip address below
+- Once the kind cluster is created we need to exec to the kind docker container and update the `/etc/hosts` file with the hosts value.
+- Use `docker network inspect bridge` to find the gateway IP address for ssl-nexus-nexus-1 container in this case and update that ip address below
+- With the host file updated in the container with below command, No need to restart the docker kind container.
 
-```
+```sh
 docker exec -it private-repo-control-plane sh
 
 echo "172.17.0.3 nexus.local" >> /etc/hosts
 ```
 
-Note, the above host update for the kind cluster to pull the image but this might not be needed which I am not concrete about. No need to restart the container after updating this hosts.
+Once kind docker container host is updated kind cluster will be able to pull the image without any exception. This step might not be necessary, but not tested after updating continared configuratrion.  No need to restart the container after updating this hosts.
 
-- Once the ip and dns update, try to use `curl -kiv https://nexus.local` to see if 200 response is received.
+From the kind docker container once the host is updated try `curl -kiv https://nexus.local` and should see 200 response.
 
-With the above updates, now we can create the manfiest with the private registry, like below
+The pod manifest uses the image from the private registry and deploy to the kind cluster.
 
 ```yaml
 # file-name: test-pod.yaml
@@ -305,14 +314,14 @@ spec:
     command: ["/bin/sh", "-c", "sleep 15m"]
 ```
 
-- To deploy the pod, use `kubectl apply -f test-pod.yaml`, this will deploy the pod uses the image from private directory.
+To deploy the pod manifest use the command `kubectl apply -f test-pod.yaml`. The status of the of the pod should be Running, describe to see the events.
 
-Describe the pod we could see the image pulled successfully.
+Below is the screenshot of the described pod we could see the image pulled successfully.
 
 <img width="2806" height="293" alt="image" src="https://github.com/user-attachments/assets/5f7ba3ac-5043-441a-af41-7c9469cb6281" />
 
 
-- Command to create the pod directly is listed below
+Command to create the pod directly is listed below
  
 ```sh
 kubectl run test --image=nexus.local/my-docker/busybox:020826 -- sleep 3600
