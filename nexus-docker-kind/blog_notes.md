@@ -269,11 +269,11 @@ nodes:
   # the control-plane node, allowing containerd to access them. 
   extraMounts:
     - containerPath: /etc/docker/certs.d/nexus.local
-      hostPath: /etc/docker/certs.d/nexus.local
+      hostPath: /etc/docker/certs.d/nexus.local                   #  server.crt file mounted on docker is added
     - containerPath: /var/lib/kubelet/config.json
-      hostPath: /mnt/c/thiru/edu/tmp/ssl-nexus/config.json
+      hostPath: /mnt/c/thiru/edu/tmp/ssl-nexus/config.json        # docker credential file
     - containerPath: /etc/containerd/certs.d/nexus.local/
-      hostPath: /mnt/c/thiru/edu/tmp/ssl-nexus/containerd/
+      hostPath: /mnt/c/thiru/edu/tmp/ssl-nexus/containerd/        # server.crt & host.toml files
 containerdConfigPatches:
 - |-
   [plugins."io.containerd.grpc.v1.cri".registry]
