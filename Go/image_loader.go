@@ -50,7 +50,7 @@ func FileExists(filePath string) (bool, error) {
 	return false, fmt.Errorf("File not exist or Error occured during file check")
 }
 
-func GetTarFileNameFromGzFile(gzFilePath string) string {
+func CreateTarFileNameFromGivenTarGzFilename(gzFilePath string) string {
 	gzExtension := ".gz"
 
 	if gzFilePath == "" || !strings.HasSuffix(gzFilePath, gzExtension) {
@@ -62,6 +62,7 @@ func GetTarFileNameFromGzFile(gzFilePath string) string {
 	return tarFileName
 }
 
+// Not being used
 func UntarGzToFile(srcPath, destPath string) error {
 	// 1. Open the source .tar.gz file
 	file, err := os.Open(srcPath)
@@ -133,10 +134,12 @@ func ExtractTarGz(src, dest string, extractTar bool) error {
 			}
 		}
 	} else {
-		destTar := CreateTarFileNameFromGivenTarGzFilename(src)
+		/*destTar := CreateTarFileNameFromGivenTarGzFilename(src)
 		fmt.Println("extract the tar file name on dest ", destTar)
 		targetDestPath := filepath.Join(dest, destTar)
-		tarOutFile, err := os.Create(targetDestPath)
+		fmt.Printf("Filename with path to tar: %s\n", targetDestPath)
+		*/
+		tarOutFile, err := os.Create(dest)
 		if err != nil {
 			log.Fatalf("cannot create the tar file from the gz format")
 		}
@@ -159,7 +162,7 @@ func main() {
 	password := flag.String("password", "", "artifactory password")
 	insecure := flag.Bool("insecure", true, "enable when using TLS, insecure by default")
 	imageTar := flag.String("image-tar", "", "the tar image saved using docker save -o image.tar nginx")
-	repoPath := flag.String("repo-path", "", "the repo image path example nexus.local/local-docker/nexus:v26.1.0")
+	imageUrl := flag.String("repo-path", "", "the repo image path example nexus.local/local-docker/nexus:v26.1.0")
 	extractGzPath := flag.String("extract-gz-path", "", "path to extract the tar.gz as tar file to uploade image")
 
 	flag.Parse()
@@ -170,7 +173,7 @@ func main() {
 		log.Fatal("image tar should be provided, using flag -image-tar image.tar")
 	}
 
-	if *repoPath == "" {
+	if *imageUrl == "" {
 		log.Fatal("repo path to upload the image should be provided, using flag -repo-path nexus.local/local-docer/nexus:v2026.1.0")
 	}
 
@@ -184,37 +187,49 @@ func main() {
 		log.Fatal("path to extract the tar.gz should be specified")
 	}
 
-	iTar := *imageTar
+	tarFileName := CreateTarFileNameFromGivenTarGzFilename(*imageTar)
+
+	//if -extract-gz-path option with / or \ then
+	tarFileWithPath := *imageTar
+	if strings.Contains(*extractGzPath, "/") || strings.Contains(*extractGzPath, "\\") {
+		tarFileWithPath = fmt.Sprintf("%s%s", *extractGzPath, tarFileName)
+	} else {
+		//tarFileWithPath = fmt.Sprintf("%s/%s", *extractGzPath, tarFileName)
+		// below is not applicable for windows
+		tarFileWithPath = filepath.Join(*extractGzPath, tarFileName)
+	}
+
+	fmt.Printf("tarFileWithPath: %s\n", tarFileWithPath)
+
 	if strings.HasSuffix(*imageTar, gzSuffix) {
 
-		tarFileName := GetTarFileNameFromGzFile(*imageTar)
+		fmt.Printf("imageTar: %s\ntarFilename: %s\n", *imageTar, tarFileName)
 
-		fmt.Printf("Filename: %s\n", tarFileName)
-
-		//err := ExtractTarGz(*imageTar, *extractGzPath, false)
-		err := UntarGzToFile(*imageTar, fmt.Sprintf("%s/%s", *extractGzPath, tarFileName))
+		//dest is the tmp/image.tar file
+		err := ExtractTarGz(*imageTar, tarFileWithPath, false)
+		//below can be used but commented
+		//err := UntarGzToFile(*imageTar, tarFileWithPath)
 		if err != nil {
 			log.Fatal("error untar gzip file")
 		}
 
-		iTar = fmt.Sprintf("%s/%s", *extractGzPath, tarFileName)
-		_, err = FileExists(iTar)
+		_, err = FileExists(tarFileWithPath)
 
 		if err != nil {
-			log.Fatalf("decompressed tar file doesn't exist %s", iTar)
+			log.Fatalf("decompressed tar file doesn't exist %s", tarFileWithPath)
 		}
 
 	}
 
-	fmt.Println("loading image :", iTar, "repo", *repoPath)
+	fmt.Println("loading image :", tarFileWithPath, "repo", *imageUrl)
 
-	img, err := tarball.ImageFromPath(iTar, nil)
+	img, err := tarball.ImageFromPath(tarFileWithPath, nil)
 
 	if err != nil {
 		log.Fatalf("failed to load tar : %v", err)
 	}
 
-	ref, err := name.ParseReference(*repoPath)
+	ref, err := name.ParseReference(*imageUrl)
 
 	if err != nil {
 		log.Fatalf("invalid reference: %v", err)
@@ -229,6 +244,12 @@ func main() {
 
 		fmt.Println("Image loading without credentials")
 		err = remote.Write(ref, img, remote.WithTransport(transport))
+
+		if err != nil {
+			log.Fatalf("Error occurred loading image: %v", err)
+		} else {
+			fmt.Println("completed uploading image ", ref.String())
+		}
 	} else {
 		fmt.Println("Image loading with credentials")
 		err = remote.Write(ref, img,
@@ -238,11 +259,14 @@ func main() {
 			}), remote.WithTransport(
 				transport),
 		)
+		if err != nil {
+			log.Fatalf("Error occurred loading image: %v", err)
+		} else {
+			fmt.Println("completed uploading image ", ref.String())
+		}
 	}
 
-	if err != nil {
-		log.Fatalf("failed to push image: %v", err)
-	}
 }
+
 
 
