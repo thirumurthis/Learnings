@@ -13,6 +13,8 @@ $ docker save -o busybox.tar busybox:latest
 // if different image is used then update the below code path and image tar file
 // run the command below to run the go - assuming username and password are stored env variable
 $ go ./cmd/image-handler -username $USERNAME -password $PASSCREDS
+or 
+$ go run ./cmd/image-handler/ -image-tar nginx.tar.gz -extract-gz-path tmp -repo-path nexus.local/local-docker/busybox:v26.1.0
 */
 package main
 
