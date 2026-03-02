@@ -1,19 +1,3 @@
-package main
-
-import (
-	"crypto/tls"
-	"errors"
-	"flag"
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-
-	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
-	"github.com/google/go-containerregistry/pkg/v1/tarball"
-)
 /*
 create a folder and add the main
 $ mkdir image-handler
@@ -30,6 +14,27 @@ $ docker save -o busybox.tar busybox:latest
 // run the command below to run the go - assuming username and password are stored env variable
 $ go ./cmd/image-handler -username $USERNAME -password $PASSCREDS
 */
+package main
+
+import (
+	"archive/tar"
+	"compress/gzip"
+	"crypto/tls"
+	"errors"
+	"flag"
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/google/go-containerregistry/pkg/v1/remote"
+	"github.com/google/go-containerregistry/pkg/v1/tarball"
+)
 
 func FileExists(filePath string) (bool, error) {
 
@@ -45,6 +50,100 @@ func FileExists(filePath string) (bool, error) {
 	return false, fmt.Errorf("File not exist or Error occured during file check")
 }
 
+func GetTarFileNameFromGzFile(gzFilePath string) string {
+	gzExtension := ".gz"
+
+	if gzFilePath == "" || !strings.HasSuffix(gzFilePath, gzExtension) {
+		fmt.Printf("file %s is not a gz file", gzFilePath)
+		return ""
+	}
+	gzTarFilename := filepath.Base(gzFilePath)
+	tarFileName := strings.TrimSuffix(gzTarFilename, gzExtension)
+	return tarFileName
+}
+
+func UntarGzToFile(srcPath, destPath string) error {
+	// 1. Open the source .tar.gz file
+	file, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// 2. Create a gzip reader to decompress the stream
+	gzr, err := gzip.NewReader(file)
+	if err != nil {
+		return err
+	}
+	defer gzr.Close()
+
+	// 3. Create the destination .tar file
+	outFile, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close() // Ensure the output file is closed properly
+
+	// 4. Copy the uncompressed data from the gzip reader to the output .tar file
+	if _, err := io.Copy(outFile, gzr); err != nil {
+		return err
+	}
+
+	// Manually close the outFile immediately after io.Copy to catch potential write errors
+	if err := outFile.Close(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ExtractTarGz(src, dest string, extractTar bool) error {
+	file, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	gzr, err := gzip.NewReader(file)
+	if err != nil {
+		return err
+	}
+	defer gzr.Close()
+
+	if extractTar {
+		tr := tar.NewReader(gzr)
+		for {
+			header, err := tr.Next()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return err
+			}
+
+			target := filepath.Join(dest, header.Name)
+			switch header.Typeflag {
+			case tar.TypeDir:
+				os.MkdirAll(target, 0755)
+			case tar.TypeReg:
+				os.MkdirAll(filepath.Dir(target), 0755)
+				outFile, _ := os.Create(target)
+				io.Copy(outFile, tr) // Uses io.Copy for data extraction
+				outFile.Close()
+			}
+		}
+	} else {
+		outFile, err := os.Create(GetTarFileNameFromGzFile(src))
+		if err != nil {
+			log.Fatalf("cannot create the tar file from the gz format")
+		}
+		defer outFile.Close()
+		io.Copy(outFile, gzr)
+		outFile.Close()
+	}
+	return nil
+}
+
 func main() {
 
 	username := flag.String("username", "", "artifactory username")
@@ -52,8 +151,11 @@ func main() {
 	insecure := flag.Bool("insecure", true, "enable when using TLS, insecure by default")
 	imageTar := flag.String("image-tar", "", "the tar image saved using docker save -o image.tar nginx")
 	repoPath := flag.String("repo-path", "", "the repo image path example nexus.local/local-docker/nexus:v26.1.0")
+	extractGzPath := flag.String("extract-gz-path", "", "path to extract the tar.gz as tar file to uploade image")
 
 	flag.Parse()
+
+	gzSuffix := ".gz"
 
 	if *imageTar == "" {
 		log.Fatal("image tar should be provided, using flag -image-tar image.tar")
@@ -69,8 +171,35 @@ func main() {
 		log.Fatalf("Image tar file doesn't exists %v", fileError)
 	}
 
-	fmt.Println("loading image :", imageTar, "repo", *repoPath)
-	img, err := tarball.ImageFromPath(*imageTar, nil)
+	if *extractGzPath == "" {
+		log.Fatal("path to extract the tar.gz should be specified")
+	}
+
+	iTar := *imageTar
+	if strings.HasSuffix(*imageTar, gzSuffix) {
+
+		tarFileName := GetTarFileNameFromGzFile(*imageTar)
+
+		fmt.Printf("Filename: %s\n", tarFileName)
+
+		//err := ExtractTarGz(*imageTar, *extractGzPath, false)
+		err := UntarGzToFile(*imageTar, fmt.Sprintf("%s/%s", *extractGzPath, tarFileName))
+		if err != nil {
+			log.Fatal("error untar gzip file")
+		}
+
+		iTar = fmt.Sprintf("%s/%s", *extractGzPath, tarFileName)
+		_, err = FileExists(iTar)
+
+		if err != nil {
+			log.Fatalf("decompressed tar file doesn't exist %s", iTar)
+		}
+
+	}
+
+	fmt.Println("loading image :", iTar, "repo", *repoPath)
+
+	img, err := tarball.ImageFromPath(iTar, nil)
 
 	if err != nil {
 		log.Fatalf("failed to load tar : %v", err)
