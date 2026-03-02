@@ -97,7 +97,7 @@ func UntarGzToFile(srcPath, destPath string) error {
 	return nil
 }
 
-func ExtractTarGz(src, dest string) error {
+func ExtractTarGz(src, dest string, extractTar bool) error {
 	file, err := os.Open(src)
 	if err != nil {
 		return err
@@ -110,25 +110,44 @@ func ExtractTarGz(src, dest string) error {
 	}
 	defer gzr.Close()
 
-	tr := tar.NewReader(gzr)
-	for {
-		header, err := tr.Next()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
+	if extractTar {
+		tr := tar.NewReader(gzr)
+		for {
+			header, err := tr.Next()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				return err
+			}
 
-		target := filepath.Join(dest, header.Name)
-		switch header.Typeflag {
-		case tar.TypeDir:
-			os.MkdirAll(target, 0755)
-		case tar.TypeReg:
-			os.MkdirAll(filepath.Dir(target), 0755)
-			outFile, _ := os.Create(target)
-			io.Copy(outFile, tr) // Uses io.Copy for data extraction
-			outFile.Close()
+			target := filepath.Join(dest, header.Name)
+			switch header.Typeflag {
+			case tar.TypeDir:
+				os.MkdirAll(target, 0755)
+			case tar.TypeReg:
+				os.MkdirAll(filepath.Dir(target), 0755)
+				outFile, _ := os.Create(target)
+				io.Copy(outFile, tr) // Uses io.Copy for data extraction
+				outFile.Close()
+			}
+		}
+	} else {
+		destTar := CreateTarFileNameFromGivenTarGzFilename(src)
+		fmt.Println("extract the tar file name on dest ", destTar)
+		targetDestPath := filepath.Join(dest, destTar)
+		tarOutFile, err := os.Create(targetDestPath)
+		if err != nil {
+			log.Fatalf("cannot create the tar file from the gz format")
+		}
+		defer tarOutFile.Close()
+		_, err = io.Copy(tarOutFile, gzr)
+
+		if err != nil {
+			log.Fatal("error occured during copy to tar")
+		}
+		if err := tarOutFile.Close(); err != nil {
+			log.Fatal("error closing the file")
 		}
 	}
 	return nil
