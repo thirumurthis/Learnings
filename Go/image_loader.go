@@ -97,7 +97,7 @@ func UntarGzToFile(srcPath, destPath string) error {
 	return nil
 }
 
-func ExtractTarGz(src, dest string, extractTar bool) error {
+func ExtractTarGz(src, dest string) error {
 	file, err := os.Open(src)
 	if err != nil {
 		return err
@@ -110,36 +110,26 @@ func ExtractTarGz(src, dest string, extractTar bool) error {
 	}
 	defer gzr.Close()
 
-	if extractTar {
-		tr := tar.NewReader(gzr)
-		for {
-			header, err := tr.Next()
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				return err
-			}
-
-			target := filepath.Join(dest, header.Name)
-			switch header.Typeflag {
-			case tar.TypeDir:
-				os.MkdirAll(target, 0755)
-			case tar.TypeReg:
-				os.MkdirAll(filepath.Dir(target), 0755)
-				outFile, _ := os.Create(target)
-				io.Copy(outFile, tr) // Uses io.Copy for data extraction
-				outFile.Close()
-			}
+	tr := tar.NewReader(gzr)
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
 		}
-	} else {
-		outFile, err := os.Create(GetTarFileNameFromGzFile(src))
 		if err != nil {
-			log.Fatalf("cannot create the tar file from the gz format")
+			return err
 		}
-		defer outFile.Close()
-		io.Copy(outFile, gzr)
-		outFile.Close()
+
+		target := filepath.Join(dest, header.Name)
+		switch header.Typeflag {
+		case tar.TypeDir:
+			os.MkdirAll(target, 0755)
+		case tar.TypeReg:
+			os.MkdirAll(filepath.Dir(target), 0755)
+			outFile, _ := os.Create(target)
+			io.Copy(outFile, tr) // Uses io.Copy for data extraction
+			outFile.Close()
+		}
 	}
 	return nil
 }
@@ -235,4 +225,5 @@ func main() {
 		log.Fatalf("failed to push image: %v", err)
 	}
 }
+
 
