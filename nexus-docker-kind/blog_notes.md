@@ -298,7 +298,7 @@ docker exec -it private-repo-control-plane sh
 echo "172.17.0.3 nexus.local" >> /etc/hosts
 ```
 
-Once kind docker container host is updated kind cluster will be able to pull the image without any exception. This step might not be necessary, but not tested after updating continared configuratrion.  No need to restart the container after updating this hosts.
+Once kind docker container host is updated kind cluster will be able to pull the image without any exception. This step might not be necessary, but not tested after updating continared configuration.  No need to restart the container after updating this hosts.
 
 From the kind docker container once the host is updated try `curl -kiv https://nexus.local` and should see 200 response.
 
