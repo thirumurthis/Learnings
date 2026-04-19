@@ -33,6 +33,24 @@ sudo vi /etc/wsl.conf
 [boot]
 systemd=true
 ```
+
+We can add beklow as well but `update the user name correctly`  
+```
+cat > /etc/wsl.conf <<'EOF'
+[user]
+default=thiru
+
+[boot]
+systemd=true
+
+[network]
+generateResolvConf=true
+
+[interop]
+enabled=true
+appendWindowsPath=true
+EOF
+```
 - Shutodown using `wsl.exe --shutdown Ubuntu` to take effect of running systemd.
 - issue command `systemctl list-unit-files --type=service` to verify if the it is enabled.
 -----------------
