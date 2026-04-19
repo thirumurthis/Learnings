@@ -20,7 +20,7 @@ $ sudo visudo
 ```
 
 Note: 
-  - when using `visudo` to save and exist use `Ctrl + x` and `Y`.
+  - when using `visudo` to save hit `Ctrl + x` and `Y`. Then to exit `Ctrl + x`. 
 
 -----------
 
