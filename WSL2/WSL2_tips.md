@@ -11,20 +11,16 @@ $ sudo visudo
 ```
 -----------------
 
-## If behind proxy probably un comment below 
-- set the `http_proxy` and `https_proxy` with the proxy url.
-- Also note, some app expected to be lower case. Set this in `~/.bashrc`.
+## If behind proxy probably [uncomment http(s)_proxy line in visudo]
+- set the `http_proxy` and `https_proxy` with the proxy url. Also note, linux uses might use lower case. Set the proxy in `~/.bashrc`.
+- below only for exposing the proxy behind proxy
 
-```
-sudo visudo
-```
- - below only for exposing the proxy
 ```
 #Defaults:%sudo env_keep += "http_proxy https_proxy ftp_proxy all_proxy no_proxy"
 ```
 
 Note: 
-  - when using `visudo` to save and exist use `Ctrl + o` and `Ctrl + x`.
+  - when using `visudo` to save and exist use `Ctrl + x` and `Y`.
 
 -----------
 
