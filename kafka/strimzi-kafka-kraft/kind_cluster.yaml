@@ -1,0 +1,25 @@
+apiVersion: kind.x-k8s.io/v1alpha4
+kind: Cluster
+name: dev
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 31092
+    hostPort: 31092
+  - containerPort: 31093
+    hostPort: 31093
+  - containerPort: 31094
+    hostPort: 31094
+  - containerPort: 31095
+    hostPort: 31095
+  # port for akhq
+  - containerPort: 31080
+    hostPort: 31080
+  # k8s for apisix
+  - containerPort: 30080
+    hostPort: 80
+  - containerPort: 30443
+    hostPort: 443
+- role: worker
+- role: worker
+- role: worker

@@ -1,0 +1,110 @@
+# Documentation - https://strimzi.io/docs/operators/in-development/deploying#minimal_configuration_for_kafka_connect
+# Basic configuration (required)
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  name: kraft-cntrl-role # (1)
+  labels:
+    strimzi.io/cluster: demo-clstr # (2)
+# Node pool specifications
+spec:
+  # Replicas (required)
+  replicas: 3 # (3)
+  # Roles (required)
+  roles: # (4)
+    - controller
+  # Storage configuration (required)
+  storage: # (5)
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 6Gi
+  # Resources requests and limits (recommended)
+  #resources: # (6)
+  #  requests:
+  #    memory: 64Gi
+  #    cpu: "8"
+  #  limits:
+  #    memory: 64Gi
+  #    cpu: "12"
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaNodePool
+metadata:
+  name: kraft-brkr-role # (1)
+  labels:
+    strimzi.io/cluster: demo-clstr # (2)
+# Node pool specifications
+spec:
+  # Replicas (required)
+  replicas: 3 # (3)
+  # Roles (required)
+  roles: # (4)
+    - broker
+  # Storage configuration (required)
+  storage: # (5)
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 6Gi
+  # Resources requests and limits (recommended)
+  #resources: # (6)
+  #  requests:
+  #    memory: 64Gi
+  #    cpu: "8"
+  #  limits:
+  #    memory: 64Gi
+  #    cpu: "12"
+---
+# Basic configuration (required)
+apiVersion: kafka.strimzi.io/v1
+kind: Kafka
+metadata:
+  name: demo-clstr
+# Deployment specifications
+spec:
+  kafka:
+    # Kafka version (recommended)
+    version: 4.2.0
+    # KRaft metadata version (recommended)
+    metadataVersion: "4.2"
+    # Broker configuration for replication (recommended)
+    config:
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+    # Listener configuration (required)
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      #- name: tls
+      #  port: 9093
+      #  type: internal
+      #  tls: true
+      - name: external
+        type: nodeport   # use lower case
+        port: 9094
+        tls: false
+        configuration:
+          bootstrap:
+            nodePort: 31092
+          brokers:
+            - broker: 0
+              advertisedHost: 127.0.0.1
+              nodePort: 31093
+            - broker: 1
+              advertisedHost: 127.0.0.1
+              nodePort: 31094
+            - broker: 2
+              advertisedHost: 127.0.0.1
+              nodePort: 31095
+  # Entity Operator (recommended)
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}

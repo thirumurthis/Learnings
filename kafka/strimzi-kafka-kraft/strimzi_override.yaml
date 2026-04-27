@@ -1,0 +1,12 @@
+# install with
+# helm upgrade install demo-strimzi-opr oci://quay.io/strimizi-helm/strimzi-kafka-operator
+
+# override with 3 replicas
+replicas: 3
+
+# watch namespace to scan when cluster or topics are created
+watchNamespaces:
+  - demo
+
+# make strimizi operator not tol scan all the namespace
+watchAnyNamespace: false

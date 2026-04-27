@@ -1,0 +1,24 @@
+#https://www.apicur.io/registry/docs/apicurio-registry/3.2.x/getting-started/assembly-operator-config-reference.html#operator-ingress-reference_registry
+apiVersion: registry.apicur.io/v1
+kind: ApicurioRegistry3
+metadata:
+  name: sample
+spec:
+  app:
+    env:
+    - name: QUARKUS_HTTP_CORS_ORIGINS
+      value: "https://apicurio.app.demo.com,http://apicurio.app.demo.com,https://apicurio.ui.demo.com,http://apicurio.ui.demo.comhttp://localhost:8080"
+      #value: "https://apicurio.app.demo.com,http://apicurio.app.demo.com,http://localhost:8080"
+    - name: QUARKUS_HTTP_CORS
+      value: "true"
+    ingress:
+      enabled: false
+    #  host: simple-app.apps.cluster.example:8080 #simple-app-svc.apicurio-registry.svc.cluster-domain.example #simple-ui-service.
+  ui:
+   env:
+    - name: REGISTRY_API_URL
+      #value: "sample-app-service.apicurio-registry:8080/apis/registry/v3" #localhost:8099 #sample-app-service.apicurio-registry.svc:8080
+      value: "https://apicurio.app.demo.com/apis/registry/v3"
+   ingress:
+    enabled: false
+    #host: simple-ui.apps.cluster.example

@@ -1,0 +1,81 @@
+configuration:
+  akhq:
+    server:
+      access-log:
+        enabled: true
+        name: org.akhq.log.access
+        format: "[Date: {}] [Duration: {} ms] [Url: {} {}] [Status: {}] [Ip: {}] [User: {}]" # Logger format
+    connections:
+      demo-cluster:
+        properties:
+          bootstrap.servers: "demo-clstr-kafka-bootstrap:9092"
+    security:
+      #default-group: reader
+      roles:
+          topic-admin:
+          - resources: [ "TOPIC", "TOPIC_DATA" ]
+            actions: [ "READ", "CREATE", "DELETE" ]
+          - resources: [ "TOPIC" ]
+            actions: [ "UPDATE", "READ_CONFIG", "ALTER_CONFIG" ]
+      groups:
+        admin:
+          roles:
+            - "admin"
+            - "topic-admin"
+          patterns:
+            - ".*"
+        reader:
+          roles:
+            - "topic/read"
+            - "group/read"
+          patterns:
+            - ".*"
+      basic-auth:
+        - username: "${AKHQ_ADMIN_USER}"
+          password: "${AKHQ_ADMIN_PASSWORD}" #"${AKHQ_PASSWORD}" #5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8 <= echo -n "password" | sha256sum
+          passwordHash: SHA256
+          group:
+            - admin
+        - username: "${AKHQ_READ_USER}"
+          password: "${AKHQ_READ_PASSWORD}" #"${AKHQ_PASSWORD}" #5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8 <= echo -n "password" | sha256sum
+          passwordHash: SHA256
+          group:
+            - reader
+  # Please set the 'micronaut.security.token.jwt.signatures.secret.generator.secret' configuration, or ask your administrator to do it !
+  micronaut:
+    security:
+      enabled: true
+      default-group: no-roles
+      token:
+        jwt:
+          signatures:
+            secret:
+              generator:
+                secret: "TSxCQLAkP/bAxXW71tdUX64fIBshJJYbJ39iTvtjEjQ/qWhQaIWhFkETi6ryHw=="
+
+service:
+  type: NodePort
+  httpNodePort: 31080
+
+extraEnv: 
+  - name: AKHQ_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: akhq-secret
+        key: AKHQ_ADMIN_PASSWORD
+  - name: AKHQ_ADMIN_USER
+    valueFrom:
+      secretKeyRef:
+        name: akhq-secret
+        key: AKHQ_ADMIN_USER
+  - name: AKHQ_READ_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: akhq-secret
+        key: AKHQ_READ_PASSWORD
+  - name: AKHQ_READ_USER
+    valueFrom:
+      secretKeyRef:
+        name: akhq-secret
+        key: AKHQ_READ_USER
+   

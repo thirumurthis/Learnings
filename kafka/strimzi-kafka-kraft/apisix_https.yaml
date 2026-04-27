@@ -1,0 +1,62 @@
+# file name: 1_apisix_cert_issuer.yaml
+# deploy in apisix namespace
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-apisix-ca-issuer
+spec:
+  selfSigned: {}
+---
+# deploy in apisix namespace
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-apisix-cert
+spec:
+  commonName: apisix.demo.com  
+  secretName: selfsigned-apisix-cert-secret # cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-apisix-ca-issuer # issuer resource name
+    kind: Issuer
+  dnsNames:
+    - apisix.demo.com  # dns name add this to hosts file for loopback address
+---
+# 2_dashboard_apisix_tls.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: sample-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - apisix.demo.com
+  secret:
+    name: selfsigned-apisix-cert-secret  # certificate created by the cert-manager
+    namespace: apisix
+---
+# 3_dashboard_apisix_route.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: dashboard-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: apisix-db
+      match:
+        hosts:
+          - apisix.demo.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: apisix-cp-admin
+          servicePort: 9180
+      plugins:
+        - name: proxy-rewrite
+          enable: true
+          config:
+            headers:
+              set:
+                X-Api-Key: "edd1c9f034335f136f87ad84b625c8f1"

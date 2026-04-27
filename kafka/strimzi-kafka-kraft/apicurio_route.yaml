@@ -1,0 +1,108 @@
+# file name: 1_apisix_cert_issuer.yaml
+# deploy in apicurio-registry namespace
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-ca-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-ui-cert
+spec:
+  commonName: apicurio.ui.demo.com  
+  secretName: selfsigned-ui-cert-secret # cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-ca-issuer # issuer resource name
+    kind: Issuer
+  dnsNames: 
+    # dns name add this to hosts file for loopback address
+    - apicurio.ui.demo.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: sample-ui-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - apicurio.ui.demo.com
+  secret:
+    name: selfsigned-ui-cert-secret  # certificate created by the cert-manager
+    namespace: apicurio-registry
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: apicurio-ui-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: apicurio-ui-http
+      match:
+        hosts:
+          - apicurio.ui.demo.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: sample-ui-service
+          servicePort: 8080
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-app-cert
+spec:
+  commonName: apicurio.app.demo.com  
+  secretName: selfsigned-app-cert-secret # cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-ca-issuer # issuer resource name
+    kind: Issuer
+  dnsNames: 
+    # dns name add this to hosts file for loopback address
+    - apicurio.app.demo.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: sample-app-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - apicurio.app.demo.com
+  secret:
+    name: selfsigned-app-cert-secret  # certificate created by the cert-manager
+    namespace: apicurio-registry
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: apicurio-app-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: apicurio-app-http
+      match:
+        hosts:
+          - apicurio.app.demo.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: sample-app-service
+          servicePort: 8080
+      #plugins:
+      # - name: cors
+      #   enable: true
+      #   config:
+      #      allow_origins: "*" #"https://apicurio.app.com,http://apicurio.app.com" # Allowed origins
+            #allow_methods: "GET,POST,PUT,DELETE,OPTIONS"
+            #allow_headers: "Authorization,Content-Type" # Specific headers allowed
+            #expose_headers: "Content-Range,X-Total-Count"
+            #allow_credential: true # Allowed if needed
+            #max_age: 3600
