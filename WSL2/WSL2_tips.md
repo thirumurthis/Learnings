@@ -11,21 +11,19 @@ $ sudo visudo
 ```
 -----------------
 
-## If behind proxy probably un comment below 
-- set the `http_proxy` and `https_proxy` with the proxy url.
-- Also note, some app expected to be lower case. Set this in `~/.bashrc`.
+## If behind proxy probably [uncomment http(s)_proxy line in visudo]
+- set the `http_proxy` and `https_proxy` with the proxy url. Also note, linux uses might use lower case. Set the proxy in `~/.bashrc`.
+- below only for exposing the proxy behind proxy
 
-```
-sudo visudo
-```
- - below only for exposing the proxy
 ```
 #Defaults:%sudo env_keep += "http_proxy https_proxy ftp_proxy all_proxy no_proxy"
 ```
 
 Note: 
-  - when using `visudo` to save and exist use `Ctrl + o` and `Ctrl + x`.
+  - when using `visudo` to save hit `Ctrl + x` and `Y`. Then to exit `Ctrl + x`. 
 
+-----------
+to install docker - https://docs.docker.com/engine/install/ubuntu/
 -----------
 
 ## How to enable systemd in the WSL configuration
@@ -36,6 +34,24 @@ sudo vi /etc/wsl.conf
 # add
 [boot]
 systemd=true
+```
+
+We can add beklow as well but `update the user name correctly`  
+```
+cat > /etc/wsl.conf <<'EOF'
+[user]
+default=thiru
+
+[boot]
+systemd=true
+
+[network]
+generateResolvConf=true
+
+[interop]
+enabled=true
+appendWindowsPath=true
+EOF
 ```
 - Shutodown using `wsl.exe --shutdown Ubuntu` to take effect of running systemd.
 - issue command `systemctl list-unit-files --type=service` to verify if the it is enabled.
@@ -170,4 +186,28 @@ export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
 alias run-ollama-in-docker='echo "docker run -d -v /mnt/c/thiru/edi/ai-models/ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama"; read -p "Do you want to execute the command? (y/n): " usrInput; if [[ "$usrInput" =~ ^[Yy]$ ]]; then docker run -d -v /mnt/c/thiru/edi/ai-models/ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama; else echo "skipped execution..."; fi'
 
 alias run-llama-model-in-ollama='echo "docker exec -it ollama ollama run llama3.2"; read -p "Do you want to execute the command? (y/n): " usrInput; if [[ "$usrInput" =~ ^[Yy]$ ]]; then docker exec ollama ollama run llama3.2; else echo "skipped execution..."; fi'
+```
+
+----------------------------------------------------
+
+#### Update Jan-2026 (Ubnutu docker install)
+
+```sh
+# Add Docker's official GPG key:
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
 ```

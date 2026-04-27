@@ -24,13 +24,13 @@ nodes:
 _Kuberentes Gateway API_
 
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
 ```
  
  _cert manager_
  
 ```bash
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
 ```
 
 3. Install the `apisx` using helm chart in `apisix`namespace. The `serviceNamespace` should be same as the namespace unless using different one. Most of the configuration is default we enabled the `apisix.ssl.enabled` in the chart.

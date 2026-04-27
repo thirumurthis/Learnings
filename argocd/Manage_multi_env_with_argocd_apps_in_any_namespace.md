@@ -150,7 +150,7 @@ patches:
   - path: argocd-cmd-params-cm-patch.yaml
 ```
 
-Note:- 
+** Note:- ** 
    - Place the files - kustomization.yaml, argocd-cm-patch.yaml and argocd-cmd-params-cm-patch.yaml place under argocd_install/kustomize.
    - The Kustomization manifest `patches` property includes patched ArgoCD config map enable application in any namespace will applied automatically.
 
@@ -186,7 +186,7 @@ kind create cluster --config kind_argocd_config.yaml
 To install the Kubernetes Gateway to the cluster, we use below command
 
 ```sh
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.3.0/standard-install.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
 ```
 
 ### Deploy cert manager
@@ -194,7 +194,7 @@ kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/downloa
 To install cert manager use below command.
 
 ```sh
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.17.2/cert-manager.yaml
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.2/cert-manager.yaml
 ```
 
 ### Deploy ArgoCD using Kustomize manifest
@@ -238,7 +238,8 @@ helm upgrade -i apisix apisix/apisix --namespace apisix \
 --set dashboard.enabled=true \
 --set ingress-controller.enabled=true \
 --set ingress-controller.config.apisix.serviceNamespace=apisix \
---set ingress-controller.config.kubernetes.enableGatewayAPI=true
+--set ingress-controller.config.kubernetes.enableGatewayAPI=true \
+--set ingress-controller.gatewayProxy.createDefault=true
 ```
 
 ### Deploy Issuer and Certificate (Self-signed certificate) 
@@ -275,6 +276,7 @@ spec:
     kind: Issuer
   dnsNames:
     - argocd.demo.com  # dns name add this to hosts file for loopback address
+    - argocd.localhost
 ```
 
 To deploy to the argocd cluster use below command.
@@ -286,7 +288,7 @@ kubectl -n argocd apply -f argocd_certificate.yaml
 
 ### Install Apisix ingress  
 
-Below is the ingress manifest used to access the argocd server. The Apisix ingressClassName is used to pass the traffic to argocd-server service on the port 443.
+Below is the ingress manifest used to access the argocd server. The Apisix ingressClassName is used to pass the traffic to argocd-server service on the port 443. Apply this ingress to argocd namespace.
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -310,9 +312,20 @@ spec:
   tls:
     - hosts:
         - argocd.demo.com
+        - argocd.localhost
       secretName: argocd-cert-manager-tls # cert-manager will store the created certificate in this secret.
   rules:
   - host: argocd.demo.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
+  - host: argocd.localhost
     http:
       paths:
       - path: /
@@ -331,6 +344,9 @@ The Apisix ingress is configured with comman name `argocd.demo.com`, add this to
 ```
 127.0.0.1 argocd.demo.com
 ```
+
+**Info:**
+ - Accessing the local argocd behind the proxy with the `argocd.demo.local` might throw `DNS resolution error`. In this case add `argocd.localhost` in the hosts file like  `127.0.0.1 argocd.localhost` and access `http://argocd.localhost` to access the app.
 
 From browser use the URL `http://argocd.demo.com` which will redirect to `https` and allow unverified access since self signed certificate.
 
