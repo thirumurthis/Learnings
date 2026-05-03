@@ -94,7 +94,6 @@ strimzi-opr oci://quay.io/strimzi-helm/strimzi-kafka-operator \
 
 To check the status use `kubectl -n kafka get pods`
 
-
 ### Install the Kafka cluster with KRaft mode
 
 The Kafka cluster configuration with KRaft mode is shown below, to expose as NodePort the listeners configuration is updated with necessary ports.
@@ -486,6 +485,9 @@ Save the yaml manifest to apisix-dashboard-route.yaml, apply using command `kube
 INFO: Update the windows hosts file with `127.0.0.1 apisix.demo.com`, with this update we can access the Apisix dashboard with `https://apisix.demo.com/ui`
 
 To check the status use `kubectl -n apisix get apisixtls` and `kubectl -n apisix get ar`
+
+<img width="1995" height="1305" alt="image" src="https://github.com/user-attachments/assets/6fb59302-8424-4646-8cab-2c60b5a1bca9" />
+
 
 ### Deploy the Apicurio registry with Apicurio operator
 
