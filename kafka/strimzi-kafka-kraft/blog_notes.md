@@ -1,7 +1,10 @@
 ## Apache kafka with Avro Schema registry
 
 
-In this article have detailed the steps to serialize and de-serialize messages to kafka topic with Avro Schema registry.
+In this article have detailed the steps on configuring Apache Kafka in a KinD cluster. 
+To work with schema registry includes steps to configure simple Apicurio schema registry using Apicurio operator.
+
+This would help for local deployment.
 
 All the component for this example is deployed in KinD cluster.
 
@@ -13,12 +16,12 @@ Pre-requisites
  - Kubectl CLI
  - Helm CLI (4.x+)
 
-Apache Kafka installed with Strimzi helm chart with Kraft mode enabled. The configuration expose the bootstrap using NodePort, we need to determine the ports ahead of creating the kind cluster.
-The kind cluster configuration uses the NodePort so we don't need to port-forward the external bootstrap service of kafka. Also, installed AKHQ opensource UI for kafka cluster used to view the topics details.
+The Apache Kafka is installed in KinD cluster with Strimzi helm chart in Kraft mode.
 
-For Avro Schema registry have used the opensource Apicurio registry (version3). The registry is installed using Apicurio operator.
+To access the Kafka from the host machine the Strimzi kafka configuration used NodePort, the container port is configured in the KinD Cluster extraPortMappings. Refer [KinD documentation](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for more details.  
+The NodePort should be determined ahead of deploying the KinD cluster.
 
-To access the Apicurio registry endpoint from the host machine we use Apisix Gateway with self-signed certificate.
+The Avro Schema Apicurio registry can be accessed using domain name with https self-signed since the Apache Apisix Gateway API is deployed, the details shown below. 
 
 The Apache Apisix 3.x version has been update significantly, the dashboard is deprecated and uses new admin ui embedded ui. 
 
@@ -41,11 +44,9 @@ nodes:
     hostPort: 31094
   - containerPort: 31095
     hostPort: 31095
-  # port for akhq
-  - containerPort: 31080
+  - containerPort: 31080  # akhq port
     hostPort: 31080
-  # k8s for apisix
-  - containerPort: 30080
+  - containerPort: 30080  # apisix port
     hostPort: 80
   - containerPort: 30443
     hostPort: 443
