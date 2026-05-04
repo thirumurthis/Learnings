@@ -21,13 +21,13 @@ The Apache Kafka is installed in KinD cluster with Strimzi helm chart in Kraft m
 To access the Kafka from the host machine the Strimzi kafka configuration used NodePort, the container port is configured in the KinD Cluster extraPortMappings. Refer [KinD documentation](https://kind.sigs.k8s.io/docs/user/configuration/#extra-port-mappings) for more details.  
 The NodePort should be determined ahead of deploying the KinD cluster.
 
-The Avro Schema Apicurio registry can be accessed using domain name with https self-signed since the Apache Apisix Gateway API is deployed, the details shown below. 
+The ports for accessing the kafka and AKHQ (UI for Kafka) should be determined ahead of deploying the KinD cluster along with the Apisix NodePort port. In this case the Kafka and AKHQ (UI for Kafka) is accessed directly with localhost. The Certificate manager is deployed to use self-signed certificates based configuration to access the Apisix UI, Apicurio UI and App configured using ApisixRoute and ApisixTLS.
 
-The Apache Apisix 3.x version has been update significantly, the dashboard is deprecated and uses new admin ui embedded ui. 
+The Avro Schema Apicurio registry is configured with Apisix route and self-signed certificate so can be accessed using domain name with https the details further explained below. The Apache Apisix 3.x version is used here and comparing the 2.x version it is updated significantly, the dashboard chart is deprecated and uses new embedded Admin UI.  
 
 #### KinD cluster creation 
 
-- The KinD cluster configuration with set of NodePort for Kafka, AKHQ and Apisix.
+The KinD cluster configuration with ports for Kafka, AKHQ and Apisix. This creates 3 node cluster.
 
 ```yaml
 apiVersion: kind.x-k8s.io/v1alpha4
