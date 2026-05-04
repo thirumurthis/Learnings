@@ -197,7 +197,7 @@ spec:
 
 To check the status of the Kafka cluster deployment use the command `kubectl -n demo get pods` should see pods with brokers and controllers with and entity operator.
 
-<img width="700" height="335" alt="image" src="https://github.com/user-attachments/assets/00988de3-8099-463b-bfd9-83bdfd7657c5" />
+<img width="1000" height="335" alt="image" src="https://github.com/user-attachments/assets/00988de3-8099-463b-bfd9-83bdfd7657c5" />
 
 ### Create kafka topic
 
@@ -231,7 +231,7 @@ spec:
 
 To check the status of the topics use the command `kubectl -n demo get kt`, the READY should be True.
 
-<img width="750" height="134" alt="image" src="https://github.com/user-attachments/assets/5992cee8-f4a3-4f8d-bcff-ec39b9268390" />
+<img width="1000" height="134" alt="image" src="https://github.com/user-attachments/assets/5992cee8-f4a3-4f8d-bcff-ec39b9268390" />
 
 
 ### Install AKHQ
@@ -343,6 +343,11 @@ helm upgrade --install -n demo akhq akhq/akhq -f akhq_config.yaml
 
 To check the status of the installation, use `kubectl -n demo get pods`, the akhq pod should be in Running state.
 
+The AKHQ application can be accessed from browser with `http://localhost:31080`, should look like.
+
+<img width="2024" height="1683" alt="image" src="https://github.com/user-attachments/assets/c6a31cb7-2ef6-4b47-bed2-50eb6076008c" />
+
+
 ### Install Apisix in de-coupled mode with self-signed certificate
 
 Apache Apisix is deployed to the cluster with controller and data plane as deployment, there is another option to deploy as daemonset. With Apisix we can install the cert manager to generate self-signed certificate so the we can create routes for Apisix dashboard. Apicurio UI and backend app which could be accessed with SSL certificate.
@@ -358,7 +363,7 @@ helm install \
   --set crds.enabled=true
 ```
 
-Create an Issuer and Certificate to configure with the embedded Apisix control-plane admin UI dashboard. The Issuer and the Certificate should be deployed in the same namespace where the apisix is deployed in this case apisix namespace.
+Create an Issuer and Certificate to configure with the Apisix control-plane embedded admin UI dashboard. The Issuer and the Certificate should be deployed in the same namespace where the apisix is deployed in this case apisix namespace.
 
 ```yaml
 ---
@@ -393,11 +398,11 @@ kubectl create ns apisix
 kubectl -n apisix apply -f apisix-cert.yaml
 ```
 
-To check the status use command `kubectl -n apisix get certificate` to see the READY state is true. 
+To check the status of deployed resources, use command `kubectl -n apisix get certificate`. The deployed resource should show True in the READY state. 
 
 Install the Apisix deployment with de-coupled mode we use the control-plane and data-plane. 
 
-To install the control-plane use below command.
+To install the control-plane use below helm command
  - The ca cert secret created by the certficate manager should be configured in the `apisix.ssl.existingCASecret` property else we would not be able to use https from browser.
  - The `apisix.ssl.ccertCAFilename` is set to ca.crt which is key name of the certificate in the secret.
 
@@ -658,11 +663,12 @@ INFO: Add host mapping entries to the windows hosts file like below. With the ho
 ```
 
 With registry deployed below java code is sample on validating if the registry is accessible. The certificate can be obtained from the secret or browser. 
-- Copy the ca.crt content of the secret `selfsigned-app-cert-secret` created by the cert manager configured in the Certificate request config above. Save the ca.crt content to a file caCert.crt and pass it to the RestClientOptions. - Export the certificate from browser, navigate to `https://apicurio.app.demo.com` in browser accept the SSL error from browser and navigate further. Save the certificate export to a file named browserCaCert.crt.
+- Copy the ca.crt content of the secret `selfsigned-app-cert-secret` created by the cert manager configured in the Certificate request config above. Save the ca.crt content to a file caCert.crt and pass it to the RestClientOptions. - Export the certificate from browser hitting the certificate lock symbol, navigate to `https://apicurio.app.demo.com` in browser accept the SSL error from browser and navigate further. Save the certificate export to a file named browserCaCert.crt.
 
 The code uses a boolean flag to determine which crt to use, both the ca certificate works.
 
-```java///usr/bin/env jbang "$0" "$0" : exit $?
+```java
+///usr/bin/env jbang "$0" "$0" : exit $?
 
 //DEPS io.apicurio:apicurio-registry:3.2.1@pom
 //DEPS io.apicurio:apicurio-registry-java-sdk
@@ -684,10 +690,10 @@ import org.slf4j.LoggerFactory;
 
 public class SampleAvroRegistryAcces {
 
-     private static final Logger LOGGER = LoggerFactory.getLogger(SampleAvroRegistryAcces.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SampleAvroRegistryAcces.class);
 
-       private static final RegistryClient client;
-      static {
+    private static final RegistryClient client;
+    static {
         // Create a Service Registry client
         String registryUrl = "https://apicurio.app.demo.com/apis/registry/v3";
         client = createProperClient(registryUrl);
@@ -695,10 +701,12 @@ public class SampleAvroRegistryAcces {
 
     public static void main(String[] args) {
         // Register the JSON Schema schema in the Apicurio registry.
-        //final String artifactId = "employee-info"; // UUID.randomUUID().toString();
+        // final String artifactId = "employee-info"; // UUID.randomUUID().toString();
         final String groupId = "default";
 
         try {
+            // RegistryDemoUtil.createSchemaInServiceRegistry(client, artifactId,
+            // Constants.SCHEMA);
             getSchemaFromRegistry(client, groupId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -710,7 +718,7 @@ public class SampleAvroRegistryAcces {
         }
     }
 
-        public static RegistryClient createProperClient(String registryUrl) {
+    public static RegistryClient createProperClient(String registryUrl) {
         final String tokenEndpoint = System.getenv("AUTH_TOKEN_ENDPOINT");
         boolean dontExecute = false;
         if (tokenEndpoint != null && dontExecute) {
@@ -720,44 +728,141 @@ public class SampleAvroRegistryAcces {
                     .oauth2(tokenEndpoint, authClient, authSecret));
         } else {
             RegistryClientOptions clientOptions = RegistryClientOptions.create(registryUrl);
-            // based on the opition from where the ca cert is fetched set the below flag 
-            boolean useCaCertFromSecret = false; 
-            if(useCaCertFromSecret){
+            boolean useCaCertFromSecret = false;
+            if (useCaCertFromSecret) {
                 clientOptions.trustStorePem("./caCert.crt");
-            }else{
+            } else {
                 // else extract from the browser option
-                 clientOptions.trustStorePem("./browserCaCert.crt");
+                clientOptions.trustStorePem("./browserCaCert.crt");
             }
             return RegistryClientFactory.create(clientOptions);
         }
     }
 
-      public static ArtifactMetaData getSchemaFromRegistry(RegistryClient service, String groupId) {
+    public static ArtifactMetaData getSchemaFromRegistry(RegistryClient service, String groupId) {
 
         LOGGER.info("---------------------------------------------------------");
-        LOGGER.info("=====> Fetching artifact from the registry for JSON Schema with ID: {}",groupId);
+        LOGGER.info("=====> Fetching artifact from the registry for JSON Schema with ID: {}", groupId);
         try {
             List<ArtifactMetaData> metaData = new ArrayList<>();
             ArtifactSearchResults result = service.groups().byGroupId(groupId).artifacts().get();
             result.getArtifacts().forEach(itm -> {
-              LOGGER.info("ARTIFACT ID -----[{}] ",itm.getArtifactId());
-              ArtifactMetaData metaDataInfo = service.groups().byGroupId(groupId).artifacts()
-                    .byArtifactId(itm.getArtifactId()).get();
-            assert metaDataInfo != null;
-            metaData.add(metaDataInfo);  
+                LOGGER.info("ARTIFACT ID -----[{}] ", itm.getArtifactId());
+                ArtifactMetaData metaDataInfo = service.groups().byGroupId(groupId).artifacts()
+                        .byArtifactId(itm.getArtifactId()).get();
+                assert metaDataInfo != null;
+                metaData.add(metaDataInfo);
             });
 
             LOGGER.info("=====> Successfully fetched JSON Schema artifact in Service Registry: {}",
-             metaData.size()>0? metaData.get(0): null);
+                    metaData.size() > 0 ? metaData.get(0) : null);
             LOGGER.info("---------------------------------------------------------");
-            return metaData.size()>0? metaData.get(0): null;
+            return metaData.size() > 0 ? metaData.get(0) : null;
         } catch (Exception t) {
             throw t;
         }
-    }   
+    }
 }
 ```
 
-<TO DO> 
-example of java code with Avro schema only 
-example of java code with registry-route
+Save the file to SimpleAvroRegistryAccess.java, then to run we can use `jbang SimpleAvroRegistryAccess.java`. The output of the above java code would look like below 
+
+<img width="2389" height="622" alt="image" src="https://github.com/user-attachments/assets/dd693eb1-ad8d-40ce-bad7-fdb7dcac9814" />
+
+### Example Kafka consumer and producer
+
+#### Example Kafka consumer and producer with simple message
+
+Below is the Java Jbang example with Producer and Consumer where a random message triggered with Camel routes.
+
+- producer
+ 
+```java
+///usr/bin/env jbang "$0" "$0" : exit $?
+//DEPS org.apache.camel:camel-bom:4.18.1@pom
+//DEPS org.apache.camel:camel-core
+//DEPS org.apache.camel:camel-main
+//DEPS org.apache.camel:camel-stream
+//DEPS org.apache.camel:camel-kafka
+//DEPS org.slf4j:slf4j-nop:2.0.13
+//DEPS org.slf4j:slf4j-api:2.0.13
+
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.main.Main;
+import java.util.Random;
+
+import static java.lang.System.out;
+import static java.lang.System.setProperty;
+
+class DemoPublisher{
+
+    public static void main(String ... args) throws Exception{
+        out.println("Starting camel route...");
+        setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+        Random random = new Random();
+        Main main = new Main();
+
+        main.configure().addRoutesBuilder(new RouteBuilder(){
+            public void configure() throws Exception{
+                from("timer:Msg?period=60000")
+               .process(exchange -> exchange.getIn().setBody(random.nextInt(1000)))
+               .setBody(simple("msg from publisher = ${body}"))
+               .to("kafka:test-topic-1?brokers=localhost:31092")
+               .to("stream:out");;
+            }
+         });
+        main.run();
+    }
+}
+```
+
+- consumer
+
+```java
+///usr/bin/env jbang "$0" "$0" : exit $?
+
+//DEPS org.apache.camel:camel-bom:4.18.1@pom
+//DEPS org.apache.camel:camel-core
+//DEPS org.apache.camel:camel-main
+//DEPS org.apache.camel:camel-stream
+//DEPS org.apache.camel:camel-kafka
+//DEPS org.apache.kafka:kafka-clients:4.2.0
+//-- //nop dependency to skip log
+//-- //DEPS org.slf4j:slf4j-nop:2.0.13
+//DEPS org.slf4j:slf4j-simple:2.0.13
+//DEPS org.slf4j:slf4j-api:2.0.13
+
+import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.main.Main;
+
+import static java.lang.System.out;
+import static java.lang.System.setProperty;
+
+class DemoConsumer{
+
+    public static void main(String ... args) throws Exception{
+        out.println("Starting camel route...");
+        setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+
+        Main main = new Main();
+
+        main.configure().addRoutesBuilder(new RouteBuilder(){
+            public void configure() throws Exception{
+                from("kafka:test-topic-1?brokers=localhost:31092&"+
+                "maxPollRecords=1000&consumersCount=1&seekTo=BEGINNING&"+
+                "groupId=kafkaGroup")
+               .log("consumed: ${body}")
+               .to("stream:out");
+            }
+         });
+        main.run();
+    }
+}
+```
+
+Save the Java class with the class name like `DemoConsumer.java` asnd `DemoPublisher.java`. To run the example use  below command.
+
+```
+
+```
+
