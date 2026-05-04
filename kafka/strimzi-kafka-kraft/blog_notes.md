@@ -1387,10 +1387,14 @@ The output snapshot below, the top section produces messages and bottom section 
 <img width="2818" height="1576" alt="image" src="https://github.com/user-attachments/assets/2690f9b5-8a40-4bf9-8a92-71f943fdb994" />
 
 Snapshot of AKHQ topic were the producer sent the serialize message
+
 <img width="2000" height="1069" alt="image" src="https://github.com/user-attachments/assets/a09160bb-7bbf-4873-9b0a-e00c8acb7f03" />
 
 Snapshot of Apicurio UI we could see the artifact created automatically by the producer
+
 <img width="2009" height="1685" alt="image" src="https://github.com/user-attachments/assets/9d538227-7689-4743-8ddd-03c9e7d62936" />
+
+Snapshot of Apicurio UI to view the auto created artifact, this created a string based schema
 
 <img width="1949" height="1457" alt="image" src="https://github.com/user-attachments/assets/1b1465a4-2704-4070-a3eb-fd00c765dead" />
 
