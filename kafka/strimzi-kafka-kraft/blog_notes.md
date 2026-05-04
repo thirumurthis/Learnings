@@ -194,9 +194,9 @@ spec:
     userOperator: {}
 ```
 
-To check the status of the Kafka cluster use the command `kubectl -n demo get pods` should see pods with brokers and controllers with and entity operator.
+To check the status of the Kafka cluster deployment use the command `kubectl -n demo get pods` should see pods with brokers and controllers with and entity operator.
 
-<img width="1381" height="335" alt="image" src="https://github.com/user-attachments/assets/00988de3-8099-463b-bfd9-83bdfd7657c5" />
+<img width="700" height="335" alt="image" src="https://github.com/user-attachments/assets/00988de3-8099-463b-bfd9-83bdfd7657c5" />
 
 ### Create kafka topic
 
@@ -230,7 +230,7 @@ spec:
 
 To check the status of the topics use the command `kubectl -n demo get kt`, the READY should be True.
 
-<img width="1101" height="134" alt="image" src="https://github.com/user-attachments/assets/5992cee8-f4a3-4f8d-bcff-ec39b9268390" />
+<img width="750" height="134" alt="image" src="https://github.com/user-attachments/assets/5992cee8-f4a3-4f8d-bcff-ec39b9268390" />
 
 
 ### Install AKHQ
@@ -409,10 +409,11 @@ helm upgrade --install --create-namespace -n apisix apisix-cp apisix/apisix \
   --wait
 ```
  
-For deploying the data-plane use below command, the NodePort is configured in the service so the Apisix can be accessed with domain name.
-The controlPlance.service.name should be updated with the control plane service else the Apisix will not connect to the control plance reporting errors.
-The admin key is hard coded here not to be used as-is in production environment. Refer Apisix documentation for alternates like creating secrets, etc. 
-The data-plane doesn't install etcd, the control-plane installs so the url should be provided here. To get this info, check the config-map of the apisix control plane.
+To deploy the data-plane use below command, the release name is apisix-dp and few configuration overrides.
+ - service name of control plane is configured in the ingress controller `ingress-controller.gatewayProxy.provider.controlPlane.service.name` service name. After the control plane installed the control plane service can be used. If the `ingress-controller.gatewayProxy.provider.controlPlane.service.name` property is not updated correctly with the control-plane service the Apisix data-plane will not be able to connect to the control plane and reports errors which could seen in the logs.
+ - The etcd service is disabled since it is deployed part of control-plane, the etcd url is configured with empty user name so data-plane pods doesn't require authentication to access etcd service internally.
+ - The apisix service exposed as NodePort and respecitive port is used. This port is configured in KinD configuration with extraMappingPorts properties. The traffice could be routed from port 80 and 443 to backend service in the cluster. We can use the windows hosts file map a any domain name to 127.0.0.1 in this case `127.0.0.1 apisix.demo.com` With this config we can use custom domain name in hosts file with host name mapping in the hosts file.
+- The admin key is hard coded which is not recommended for production deployment. Refer Apisix documentation for alternates options like creating secrets instead. 
 
 ```sh 
 helm upgrade  --install apisix-dp \
@@ -445,7 +446,7 @@ helm upgrade  --install apisix-dp \
   --wait
 ```
 
-To check the status of the apisix, use `kubectl -n apisix get pods`, 3 replicas of etcd will be deployed followed by control and data plane, all the pods should be in Running state.
+Once the above command is applied, to check the status of the apisix data-plane pods use `kubectl -n apisix get pods`. There 3 replicas of etcd should be green after deployment followed by apisix control-plane and data-plane to b e green. Make sure all the pods are in Running state to proceed further.
 
 Install the self-signed certificate for traffic we need to create ApisixTls and ApisixRoute for accessing the dashboard. the proxy-rewrite is just to add the header with the admin key.
 
