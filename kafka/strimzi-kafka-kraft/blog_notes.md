@@ -63,6 +63,8 @@ Save the Yaml content to a file, say kind-config.yaml, then to create the 3 node
 kind create cluster --config kind-config.yaml
 ```
 
+<img width="2840" height="214" alt="image" src="https://github.com/user-attachments/assets/747120ae-9792-4433-aac6-0821b60754c4" />
+
 ### Install the Strimizi Kafka
 
 The Strimizi is installed using helm chart, we pass in a override some configuration, the content looks like below.
@@ -194,21 +196,12 @@ spec:
 
 To check the status of the Kafka cluster use the command `kubectl -n demo get pods` should see pods with brokers and controllers with and entity operator.
 
+<img width="1381" height="335" alt="image" src="https://github.com/user-attachments/assets/00988de3-8099-463b-bfd9-83bdfd7657c5" />
+
 ### Create kafka topic
 
-The kafka topic configuration looks like below we creat two topic where the labels is uesd by operator to which cluster the topics to be created
+The kafka topic configuration looks like below. Two topic are created in below configuration where the labels is used by operator to identify the cluster on which the topics to be created.
 
-The AKHQ credentials secret can be created with below command. To generate the Password value use `echo -n "admin" | sha256sum`
-
-```sh
-kubectl -n demo create secret generic akhq-secret \
---from-literal=AKHQ_ADMIN_USER=admin \
---from-literal=AKHQ_ADMIN_PASSWORD=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 \
---from-literal=AKHQ_READ_USER=user \
---from-literal=AKHQ_READ_PASSWORD=04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb
-```
-
-The configuration for AKHQ configuration
 
 ```yaml
 apiVersion: kafka.strimzi.io/v1
@@ -237,10 +230,22 @@ spec:
 
 To check the status of the topics use the command `kubectl -n demo get kt`, the READY should be True.
 
+<img width="1101" height="134" alt="image" src="https://github.com/user-attachments/assets/5992cee8-f4a3-4f8d-bcff-ec39b9268390" />
 
-### Install AKHQ 
 
-The AKHQ installed with admin and reader role for the topics, we create the user credentials as secret and mount it as environment.
+### Install AKHQ
+
+The AKHQ credentials secret can be created with below command. To generate the Password value use `echo -n "admin" | sha256sum`
+
+```sh
+kubectl -n demo create secret generic akhq-secret \
+--from-literal=AKHQ_ADMIN_USER=admin \
+--from-literal=AKHQ_ADMIN_PASSWORD=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 \
+--from-literal=AKHQ_READ_USER=user \
+--from-literal=AKHQ_READ_PASSWORD=04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb
+```
+
+The configuration for AKHQ configuration deployed is shown below. The AKHQ installed with admin and reader roles for managing the topics in the cluster, we create the user credentials as secret and mount it as environment.
 
 ```yaml
 configuration:
@@ -325,7 +330,7 @@ extraEnv:
         key: AKHQ_READ_USER
 ```
 
-Save the above yaml AKHQ configuration in akhq_config.yaml, use below command 
+Save the above yaml AKHQ configuration in akhq_config.yaml, use below command to install to cluster.
 
 ```sh
 helm repo add akhq https://akhq.io/
@@ -337,7 +342,9 @@ To check the status of the installation, use `kubectl -n demo get pods`, the akh
 
 ### Install Apisix in decoupled mode with self-signed certificate
 
-Install the certificate manager with below command
+Apache Apisix is deployed to the cluster with controller and data plane as deployment, there is another option to deploy as daemonset. With Apisix we can install the cert manager to generate self-signed certificate so the we can create routes for Apisix dashboard. Apicurio UI and backend app which could be accessed with SSL certificate.
+
+Install the certificate manager to the cluster with below helm command
 
 ```sh
 helm install \
@@ -348,7 +355,7 @@ helm install \
   --set crds.enabled=true
 ```
 
-To create an Issuer for Apisix, we need to create apisix namespace
+Create an Issuer for accessing the Apisix admin UI embedded in the controller plance, we need to create this issuer in apisix namespace.
 
 ```yaml
 ---
@@ -376,7 +383,7 @@ spec:
 ---
 ```
 
-Save the manfiest configuration to install the Issuer and Certificate request to apisix-certs.yaml and apply using below command.
+Save the manfiest yaml configuration to apisix-certs.yaml. Install the Issuer and Certificate request to the cluster use below command.
 
 ```sh
 kubectl create ns apisix
