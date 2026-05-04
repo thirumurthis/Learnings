@@ -14,7 +14,7 @@ Pre-requisites
  - KinD CLI
  - JBang 
  - Kubectl CLI
- - Helm CLI (4.x+)
+ - Helm CLI (4+)
 
 The Apache Kafka is installed in KinD cluster with Strimzi helm chart in Kraft mode.
 
@@ -86,7 +86,7 @@ watchNamespaces:
 watchAnyNamespace: false
 ```
 
-Say, if the above Strimzi override yaml content saved in a file strimizi_override.yaml, then we can use the below command
+Save the Strimzi configuration yaml to a file named strimizi_override.yaml, use below helm command to deploy the strimizi operator in cluster
 
 ```
 helm upgrade -i -n kafka --create-namespace \
@@ -98,8 +98,9 @@ To check the status use `kubectl -n kafka get pods`
 
 ### Install the Kafka cluster with KRaft mode
 
-The Kafka cluster configuration with KRaft mode is shown below, to expose as NodePort the listeners configuration is updated with necessary ports.
-With this configuration, the kafka cluster can be accessed with bootstrap url localhost:31092 from host machine.
+The Kafka cluster configuration with KRaft mode is shown below, the listeners are configured with NodePort with necessary ports so the kafka cluster could be accessed from the host machine.
+
+After applying below configuration and with the KinD cluster extraMappingPorts property updated, the kafka cluster can be accessed externally with bootstrap url `localhost:31092` from host machine.
 
 ```yaml
 # Documentation - https://strimzi.io/docs/operators/in-development/deploying#minimal_configuration_for_kafka_connect
@@ -245,7 +246,9 @@ kubectl -n demo create secret generic akhq-secret \
 --from-literal=AKHQ_READ_PASSWORD=04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb
 ```
 
-The configuration for AKHQ configuration deployed is shown below. The AKHQ installed with admin and reader roles for managing the topics in the cluster, we create the user credentials as secret and mount it as environment.
+The configuration for AKHQ configuration deployed is shown below. 
+- The AKHQ installed with admin and reader roles for managing the topics in the cluster, we create the user credentials as secret and mount it as environment.
+- The AKHQ is deployed in the same namespace as kafka cluster, so the bootstrap.servers url is configured with the kafka external bootstrap url which could be found from the service deployed part of the kafka cluster.
 
 ```yaml
 configuration:
@@ -340,7 +343,7 @@ helm upgrade --install -n demo akhq akhq/akhq -f akhq_config.yaml
 
 To check the status of the installation, use `kubectl -n demo get pods`, the akhq pod should be in Running state.
 
-### Install Apisix in decoupled mode with self-signed certificate
+### Install Apisix in de-coupled mode with self-signed certificate
 
 Apache Apisix is deployed to the cluster with controller and data plane as deployment, there is another option to deploy as daemonset. With Apisix we can install the cert manager to generate self-signed certificate so the we can create routes for Apisix dashboard. Apicurio UI and backend app which could be accessed with SSL certificate.
 
@@ -355,7 +358,7 @@ helm install \
   --set crds.enabled=true
 ```
 
-Create an Issuer for accessing the Apisix admin UI embedded in the controller plance, we need to create this issuer in apisix namespace.
+Create an Issuer and Certificate to configure with the embedded Apisix control-plane admin UI dashboard. The Issuer and the Certificate should be deployed in the same namespace where the apisix is deployed in this case apisix namespace.
 
 ```yaml
 ---
@@ -394,7 +397,9 @@ To check the status use command `kubectl -n apisix get certificate` to see the R
 
 Install the Apisix deployment with de-coupled mode we use the control-plane and data-plane. 
 
-To install the control-plane use below command, the ca sert should be provided else we would not be able to use https from browser.
+To install the control-plane use below command.
+ - The ca cert secret created by the certficate manager should be configured in the `apisix.ssl.existingCASecret` property else we would not be able to use https from browser.
+ - The `apisix.ssl.ccertCAFilename` is set to ca.crt which is key name of the certificate in the secret.
 
 ```sh
 helm upgrade --install --create-namespace -n apisix apisix-cp apisix/apisix \
@@ -488,20 +493,20 @@ spec:
                 X-Api-Key: "edd1c9f034335f136f87ad84b625c8f1"
 ```
 
-Save the yaml manifest to apisix-dashboard-route.yaml, apply using command `kubectl -n apisix apply -f apisix-dashboard-route.yaml`
+Save the yaml manifest to apisix-dashboard-route.yaml, apply to cluster using command `kubectl -n apisix apply -f apisix-dashboard-route.yaml`
 
 INFO: Update the windows hosts file with `127.0.0.1 apisix.demo.com`, with this update we can access the Apisix dashboard with `https://apisix.demo.com/ui`
 
 To check the status use `kubectl -n apisix get apisixtls` and `kubectl -n apisix get ar`
 
-<img width="1995" height="1305" alt="image" src="https://github.com/user-attachments/assets/6fb59302-8424-4646-8cab-2c60b5a1bca9" />
+<img width="1000" height="1305" alt="image" src="https://github.com/user-attachments/assets/6fb59302-8424-4646-8cab-2c60b5a1bca9" />
 
 
 ### Deploy the Apicurio registry with Apicurio operator
 
-The operator will be installed in the apicurio-registry namespace, using command `kubectl create ns apicurio-registry`.
+Create the namespace apicurio-registry in which the apicurio-operator and registry will be installed. To create the namespace use the command `kubectl create ns apicurio-registry`.
 
-To install the operator we can use below command
+To install the operator use below command, if there are new version refer the documentation to update it. The operator version v3 is used in this case.
 
 ```sh
 VERSION=3.2.1;
@@ -511,9 +516,9 @@ curl -sSL "https://raw.githubusercontent.com/Apicurio/apicurio-registry/$VERSION
  | kubectl -n $NAMESPACE apply -f -
 ```
 
-The configuration to create a registry ui and backend. The configuration details can be found in this link #https://www.apicur.io/registry/docs/apicurio-registry/3.2.x/getting-started/assembly-operator-config-reference.html#operator-ingress-reference_registry 
+The configuration to create a registry ui and backend. The configuration details can be found in [this link](https://www.apicur.io/registry/docs/apicurio-registry/3.2.x/getting-started/assembly-operator-config-reference.html#operator-ingress-reference_registry)
 
-The environment variable configured is used to fix the CORS error when accessing the backend service from the ui via browser.
+The environment variable configured fixes the CORS error when accessing the backend service from the ui via browser.
 
 ```yaml
 apiVersion: registry.apicur.io/v1
@@ -537,11 +542,11 @@ spec:
     enabled: false
 ```
 
-Save the apicurio configuration yaml to apicurio-configration.yaml, apply to cluster with command `kubectl -n apicurio-registry apply -f apicurio-configuration.yaml`
+Save the apicurio configuration yaml to apicurio-configration.yaml, to apply to cluster use the command `kubectl -n apicurio-registry apply -f apicurio-configuration.yaml`
 
-The configuration to access the Apicurio operator registry UI and app, we create ApisixTls and ApisixRoute in apicurio-registry namespace.
+The configuration to access the Apicurio operator registry UI and app, ApisixTls and ApisixRoute needs to be created in apicurio-registry namespace.
 
-Below configuration creates one issuer for the namespace, two set of certificate is requested for UI and App. The ApisixTls is created for each ApisixRoute 
+Below configuration creates one Issuer for the apicurio-registry namespace, certificate request will use the same issuer for UI and App. Two ApisixTls is created for each ApisixRoute below is the configuration. 
 
 ```yaml
 # deploy in apicurio-registry namespace
@@ -641,15 +646,117 @@ spec:
           servicePort: 8080
 ```
 
-Save the above manifest in apicurio-registry-route.yaml and apply using command `kubectl -n apicurio-registry apply -f apicurio-registry-route.yaml`
+Save the above manifest in apicurio-registry-route.yaml, to deploy use the command `kubectl -n apicurio-registry apply -f apicurio-registry-route.yaml`
 
 To check the status use `kubectl -n apicurio-registry get apisixtls,ar`
 
-INFO: Add the entries to the windows hosts file with `127.0.0.1 apicurio.ui.demo.com` and `127.0.0.1 apicurio.ui.demo.com`
+INFO: Add host mapping entries to the windows hosts file like below. With the hosts entry updated the UI and App can be accessed using `https://apicurio.ui.demo.com` and `https://apicurio.app.demo.com`
 
-With the hosts entry updated the UI can be accessed using `https://apicurio.ui.demo.com`.
+```
+127.0.0.1 apicurio.ui.demo.com
+127.0.0.1 apicurio.ui.demo.com
+```
 
-The actual registry can be accessed using `https://apicurio.app.demo.com`. In the Java application to access the registry we will grab the apicurio app self-signed certificate secret ca.crt content to access with SSL configuration.
+With registry deployed below java code is sample on validating if the registry is accessible. The certificate can be obtained from the secret or browser. 
+- Copy the ca.crt content of the secret `selfsigned-app-cert-secret` created by the cert manager configured in the Certificate request config above. Save the ca.crt content to a file caCert.crt and pass it to the RestClientOptions. - Export the certificate from browser, navigate to `https://apicurio.app.demo.com` in browser accept the SSL error from browser and navigate further. Save the certificate export to a file named browserCaCert.crt.
+
+The code uses a boolean flag to determine which crt to use, both the ca certificate works.
+
+```java///usr/bin/env jbang "$0" "$0" : exit $?
+
+//DEPS io.apicurio:apicurio-registry:3.2.1@pom
+//DEPS io.apicurio:apicurio-registry-java-sdk
+//DEPS io.apicurio:apicurio-registry-common
+//DEPS org.slf4j:slf4j-jdk14
+
+import io.apicurio.registry.client.common.DefaultVertxInstance;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.apicurio.registry.client.RegistryClientFactory;
+import io.apicurio.registry.client.common.RegistryClientOptions;
+import io.apicurio.registry.rest.client.RegistryClient;
+import io.apicurio.registry.rest.client.models.ArtifactMetaData;
+import io.apicurio.registry.rest.client.models.ArtifactSearchResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class SampleAvroRegistryAcces {
+
+     private static final Logger LOGGER = LoggerFactory.getLogger(SampleAvroRegistryAcces.class);
+
+       private static final RegistryClient client;
+      static {
+        // Create a Service Registry client
+        String registryUrl = "https://apicurio.app.demo.com/apis/registry/v3";
+        client = createProperClient(registryUrl);
+    }
+
+    public static void main(String[] args) {
+        // Register the JSON Schema schema in the Apicurio registry.
+        //final String artifactId = "employee-info"; // UUID.randomUUID().toString();
+        final String groupId = "default";
+
+        try {
+            getSchemaFromRegistry(client, groupId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } finally {
+            // If we do not provide our own instance of Vertx, then we must close the
+            // default instance that will get used.
+            DefaultVertxInstance.close();
+        }
+    }
+
+        public static RegistryClient createProperClient(String registryUrl) {
+        final String tokenEndpoint = System.getenv("AUTH_TOKEN_ENDPOINT");
+        boolean dontExecute = false;
+        if (tokenEndpoint != null && dontExecute) {
+            final String authClient = System.getenv("AUTH_CLIENT_ID");
+            final String authSecret = System.getenv("AUTH_CLIENT_SECRET");
+            return RegistryClientFactory.create(RegistryClientOptions.create(registryUrl)
+                    .oauth2(tokenEndpoint, authClient, authSecret));
+        } else {
+            RegistryClientOptions clientOptions = RegistryClientOptions.create(registryUrl);
+            // based on the opition from where the ca cert is fetched set the below flag 
+            boolean useCaCertFromSecret = false; 
+            if(useCaCertFromSecret){
+                clientOptions.trustStorePem("./caCert.crt");
+            }else{
+                // else extract from the browser option
+                 clientOptions.trustStorePem("./browserCaCert.crt");
+            }
+            return RegistryClientFactory.create(clientOptions);
+        }
+    }
+
+      public static ArtifactMetaData getSchemaFromRegistry(RegistryClient service, String groupId) {
+
+        LOGGER.info("---------------------------------------------------------");
+        LOGGER.info("=====> Fetching artifact from the registry for JSON Schema with ID: {}",groupId);
+        try {
+            List<ArtifactMetaData> metaData = new ArrayList<>();
+            ArtifactSearchResults result = service.groups().byGroupId(groupId).artifacts().get();
+            result.getArtifacts().forEach(itm -> {
+              LOGGER.info("ARTIFACT ID -----[{}] ",itm.getArtifactId());
+              ArtifactMetaData metaDataInfo = service.groups().byGroupId(groupId).artifacts()
+                    .byArtifactId(itm.getArtifactId()).get();
+            assert metaDataInfo != null;
+            metaData.add(metaDataInfo);  
+            });
+
+            LOGGER.info("=====> Successfully fetched JSON Schema artifact in Service Registry: {}",
+             metaData.size()>0? metaData.get(0): null);
+            LOGGER.info("---------------------------------------------------------");
+            return metaData.size()>0? metaData.get(0): null;
+        } catch (Exception t) {
+            throw t;
+        }
+    }   
+}
+```
 
 <TO DO> 
 example of java code with Avro schema only 
