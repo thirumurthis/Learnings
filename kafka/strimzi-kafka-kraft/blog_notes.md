@@ -458,7 +458,7 @@ helm upgrade  --install apisix-dp \
 
 Once the above command is applied, to check the status of the apisix data-plane pods use `kubectl -n apisix get pods`. The 3 replicas of etcd should be green after deployment, followed by apisix control-plane and data-plane to be green. Make sure all the pods are in Running state to proceed further.
 
-Install the self-signed certificate for traffic we need to create ApisixTls and ApisixRoute for accessing the dashboard. the proxy-rewrite is just to add the header with the admin key.
+Install the self-signed certificate for traffic the ApisixTls and ApisixRoute configuration created to access the Apisix embedded dashboard UI. The Apisix route with proxy-rewrite configured to add  the header with the admin key just to avoid the UI from requesting for the admin API key, instead of inputing in the UI it is configured as an example. Refer the documentation for more details.
 
 ```yaml
 apiVersion: apisix.apache.org/v2
