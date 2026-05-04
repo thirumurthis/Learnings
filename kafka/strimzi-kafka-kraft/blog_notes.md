@@ -1392,4 +1392,5 @@ Snapshot of AKHQ topic were the producer sent the serialize message
 Snapshot of Apicurio UI we could see the artifact created automatically by the producer
 <img width="2009" height="1685" alt="image" src="https://github.com/user-attachments/assets/9d538227-7689-4743-8ddd-03c9e7d62936" />
 
+<img width="1949" height="1457" alt="image" src="https://github.com/user-attachments/assets/1b1465a4-2704-4070-a3eb-fd00c765dead" />
 
