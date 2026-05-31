@@ -412,6 +412,7 @@ To find the container Ip address use `docker network inspect bridge` where bridg
 The Qdrant component properties in LangFlow looks like below 
 <img width="1070" height="1336" alt="image" src="https://github.com/user-attachments/assets/2b8c1f4d-2fc4-4a7d-9199-a3241d1ff915" />
 
+The Qdrant section zoomed version of components
 <img width="2762" height="1544" alt="image" src="https://github.com/user-attachments/assets/484b330d-73d8-4fcc-a369-370d81a28a77" />
 
 
