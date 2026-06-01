@@ -1,18 +1,22 @@
+### RAG system in Spring AI and Langflow using Qdrant Vector Storage
 
-RAG system with Qdrant vector database using Spring AI and Langflow
+The motivation of the article is use AI with my financial statements as context and ask questions around those. In order to build everything locally had to use RAG approach. The statements in this case used a text file with the transaction history for few months and injected to the Qdrant Vector store with mxbai-embed-large model is used.
 
+To deploy the models in local have used Ollama in docker container. The embedding model and the llama3.2 LLM model is running in the Ollama container, which can is accessed via http://localhost:11434
 
-Recently exploring Spring AI and looking to build a simple RAG based application.
-In this case wanted to load some of my bank transaction statement and use llama3.2 LLM model running in ollama and ask AI to see if I could get extract data.
+RAG system with Spring AI
 
+This is a simple Spring Boot application with the Spring AI dependencies included with  the Qdrant vector store auto configuration. The Qdrant vector store access configuration is configured in the application.yaml. The text file with statement is placed under the resources/docs folder. These files are ingested to Qdrant vector store on startup. The REST endpoint is exposed to take user input in this case we use curl with -d option, which is passed to Ollamachat model configured to use the vector store. The response will be printed in the screen. There is no UI for user inputs for this application.
 
-Spring AI:
-  - The Spring AI application ingests the data to Qdrant and during application start up. The REST API takes in input and passes to the Ollama LLM model.
+Langflow
 
+Langflow is a visual way to build AI workflows, this is literally low-to-no code approach, not intended for production environment. In this article the Langflow is deployed in Docker container, and different components are used to create the RAG system to connect to local vector storage and LLM model. The data to vector store is loaded under collections, we could see this in the Qdrant UI, the Langflow injects read file component reads the text file and loads to a new collection. The Qdrant component properties should be configured differently since using local applications, by default it tries to use SSL transport. The Qdrant component in Langflow should use url which uses the Qdrant Docker container IP itself.   
 
-Langflow:
-  - Langflow is a visual way (low to no-code) to build AI workflows, in this blog used Langflow deployed to local docker. The RAG system built without any code.
+This article doesn't details the Langflow, refer the documentation for more info. 
 
+Take away
+
+Using local models is very slow and the response accuracy is very less
 
 ## Deploying the required components
 
