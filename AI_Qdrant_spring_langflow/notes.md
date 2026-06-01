@@ -1,14 +1,14 @@
-### RAG system in Spring AI and Langflow using Qdrant Vector Storage
+## RAG system in Spring AI and Langflow using Qdrant Vector Storage
 
 The motivation of the article is use AI with my financial statements as context and ask questions around those. In order to build everything locally had to use RAG approach. The statements in this case used a text file with the transaction history for few months and injected to the Qdrant Vector store with mxbai-embed-large model is used.
 
 To deploy the models in local have used Ollama in docker container. The embedding model and the llama3.2 LLM model is running in the Ollama container, which can is accessed via http://localhost:11434
 
-RAG system with Spring AI
+### RAG system with Spring AI
 
 This is a simple Spring Boot application with the Spring AI dependencies included with  the Qdrant vector store auto configuration. The Qdrant vector store access configuration is configured in the application.yaml. The text file with statement is placed under the resources/docs folder. These files are ingested to Qdrant vector store on startup. The REST endpoint is exposed to take user input in this case we use curl with -d option, which is passed to Ollamachat model configured to use the vector store. The response will be printed in the screen. There is no UI for user inputs for this application.
 
-Langflow
+### Langflow
 
 Langflow is a visual way to build AI workflows, this is literally low-to-no code approach, not intended for production environment. In this article the Langflow is deployed in Docker container, and different components are used to create the RAG system to connect to local vector storage and LLM model. The data to vector store is loaded under collections, we could see this in the Qdrant UI, the Langflow injects read file component reads the text file and loads to a new collection. The Qdrant component properties should be configured differently since using local applications, by default it tries to use SSL transport. The Qdrant component in Langflow should use url which uses the Qdrant Docker container IP itself.   
 
@@ -16,11 +16,11 @@ This article doesn't details the Langflow, refer the documentation for more info
 
 Take away
 
-Using local models is very slow and the response accuracy is very less
+Using local models is very slow and the response accuracy is low
 
-## Deploying the required components
+### Deploying the required components
 
-### Deploy Ollama container
+#### Deploy Ollama container
 
 In Docker container use below command to deploy the ollama. The environment variable is to keep the model in memory not to offload when not in use.
 
@@ -43,7 +43,7 @@ Use below command after exec into the docker container
 # ollama run llama3.2
 ``` 
 
-### Deploy Qdrant vector data base-url
+#### Deploy Qdrant vector data base-url
 
 Below command will deploy the Qdrant in docker container, uses mount volume from local to persist the data.
 
@@ -382,7 +382,7 @@ With the same request sent again could see different response like below snapsho
 
 ## Deploy Langflow in local Docker container
 
-Below command deploys the Langflow app, the environment variables usage is self explanatory. The Auto login has set since noticed when accessing the Langflow UI the application prompted for username and crendentials
+Following section would explain how to build the RAG system with the Langflow. Below command deploys the Langflow application in Docker container. The environment variables usage is self explanatory. The Auto login is set to true since had access issue, the UI was prompting for user name and credentials using this resolved the issue.
 
 ```sh
 docker run -d \
@@ -406,12 +406,12 @@ The complete RAG system looks like below snapshot
 
 <img width="2765" height="1546" alt="image" src="https://github.com/user-attachments/assets/5081806e-390a-4baf-80ad-96c321d6291c" />
 
-The RAG part of the flow with the Qdrant component, the snapshot shows how other components are connected.
-The Read file component reads the input files input files, the split text component will chunk the files and inputs to the Qdrant vector database.
+ Below section shows the components used in the RAG part
 
-Since we are using the Qdrant database running in local, we need to configure the properties to the component like below.
-Leave the host, port and grpc port empty. And in the url property use the Docker Ip of the qdrant container.
-To find the container Ip address use `docker network inspect bridge` where bridge is the default network. 
+- The Read file component reads the input files input files.
+- The split text component will chunk the files and inputs to the Qdrant vector database.
+- The Qdrant component - since the Qdrant database running in local Docker few properties of the component should be left empty. Leave the host, port and grpc port empty. The url property should use url with Qdrant Docker container IP. To find the container Ip address use docker network inspect bridge where bridge is the default network. 
+The prompt component we define the prompt for the LLM along with the context passed from the Qdrant parsed output. 
 
 The Qdrant component properties in LangFlow looks like below 
 <img width="1070" height="1336" alt="image" src="https://github.com/user-attachments/assets/2b8c1f4d-2fc4-4a7d-9199-a3241d1ff915" />
@@ -423,3 +423,5 @@ The Qdrant section zoomed version of components
 The ouput of the playground session
 <img width="2537" height="1522" alt="image" src="https://github.com/user-attachments/assets/5e7ace6b-73ae-4c86-973b-dc016364a256" />
 
+[1] [Github source code of Spring AI rag system](https://github.com/thirumurthis/projects/tree/main/ai-rag-qdrant)
+[2] [Langflow template](https://github.com/thirumurthis/projects/tree/main/langflow_local_RAG_flow)
