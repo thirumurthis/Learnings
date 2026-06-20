@@ -15,5 +15,20 @@ With the latest version of VS code we can add models running in local docker con
 
 <img width="2390" height="622" alt="image" src="https://github.com/user-attachments/assets/2487ea72-935d-4f08-be95-f6807cc8f4f0" />
 
+- After adding the model in the chat session we will see below message
+This is the message to indicate that the utility models are not configured
+These are models used by various features by the VScode.
+<img width="686" height="1674" alt="image" src="https://github.com/user-attachments/assets/09804085-302e-49fe-a3e5-26a84a7b4d77" />
+
+- From the "Set BYOK utlity models", click the `configure` button
+should see the screen like below
+
+<img width="2296" height="896" alt="image" src="https://github.com/user-attachments/assets/e58b2db4-a8fb-45c4-8ddd-987dc384c958" />
+
+<img width="2282" height="1062" alt="image" src="https://github.com/user-attachments/assets/5bb799be-88b4-4073-a831-86b966f2a9d0" />
+
+
+
+
 
  
