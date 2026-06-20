@@ -1,5 +1,5 @@
 
-<img width="536" height="217" alt="image" src="https://github.com/user-attachments/assets/419f9807-5243-49b1-a33d-be2065889f2e" />
+<img width="536" height="217" alt="image" src="https://github.com/user-attachments/assets/419f9807-5243-49b1-a33d-be2065889f2e" style="display: flex; justify-content: center;" />
 
 
 Recently VS code started supporting Any LLM Provider, for more info refer this video. With reference to the [video](https://www.youtube.com/watch?v=EB7dQv1ALCU), wanted to use the local ollama container with llama3.2 model in the VS code chat session. 
@@ -27,7 +27,7 @@ From the container shell execute below command, the # is the shell on the contai
 
 The local model can be accessed with `http://localhost:11434`
 
-<img width="676" height="254" alt="image" src="https://github.com/user-attachments/assets/b9e8bd20-56d2-43c1-b4b6-bdef7b709e5d" />
+<img width="450" height="170" alt="image" src="https://github.com/user-attachments/assets/b9e8bd20-56d2-43c1-b4b6-bdef7b709e5d" />
 
 
 ### Configuring ollama local model in VS Code
@@ -38,7 +38,7 @@ Open VScode, select Ctrl + Shift + p
 
 Type Chat , select Manage Language Models
 
-<img width="1352" height="516" alt="image" src="https://github.com/user-attachments/assets/c684ef53-d5db-4d8e-b4b2-5f8e6ae91bbb" />
+<img width="700" height="425" alt="image" src="https://github.com/user-attachments/assets/c684ef53-d5db-4d8e-b4b2-5f8e6ae91bbb" />
 
 Chat option in VS code
 Select the Add Models
@@ -56,7 +56,7 @@ Next, add the endpoint http://localhost:11434
 Add models and selecting the ollama finally displays this info
 After selecting the model, in the chat session we would see message like below. This message  indicates that the utility models are not configured, which is used by VS code itself for its features
 
-<img width="686" height="1674" alt="image" src="https://github.com/user-attachments/assets/09804085-302e-49fe-a3e5-26a84a7b4d77" />
+<img width="650" height="1400" alt="image" src="https://github.com/user-attachments/assets/09804085-302e-49fe-a3e5-26a84a7b4d77" />
 
 configuring utility models after adding the models
 Click the configure button on the "Set BYOK utility models" message on chat session, which would open a popup like below
@@ -65,15 +65,15 @@ Click the configure button on the "Set BYOK utility models" message on chat sess
 
 After configuring the BYOK, we could see the selected model info in this case llama3.2 listed in the chat session like below
 
-<img width="2282" height="1062" alt="image" src="https://github.com/user-attachments/assets/5bb799be-88b4-4073-a831-86b966f2a9d0" />
+<img width="2282" height="1000" alt="image" src="https://github.com/user-attachments/assets/5bb799be-88b4-4073-a831-86b966f2a9d0" />
 
 After configuring the BYOK, then the model will be listed in the chat session like below
 
-<img width="842" height="1638" alt="image" src="https://github.com/user-attachments/assets/c0009816-659c-469c-9a47-360e0aa9f404" />
+<img width="650" height="1400" alt="image" src="https://github.com/user-attachments/assets/c0009816-659c-469c-9a47-360e0aa9f404" />
 
 In the chat session we can ask a question to see if the selected model is working. Below screen shot shows the response 
  
-<img width="938" height="1604" alt="image" src="https://github.com/user-attachments/assets/00969757-1a2d-4192-8153-36bdc3795ddd" />
+<img width="650" height="1400" alt="image" src="https://github.com/user-attachments/assets/00969757-1a2d-4192-8153-36bdc3795ddd" />
 
 
  
