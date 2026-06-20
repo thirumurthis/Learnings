@@ -27,6 +27,9 @@ should see the screen like below
 
 <img width="2282" height="1062" alt="image" src="https://github.com/user-attachments/assets/5bb799be-88b4-4073-a831-86b966f2a9d0" />
 
+After configuring the BYOK, then the model will be listed in the chat session like below
+
+<img width="842" height="1638" alt="image" src="https://github.com/user-attachments/assets/c0009816-659c-469c-9a47-360e0aa9f404" />
 
 
 
