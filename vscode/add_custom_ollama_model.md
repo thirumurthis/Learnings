@@ -31,6 +31,9 @@ After configuring the BYOK, then the model will be listed in the chat session li
 
 <img width="842" height="1638" alt="image" src="https://github.com/user-attachments/assets/c0009816-659c-469c-9a47-360e0aa9f404" />
 
+- In the chat session ask a question for response, make sure the model is running in this case used `docker exec -it ollama bash` and then in the shell, issued `ollama run llama:3.2`
+ 
+<img width="938" height="1604" alt="image" src="https://github.com/user-attachments/assets/00969757-1a2d-4192-8153-36bdc3795ddd" />
 
 
 
