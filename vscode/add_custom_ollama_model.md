@@ -37,6 +37,81 @@ After configuring the BYOK, then the model will be listed in the chat session li
  
 <img width="938" height="1604" alt="image" src="https://github.com/user-attachments/assets/00969757-1a2d-4192-8153-36bdc3795ddd" />
 
+---
+Recently VS code started supporting Any LLM Provider, for more info refer this video. With reference to the video, wanted to use the local ollama container with llama3.2 model in the VS code chat session. Below is the details of how to configure and interact like using the copilot chat.
 
+Running ollama in docker
+To run the ollama container in local, used below command, the ollama volume mounts to local file system from where the command is executed
+
+docker run -e OLLAMA_KEEP_ALIVE=-1 -v ollama:/root/.ollama -d -p 11434:11434 --name ollama ollama/ollama
+To download and run a model within the ollama container execute below command
+
+docker exec -it ollama sh
+From the container shell execute below command, the # is the shell on the container
+
+# ollama run llama:3.2
+Configuring ollama local model in VS Code
+Make sure the VS code is up to date and ollama container deployed in the docker is accessible http://localhost:11434. From browser should see a response Ollama is running 
+
+Open VScode, select Ctrl + Shift + p
+
+Type Chat , select Manage Language Models
+
+Minimize image
+Edit image
+Delete image
+
+Chat option in VS code
+Select the Add Models
+
+Select the ollama
+
+Provide a name
+
+Next, add the endpoint http://localhost:11434 
+
+  If the docker instance is running with the model, then we should see list of model info like in below screen shoot
+
+Minimize image
+Edit image
+Delete image
+
+Add models and selecting the ollama finally displays this info
+After selecting the model, in the chat session we would see message like below. This message  indicates that the utility models are not configured, which is used by VS code itself for its features
+
+Maximize image
+Edit image
+Delete image
+
+configuring utility models after adding the models
+Click the configure button on the "Set BYOK utility models" message on chat session, which would open a popup like below
+
+Minimize image
+Edit image
+Delete image
+
+utility model popup
+Minimize image
+Edit image
+Delete image
+
+select the models that are running in the ollama form the drop down list
+After configuring the BYOK, we could see the selected model info in this case llama3.2 listed in the chat session like below
+
+Maximize image
+Edit image
+Delete image
+
+models supported are listed to be selected for chat
+In the chat session we can ask a question to see if the selected model is working. Below screen shot shows the response 
+
+Maximize image
+Edit image
+Delete image
+
+response from the local ollama llama3.2 model
+
+
+ 
 
  
