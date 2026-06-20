@@ -2,6 +2,8 @@ With the latest version of VS code we can add models running in local docker con
 
 - ollama is deployed in the docker and accessible using `http://localhost:11434/`
 
+<img width="676" height="254" alt="image" src="https://github.com/user-attachments/assets/b9e8bd20-56d2-43c1-b4b6-bdef7b709e5d" />
+
 - Open VScode (make sure to use latest version)
 
 - select Ctrl + Shift + p
