@@ -222,7 +222,7 @@ Note, no square root
 
 ```	 
 	    || x ||   =   (  sum of absolute elements power p ) power 1/p 
-             p
+               p
 			   
    - p must be 
 	  - real number 
@@ -247,7 +247,7 @@ y    1 |                => v = 1.5i + 2j
 
 ### Orthogonal vectors
 
-x and y are orthogonal vectors if  `x^T  y = 0`
+x and y are orthogonal vectors if  x<sup>T</sup> y = 0
  - perform x transpose y is zero then it is called orthogonal
  - are at 90 degree angle to each other ( assuming non-zero norms)
  - n-dimensional space has max n mutually orthogonal vectors (again, assuming non-zero norms)
@@ -273,4 +273,65 @@ j = np.array([0,1])
 
 np.dot(i,j)
 # 0
+```
+
+### Matrices
+
+ - Two dimensional array of numbers 
+ - Denoted in uppercase, italics, bold, eg: X
+ - Height given priority ahead of width in notation, i.e  n<sub>row</sub>, n<sub>col<sub>
+    - rows is given priority then the column so row x column
+    - below is a 3x2 matrics 
+ - Individual scalar elements are denoted in uppercase, italics only 
+    - element on top-right corner of martix below is X<sub>1,2</sub>
+
+ - colon represents an entire row or column 
+   - Left column of matrix X is X<sub>:,1</sub>
+   - Middle row of matrix X is X<sub>2,:</sub>
+
+ 
+```
+    _          _            _     _
+   | x1,1  x1,2 |          | 25  2 |
+   | x2,1  x2,2 |          |  5 26 |
+   | x3,1  x3,2 |          |  3  7 |
+   | _         _|          |_     _|
+
+```
+
+- in the notebook we use double square bracket to represent the matrix
+
+```
+x1=np.array([[25,2],[5,26],[3,7]])
+
+x1.shape  # 3,2
+
+-- select row matrix 
+x1[1,:]   # array([ 5, 26])
+
+x1[:,0'  # array([25,  5,  3])
+```
+
+- tensorflow 
+
+```
+import tensorflow as tf
+
+x_tf = tf.Variable([[25,2],[5,26],[3,7]])
+
+tf.rank(x_tf) # <tf.Tensor: shape=(), dtype=int32, numpy=2>
+
+tf.shape(x_tf) # <tf.Tensor: shape=(2,), dtype=int32, numpy=array([3, 2], dtype=int32)>
+```
+
+- pytourch
+
+```
+import torch 
+
+x_pt = torch.tensor([[25, 2], [5,26], [3,7]])
+
+x_pt.shape  # torch.Size([3, 2])
+
+x_pt[1,:]   # tensor([ 5, 26])
 ```
