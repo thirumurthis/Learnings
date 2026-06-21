@@ -417,7 +417,10 @@ array([[ 1,  2,  4],
 - Transpose of scalar is itself, e.g  x<sup>T</sup> = x
 - transpose of vector, converts column to row (vice versa)
 - scalar and vector transposition are special cases of matrix transposition
-   - flip of axes over main diagonal such that 
+   - flip of axes over main diagonal such that
+  
+   - <img width="374" height="144" alt="image" src="https://github.com/user-attachments/assets/bed2c9a6-fc4a-4bed-a24d-0fed364b587d" />
+
    
 ```
    _           _ T        _                   _
