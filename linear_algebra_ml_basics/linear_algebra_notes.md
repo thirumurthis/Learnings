@@ -374,3 +374,38 @@ tensor flow
 img_tf = tf.zeros([32,28,28,3])
 ```
 
+### Transpose matrix
+
+numpy 
+
+```
+in_np = np.array([[25, 2, -3, -23]])
+
+np.shape(in_np)  # (1,4)
+
+in_npT = in_np.T
+
+np.shape(in_npT)  # (4,1)
+
+in_np = np.array([[1, 2, 3],[2,4,6],[4,8,24]]) 
+
+in_np.shape  # 3,3
+
+in_np
+
+in_np
+## output
+array([[ 1,  2,  3],
+       [ 2,  4,  6],
+       [ 4,  8, 24]])
+	   
+
+in_npT = in_np.T
+
+in_npT
+
+## output
+array([[ 1,  2,  4],
+       [ 2,  4,  8],
+       [ 3,  6, 24]])
+```
