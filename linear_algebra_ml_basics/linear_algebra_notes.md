@@ -1,4 +1,29 @@
-### Tensor:
+## Table of contents 
+
+* [1. Tensor](#Tensor)
+* [2. Scalar](#Scalar)
+* [2.1. google colab](#google-colab)
+* [3. Vectors](#Vectors)
+* [3.1. Vector Transposition](#Vector-Transposition)
+* [3.2. Norms and unit vectors](#Norms-and-unit-vectors)
+* [3.2.1 Unit Vectors](#Unit-Vectors)
+* [3.2.2 L1 norm](#L1-norm)
+* [3.2.3 Squared L2 Norm](#Squared-L2-Norm)
+* [3.2.4 Max norm](#Max-norm)
+* [3.2.5 Generalized L<sup>p</sup> Norm](#Generalized-L<sup>p</sup>-Norm)
+* [3.3 Basis, Orthogonal and Orthonormal vectors](#Basis,-Orthogonal-and-Orthonormal-vectors)
+* [3.3.4 Orthogonal vectors](#Orthogonal-vectors)
+* [4. Matrices](#Matrices)
+* [4.1 Generic Tensor notation](#Generic-Tensor-notation)
+* [4.2 Transpose matrix](#Transpose-matrix)
+* [4.3 Tensore Transpose](#Tensor-Transpose)
+* [5. Basic tensor arithmetic](#Basic-tensor-arithmetic)
+* [5.1 Scalar operation](#Scalar-operation)
+* [5.2 Hadamard product](#Hadamard-product)
+* [5.3 Reduction](#Reduction)
+* [5.4 Dot prodcut](#Dot-product)
+
+## Tensor
 
   - This is the most common data structure used in Machine Learning and Deep Learning
   - Arrays of number
@@ -21,6 +46,9 @@ matrix                - (2 dimenstion has height and width )
      |_|_|/
 ```
 
+Generalized 
+
+```
 Dimensions      Math name          Description
 
 0                scalar             magnitude only
@@ -28,16 +56,16 @@ Dimensions      Math name          Description
 2                matrix             flat table, e.g. square
 3                3-tensor           3D table, e.g. cube 
 n                n-tensor           higher dimenstional
+```
 
-
-### Scalar:
+## Scalar
   - no dimension 
   - single number 
   - denotated in lowercase, italics, e.g x
   - should be typed, like all other tensors. eg. int, float32
 
 
-google colab: 
+## google colab
   - an environment which uses google account to run command
   
   https://github.com/the-deep-learners/TensorFlow-LiveLessons/blob/master/notebooks/deep_net_in_tensorflow.ipynb
@@ -46,7 +74,7 @@ google colab:
   pytourch
   tensorflow
   
-### Vectors:
+## Vectors
   
    - 1-dimensional array of numbers
    - denoted in lowercase italics, bold, eg: x
@@ -65,7 +93,7 @@ google colab:
    0,0  x1                 12
   ```
 
-### Vector Transposition:
+## Vector Transposition
 
 ```
               T       _  _
@@ -79,9 +107,9 @@ row vector           = column vector
 
 ``` 
 
-### Norms and unit vectors:
+## Norms and unit vectors
 
-#### Norms:
+### Norms
 
 ```
 
@@ -133,7 +161,7 @@ np.linalg.norm(x)
 # np.float64(25.573423705088842)
 ```
 
-### Unit Vectors:
+### Unit Vectors
 
 - special case of vector where its length is equal to one
 
@@ -149,7 +177,7 @@ np.linalg.norm(x)
 - x is a unit vector with unit norm, if the L2 norm is 1.
 ```
 
-### L1 norm:
+### L1 norm
 
 - described as
 
@@ -172,8 +200,7 @@ np.abs(25) + np.abs(2) + np.abs(5)
 32
 ```
 
-
-### Squared L2 Norm:
+### Squared L2 Norm
 
 - described by 
 
@@ -199,7 +226,7 @@ Note, no square root
  np.dot(x,x)
 ``` 
  
-### Max norm:
+### Max norm
 
  Max Norm (or L<sup>infinity</sup> Norm)
  
@@ -214,7 +241,7 @@ Note, no square root
 - max norm is max of absolute value of element in vector (simply the largest magnitude element)
 ```
                    
-### Generalized L<sup>p</sup>  Norm 
+### Generalized L<sup>p</sup> Norm 
 
  - described by:
       
