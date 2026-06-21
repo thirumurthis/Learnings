@@ -453,3 +453,137 @@ array([[25,  5],
        [ 2, 26],
        [ 5,  1]], dtype=int32)>
 ```
+
+### Basic tensor arithmetic
+
+#### Scalar operation
+
+```
+x=np.array([[1,2,4]])
+
+x * 2
+
+x *2+2
+
+# torch representation
+
+torch.add(torch.mul(x_pt,2),2)
+
+# tensor flow 
+x_pt * 2 + 2 
+# or 
+tf.add(tf.multiply(x_tf, 2),2)
+```
+
+#### Hadamard product 
+
+- If two tensors have the same size, operations are often by default applied element-wise.
+This is not matrix multiplcation, rather called hadamard product or simply element-wise product
+
+Mathmetically represented as A (.) X
+
+```
+X=np.array([[ 1,  2,  3],
+       [ 2,  4,  6],
+       [ 4,  8, 24]])
+	   
+A= X+2
+A
+##
+array([[ 3,  4,  5],
+       [ 4,  6,  8],
+       [ 6, 10, 26]])
+
+A+X
+
+## 
+array([[ 4,  6,  8],
+       [ 6, 10, 14],
+       [10, 18, 50]])
+
+
+A * X
+
+##
+array([[  3,   8,  15],
+       [  8,  24,  48],
+       [ 24,  80, 624]])
+
+# pytorch and tensorflow the above operation is same 
+```
+
+### Reduction
+
+- Caculating sum accross all elements of a tensor is common operation
+- for vector x of length n, we calcuate sum from i=1 to n of x<sub>i</sub>
+- for matrix X with m by n dimensions, we calcuate sum from i=1 to m sum from i=1 to n X<sub>i,j</sub>
+
+- numpy
+  
+```
+X
+## output
+array([[ 1,  2,  3],
+       [ 2,  4,  6],
+       [ 4,  8, 24]])
+
+X.sum()
+np.int64(54)
+
+# torch 
+torch.sum(x_pt)
+
+# tensorflow
+tf.reduce_sum(x_tf)
+```
+to sum along the axis
+
+```
+X.sum(axis=0)
+
+## summ of all colums
+array([ 7, 14, 33])
+
+torch.sum(x_pt,0)
+
+tf.reduce_sum(x_tf,1)
+```
+
+### Dot product 
+
+- if we have two vector x and y, with the same length n
+- we can calcualte the dot product between them
+- annotated as x . y, x<sup>T</sup> y, <x , y>
+- Regardless of notation, the calculation is the same
+
+```
+x.y = sum from i=1 to n of x<sub>i</sub> y<sub>j</sub>
+```
+
+- Dot product is ubiquitios in deep learning. It is perfromed on every artificial neuron in a deep neural network, which may be made up to millions of these neurons
+
+```
+x = np.array([25,2,5])
+y= np.array([0,1,2])
+np.dot(x,y)  # np.int64(12)
+
+# torch
+x_pt
+y_pt = torch.tensor([0,1,2])
+
+# for pytorch pass in float time for operations else it will throw error
+torch.dot(torch.tensor([25,2,5.]),torch.tensor([0,1,2.]))
+
+
+# tensor flow 
+x_tf
+
+y_tf = tf.Variable([0,1,2])
+
+# no dot function in tensorflow so we need to use the formula
+
+tf.reduce_sum(tf.multiply(x_tf, y_tf))
+
+```
+
+
