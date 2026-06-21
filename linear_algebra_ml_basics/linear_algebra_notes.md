@@ -431,3 +431,25 @@ array([[ 1,  2,  4],
 
 ```
 
+- pytorch
+
+```
+import torch
+x_pt = torch.tensor([[25, 2], [5,26], [3,7]])
+x_pt.shape
+
+x_pt.T
+```
+
+- tensorflow
+
+```
+tf_i = tf.Variable([[25, 2,5], [5,26,1]])
+tf.transpose(tf_i)
+
+## output
+<tf.Tensor: shape=(3, 2), dtype=int32, numpy=
+array([[25,  5],
+       [ 2, 26],
+       [ 5,  1]], dtype=int32)>
+```
