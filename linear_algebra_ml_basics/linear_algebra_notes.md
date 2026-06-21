@@ -393,13 +393,11 @@ in_np.shape  # 3,3
 
 in_np
 
-in_np
 ## output
 array([[ 1,  2,  3],
        [ 2,  4,  6],
        [ 4,  8, 24]])
 	   
-
 in_npT = in_np.T
 
 in_npT
@@ -409,3 +407,24 @@ array([[ 1,  2,  4],
        [ 2,  4,  8],
        [ 3,  6, 24]])
 ```
+
+### Tensor Transpose 
+
+<img width="256" height="176" alt="image" src="https://github.com/user-attachments/assets/c13db99f-c724-43eb-96b7-3cb64ec31df0" />
+
+<img width="314" height="138" alt="image" src="https://github.com/user-attachments/assets/d1b3f126-f991-44f6-ad5b-743701f238e7" />
+
+- Transpose of scalar is itself, e.g  x<sup>T</sup> = x
+- transpose of vector, converts column to row (vice versa)
+- scalar and vector transposition are special cases of matrix transposition
+   - flip of axes over main diagonal such that 
+   
+```
+   _           _ T        _                   _
+  |  x1,1  x1,2 |        |   x1,1  x2,1  x3,1  |
+  |  x2,1  x2,2 |   =    |   x1,2  x2,2  x3,2  |            
+  |  x3,1  x3,2 |        |_                   _|
+  |_           _|        
+
+```
+
