@@ -335,3 +335,42 @@ x_pt.shape  # torch.Size([3, 2])
 
 x_pt[1,:]   # tensor([ 5, 26])
 ```
+
+### Generic Tensor notation
+
+- upper case, bold, italics, sans serif, eg. X
+
+- In a 4-tensor X, elements at position (i,j,k,l) denoated as x<sub>(i,j,kl)</sup>
+
+Higher rank Tensors 
+ - rank 4 tensors are used to hold image data, each dimension corresponds to 
+
+  - number of images in training batch e.g. 32
+  - image height in pixels e.g. 28 for MNIST digits
+  - image width pixels, e.g 28
+  - Number of color channels e.g. 3 for RGB
+
+
+pytorch 
+
+```
+images_pt = torch.zeros([32, 28, 28, 3])
+
+images_pt
+
+tensor([[[[0., 0., 0.],
+          [0., 0., 0.],
+          [0., 0., 0.],
+          ...,
+          [0., 0., 0.],
+          [0., 0., 0.],
+          [0., 0., 0.]],
+		  ....
+```  
+
+tensor flow 
+
+```
+img_tf = tf.zeros([32,28,28,3])
+```
+
