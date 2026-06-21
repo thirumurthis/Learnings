@@ -1,0 +1,276 @@
+### Tensor:
+
+  - This is the most common data structure used in Machine Learning and Deep Learning
+  - Arrays of number
+  - ML generalization of vectors and matrices to any number of dimensions
+
+scalar x              - (0 dimensional tensor)
+vector [x1 x2 x3]     - (1 dimensional tensor)
+matrix                - (2 dimenstion has height and width )    
+```
+   | x1,1  x1,2 |
+   | x2,1  x2,2 |
+```
+3 - tensor (higher dimensional tensor) 2 height, 2 width, 2 depth dimensional
+
+```
+        _ _
+       /_/_/|
+      /_/_/|/|
+     |_|_|/|/
+     |_|_|/
+```
+
+Dimensions      Math name          Description
+
+0                scalar             magnitude only
+1                vector             array
+2                matrix             flat table, e.g. square
+3                3-tensor           3D table, e.g. cube 
+n                n-tensor           higher dimenstional
+
+
+### Scalar:
+  - no dimension 
+  - single number 
+  - denotated in lowercase, italics, e.g x
+  - should be typed, like all other tensors. eg. int, float32
+
+
+google colab: 
+  - an environment which uses google account to run command
+  
+  https://github.com/the-deep-learners/TensorFlow-LiveLessons/blob/master/notebooks/deep_net_in_tensorflow.ipynb
+  
+  numpy
+  pytourch
+  tensorflow
+  
+### Vectors:
+  
+   - 1-dimensional array of numbers
+   - denoted in lowercase italics, bold, eg: x
+   - Arranged in an order, so element can be accessed by its index
+     - elemets are scarlars so not bold, eg. second element of x is x2
+   - representing a point in space
+     - Vector of length two represents location in 2D matrix    
+
+
+   ```
+       |                       [x1 x2] = [ 12 4]
+   4   |---------------------|
+       |                     |
+  x2  |                     |
+       |_____________________|___
+   0,0  x1                 12
+  ```
+
+### Vector Transposition:
+
+```
+              T       _  _
+  [ x1 x2 x3 ]   =   | x1 |
+                     | x2 |
+                     | x3 |
+                     |_  _|
+
+row vector           = column vector 
+ shape is (1, 3)            (3, 1)
+
+``` 
+
+### Norms and unit vectors:
+
+#### Norms:
+
+```
+
+     |        /                [x1 x2] = [ 12 4]
+   4 |      /
+     |    /
+  x2 |  /                    
+     |/________________________
+	0,0  x1        12 
+	
+```
+
+vector represents magnitude and direction from origin
+
+Norms are functions that quantify vector magnitude.
+
+The vector from origin to that point represented by the values is in this case (12,4) above 
+
+
+The common Norm is L2 norm
+
+ - simply the distance between the points 
+
+- described as 
+
+```
+                          2    1/2
+ || x ||    =  ( sum (  x   ) ) 
+         2
+```
+		 
+- square root of (sum of squares of all individual elements) 
+- Measures simple distance (called Eucliden distance) from origin
+- Most common norm in ML
+  - instead of || x ||   , it can be denoted as || x || (without the base 2)
+                       2
+
+numpy
+```
+import numpy as np
+
+x = np.array([25, 2, 5]) 
+
+(25**2 + 2**2 + 5**2)**(1/2)
+# 25.573423705088842
+
+-- alternate option for norm
+np.linalg.norm(x)
+# np.float64(25.573423705088842)
+```
+
+### Unit Vectors:
+
+- special case of vector where its length is equal to one
+
+- if || x || = 1, x is "unit vector"
+
+```
+      |      (1,1)
+	1 |    /
+	  |  /
+	  |/__________
+	(0,0)     1
+	
+- x is a unit vector with unit norm, if the L2 norm is 1.
+```
+
+### L1 norm:
+
+- described as
+
+<img width="270" height="92" alt="image" src="https://github.com/user-attachments/assets/6b422a93-8cf1-4ea7-867a-0ec5a1d1aa95" />
+
+```
+      || x ||   = sum ( absolute value of x )
+	          1
+	 sum of all absolute values of each elements in vector
+```
+
+- Another common norm in ML
+- varies linearly at all locations wheter near or far from origin
+- used whenever difference between zero and non-zero is key
+
+```
+x = np.array([25, 2, 5])
+
+np.abs(25) + np.abs(2) + np.abs(5)
+32
+```
+
+
+### Squared L2 Norm:
+
+- described by 
+
+<img width="220" height="146" alt="image" src="https://github.com/user-attachments/assets/ac2064f4-ea01-4c2e-ae19-836579da3e54" />
+
+```
+            2
+     || x ||    = sum of ( square of all elements in vector) 
+            2
+```
+
+Note, no square root
+
+
+ - computiontally cheaper to use than L2 norm because:
+    - squared L2 norm equsly simply x^T x  (i.e. x transpose x)
+	  - derivative (used to train alone, whereas L2 norm requirees x vector)
+ - Downside is it grows slowly near origin so can't be used if distinguishing between zero and near-zero is important
+ 
+``` 
+ (25**2 + 2**2 + 5**2)
+ 
+ np.dot(x,x)
+``` 
+ 
+### Max norm:
+
+ Max Norm (or L<sup>infinity</sup> Norm)
+ 
+- described
+
+<img width="514" height="80" alt="image" src="https://github.com/user-attachments/assets/0b346ad9-c2b7-4ca3-beea-bc0e2f62b7de" />
+
+```
+|| x ||            =                   | x |
+        infinity        max of element  
+
+- max norm is max of absolute value of element in vector (simply the largest magnitude element)
+```
+                   
+### Generalized L<sup>p</sup>  Norm 
+
+ - described by:
+      
+   <img width="380" height="106" alt="image" src="https://github.com/user-attachments/assets/a576db07-c408-4723-beee-b1266f952399" />
+
+```	 
+	    || x ||   =   (  sum of absolute elements power p ) power 1/p 
+             p
+			   
+   - p must be 
+	  - real number 
+	  - Greader than or equal to one
+   - Can derive L1, L2 and L infinity norm forumlae by substituting for p
+   - Norms, particularly L1 and L2, used to regularize objective functions
+```
+   
+### Basis, Orthogonal and Orthonormal vectors
+   
+   Basis vectors can be scaled to any vector
+
+```
+	   |
+	   |
+y    1 |                => v = 1.5i + 2j 
+	 j |                     (1.5 times i + 2 times j)
+	   |____________
+	  0,0  i  1
+	        x
+```
+
+### Orthogonal vectors
+
+x and y are orthogonal vectors if  `x^T  y = 0`
+ - perform x transpose y is zero then it is called orthogonal
+ - are at 90 degree angle to each other ( assuming non-zero norms)
+ - n-dimensional space has max n mutually orthogonal vectors (again, assuming non-zero norms)
+ 
+ - Orthonormal vectors are orthogonal and all have unit norm; 
+   - Basis vectors are an example 
+
+```
+        2 |    basis vectors  i(1,0) j(1,0)
+    y     |
+          |
+        1 |
+          |_______________
+		        1    2
+                   x 				
+```
+
+- example of orthonormal vector
+
+```
+i = np.array([1,0])
+j = np.array([0,1])
+
+np.dot(i,j)
+# 0
+```
