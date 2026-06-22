@@ -5,28 +5,31 @@
 * [2.1. google colab](#google-colab)
 * [3. Vectors](#Vectors)
 * [3.1. Vector Transposition](#Vector-Transposition)
-* [3.2. Norms and unit vectors](#Norms-and-unit-vectors)
-* [3.2.1 Unit Vectors](#Unit-Vectors)
-* [3.2.2 L1 norm](#L1-norm)
-* [3.2.3 Squared L2 Norm](#Squared-L2-Norm)
-* [3.2.4 Max norm](#Max-norm)
-* [3.2.5 Generalized L<sup>p</sup> Norm](#Generalized-L-p-Norm)
-* [3.3 Basis, Orthogonal and Orthonormal vectors](#Basis--Orthogonal-and-Orthonormal-vectors)
-* [3.3.4 Orthogonal vectors](#Orthogonal-vectors)
+** [3.2. Norms and unit vectors](#Norms-and-unit-vectors)
+*** [3.2.1 Unit Vectors](#Unit-Vectors)
+*** [3.2.2 L1 norm](#L1-norm)
+*** [3.2.3 Squared L2 Norm](#Squared-L2-Norm)
+*** [3.2.4 Max norm](#Max-norm)
+*** [3.2.5 Generalized L<sup>p</sup> Norm](#Generalized-L-p-Norm)
+** [3.3 Basis, Orthogonal and Orthonormal vectors](#Basis--Orthogonal-and-Orthonormal-vectors)
+*** [3.3.4 Orthogonal vectors](#Orthogonal-vectors)
 * [4. Matrices](#Matrices)
-* [4.1 Generic Tensor notation](#Generic-Tensor-notation)
-* [4.2 Transpose matrix](#Transpose-matrix)
-* [4.3 Tensore Transpose](#Tensor-Transpose)
+** [4.1 Generic Tensor notation](#Generic-Tensor-notation)
+** [4.2 Transpose matrix](#Transpose-matrix)
+** [4.3 Tensore Transpose](#Tensor-Transpose)
 * [5. Basic tensor arithmetic](#Basic-tensor-arithmetic)
-* [5.1 Scalar operation](#Scalar-operation)
-* [5.2 Hadamard product](#Hadamard-product)
-* [5.3 Reduction](#Reduction)
-* [5.4 Dot prodcut](#Dot-product)
+** [5.1 Scalar operation](#Scalar-operation)
+** [5.2 Hadamard product](#Hadamard-product)
+** [5.3 Reduction](#Reduction)
+** [5.4 Dot prodcut](#Dot-product)
 * [6 Solving Linear Systems](#Solving-Linear-Systems)
-* [6.1 Substitution](#Substitution)
-* [6.2 Elimination](#Elimination)
+** [6.1 Substitution](#Substitution)
+** [6.2 Elimination](#Elimination)
 * [7. Matrix\-by\-vector Multiplication](#Matrix-by-vector-Multiplication)
 * [8. Matrix\-by\-Matrix multiplication](#Matrix-by-Matrix-multiplication)
+* [9. Symmetric and Identity Matrices](#Symmetric-and-Identity-Matrices)
+** [9.1 Symmetric Matrices](#Symmetric-Matrices)
+** [9.2 Identity Matrices](#Identity-Matrices)
   
 
 ## Tensor
@@ -788,4 +791,62 @@ B_tf = tf.convert_to_tensor(B, dtype=tf.int32)
 
 tf.matmul(A_tf, B_tf)
 ```
+
+## Symmetric and Identity Matrices
+
+### Symmetric Matrices
+
+- Special matrix and includes below properties 
+   
+  - square matrics, rows and colums are equal.
+  - X<sup>T</sup> = X   ( transpose of x = x)  
+   
+```
+   _	      _
+  |   0  1   2 |
+  |   1  7   8 |
+  |   2  8   9 |
+  |_          _|
+```
+
+colab 
+
+```
+# numpy
+
+x_sym = np.array([[0,1,2],[1,7,8],[2,8,9]])
+
+x_sym.T
+
+
+x_sym.T == x_sym
+```
+
+### Identity matrices
+
+A symmetric matrix where 
+ - Every element along main diagonal is 1 
+ - All other elements are 0
+ - Notation: I<sub>n</sub> where n= height (or width)
+ - n-length vector unchanged if multipled by I<sub>n</sub> 
+
+```
+  _             _
+ |   1  0  0  0  |
+ |   0  1  0  0  |
+ |   0  0  1  0  |
+ |_  0  0  0  1 _|
+ 
+```
+
+colab 
+
+```
+I = torch.tensor([[1,0,0],[0,1,0],[0,0,1]])
+
+x_pt = torch.tensor([25,2,5])
+
+toruch.matmul(I, x_pt)
+```
+
  
