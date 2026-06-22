@@ -30,7 +30,8 @@
 - [9. Symmetric and Identity Matrices](#Symmetric-and-Identity-Matrices)
   - [9.1 Symmetric Matrices](#Symmetric-Matrices)
   - [9.2 Identity Matrices](#Identity-Matrices)
-- [10. ML and Deep Learning](#ML-and-Deep-Learning)  
+- [10. ML and Deep Learning](#ML-and-Deep-Learning)
+- [11. Matrix Inversion](#Matrix-Inversion) 
 
 ## Tensor
 
@@ -960,4 +961,29 @@ tf.norm(x_tf)
 <tf.Tensor: shape=(), dtype=float32, numpy=5.4772257804870605> 
 
 ```
+
+## Matrix Inversion 
+
+- convenient approach for solving linear equations
+- An alternative to manually sovling with substitution or elimination
+
+Matix inverse of x is denoted X<sup>-1</sup>
+  - satisfies X<sup>-1</sup> X = I<sub>n</sub> (i.e) identity matrix
+
+```
+   _     _         _                         _     _    _
+  |   y1  |       |   1  x1,1  x1,2 ... x1,m  |   |  a   |
+  |   y2  |       |   1  x2,1  x2,2 ... x2,m  |   |  b   |
+  |   .   |   =   |   .  .      .   ...       |   |  c   |
+  |   .   |       |   .  .      .   ...       |   |  .   |
+  |   yn  |       |   1  xn,1  xn,2 ... xn,m  |   |_ m  _|
+  |_     _|       |_                         _| 
+
+    m - features wide
+	n cases 
+```
+
+  The regression formula can be represented as 
+  
+     y = Xw (w - is the vector of weights a through m)
 
