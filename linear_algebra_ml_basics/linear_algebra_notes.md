@@ -30,7 +30,7 @@
 - [9. Symmetric and Identity Matrices](#Symmetric-and-Identity-Matrices)
   - [9.1 Symmetric Matrices](#Symmetric-Matrices)
   - [9.2 Identity Matrices](#Identity-Matrices)
-  
+- [10. ML and Deep Learning](#ML-and-Deep-Learning)  
 
 ## Tensor
 
@@ -849,4 +849,66 @@ x_pt = torch.tensor([25,2,5])
 toruch.matmul(I, x_pt)
 ```
 
- 
+ - exercise
+
+```
+import numpy as np
+
+A = np.array([[0,1,2],[3,4,5],[6,7,8]])
+B = np.array([-1,1,-2])
+
+np.dot(A,B)
+
+# output - array([ -3,  -9, -15])
+
+A1 = np.array([[0,1,2],[3,4,5],[6,7,8]])
+B1 = np.array([[-1,0],[1,1],[-2,2]])
+
+np.dot(A1,B1)
+
+# output
+array([[ -3,   5],
+       [ -9,  14],
+       [-15,  23]])
+
+```
+
+## ML and Deep Learning 
+
+
+y = a + f x<sub>1</sub> + c x<sub>2</sub> + ..... + m x<sub>m</sub> 
+
+
+```
+  _                                                _
+ |    y1  |   a + b x1,1 + c x1,2 + .... + m x1,m   |
+ |    y2  |   a + b x2,1 + c x2,2 + .... + m x2,m   |
+ |     .  |   .                                     |
+ |     .  |   .                                     |
+ |    yn  |   a + b xn,1 + c xn,2 + .... + m xn,m   | 
+ |_                                                _|
+
+Dataset:
+  For any house i in the dataset,
+  yi = price and xi,1 to xi,m are its features
+  we solve for parameters a,b,c to m
+  x extends rightward to m-1 not m because of the presence of a on far left 
+```
+
+The above equation can be represented in matrix 
+
+
+Matrix Multiplication in regression
+
+```
+   _     _         _                         _     _    _
+  |   y1  |       |   1  x1,1  x1,2 ... x1,m  |   |  a   |
+  |   y2  |       |   1  x2,1  x2,2 ... x2,m  |   |  b   |
+  |   .   |   =   |   .  .      .   ...       |   |  c   |
+  |   .   |       |   .  .      .   ...       |   |  .   |
+  |   yn  |       |   1  xn,1  xn,2 ... xn,m  |   |_ m  _|
+  |_     _|       |_                         _| 
+
+    m - features wide
+```
+for example refer the artificial-neurons.ipynb file in git
