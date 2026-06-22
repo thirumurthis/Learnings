@@ -25,6 +25,8 @@
 * [6 Solving Linear Systems](#Solving-Linear-Systems)
 * [6.1 Substitution](#Substitution)
 * [6.2 Elimination](#Elimination)
+* [7. Matrix-by-vector Multiplication](#Matrix-by-vector-Multiplication)
+* [8. Matrix-by-Matrix multiplication](#Matrix-by-Matrix-multiplication)
   
 
 ## Tensor
@@ -647,5 +649,143 @@ Example:
   4x + 10y = 14
  
  multiply by -2 on the 1st equation, so we can elimnate the x on both equation when added 
+
+## Matrix-by-vector Multiplication
+
+Conditions:
+  Two matrix can be multiplied only when the 
+
+   A matrix with a-row, a-column 
+   B matrix with b-row, b-column 
+   we can multiply the A and B only when 
+     - A a-column = B b-row 
+     - the result would be of a-row, b-column 
+
+```
+
+   C      =      A       *       B
+     m,p           m,n             n,p
+	 
+
+   C       =  sum for each j of product/multiplictaion of A     .  B 
+     i,k                                                    i,j      j,k
+
+   i,j and j,k are row,column represenation of A and B 
+```	 
  
+Example:
+
+Multiply matrix with vector like below where 1 dimension vector
+
+```
+   _      _      _    _
+  |  3  4  |    |   1  |
+  |  5  6  |    |   2  |
+  |  7  8  |    |_    _|
+  |_      _|  
+
+  3,2              2,1  
+  
+  
+        _          _
+  =    | 3x1 + 4x2  |
+       | 5x1 + 6x2  |
+       | 7x1 + 8x2 	|   
+       |_          _|
+	   
+  =     _    _
+       |  11  |
+	   |  17  |
+	   |_ 23 _|
+```
+
+colab or notbook
+
+```
+A = np.array([[3,4],[5,6],[7,8]])
+
+b = np.array([1,2])
+
+np.dot(A, b)
+
+# torch 
+
+A_pt = torch.tensor([[3,4],[5,6],[7,8]])
+
+b_pt = torch.tensor([1,2])
+
+torch.matmul(A_pt, b_pt)
+
+# tensor flow 
+
+A_tf = tf.Variable([[3,4],[5,6],[7,8]])
+
+b_tf = tf.Variable([1,2])
+
+tf.linalg.matvec(A_tf, b_tf)
+```
+
+## Matrix-by-Matrix multiplication
+
+- The same rule applies the column of first matrix should be same as the row of the second matrix
+
+```
+
+   _      _      _       _
+  |  3  4  |    |   1  9  |
+  |  5  6  |    |   2  0  |
+  |  7  8  |    |_       _|
+  |_      _|  
+
+  3,2            2,2
+  
+  
+        _                       _
+    =  | 3x1 + 4x2    3x9 + 4x0  |
+       | 5x1 + 6x2    5x9 + 6x0  |
+       | 7x1 + 8x2 	  7x9 + 8x0  |   
+       |_                       _|
+
+    
+	=   _         _
+       |  11  27   |
+	   |  17  45   |
+	   |_ 23  63  _|
+```
+
+colab or notebook
+
+ - Matrix multiplication is not commutative (i.e. A.B not equat to B.A)
+
+```
+
+# numpy
+
+A = np.array([[3,4],[5,6],[7,8]])
+
+B = np.array([[1,9], [2,0]])
+
+np.dot(A, B)
+
+
+# torch
+
+A_pt = torch.from_numpy(A)
+B_pt = torch.from_numpy(B)
+
+# alternate to create B tensor with transposition
+
+B_pt = torch.tensor([[1,2], [9,0]]).T
+
+# matrix multiplication
+torch.matmul(A_pt,B_pt)
+
+# tensor flow 
+
+# convert nparray with tensorflow 
+A_tf = tf.convert_to_tensor(A, dtype=tf.int32)
+B_tf = tf.convert_to_tensor(B, dtype=tf.int32)
+
+tf.matmul(A_tf, B_tf)
+```
  
