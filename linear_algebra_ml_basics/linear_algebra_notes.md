@@ -914,4 +914,50 @@ Matrix Multiplication in regression
 
 For example refer the artificial-neurons.ipynb file in (git Repo)[https://github.com/jonkrohn/ML-foundations/blob/master/notebooks/artificial-neurons.ipynb] - https://github.com/jonkrohn/ML-foundations
 
+For deep learning - https://github.com/jonkrohn/deepTF1
+
+## Frobenius Norm
+
+- Analogus to L<sup>2</sup> Norm
+- Measures the size of matrix in terms of Euclidean distance
+- It is the sum of the magnitude of all the vectors (that makes the columns on the matrix) in X
+
+Described as:
+ <img width="682" height="242" alt="image" src="https://github.com/user-attachments/assets/4f0363bc-1ba9-4244-bad2-ba782e65bfef" />
+
+Frobenius Norm is matrix norm of an m x n matrix A defined as square root of the sum of the absolute squares of its elements. This can also be considered as Vector norm.
+
+<img width="346" height="144" alt="image" src="https://github.com/user-attachments/assets/1d6ac4e2-9e7a-4685-9074-61a153f304a8" />
+
+- colab
+
+```
+import numpy as np
+
+x = np.array([[1,2],[3,4]])
+
+# calcuate the frobenius norm 
+np.linalg.norm(x)
+
+# output
+np.float64(5.477225575051661)
+
+# pytorch
+
+x_pt = torch.tensor([[1,2],[3,4.]])
+
+torch.norm(x_pt)
+
+# output
+tensor(5.4772)
+
+# tensorflow
+x_tf = tf.Variable([[1,2],[3,4.]])
+
+tf.norm(x_tf)
+
+# output
+<tf.Tensor: shape=(), dtype=float32, numpy=5.4772257804870605> 
+
+```
 
