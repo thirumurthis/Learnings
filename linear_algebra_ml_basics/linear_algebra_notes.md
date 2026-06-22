@@ -25,8 +25,8 @@
 * [6 Solving Linear Systems](#Solving-Linear-Systems)
 * [6.1 Substitution](#Substitution)
 * [6.2 Elimination](#Elimination)
-* [7. Matrix-by-vector Multiplication](#Matrix-by-vector-Multiplication)
-* [8. Matrix-by-Matrix multiplication](#Matrix-by-Matrix-multiplication)
+* [7. Matrix\-by\-vector Multiplication](#Matrix-by-vector-Multiplication)
+* [8. Matrix\-by\-Matrix multiplication](#Matrix-by-Matrix-multiplication)
   
 
 ## Tensor
