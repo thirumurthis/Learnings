@@ -987,3 +987,100 @@ Matix inverse of x is denoted X<sup>-1</sup>
   
      y = Xw (w - is the vector of weights a through m)
 
+In the equation y = Xw 
+ - we know the outcomes y, which could be houses price
+ - we know the features X, which are predictors like room count, etc
+ - vector w contains the unknowns, the model's learnable parameter
+ 
+ assuming X<sup>-1</sup> exists, matrix inversion can solve for w:
+  
+     Xw = y 
+	 
+	 => multipy by inverse of X on both side  
+	 X<sup>-1</sup> Xw  = X<sup>-1</sup> y
+	 
+	 => inverse of X and X will be identity matrix
+	 
+	 I<sub>n</sub> w = X<sup>-1</sup>y
+	 
+	 => Product of Identity matrix with any vector results same vector
+	 
+	 w = X<sup>-1</sup>y
+
+Example 
+
+```
+ 4b + 2c = 4
+-5b - 3c = -7
+
+       _           _       _       _
+x =   |  x1,1  x1,2 |     |   4   2 |
+      |  x2,1  x2,3 |  =  |  -5  -3 |
+	  |_           _|     |_       _|
+
+       _     _
+y =   |   4   |
+      |  -7   |
+	  |_     _|
+	  
+       _     _       _   _
+      |  w1   |     |  b  |
+w =   |  w2   | =   |  c  |  = X^-1 y 
+	  |_     _|     |_   _|
+
+```
+
+we can predict the outcomes of those values
+
+colab
+
+```
+# numpy
+X = np.array([[4,2],[-5,-3]])
+xinv = np.linalg.inv(X)
+xinv
+
+# output
+array([[ 1.5,  1. ],
+       [-2.5, -2. ]])
+
+y = np.array([4, -7])
+
+w = np.dot(xinv,y)
+w
+
+# output
+array([-1.,  4.])
+
+# to cross verify the output we can do
+
+np.dot(X, w)
+# output
+array([ 4., -7.])
+
+# pytorch
+
+torch.inverse(torch.tensor([[4,2],[-5,-3]]))
+
+# tensorflow
+
+tf.linalg.inv(tf.Variable([[4,2],[-5,-3.]]))
+```
+
+Matrix Inversion is nifty trick, but can only be calcuated if:
+ - matrix isn't "singular" 
+ - That is , all columns of matrix must be linearly independent
+   - The columns of matrix are NOT linearly independent if a column is [1,2] and another can't be [2,4] or also be [1,2]
+   
+    if one column is [1,2] and another is [2,4] =  This indicates that both point runs parallel to each other and no solution exists
+    if one column is [1,2] and the other column is also [1,2] = This indicates that there are infinite solutions.
+ - Matrix is square: n<sub>row</sub> = n<sub>col</sub> 
+    (i.e.  vector span = matrix range)
+- Avoids overdetermination: n<sub>row</sub> > n<sub>col</sub>
+	(i.e. n<sub>equations</sub> > n<sub>dimensions</sub>)
+  - in this case we have undetermined system multple points are crossed, if we have 3 rows and 2 columns in 2-d space on horizontal and vertical line which is overdetermination system. We can't have single solution
+- Avoids underdetermination: n<sub>row</sub> < n<sub>col</sub>
+    (i.e. n<sub>equations</sub> < n<sub>dimensions</sub> )
+  - underdetermined system, we have only one line. so number of solution is less
+
+
