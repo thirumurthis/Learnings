@@ -24,6 +24,7 @@
 * [5.4 Dot prodcut](#Dot-product)
 * [6 Solving Linear Systems](#Solving-Linear-Systems)
 * [6.1 Substitution](#Substitution)
+* [6.2 Elimination](#Elimination)
   
 
 ## Tensor
@@ -633,4 +634,18 @@ ex.
  x+y =6 and 2x+3y = 16
  -x+4y=0 and 2x - 5y = -6
  y=4x + 1 and -4x + y =2
+ 
+### Elimination 
+
+When to use?
+ - typically best option if no variable in system has coefficient 1
+ - Use addition property of equations to elimnate variables
+   - If necessary, multiply one or both equations to make elimination of a variable possible
+  
+Example:
+  2x - 3y = 15 
+  4x + 10y = 14
+ 
+ multiply by -2 on the 1st equation, so we can elimnate the x on both equation when added 
+ 
  
