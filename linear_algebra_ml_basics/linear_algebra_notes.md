@@ -1000,7 +1000,8 @@ Xw = y
 	 X<sup>-1</sup> Xw  = X<sup>-1</sup> y
 	 
 = inverse of X and X will be identity matrix
-	 I<sub>n</sub> w = X<sup>-1</sup>y
+
+I<sub>n</sub> w = X<sup>-1</sup>y
 	 
 = Product of Identity matrix with any vector results same vector
 	 
@@ -1015,17 +1016,17 @@ Example
        _           _       _       _
 x =   |  x1,1  x1,2 |     |   4   2 |
       |  x2,1  x2,3 |  =  |  -5  -3 |
-	  |_           _|     |_       _|
+	     |_           _|     |_       _|
 
        _     _
 y =   |   4   |
       |  -7   |
-	  |_     _|
+	     |_     _|
 	  
        _     _       _   _
       |  w1   |     |  b  |
 w =   |  w2   | =   |  c  |  = X^-1 y 
-	  |_     _|     |_   _|
+	     |_     _|     |_   _|
 
 ```
 
