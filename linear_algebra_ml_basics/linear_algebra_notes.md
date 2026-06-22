@@ -911,4 +911,7 @@ Matrix Multiplication in regression
 
     m - features wide
 ```
-for example refer the artificial-neurons.ipynb file in git
+
+For example refer the artificial-neurons.ipynb file in (git Repo)[https://github.com/jonkrohn/ML-foundations/blob/master/notebooks/artificial-neurons.ipynb] - https://github.com/jonkrohn/ML-foundations
+
+
