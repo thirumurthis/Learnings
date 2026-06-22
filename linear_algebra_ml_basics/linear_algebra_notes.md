@@ -22,6 +22,9 @@
 * [5.2 Hadamard product](#Hadamard-product)
 * [5.3 Reduction](#Reduction)
 * [5.4 Dot prodcut](#Dot-product)
+* [6 Solving Linear Systems](#Solving-Linear-Systems)
+* [6.1 Substitution](#Substitution)
+  
 
 ## Tensor
 
@@ -613,4 +616,21 @@ tf.reduce_sum(tf.multiply(x_tf, y_tf))
 
 ```
 
+## Solving Linear Systems 
 
+### Substitution 
+
+- subsititution is a method to solve linear systems
+
+When to use?
+ - whenever there's a variable in system with coefficient of 1
+ - example, when solving for x and y in following system
+   y = 3x 
+   -5x + 2y = 2
+ - in the above we can substitue y in the above equation
+ 
+ex.
+ x+y =6 and 2x+3y = 16
+ -x+4y=0 and 2x - 5y = -6
+ y=4x + 1 and -4x + y =2
+ 
