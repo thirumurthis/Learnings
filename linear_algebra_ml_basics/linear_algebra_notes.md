@@ -994,18 +994,17 @@ In the equation y = Xw
  
  assuming X<sup>-1</sup> exists, matrix inversion can solve for w:
   
-     Xw = y 
+Xw = y 
 	 
-	 => multipy by inverse of X on both side  
+= multipy by inverse of X on both side  
 	 X<sup>-1</sup> Xw  = X<sup>-1</sup> y
 	 
-	 => inverse of X and X will be identity matrix
-	 
+= inverse of X and X will be identity matrix
 	 I<sub>n</sub> w = X<sup>-1</sup>y
 	 
-	 => Product of Identity matrix with any vector results same vector
+= Product of Identity matrix with any vector results same vector
 	 
-	 w = X<sup>-1</sup>y
+w = X<sup>-1</sup>y
 
 Example 
 
