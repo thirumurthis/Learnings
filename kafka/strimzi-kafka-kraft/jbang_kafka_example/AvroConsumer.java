@@ -20,14 +20,14 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.main.Main;
 
 // ------ not use this import org.apache.camel.model.dataformat.AvroDataFormat;
-import org.apache.camel.dataformat.avro.AvroDataFormat; 
+import org.apache.camel.dataformat.avro.AvroDataFormat;
 
 import static java.lang.System.out;
 import static java.lang.System.setProperty;;
 
-class AvroConsumer{
+class AvroConsumer {
 
-    public static void main(String ... args) throws Exception{
+    public static void main(String... args) throws Exception {
         out.println("Starting camel route...");
         setProperty("org.slf4j.simpleLogger.logFile", "System.out");
         setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
@@ -39,33 +39,33 @@ class AvroConsumer{
         AvroDataFormat avroDataFormat = new AvroDataFormat(consumer.getSchema());
         avroDataFormat.setInstanceClassName(GenericData.Record.class.getName());
 
-        main.configure().addRoutesBuilder(new RouteBuilder(){
-            public void configure() throws Exception{
+        main.configure().addRoutesBuilder(new RouteBuilder() {
+            public void configure() throws Exception {
                 from("kafka:test-topic-1?brokers=localhost:31092&"
-                +"maxPollRecords=1000&consumersCount=1&seekTo=BEGINNING"
-                )
-                .unmarshal(avroDataFormat)
-                //process to print the message from exchange
-                //.process(exchange -> System.out.println("inside the consumer"+exchange.getIn().getBody()))
-               .log("consumed unmarshalled message: ${body}")
-               .to("stream:out");
+                        + "maxPollRecords=1000&consumersCount=1&seekTo=BEGINNING")
+                        .unmarshal(avroDataFormat)
+                        // process to print the message from exchange
+                        // .process(exchange -> System.out.println("inside the
+                        // consumer"+exchange.getIn().getBody()))
+                        .log("consumed unmarshalled message: ${body}")
+                        .to("stream:out");
             }
-         });
-        //main.run();
+        });
+        // main.run();
         main.start();
         Thread.sleep(10000);
         main.stop();
     }
 
-        public Schema getSchema(){
+    public Schema getSchema() {
         String userSchema = """
-        {"type": "record",
-        "name": "employee",
-        "fields":[
-            {"name": "name","type":"string"},
-            {"name": "address", "type": ["string", "null"]}
-            ]}
-        """;
+                {"type": "record",
+                "name": "employee",
+                "fields":[
+                    {"name": "name","type":"string"},
+                    {"name": "address", "type": ["string", "null"]}
+                    ]}
+                """;
 
         return new Schema.Parser().parse(userSchema);
     }

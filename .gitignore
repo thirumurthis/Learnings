@@ -2,3 +2,8 @@
 gRPC/code/spring_grpc_lib_demo/**/target/**
 gRPC/code/spring_grpc_lib_demo/.idea/**
 **/target/**
+
+**/**/*.class
+**/**/*.jar
+**/**/.vscode
+**/**/*.crt
