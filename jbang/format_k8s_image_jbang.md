@@ -198,4 +198,17 @@ if ($null -eq $env:KUBECONFIG) {
 }
 ```
 
-The output
+Before executing the command make sure to set the KUBECONFIG environment variable on powershell using `$env.KUBECONFIG="/path/of/k8s/config"`
+
+The output in powershell version less than 7.x
+
+<img width="2268" height="706" alt="image" src="https://github.com/user-attachments/assets/a856f138-6bf1-4711-9657-07fd18cf84a5" />
+
+The output in powershell version 7+
+
+<img width="2146" height="706" alt="image" src="https://github.com/user-attachments/assets/8ddded70-0485-4235-a791-378eaf8622a0" />
+
+In gitbash when executing the jbang with file directly the file will be compiled and command gets executed
+
+<img width="2860" height="784" alt="image" src="https://github.com/user-attachments/assets/bdd75f43-483e-4fab-8fae-93a475c4d7c0" />
+
