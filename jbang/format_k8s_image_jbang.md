@@ -1,3 +1,35 @@
+### Utility tool - Format Kubernetes image info with JQ and JBang
+
+
+Was working on an productivity tool to list the image from Kuberentes in clean and simple table format.
+
+In this article, have used `jq` utility and `JBang` with java code to read the inputstream and added logic to format the output.
+
+The convienence here is the outputs can be piped easily. The jq is used to filter the deployment name, namespace and image info (both initContainers and container images).
+
+
+Pre-requisites:
+  - JBang CLI
+  - Kubectl 
+  - KinD 
+  
+To create a powershell script, the JBang code is compiled to jar and used it in script. When using in gitbash the java class file can be directly used.
+
+In gitbash command prompt the output of kubectl is piped to Jq and finally jbang Formatter code. The output snapshot is at the bottom of this article.
+
+```sh
+kubectl get deployment -A -o json | jq -r ' .items[] | [(.metadata.name), (.metadata.namespace), (.spec.initContainers[]?.image | split("/") | .[-1]), (.spec.template.spec.containers[].image | split("/") | .[-1] )] | @csv ' | jbang Formatter.java
+```
+
+The JBang java code, the input to the code below is the will be comma selerated csv format like below 
+
+```
+"apicurio-registry-operator-v3.2.1","apicurio-registry","apicurio-registry-3-operator:3.2.1"
+```
+
+The init container images will be part of the CSV format added to the end. The output format doesn't diffirentiate the initcontainer images or container images, but groups and lists under the deployment name. 
+
+```java
 ///usr/bin/env jbang $0 "$@" ; exit $?
 
 import java.io.BufferedInputStream;
@@ -13,34 +45,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
-* Formatter.java
-*
-kubectl get deployment -A -o json | jq -r ' .items[] | [(.metadata.name), (.metadata.namespace), (.spec.template.spec.initContainers[]?.image | split("/") | .[-1]), (.spec.template.spec.containers[].image | split("/") | .[-1] )] | @csv ' | jbang Formatter.java
-  
-output: 
-"apicurio-registry-operator-v3.2.1","apicurio-registry","apicurio-registry-3-operator:3.2.1"
-"sample-app-deployment","apicurio-registry","apicurio-registry:3.2.1"
-
-Use below command for development
-echo '"apicurio-registry-operator-v3.2.1","apicurio-registry","apicurio-registry-3-operator:3.2.1"' |jbang Formatter.java
-echo '"apicurio-registry-operator-v3.2.1","apicurio-registry","apicurio-registry-3-operator:3.2.1"' |java -jar jars/Formatter.jar Formatter
-
-Use to compile and create jar
-$ mkdir -p jars/classes
-
-$ javac -d jars/classes Formatter.java
-$ jar cvfe jars/Formatter.jar Formatter -C jars/classes .
-
-In powershell set env vriable of kind running in local wsl2
-$env:KUBECONFIG="\\wsl$\Ubuntu-26.04\home\<user>\.kube\config"
-
-*/
-
 public class Formatter {
 
     static int SPACING = 2;
-    static int FIELD_LENGTH = 4;
     static String DEPLOY_NAME="DEPLOYMENT NAME";
     static String NAMESPACE="NAMESPACE";
     static String IMAGE_NAME="IMAGE NAME";
@@ -160,3 +167,35 @@ public class Formatter {
         return deDupedList;
     }
 }
+
+```
+
+To create the jar from the above JBang code. Save the above file in Formatter.java and use below command. Folder are created to group the files.
+
+```sh
+$ mkdir -p jars/classes
+
+$ javac -d jars/classes Formatter.java
+$ jar cvfe jars/Formatter.jar Formatter -C jars/classes .
+```
+
+To create the powershell script, save as k8sFormatterCmd.ps1. Note when executing the below command makes sure to update the Jar path.
+
+```bash
+if ($null -eq $env:KUBECONFIG) {
+	Write-Host ""
+    Write-Host "[KUBECONFIG variable does not exists or is empty]"
+	Write-Host "In powershell $env:KUBECONFIG=\"path/to/kube/config\""
+} else {
+	
+	if ($PSVersionTable.PSVersion.Major -lt 7) {
+     kubectl get deployment -A -o json | jq -r ' .items[] | [(.metadata.name), (.metadata.namespace), (.spec.template.spec.initContainers[]?.image | split(\"\/\") | .[-1]), (.spec.template.spec.containers[].image | split(\"\/\") | .[-1] )] | @csv ' | java -jar jars/Formatter.jar Formatter
+
+   } else {
+      kubectl get deployment -A -o json | jq -r ' .items[] | [(.metadata.name), (.metadata.namespace), (.spec.template.spec.initContainers[]?.image | split("\/") | .[-1]), (.spec.template.spec.containers[].image | split("\/") | .[-1] )] | @csv ' | java -jar jars/Formatter.jar Formatter
+
+   }
+}
+```
+
+The output
