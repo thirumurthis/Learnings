@@ -1,21 +1,20 @@
 ### Utility tool - Format Kubernetes image info with JQ and JBang
 
 
-Was working on an productivity tool to list the image from Kuberentes in clean and simple table format.
+Working on Kubernetes resources deploying the application often wanted to create an utility tool to format the few Kubernetes resources in specific table format to improve productivity. All I needed is to list the images from Kubernetes deployment in clean and simple table format of both initContainers and containers. To achive this had used JQ and JBang. There could possibly be different options to achieve this, the details that helped me is documented in this article.
 
-In this article, have used `jq` utility and `JBang` with java code to read the inputstream and added logic to format the output.
+The convenience with this approach is the outputs are piped easily. The kubectl get deployment is converted to json and piped to JQ with filter conditions to create a csv formatted output which would be deployment name, namespace and image information of both initContainers and container at the end as comma separated values. This is piped to JBang code which includes the logic to transform the output to presentable format. 
 
-The convienence here is the outputs can be piped easily. The jq is used to filter the deployment name, namespace and image info (both initContainers and container images).
+To follow along below are the pre-requisites that needs to be installed in the machine
 
+ - JBang
+ - Kubectl
+ - KinD (used to deploy the Kubernetes cluster)
+ - Java JDK
 
-Pre-requisites:
-  - JBang CLI
-  - Kubectl 
-  - KinD 
-  
-To create a powershell script, the JBang code is compiled to jar and used it in script. When using in gitbash the java class file can be directly used.
+In order to work with the Powershell script, the JBang code is compiled to jar the command are shown below. For Powershell script the JQ command output is piped to the Java command which calls the JBang java class. In case of gitbash the JBang java class file is directly called using the jbang CLI. Refer the output snapshot at the bottom of this article.
 
-In gitbash command prompt the output of kubectl is piped to Jq and finally jbang Formatter code. The output snapshot is at the bottom of this article.
+Below is the command piped one after the other and works in Gitbash since the output of JQ is finally piped to the JBang CLI. This command doesn't directly work in command prompt.
 
 ```sh
 kubectl get deployment -A -o json | jq -r ' .items[] | [(.metadata.name), (.metadata.namespace), (.spec.initContainers[]?.image | split("/") | .[-1]), (.spec.template.spec.containers[].image | split("/") | .[-1] )] | @csv ' | jbang Formatter.java
@@ -198,4 +197,18 @@ if ($null -eq $env:KUBECONFIG) {
 }
 ```
 
-The output
+Before executing the command make sure to set the KUBECONFIG environment variable on powershell using `$env.KUBECONFIG="/path/of/k8s/config"`
+
+The output in powershell version less than 7.x
+
+<img width="2276" height="702" alt="image" src="https://github.com/user-attachments/assets/d071533c-4120-4a91-9dc0-ace69b9924b0" />
+
+The output in powershell version 7+
+
+<img width="2218" height="714" alt="image" src="https://github.com/user-attachments/assets/bb7bf588-8d08-45af-9356-34f281dc68ba" />
+
+
+In gitbash when executing the jbang with file directly the file will be compiled and command gets executed
+
+<img width="2860" height="784" alt="image" src="https://github.com/user-attachments/assets/bdd75f43-483e-4fab-8fae-93a475c4d7c0" />
+
