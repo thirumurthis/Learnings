@@ -1,0 +1,32 @@
+global:
+  namespace: hoppscotch
+
+community:
+  replicas: 1  
+
+  image:
+    repository: hoppscotch/hoppscotch  
+    tag: latest  
+    pullPolicy: IfNotPresent  
+
+  config:
+    urls:
+      base: "http://frontend.hs.com"
+      shortcode: "http://frontend.hs.com"
+      admin: "http://admin.hs.com"
+      backend:
+        gql: "http://backend.hs.com/graphql"
+        ws: "ws://backend.hs.com/graphql"
+        api: "http://backend.hs.com/v1"
+      redirect: "http://frontend.hs.com"
+      whitelistedOrigins: "http://backend.hs.com,http://frontend.hs.com,http://admin.hs.com,http://host.docker.internal:5000,http://thirumurthi.local:5000"
+
+#service:
+#  type: LoadBalancer  
+#  port: 3000  
+service:
+    ingress:
+      enabled: false
+      mainHost: frontend.hs.com
+      adminHost: admin.hs.com
+      backendHost: backend.hs.com  

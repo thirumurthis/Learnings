@@ -1,0 +1,139 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ss-ca-hop-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ss-admin-hop-cert
+spec:
+  commonName: admin.hop.com
+  secretName: ss-admin-cert-secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: ss-ca-hop-issuer
+    kind: Issuer
+  dnsNames: 
+    - admin.hop.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: admin-hop-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - admin.hop.com
+  secret:
+    name: ss-admin-cert-secret
+    namespace: hoppscotch
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: hop-ad-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: hop-ad-http
+      match:
+        hosts:
+          - admin.hop.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: hoppscotch-community
+          servicePort: 3000
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ss-fe-cert
+spec:
+  commonName: frontend.hs.com  
+  secretName: ss-fe-cert-secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: ss-ca-hop-issuer
+    kind: Issuer
+  dnsNames: 
+    - frontend.hs.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: hop-fe-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - frontend.hs.com
+  secret:
+    name: ss-fe-cert-secret
+    namespace: hoppscotch
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: hop-fe-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: hop-fe-http
+      match:
+        hosts:
+          - frontend.hs.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: hoppscotch-community 
+          servicePort: 3100
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ss-be-cert
+spec:
+  commonName: backend.hs.com  
+  secretName: ss-be-cert-secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: ss-ca-hop-issuer
+    kind: Issuer
+  dnsNames: 
+    - backend.hs.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: hop-be-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - backend.hs.com
+  secret:
+    name: ss-be-cert-secret
+    namespace: hoppscotch
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: hop-be-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: hop-be-http
+      match:
+        hosts:
+          - backend.hs.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: hoppscotch-community 
+          servicePort: 3170
