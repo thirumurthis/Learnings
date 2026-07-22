@@ -422,7 +422,12 @@ Set the hosts file with below mapping. In windows update the `C:\Windows\System3
 127.0.0.1 admin.hop.com frontend.hop.com backend.hs.com
 ```
 
-The Hoppscotch UI now can be accessed with the `https://admin.hop.com`. Also, install the Hoppscotch Chrome extension so we can configure localhost endpoint url to access API endpoint running in the host machine wiht http://localhost:<port> endpoints. 
+The Hoppscotch UI now can be accessed with the `https://admin.hop.com`. Also, install the Hoppscotch Chrome extension so we can configure localhost endpoint url to access API endpoint running in the host machine wiht http://localhost:<port> endpoints.
+
+For Hoppscotch UI to use the Chrome extension, we need to update the settings in the UI. Refer the snapshot below. Click Settings (gear icon) and scroll to the bottom, select the extensions in the intercptor. Make sure the version number of the extension is displayed.
+
+<img width="2732" height="1406" alt="image" src="https://github.com/user-attachments/assets/dd325035-6eec-40cd-8b3b-e506fe42e0e8" />
+
 
 #### Landing page of Hoppscotch
 
