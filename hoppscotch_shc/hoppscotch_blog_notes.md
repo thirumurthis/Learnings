@@ -213,10 +213,10 @@ kubectl apply -f apisix-route.yaml -n apisix
 Once the ApisixTls and ApisxRoute is deployed, we can access the Apisix Dashboard using `https://apisix.demo.com/ui`.
 
 Information:
-  When working behind the proxy in enterprise network, sometimes the apisix.demo.com might be routed to external internet in that case use the the DNS something like apisix.local or apisix.demo. This also depends on type of proxy being used. 
+ When working behind the proxy in enterprise network, sometimes the apisix.demo.com might be routed to external internet in that case use the the DNS something like apisix.local or apisix.demo. This also depends on type of proxy being used. 
 
 
-### Install the Hoppscotch Community using Helm Chart
+### Install the Hoppscotch Community Helm Chart
 
 Clone the helm chart of Hoppscotch repo using below command.
 
@@ -224,21 +224,205 @@ Clone the helm chart of Hoppscotch repo using below command.
 git clone https://github.com/hoppscotch/helm-charts.git
 ```
 
-## Go to helm charts directory cloned from hoppscotch, change the path if needed
-cd /mnt/c/hoppscoth/helm-charts
+We need to override some properties in the configuration when we deploy to the KinD cluster. To deploy in the specific namespace we need to specify the namespace in the global.namespace as well, since the default values.yaml includes default namespace. The default ingress is disabled. The config uses the custom domain like below.
 
-## Install the chart for Community Edition
+```yaml
+global:
+  namespace: hoppscotch
 
-helm upgrade --install hoppscotch -n hoppscotch --create-namespace ./charts/shc --values ../overlay-values.yaml
+community:
+  replicas: 1  
+
+  image:
+    repository: hoppscotch/hoppscotch  
+    tag: latest  
+    pullPolicy: IfNotPresent  
+
+  config:
+    urls:
+      base: "http://frontend.hop.com"
+      shortcode: "http://frontend.hop.com"
+      admin: "http://admin.hop.com"
+      backend:
+        gql: "http://backend.hop.com/graphql"
+        ws: "ws://backend.hop.com/graphql"
+        api: "http://backend.hop.com/v1"
+      redirect: "http://frontend.hop.com"
+      whitelistedOrigins: "http://backend.hop.com,http://frontend.hop.com,http://admin.hop.com"
+  
+service:
+    ingress:
+      enabled: false
+```
+
+Save the content above to the file named `overlay_values.yaml`. Below is the command to deploy to the cluster. The command should be executed from the helm-chart path, and the overlay_values.yaml file also shoul be placed in teh same folder.
+
+```sh
+helm upgrade --install hoppscotch -n hoppscotch --create-namespace ./charts/shc --values overlay_values.yaml
+```
+
+Below is the route info to access the hoppscotch endpoint. We create three routes for admin, frontend and backend service. The domain name for admin, forntend and backend is defined as admin.hop.com, frontend.hop.com and backend.hop.com respectively. If we need the domain to be different the below route configuration should be updated.
 
 
-helm template hoppscotch ./charts/shc --values ../overlay-values.yaml
+```yaml
+# file name: 1_apisix_cert_issuer.yaml
+# deploy in apicurio-registry namespace
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-ca-hop-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-hop-cert
+spec:
+  commonName: admin.hop.com
+  secretName: selfsigned-ad-cert-secret # cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-ca-hop-issuer # issuer resource name
+    kind: Issuer
+  dnsNames: 
+    # dns name add this to hosts file for loopback address
+    - admin.hop.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: admin-hop-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - admin.hop.com
+  secret:
+    name: selfsigned-ad-cert-secret  # certificate created by the cert-manager
+    namespace: hoppscotch
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: hop-ad-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: hop-ad-http
+      match:
+        hosts:
+          - admin.hop.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: hoppscotch-community
+          servicePort: 3000
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-fe-cert
+spec:
+  commonName: frontend.hop.com  
+  secretName: selfsigned-fe-cert-secret # cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-ca-hop-issuer # issuer resource name
+    kind: Issuer
+  dnsNames: 
+    # dns name add this to hosts file for loopback address
+    - frontend.hop.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: hop-fe-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - frontend.hop.com
+  secret:
+    name: selfsigned-fe-cert-secret  # certificate created by the cert-manager
+    namespace: hoppscotch
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: hop-fe-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: hop-fe-http
+      match:
+        hosts:
+          - frontend.hop.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: hoppscotch-community 
+          servicePort: 3100
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: selfsigned-be-cert
+spec:
+  commonName: backend.hop.com  
+  secretName: selfsigned-be-cert-secret # cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: selfsigned-ca-hop-issuer # issuer resource name
+    kind: Issuer
+  dnsNames: 
+    # dns name add this to hosts file for loopback address
+    - backend.hop.com
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: hop-be-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - backend.hop.com
+  secret:
+    name: selfsigned-be-cert-secret  # certificate created by the cert-manager
+    namespace: hoppscotch
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: hop-be-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: hop-be-http
+      match:
+        hosts:
+          - backend.hop.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: hoppscotch-community 
+          servicePort: 3170
+```
 
-## apply the route info if apisix route is configured
+Save the above content to file named route.yaml on the helm-chart folder, then to deploy use below command
 
-kubectl -n hoppscotch apply -f ../route.yaml
+```sh
+kubectl -n hoppscotch apply -f route.yaml
+```
 
-## set the host file with 127.0.0.1 admin.hs.com frontend.hs.com backend.hs.com
+### Access the Hoppscotch UI
 
-## in browser use https://admin.hs.com to view the ui, add the hoppscotch chrome extension to access localhost:5000 url and add it to the path.
+Set the hosts file with below mapping. In windows update the `C:\Windows\System32\drivers\etc\hosts` file
+
+```
+127.0.0.1 admin.hop.com frontend.hop.com backend.hs.com
+```
+
+The Hoppscotch UI now can be accessed with the `https://admin.hop.com`. Also, install the Hoppscotch Chrome extension so we can configure localhost endpoint url to access API endpoint running in the host machine wiht http://localhost:<port> endpoints. 
 

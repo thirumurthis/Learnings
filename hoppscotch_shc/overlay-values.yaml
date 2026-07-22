@@ -29,4 +29,4 @@ service:
       enabled: false
       mainHost: frontend.hs.com
       adminHost: admin.hs.com
-      backendHost: backend.hs.com  
+      backendHost: backend.hs.com
