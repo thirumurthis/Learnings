@@ -4,8 +4,7 @@ Hoppscotch provides lots of options it has both community and enterprise offerin
 
 With the Hoppscotch deployed API running in localhost and in internet can be accessed. Note, since the Hoppscotch container in local docker can't acccess the localhost API running on the host machine, we had to install the Hoppscotch browser extension and configure the localhost url in the extension, with this we can see how to access the endpoint running in host machine.
 
-This article is with reference to the documentation provided in hoppscotch website - https://docs.hoppscotch.io/documentation/self-host/helm-chart-deployment/digital-ocean
-
+This article is with reference to the documentation provided in [Hoppscotch website](https://docs.hoppscotch.io/documentation/self-host/helm-chart-deployment/digital-ocean).
 
 Pre-requisites:
   - Docker (Using Docker Daemon community version runnning in WSL2)
@@ -13,7 +12,6 @@ Pre-requisites:
   - Kubectl CLI
   - Helm CLI
   - Git CLI
-
 
 ### Deploy the KinD Cluster 
 
