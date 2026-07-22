@@ -426,3 +426,62 @@ Set the hosts file with below mapping. In windows update the `C:\Windows\System3
 
 The Hoppscotch UI now can be accessed with the `https://admin.hop.com`. Also, install the Hoppscotch Chrome extension so we can configure localhost endpoint url to access API endpoint running in the host machine wiht http://localhost:<port> endpoints. 
 
+#### Landing page of Hoppscotch
+
+<img width="1390" height="849" alt="image" src="https://github.com/user-attachments/assets/9d90d6be-cfe4-4091-959e-7c2d3e55c708" />
+
+#### Accessing the API from internet the hoppscotch endpoint and shows the output repsonse
+
+<img width="2760" height="1564" alt="image" src="https://github.com/user-attachments/assets/5f8d7c46-07f7-46cb-80ca-8e8f0d074ea7" />
+
+#### Configuring the HoppScotch with Chrome Extension
+
+Extension configuration looks like below
+
+<img width="1004" height="1198" alt="image" src="https://github.com/user-attachments/assets/d73acb65-8b84-4801-b730-e7ef2dcd7fda" />
+
+With the Extension installed, we can access the local API from the UI. The response is captured in this snapshot
+
+<img width="2770" height="1530" alt="image" src="https://github.com/user-attachments/assets/70f7af87-35c0-4e3e-8e22-401d4dda18c1" />
+
+For the rest API here used Jbang spring to expose a REST API. Code refered from this (blog)[https://www.makariev.com/blog/how-to-build-spring-boot-rest-api-with-jbang-in-single-java-file/].
+
+Code below should be placed under app folder. Uses the default port, to update other properties refer the JBang Spring integration documentation.
+
+```java
+//usr/bin/env jbang "$0" "$@" ; exit $?
+//JAVA 25
+
+//DEPS org.springframework.boot:spring-boot-dependencies:4.1.0@pom
+//DEPS org.springframework.boot:spring-boot-starter-web
+
+package app;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+@SpringBootApplication
+@RestController
+public class SpringRestApi {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringRestApi.class, args);
+    }
+
+    @GetMapping("/")
+    public String sayHello(
+        @RequestParam(value = "name", defaultValue = "World") String name) {
+        return "Hello, " + name + "!";
+    }
+}
+```
+
+Command to run using JBang cli
+
+```
+jbang SpringRestApi.java
+```
