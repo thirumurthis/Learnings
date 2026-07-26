@@ -263,8 +263,6 @@ Below is the route info to access the hoppscotch endpoint. We create three route
 
 
 ```yaml
-# file name: 1_apisix_cert_issuer.yaml
-# deploy in apicurio-registry namespace
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
