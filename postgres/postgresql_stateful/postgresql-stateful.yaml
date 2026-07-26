@@ -11,9 +11,9 @@ metadata:
   namespace: postgresql
 type: Opaque
 data:
-  POSTGRES_USER: YWRtaW4=
-  POSTGRES_PASSWORD: YWRtaW4xMjM=
-  POSTGRES_DB: cG9zdGdyZXNkYg==
+  POSTGRES_USER: ZGV2dXNlcg==     #devuser
+  POSTGRES_PASSWORD: cG9zdGdyZSRxbA== #postgre$ql
+  POSTGRES_DB: cG9zdGdyZXNkYg==   #postgresdb
 ---
 apiVersion: v1
 kind: ConfigMap
