@@ -1,17 +1,20 @@
 
-During REST API development was exploring tools opensource tools similar to Postman and came accross the Hoppscotch.
-Hoppscotch provides lots of options it has both community and enterprise offering. In this article, have deployed the community version. Used for local development, this article details the configuration and commands necessary to deploy hoppscotch in KinD cluster. To access the Hoppscotch frontend we use Apisix Ingress and cert-manager, with self-signed certs we can access the UI using https url from browser.
+This article shows how to deploy Hoppscotch community version in Docker KinD (Kubernetes in Docker) cluster to use for local development.
 
-With the Hoppscotch deployed API running in localhost and in internet can be accessed. Note, since the Hoppscotch container in local docker can't acccess the localhost API running on the host machine, we had to install the Hoppscotch browser extension and configure the localhost url in the extension, with this we can see how to access the endpoint running in host machine.
+The reason for this article is was working on REST API development and to test was exploring if there are any opensource tools similar to Postman and came accross the Hoppscotch.
 
-This article is with reference to the documentation provided in [Hoppscotch website](https://docs.hoppscotch.io/documentation/self-host/helm-chart-deployment/digital-ocean).
+Hoppscotch has an UI to accessing and test REST API endpoint, they offer both enterprise offering and free community version. In this article, have explained how to deployed the community version in KinD cluster with helm chart and access using self-singed certificate so we can access using https URL. Had used Apisix Ingress along with cert-manager components deployed to the KinD cluster.
+
+After deploying in local has shown the output snapshot were we can access the locally running application running on the host machine. Note, to acess the API endpoint running on the local we need to install the Hoppscotch browser extensions, but if the API endpoint is hosted in internet or accessible over the network then the extension is not required.
+
+This article is inspired by the Hoppscotch Digital Ocean deployment documentation. In this article have used cert-manager and Apisix Ingress.
 
 Pre-requisites:
-  - Docker (Using Docker Daemon community version runnning in WSL2)
-  - KinD CLI
-  - Kubectl CLI
-  - Helm CLI
-  - Git CLI
+— Docker (Used Docker Daemon community version runnning in WSL2)
+— KinD CLI
+— Kubectl CLI
+— Helm CLI
+— Git CLI
 
 ### Deploy the KinD Cluster 
 
@@ -109,7 +112,7 @@ kubectl -n apisix apply -f apisix_cert.yaml
 ### Install Apisix Ingress (Control and Data plane)
 
 
-Apisix installation can be done in different variation, we deploy control plane and data plane seperately. Still the etcd is used from the Apisix chart itself.
+Apisix installation can be done in different variation, we deploy control plane and data plane separately. Still the etcd is used from the Apisix chart itself.
 
 Helm command used to deploy the control plane is shown below, note the secret name with the certificate should be updated correctly in the command, in this case `ss-apisix-cert-secret`. The secret would have been created by cert manager based on above deployment. 
 
@@ -222,7 +225,7 @@ Clone the helm chart of Hoppscotch repo using below command.
 git clone https://github.com/hoppscotch/helm-charts.git
 ```
 
-We need to override some properties in the configuration when we deploy to the KinD cluster. To deploy in the specific namespace we need to specify the namespace in the global.namespace as well, since the default values.yaml includes default namespace. The default ingress is disabled. The config uses the custom domain like below.
+Some of the properties are overrided in the configuration when deployed to the KinD cluster. To deploy in the specific namespace we need to specify the namespace in the global.namespace as well, since the default values.yaml includes default namespace. The default ingress is disabled. The config uses the custom domain like below.
 
 ```yaml
 global:
@@ -420,9 +423,9 @@ Set the hosts file with below mapping. In windows update the `C:\Windows\System3
 127.0.0.1 admin.hop.com frontend.hop.com backend.hs.com
 ```
 
-The Hoppscotch UI now can be accessed with the `https://admin.hop.com`. Also, install the Hoppscotch Chrome extension so we can configure localhost endpoint url to access API endpoint running in the host machine wiht http://localhost:<port> endpoints.
-
-For Hoppscotch UI to use the Chrome extension, we need to update the settings in the UI. Refer the snapshot below. Click Settings (gear icon) and scroll to the bottom, select the extensions in the intercptor. Make sure the version number of the extension is displayed.
+Now from browser to Hoppscotch UI use the URL https://admin.hop.com from browser. Install the Hoppscotch Chrome extension so we can test localhost endpoint API endpoint running in the host machine with http://localhost:<port> url with endpoint path.
+To configure the deployed Hoppscotch UI to use the Chrome extension, select the settings in the UI and update the interceptor section configuration. Refer the snapshot below.
+Click Settings (gear icon) and scroll to the bottom, select the extensions in the interceptor. Once the the extensions is configured in the UI we should see the extensions version number.
 
 <img width="2732" height="1406" alt="image" src="https://github.com/user-attachments/assets/dd325035-6eec-40cd-8b3b-e506fe42e0e8" />
 
