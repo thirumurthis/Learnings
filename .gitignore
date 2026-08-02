@@ -7,3 +7,6 @@ gRPC/code/spring_grpc_lib_demo/.idea/**
 **/**/*.jar
 **/**/.vscode
 **/**/*.crt
+
+/java/heartbeat-app/target/**
+/java/heartbeat-app/.idea/**
