@@ -1,0 +1,10 @@
+- hosts: localhost
+  tasks:
+  - name: deploy nginx server  
+    kubernetes.core.k8s:
+       state: present
+       src: deployment.yaml
+  - name: deploy service
+    kubernetes.core.k8s:
+       state: present
+       src: service.yaml
