@@ -1,0 +1,25 @@
+---
+- name: Delete Kubernetes Resources
+  hosts: localhost
+  #connection: local
+  tasks:
+    #- name: Remove a specific Deployment
+    #  kubernetes.core.k8s:
+    #    state: absent
+    #    src: Deployment
+    #    name: webapp
+    #    namespace: myapp
+
+    #- name: Remove a Namespace (deletes all contained resources)
+    #  kubernetes.core.k8s:
+    #    state: absent
+    #    kind: Namespace
+    #    name: test-environment
+    - name: Remove Deployment
+      kubernetes.core.k8s:
+          state: absent
+          src: deployment.yaml
+    - name: Remove Service
+      kubernetes.core.k8s:
+           state: absent
+           src: service.yaml

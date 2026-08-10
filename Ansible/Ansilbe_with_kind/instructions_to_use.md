@@ -41,7 +41,7 @@ localhost ansible_connection=local
 
 Below is the playbook with tasks to configure components, in below Calico CNI is used. Flannel, Canal, etc are other CNI that can be used.
 
-Save below content to deploy.yaml 
+Save below content to install.yaml 
 
 ```yaml
 - name: Install Kubernetes
@@ -72,7 +72,7 @@ Save below content to deploy.yaml
 To deploy the playbook use below command
 
 ```
-ansible-playbook -i inventory.ini deploy.yml
+ansible-playbook -i inventory.ini install.yaml
 ```
 
 ----- 
@@ -85,6 +85,7 @@ install python
 install ansible 
 install pip3 kuberentes package use below command 
 
+# below only allows to install in venv. Instead install the python3-kubernetes directly using sudo apt since the ansible is also installed directly
 ```
 pip3 install kuberentes
 ```
@@ -229,4 +230,13 @@ data:
   tls.crt: "{{ lookup('file', 'tls.crt') | b64encode }}"
   tls.key: "{{ lookup('file', 'tls.key') | b64encode }}"
 
+```
+
+To deploy to the cluster, the kubeconfig should be updated. The default path is used if not specified otherwise.
+To override use the env kubeconfig environment variable.
+
+```
+ansible-playbook install.yaml
+
+ansible-playbook uninstall.yaml
 ```
