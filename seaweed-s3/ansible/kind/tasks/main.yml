@@ -1,0 +1,26 @@
+---
+- name: "Check Kind cli exists"
+  ansible.builtin.include_tasks: 
+    file: "check.yml"
+    apply:
+      tags: [kind-cli-check, kind-check]
+  tags:
+     - kind-cli-check
+     - kind-check
+
+- name: "Install Kind cli"
+  ansible.builtin.include_tasks: 
+    file: "install.yml"
+    apply:
+      tags: [kind-cli-install, kind-install]
+  tags:
+     - kind-cli-install
+     - kind-install
+
+
+#  tags: [always]
+#- name: "kind cli {{ role_action | default('install') }}"
+#  ansible.builtin.include_tasks: {{ role_action | default('install') }}
+#  apply:
+#    tags: [kind-install]
+#  tags: [always]

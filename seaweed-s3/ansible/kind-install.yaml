@@ -1,0 +1,20 @@
+---
+- name: Install seaweedfs
+  hosts: localhost
+
+  roles:
+   - kind
+  become: true
+  #tasks:
+  #  - name: "Check if kind cli is installed"
+  #    include_role:
+  #      name: kind
+  #    command: kind version
+  #    register: kind_version
+  #    failed_when: false
+  #    changed_when: false
+
+    #- name: "Install seaweedfs"
+    #  include_role:
+    #    name: my_role_name
+    #  when: kind_version.rc == 0

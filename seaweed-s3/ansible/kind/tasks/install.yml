@@ -1,0 +1,47 @@
+- name: Kind version check 
+  ansible.builtin.include_tasks: version.yml
+  vars:
+    run_phase: BEFORE INSTALL
+  tags: [version_check]
+
+- name: Print kind url version
+  ansible.builtin.debug:
+     msg: |
+       kind url: https://kind.sigs.k8s.io/dl/{{ version }}/kind-linux-{{ 'arm64' if ansible_facts['architecture'] == 'aarch64' else 'amd64' }}
+       Upgrade applicable? {{ version[1:] not in kind_version.stdout }}
+  when:  kind_version.rc == 0
+
+- name: Install KinD with architecture
+  ansible.builtin.get_url:
+    url: "https://kind.sigs.k8s.io/dl/{{ version }}/kind-linux-{{ 'arm64' if ansible_facts['architecture'] == 'aarch64' else 'amd64' }}"
+    dest: /usr/local/bin/kind
+    mode: '0755'
+    force: true
+    owner: root
+    group: root
+  register: download_result
+  become: true
+  when:  version[1:] not in kind_version.stdout
+
+#- name: Installation status reported (304) no difference between local and downloaded
+#  ansible.builtin.debug:
+#    msg: "The kind not installed. Skipping installation tasks since 304 status."
+#  when: 
+#    - not download_result.changed
+#    - "'304' in download_result.msg" 
+
+- name: Kind version check 
+  ansible.builtin.include_tasks: version.yml
+  vars:
+    run_phase: AFTER INSTALL
+  tags: [version_check]
+
+#- name: Download and install KinD binary
+#  ansible.builtin.get_url:
+#    url: "https://k8s.io"
+#    dest: /usr/local/bin/kind
+#    mode: '0755'
+#    owner: root
+#    group: root
+#  become: true
+
