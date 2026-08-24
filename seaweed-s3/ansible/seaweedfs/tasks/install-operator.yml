@@ -1,0 +1,44 @@
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+- name: Get current Helm repository list
+  ansible.builtin.command: helm repo list --output json
+  register: helm_repo_output
+
+- name: Set flag if the SeaweedFS Operator Helm repository is already added
+  ansible.builtin.set_fact:
+    repo_exists: "{{ seaweedfs_repo in (helm_repo_output.stdout | from_json | map(attribute='name') | list) }}"
+    #repo_exists: "{{ helm_repo_output.stdout | from_json | map(attribute='name') | list }}"
+  when: helm_repo_output.rc == 0 
+
+- name: Print if repo exists
+  ansible.builtin.debug:
+    msg: "List of repo exists in local: {{ (helm_repo_output.stdout | from_json | map(attribute='name') | list) }}"
+  when: repo_exists
+
+- name: Add the SeaweedFS Operator Helm repository
+  ansible.builtin.command: "helm repo add {{ seaweedfs_repo }} {{ seaweedfs_operator_repo_url }} && helm repo update"
+  register: helm_repo_add_result
+  changed_when: "'has been added' in helm_repo_add_result.stdout"
+  when: not repo_exists
+
+- name: Helm repo update 
+  ansible.builtin.command: helm repo update
+
+- name: Install the SeaweedFS Operator Helm chart
+  ansible.builtin.command: "helm upgrade --install {{ seaweedfs_release_name }} {{ seaweedfs_repo }}/{{ seaweedfs_chart_name }} --version {{ seaweedfs_operator_version }} --namespace {{ seaweedfs_operator_namespace }} --create-namespace"
+  register: helm_install_result
+  changed_when: "'installed' in helm_install_result.stdout or 'upgraded' in helm_install_result.stdout"
+  
+- name: Print if repo exists
+  ansible.builtin.debug:
+    msg: "helm status: {{ helm_install_result.stdout }}"
+  when: helm_install_result is defined
+
+- name: List all resources in the SeaweedFS cluster namespace
+  ansible.builtin.command: "kubectl api-resources --api-group=seaweed.seaweedfs.com"
+  register: kubectl_api_result
+
+- name: Display resources in the SeaweedFS cluster namespace
+  ansible.builtin.debug:
+    msg: "{{ kubectl_api_result.stdout }}"

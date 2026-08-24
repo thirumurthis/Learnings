@@ -1,0 +1,26 @@
+---
+- name: "Install cert-manager manfiest"
+  ansible.builtin.include_tasks: 
+    file: "install-cert.yml"
+    apply:
+      tags: [apisix-cert-issuer-install, apisix-cert-issuer]
+  tags:
+     - apisix-cert-issuer-install
+     - apisix-cert-issuer
+- name: "Install Apisix chart"
+  ansible.builtin.include_tasks: 
+    file: "install.yml"
+    apply:
+      tags: [apisix-install, apisix]
+  tags:
+     - apisix-install
+     - apisix
+
+- name: "Install Apisix control plane chart"
+  ansible.builtin.include_tasks: 
+    file: "install-apisix-cp.yml"
+    apply:
+      tags: [apisix-cp-install, apisix-cp]
+  tags:
+     - apisix-cp-install
+     - apisix-cp

@@ -1,0 +1,8 @@
+---
+- name: Check if kubectl cli is installed
+  hosts: localhost
+
+  roles:
+   - kubectl
+  become: true
+  become_user: thiru

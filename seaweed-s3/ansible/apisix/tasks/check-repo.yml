@@ -1,0 +1,26 @@
+
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+- name: Get current Helm repository list
+  ansible.builtin.command: helm repo list --output json
+  register: helm_repo_output
+
+- name: Set flag if the SeaweedFS Operator Helm repository is already added
+  ansible.builtin.set_fact:
+    apisix_repo_exists: "{{ apisix_repo_name in (helm_repo_output.stdout | from_json | map(attribute='name') | list) }}"
+  when: helm_repo_output.rc == 0 
+
+- name: Print if repo exists
+  ansible.builtin.debug:
+    msg: "List of repo exists in local: {{ (helm_repo_output.stdout | from_json | map(attribute='name') | list) }}"
+  when: apisix_repo_exists
+
+- name: Add the Apisix Operator Helm repository
+  ansible.builtin.command: "helm repo add {{ apisix_repo_name }} {{ apisix_chart_url }} && helm repo update"
+  register: helm_repo_add_result
+  changed_when: "'has been added' in helm_repo_add_result.stdout"
+  when: not repo_exists
+
+#helm repo add apisix https://apache.github.io/apisix-helm-chart
+#helm repo update

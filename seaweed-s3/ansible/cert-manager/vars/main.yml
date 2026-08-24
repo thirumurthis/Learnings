@@ -1,0 +1,29 @@
+cert_manager_repo_oci_url: oci://quay.io/jetstack/charts/cert-manager
+cert_manager_releasse_name: cert-manager
+cert_manager_version: v1.20.2
+cert_manager_namespace: cert-manager
+cert_manager_crd_enable: true
+
+cert_mgr_issuer: crt-mgr-issuer
+
+# name of the certificate to be created
+ss_cert_name: ss-cert
+
+# name of the issuer
+issuer_name: ss-ca-issuer
+
+# dns domain name
+dns_domain_name: example.demo.com
+
+# common name
+common_name: 
+  - example.demo.com
+
+# secret name cert manager with create the secret
+issuer_secret: ss-cert-secret
+
+# certificate duration
+cert_duration: 2160h
+
+# renew before
+renew_before_time: 360h

@@ -1,0 +1,9 @@
+---
+- name: "Install Cert manager chart"
+  ansible.builtin.include_tasks: 
+    file: "install.yml"
+    apply:
+      tags: [cert-manager-check, cert-manager]
+  tags:
+     - cert-manager-check
+     - cert-manager

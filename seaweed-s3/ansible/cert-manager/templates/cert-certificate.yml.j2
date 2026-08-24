@@ -1,0 +1,19 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ ss_cert_name }}
+spec:
+  commonName: {{ common_name }}
+  # cert created in this secret
+  secretName: {{ cert_secret }}
+  duration: {{ cert_duration }}
+  renewBefore: {{ renew_before_time }}
+  issuerRef:
+    # issuer resource name
+    name: {{ issuer_name }}
+    kind: Issuer
+  dnsNames:  # dns name add this to hosts file for loopback address
+  {% for cname in common_name %}
+    - {{ cname }}
+  {% endfor %}

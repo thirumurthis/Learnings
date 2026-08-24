@@ -1,0 +1,52 @@
+- name: Create the KinD configuration directory
+  ansible.builtin.file:
+    path: "{{ kind_config_path }}" #"{{ ansible_env.HOME }}/kind"
+    state: directory
+    mode: '0755'
+
+- name: Deploy the kind config file with variable replacement
+  ansible.builtin.template:
+    src: cluster.yml.j2
+    dest: "{{ kind_config_path }}/cluster.yml"
+    mode: '0644'
+
+- name: Get the content of the kind config file
+  ansible.builtin.slurp:
+    src: "{{ kind_config_path }}/cluster.yml"
+  register: kind_config_content
+
+
+- name: Create KinD cluster from config
+  ansible.builtin.command: kind get clusters
+  register: cluster_names
+    
+- name: Print the kind config information
+  ansible.builtin.debug:
+    msg: |
+     "Kind config file created at {{ kind_config_path }} with cluster name '{{ kind_cluster_name }}'."
+     "cluster info: {{ kind_config_content.content | b64decode }}"
+  when: kind_cluster_name not in cluster_names.stdout_lines
+
+- name: Print if the kind cluster names
+  ansible.builtin.debug:
+     msg: |
+      "kind cluster already exists"
+      "list of the kind cluster name - {{ cluster_names.stdout }}"
+
+  when: kind_cluster_name in cluster_names.stdout_lines    
+
+- name: Create KinD cluster from config
+  ansible.builtin.command: >
+   kind create cluster 
+    --name {{ kind_cluster_name }} 
+    --config {{ kind_config_path }}
+  when: kind_cluster_name not in cluster_names.stdout_lines
+  register: kind_creation
+  changed_when: true
+
+- name: Display cluster creation details
+  ansible.builtin.debug:
+    msg: |
+     "Cluster '{{ kind_cluster_name }}' successfully created!"
+     "Creation details: {{ kind_creation.stdout }}"
+  when: kind_creation.changed

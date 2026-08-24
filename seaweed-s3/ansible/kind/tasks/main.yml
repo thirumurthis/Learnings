@@ -10,13 +10,21 @@
 
 - name: "Install Kind cli"
   ansible.builtin.include_tasks: 
-    file: "install.yml"
+    file: "install-cli.yml"
     apply:
       tags: [kind-cli-install, kind-install]
   tags:
      - kind-cli-install
      - kind-install
 
+- name: "Install Kind cluster"
+  ansible.builtin.include_tasks: 
+    file: "install-cluster.yml"
+    apply:
+      tags: [kind-cluster-install, kind-cluster]
+  tags:
+     - kind-cluster-install
+     - kind-cluster
 
 #  tags: [always]
 #- name: "kind cli {{ role_action | default('install') }}"

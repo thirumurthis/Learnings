@@ -1,0 +1,50 @@
+# cert manager issuer name
+cert_mgr_issuer: apisix-crt-mgr-issuer
+
+#### certificate
+# name of the certificate to be created
+ss_cert_name: apisix-ss-cert
+
+# name of the issuer
+issuer_name: apisix-ss-ca-issuer
+
+# dns domain name
+common_name: apisix.demo.com
+
+# common name
+dns_domain_name: 
+  - apisix.demo.com
+
+# secret name cert manager with create the secret
+issuer_secret: apisix-ss-cert-secret
+
+# certificate duration
+cert_duration: 2160h
+
+# renew before
+renew_before_time: 360h
+
+# certificate path
+cert_template_path: "/tmp/apisix/cert"
+
+# namespace where the cert for apisix should be deployed 
+apisix_namespace: apisix
+
+### APISIX HELM CHART
+
+apisix_repo_name: apisix
+
+apisix_chart_url: https://apache.github.io/apisix-helm-chart
+
+apisix_chart_name: apisix
+
+# apisix control plane
+apisix_cp_release_name: apisix-cp
+
+# apisix control plane replica count 
+apisix_cp_replica_count: 1
+apisix_cp_etcd_replica: 3
+
+apisix_cp_cert_ca_name: ca.crt
+apisix_cp_ssl_enabled: true
+apisix_cp_etcd_enabled: true

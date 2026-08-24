@@ -1,0 +1,21 @@
+
+- name: Check Helm CLI installed from the role
+  ansible.builtin.include_role:
+    name: helm
+
+- name: Assert that Helm is installed before continuing
+  ansible.builtin.assert:
+    that:
+      - helm_cli_exists
+    fail_msg: "Helm is not installed on the target system. Aborting chart installation."
+
+- name: Check kubectl CLI installed from the role
+  ansible.builtin.include_role:
+    name: kubectl
+
+- name: Assert that kubectl is installed before continuing
+  ansible.builtin.assert:
+    that:
+      - kubectl_cli_exists
+    fail_msg: "kubectl is not installed on the target system. Aborting chart installation."
+

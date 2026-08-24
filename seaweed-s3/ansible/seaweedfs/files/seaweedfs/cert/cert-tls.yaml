@@ -1,0 +1,16 @@
+---
+# swfs-tls.yaml
+apiVersion: apisix.apache.org/v2
+kind: ApisixTls
+metadata:
+  name: seaweedfsc1-server-tls
+spec:
+  ingressClassName: apisix
+  hosts:
+    - admin.swfs.com
+    - s3.swfs.com
+    - filer.swfs.com
+    - master.swfs.com
+  secret:
+    name: ss-sw-cert-secret  # SECRET for cert created by the cert-manager
+    namespace: seaweedfs

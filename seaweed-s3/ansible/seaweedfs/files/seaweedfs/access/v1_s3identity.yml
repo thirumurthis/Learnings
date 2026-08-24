@@ -1,0 +1,14 @@
+apiVersion: seaweed.seaweedfs.com/v1
+kind: S3Identity
+metadata:
+  name: admin
+spec:
+  # The Seaweed cluster whose embedded IAM service owns this identity.
+  seaweedRef:
+    name: seaweedfsc1
+  # Optional account attributes recorded on the identity.
+  account:
+    displayName: Admin
+    email: admin@demo.com
+  # disabled: true   # uncomment to keep the identity but block authentication
+  # reclaimPolicy: Retain  # default Delete: removing this CR deletes the IAM user

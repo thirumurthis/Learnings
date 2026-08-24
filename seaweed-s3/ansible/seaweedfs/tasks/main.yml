@@ -1,5 +1,35 @@
 ---
-#- include_tasks: kind-install.yml
-#  apply:
-#    tags: [kind-install]
-#  tags: [always]
+- name: "Install seaweedfs operator cli exists"
+  ansible.builtin.include_tasks: 
+    file: "install-operator.yml"
+    apply:
+      tags: [seaweedfs-operator, seaweedfs-install]
+  tags:
+     - seaweedfs-operator
+     - seaweedfs-install
+
+- name: "Install seaweedfs cert install"
+  ansible.builtin.include_tasks:
+     file: "install-certs.yml"
+     apply:
+       tags: [seaweedfs-certs, seaweedfs-install]
+  tags:
+    - seaweedfs-certs
+    - seaweedfs-install
+
+- name: "Install seaweedfs cert install"
+  ansible.builtin.include_tasks:
+     file: "install-cluster.yml"
+     apply:
+       tags: [seaweedfs-cluster, seaweedfs-install]
+  tags:
+    - seaweedfs-cluster
+    - seaweedfs-install
+
+- name: "Uninstall seaweedfs webhook"
+  ansible.builtin.include_tasks:
+     file: "uninstall-webhook.yml"
+     apply:
+       tags: [seaweedfs-webhook-uninstall]
+  tags:
+    - seaweedfs-webhook-uninstall

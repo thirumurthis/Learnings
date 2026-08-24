@@ -1,0 +1,9 @@
+---
+- name: "Check kubectl cli exists"
+  ansible.builtin.include_tasks: 
+    file: "check.yml"
+    apply:
+      tags: [kubectl-cli-check, kubectl-check]
+  tags:
+     - kubectl-cli-check
+     - kubectl-check

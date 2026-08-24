@@ -20,7 +20,8 @@
     owner: root
     group: root
   register: download_result
-  become: true
+  #become: true
+  #become_user: thiru
   when:  version[1:] not in kind_version.stdout
 
 #- name: Installation status reported (304) no difference between local and downloaded

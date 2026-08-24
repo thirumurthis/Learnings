@@ -1,0 +1,20 @@
+
+- name: Check Helm CLI installed from the role
+  ansible.builtin.include_role:
+    name: helm
+
+- name: Assert that Helm is installed before continuing
+  ansible.builtin.assert:
+    that:
+      - helm_cli_exists
+    fail_msg: "Helm is not installed on the target system. Aborting chart installation."
+
+- name: Install apisix
+  ansible.builtin.command: 
+    cmd:  helm upgrade --install {{ cert_manager_releasse_name }} {{ cert_manager_repo_oci_url }} --version {{ cert_manager_version }} --namespace {{ cert_manager_namespace }} --create-namespace --set crds.enabled={{ cert_manager_crd_enable }}
+  register: helm_cert_manager_output
+
+- name: Cert manager status
+  ansible.builtin.debug:
+    msg: |
+     "Helm chart install output - {{ helm_cert_manager_output }}"

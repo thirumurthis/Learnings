@@ -1,0 +1,55 @@
+# apisix control plane
+#helm upgrade --install --create-namespace -n apisix apisix-cp apisix/apisix \
+#  --set apisix.deployment.mode=decoupled \
+#  --set apisix.deployment.role=control_plane \
+#  --set apisix.ssl.enabled=true \
+#  --set apisix.ssl.existingCASecret=selfsigned-apisix-cert-secret \
+#  --set apisix.ssl.certCAFilename=ca.crt \
+#  --set apisix.admin.allow.ipList[0]=0.0.0.0/0 \
+#  --set etcd.replicaCount=3 \
+#  --set etcd.enabled=true \
+#  --wait
+---
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+#- name: Check Helm CLI installed from the role
+#  ansible.builtin.include_role:
+#    name: helm
+
+#- name: Assert that Helm is installed before continuing
+#  ansible.builtin.assert:
+#    that:
+#      - helm_cli_exists
+#    fail_msg: "Helm is not installed on the target system. Aborting chart installation."
+
+#- name: Check kubectl CLI installed from the role
+#  ansible.builtin.include_role:
+#    name: kubectl
+
+#- name: Assert that kubectl is installed before continuing
+#  ansible.builtin.assert:
+#    that:
+#      - kubectl_cli_exists
+#    fail_msg: "kubectl is not installed on the target system. Aborting chart installation."
+
+
+- name: Install apisix control plane using helm chart
+  ansible.builtin.command: >
+   echo  helm upgrade --install --create-namespace -n {{ apisix_namespace }} {{ apisix_cp_release_name }} {{ apisix_repo_name }}/{{ apisix_chart_name }} \
+       --set apisix.deployment.mode=decoupled 
+       --set apisix.deployment.role=control_plane
+       --set replicaCount={{ apisix_cp_replica_count }}
+       --set apisix.ssl.enabled={{ apisix_cp_ssl_enabled }} 
+       --set apisix.ssl.existingCASecret={{ issuer_secret }} 
+       --set apisix.ssl.certCAFilename={{ apisix_cp_cert_ca_name }}
+       --set apisix.admin.allow.ipList[0]=0.0.0.0/0 
+       --set etcd.replicaCount={{ apisix_cp_etcd_replica }}
+       --set etcd.enabled={{ apisix_cp_etcd_enabled }}
+       --wait
+  register: helm_apisix_cp_output
+
+- name: Print output 
+  ansible.builtin.debug:
+    msg: |
+     "helm chart install command: {{ helm_apisix_cp_output.stdout }}"

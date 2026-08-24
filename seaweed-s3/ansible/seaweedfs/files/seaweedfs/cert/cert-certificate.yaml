@@ -1,0 +1,19 @@
+---
+# deploy in seaweefs namespace
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ss-sw-crt
+spec:
+  commonName: admin.swfs.com  
+  secretName: ss-sw-cert-secret # SECRET for cert created in this secret
+  duration: 2160h
+  renewBefore: 360h
+  issuerRef:
+    name: ss-sw-issuer # issuer resource name
+    kind: Issuer
+  dnsNames:
+    - admin.swfs.com  # dns name add this to hosts file for loopback address
+    - s3.swfs.com
+    - filer.swfs.com
+    - master.swfs.com

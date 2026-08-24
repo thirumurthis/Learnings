@@ -1,0 +1,48 @@
+- name: Create the certficate issuer directory
+  ansible.builtin.file:
+    path: "{{ cert_template_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Template cert-manager issuer manfiest 
+  ansible.builtin.template:
+    src: "cert-issuer.yml.j2"
+    dest: "{{ cert_template_path }}/cert-issuer.yml"
+    mode: '0644'
+
+- name: Get the content of the cert-manager certificate file
+  ansible.builtin.slurp:
+    src: "{{ cert_template_path }}/cert-issuer.yml"
+  register: cert_issuer_content
+
+- name: Print the certificate manfiest information
+  ansible.builtin.debug:
+    msg: |
+     "certificate info: {{ cert_issuer_content.content | b64decode }}"
+
+- name: Template the cert-manager certificate manfiest
+  ansible.builtin.template:
+    src: "cert-certificate.yml.j2"
+    dest: "{{ cert_template_path }}/cert-certificate.yml"
+    mode: '0644'
+
+- name: Get the content of the cert-manager certificate file
+  ansible.builtin.slurp:
+    src: "{{ cert_template_path }}/cert-certificate.yml"
+  register: cert_manifest_content
+
+- name: Print the certificate manfiest information
+  ansible.builtin.debug:
+    msg: |
+     "certificate info: {{ cert_manifest_content.content | b64decode }}"
+
+- name: Create certificate for apisix namespace from config
+  ansible.builtin.command: >
+   kubectl -n {{ apisix_namespace }} apply -f {{ cert_template_path }}/cert-certificate.yml
+  register: cert_install_output
+  changed_when: true
+
+- name: Print the install certificate
+  ansible.builtin.debug:
+    msg: |
+      "install certificate {{ cert_install_output.stdout }} {{ cert_install_output.stdout_lines }}"

@@ -1,0 +1,19 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ ss_cert_name }}
+spec:
+  commonName: {{ common_name }}
+  # cert created in this secret
+  secretName: {{ issuer_secret }}
+  duration: {{ cert_duration }}
+  renewBefore: {{ renew_before_time }}
+  issuerRef:
+    # issuer resource name
+    name: {{ issuer_name }}
+    kind: Issuer
+  dnsNames:
+  {% for cname in dns_domain_name %}
+    - "{{ cname }}"
+  {% endfor %}

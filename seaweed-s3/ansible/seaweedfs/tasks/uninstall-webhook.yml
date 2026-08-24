@@ -1,0 +1,17 @@
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+- name: Uninstall seaweedfs webhook
+  ansible.builtin.command: "kubectl delete {{ item }}"
+  register: webhook_output
+  loop: "{{ seaweed_webhook_name }}"
+  failed_when: false
+  changed_when: false
+
+- name: Print output info
+  ansible.builtin.debug:
+    msg: "webhook delete info: {{ item.stdout }} {{ item.stderr }}"
+  loop: "{{ webhook_output.results }}"
+  when: 
+   - webhook_output.results is defined
+   - webhook_output.results | length > 0

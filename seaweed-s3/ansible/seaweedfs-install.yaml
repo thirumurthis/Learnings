@@ -1,8 +1,8 @@
 ---
-- name: Install kind cli
+- name: Install seaweedfs
   hosts: localhost
 
   roles:
-   - kind
+   - seaweedfs
   become: true
   become_user: thiru

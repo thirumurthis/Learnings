@@ -1,0 +1,20 @@
+---
+- name: Helm version command
+  ansible.builtin.command: helm version --short
+  register: helm_check
+  failed_when: false
+  changed_when: false
+
+- name: Register new variable if the previous task had no error
+  ansible.builtin.set_fact:
+    helm_cli_exists: "{{ helm_check is succeeded }}"
+
+- name: Helm version status
+  ansible.builtin.debug:
+    msg: "Helm is installed! Version info: {{ helm_check.stdout }}"
+  when: helm_check.rc == 0
+
+- name: Print if Helm not installed
+  ansible.builtin.debug:
+    msg: "Helm is NOT installed on this system."
+  when: helm_check.rc != 0

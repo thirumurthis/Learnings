@@ -1,0 +1,78 @@
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+- name: Execute file operations with guaranteed cleanup
+  block:
+    - name: Copy file to remote tmp directory
+      ansible.builtin.copy:
+        src: "{{ local_file_path }}"
+        dest: "{{ dest_file_path }}"
+        mode: '0644'
+
+    - name: Verify the file exists on the remote system
+      ansible.builtin.stat:
+        path: "{{ dest_file_path }}"
+      register: file_status
+    
+    - name: Display file copy confirmation details
+      ansible.builtin.debug:
+        msg: >
+          File exists: {{ file_status.stat.exists }}. 
+          Size: {{ file_status.stat.size }} bytes. 
+          Owner: {{ file_status.stat.pw_name }}.
+      failed_when: not file_status.stat.exists
+
+    - name: List all files in the target folder
+      ansible.builtin.command: "ls {{ dest_file_path }}"
+      register: folder_contents
+
+    - name: Create namespace for seaweedfs cluster
+      ansible.builtin.command: "kubectl create namespace {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_create_ns_result
+      changed_when: "'created' in kubectl_create_ns_result.stdout"
+      failed_when: "'AlreadyExists' not in kubectl_create_ns_result.stderr and kubectl_create_ns_result.rc != 0"
+  
+    - name: Install the SeaweedFS cert issuer
+      ansible.builtin.command: "kubectl apply -f {{ dest_file_path }}/{{ certficate_base }}/{{ cert_issuer_file }} -n {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_issuer_result
+      changed_when: "'created' in kubectl_issuer_result.stdout or 'configured' in kubectl_issuer_result.stdout"
+
+    - name: Install the SeaweedFS certificate
+      ansible.builtin.command: "kubectl apply -f {{ dest_file_path }}/{{ certficate_base }}/{{ cert_certificate_file }} -n {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_cert_result
+      changed_when: "'created' in kubectl_cert_result.stdout or 'configured' in kubectl_cert_result.stdout"
+
+    - name: Install the SeaweedFS tls
+      ansible.builtin.command: "kubectl apply -f {{ dest_file_path }}/{{ certficate_base }}/{{ cert_tls_file }} -n {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_tls_result
+      changed_when: "'created' in kubectl_tls_result.stdout or 'configured' in kubectl_tls_result.stdout"
+
+    - name: Install the SeaweedFS route
+      ansible.builtin.command: "kubectl apply -f {{ dest_file_path }}/{{ certficate_base }}/{{ route_file }} -n {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_route_result
+      changed_when: "'created' in kubectl_route_result.stdout or 'configured' in kubectl_route_result.stdout"
+
+    - name: List all resources in the SeaweedFS cluster namespace
+      ansible.builtin.command: "kubectl get {{item}} -n {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_resources_result
+      loop: "{{ cert_resources }}"
+
+    - name: Display resources in the SeaweedFS cluster namespace
+      ansible.builtin.debug:
+        msg: |
+         "Issuer output: {{ kubectl_issuer_result.stdout }}"
+         "Certificate output: {{ kubectl_cert_result.stdout }}"
+         "TLS output: {{ kubectl_tls_result.stdout }}"
+         "Route output: {{ kubectl_route_result.stdout }}"
+
+    - name: Print output of all resources
+      ansible.builtin.debug:
+        msg: |
+         "Resource output: {{ item.item }} status {{ item.rc }}"
+      loop: "{{ kubectl_resources_result.results }}"
+
+  always:
+    - name: Clean up and remove the remote temporary file
+      ansible.builtin.file:
+        path: "{{ dest_file_path }}"
+        state: absent

@@ -1,3 +1,37 @@
-#SPDX-License-Identifier: MIT-0
----
-# vars file for seaweedfs
+seaweedfs_release_name: "seaweedfs-operator"
+seaweedfs_operator_repo_url: "https://seaweedfs.github.io/seaweedfs-operator/"
+seaweedfs_repo: "seaweedfs-operator"
+seaweedfs_chart_name: "seaweedfs-operator"
+seaweedfs_operator_namespace: "seaweedfs-operator"
+seaweedfs_cluster_namespace: "seaweedfs"
+
+seaweedfs_operator_version: "0.1.39"
+
+manifest_s3_access_dir: "access"
+local_file_path: "seaweedfs/"
+dest_file_path: "/tmp/seaweedfs"
+
+cert_issuer_file: "cert-issuer.yaml"
+cert_certificate_file: "cert-certificate.yaml"
+cert_tls_file: "cert-tls.yaml"
+certficate_base: "cert"
+route_file: "route.yaml"
+
+cert_resources:
+   - issuer
+   - certificate
+   - certificaterequest
+   - ar
+   - apisixtls
+
+seaweed_cluster_file: "seaweedfs-cluster.yaml"
+
+seaweedfs_cluster_resources:
+   - seaweed
+
+service_account_file: "service-account.yaml"
+
+seaweed_webhook_name:
+    - "validatingwebhookconfiguration/{{ seaweedfs_operator_namespace }}-validating-webhook-configuration"
+    - "mutatingwebhookconfiguration/{{ seaweedfs_operator_namespace }}-mutating-webhook-configuration"
+

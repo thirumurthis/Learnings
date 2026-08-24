@@ -1,0 +1,68 @@
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: swfs-admin-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: swfs-admin
+      match:
+        hosts:
+          - admin.swfs.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: seaweedfsc1-admin
+          servicePort: 23646
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: swfs-filer-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: swfs-filer
+      match:
+        hosts:
+          - filer.swfs.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: seaweedfsc1-filer
+          servicePort: 8888
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixUpstream
+metadata:
+   name: swfs-s3-upstream
+spec:
+  passHost: pass
+---
+---
+apiVersion: apisix.apache.org/v2
+kind: ApisixRoute
+metadata:
+  name: swfs-s3-route
+spec:
+  ingressClassName: apisix 
+  http:
+    - name: swfs-s3
+      match:
+        hosts:
+          - s3.swfs.com
+        paths:
+          - "/*"
+      backends:
+        - serviceName: seaweedfsc1-s3
+          servicePort: 8333
+      plugins:
+        - name: proxy-rewrite
+          enable: true
+          config:
+             headers:
+               set:
+                 X-Forwarded-Host: s3.swfs.com"
+                 X-Forwarded-Proto: "https"
+                 X-Forwarded-Port: "443"
