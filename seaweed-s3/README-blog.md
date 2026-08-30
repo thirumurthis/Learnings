@@ -11,7 +11,7 @@ To install the Seaweed have used Seaweedfs operator chart and to access teh S3 G
 
 ### Summary
 
-To start with we install KinD cluster with one control-plane and 3 data-plane. The configuration used uses extraPortMapping configuration to access the Apisix Ingress from th
+To start with we install KinD cluster with one control-plane and 3 data-plane. The configuration used uses extraPortMapping configuration to access the Apisix Ingress from the host machine.
 
 The certificate manager and Apisix aredeployed using the helm charts. The Apisix Ingress is deployed as dual mode (control plane and data plane), the etcd is deployed part of the control plane.
 
