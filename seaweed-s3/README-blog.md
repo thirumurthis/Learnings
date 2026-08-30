@@ -233,7 +233,7 @@ helm upgrade --install seaweedfs-operator seaweedfs-operator/seaweedfs-operator 
 
 ##### Seaweedfs certificate installation
 
-To deploy the seaweedfs S3 gateways, we will create a namesoace `seaweedfs`. The certificate issuer will be configured in the seaweedfs manfiest and the TLS will be enabled. This would allow access S3 and other services of seaweedfs from host using self-signed certificate. Create the namespace using below command.  
+To deploy the seaweedfs S3 gateways, we will create a namespace `seaweedfs`. The certificate issuer will be configured in the seaweedfs manfiest and the TLS will be enabled. This would allow access S3 and other services of seaweedfs from host using self-signed certificate. Create the namespace using below command.  
 
 ```sh
 kubectl create ns seaweedfs
