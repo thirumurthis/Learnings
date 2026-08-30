@@ -8,12 +8,13 @@ In local cluster we use certificate-manager with Apisix Ingress controller to de
   - KinD cli
   - kubectl cli
   - helm cli
-  - JBang configured
 
 ### Summary
 
-The KinD cluster is created using the kind cli using the configuration to expose ports. Once the KinD cluster is ready, the certificate manager and Apisix is deployed using the helm charts. The Apisix Ingress is deployed as dual mode where the control plane and data plane is deployed. With the cert manager and Apisix installed, the Certificate Issuer, Apisix Tls and Apisix Routes are created. The Apisix Route will be used for accessing the Seaweed admin ui, filer ui, etc.
-The Jbang based simple Java code uses Spring Boot, Picocli and aws sdk to connect to the hosted Seaweedfs S3 gateway using certificate to create and list buckets. Also, to upload single file to bucket.
+To start with we install KinD cluster with one control-plane and 3 data-plane. The configuration used uses extraPortMapping configuration to access the Apisix Ingress from th
+The certificate manager and Apisix aredeployed using the helm charts. The Apisix Ingress is deployed as dual mode (control plane and data plane), the etcd is deployed part of the control plane. 
+With the cert manager and Apisix installed to access the Apisix dashboard the Certificate Issuer, Apisix Tls and Apisix Routes are created (This is optional). 
+The Seaweedfs operator is installed using the charts in seaweedfs-operator namespace, the seaweed cluster itself is deployed in seaweedfs namespace. To configure the S3 to be accessible from host using https, the SSL certificate needs to be configure before deploying the Seaweedfs cluster. For this the Cert Issuer and Certificate request resources are deployed to the Seaweedfs (since we are using cert manager namespace scoped). With the certificate resources installed, the ApisixTLS resource with the DNS name defined for admin, filer and S3 endpoint is installed, this will create a secret with the self-signed CA cert info. The TLS secret info is used in the Seaweedfs configuration tls property. The Apisix Route configuration deployed will be used for accessing the Seaweed admin UI, filer UI and S3 endpoint.
 
 ### Installation
 
@@ -93,6 +94,14 @@ spec:
     - apisix.demo.com  # dns name add this to hosts file for loopback address
 ---
 ```
+
+To install the Apisix resource use below command
+
+```sh
+kubectl create ns apisix
+kubectl -n apisix apply -f apisix-cert.yaml
+```
+
 
 #### Apisix installation
 
