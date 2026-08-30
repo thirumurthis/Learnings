@@ -12,18 +12,23 @@ spec:
   statements:
     - effect: Allow
       actions:
-        - s3:ListBucket
+        - "*"
       resources:
         - "*"
-        #my-bucket
-    - effect: Allow
-      actions:
-        - s3:GetObject
-        - s3:PutObject
-        - s3:DeleteObject
-      resources:
-        - "*"
-        #my-bucket/uploads/*
+    #- effect: Allow
+    #  actions:
+    #    - s3:ListBucket
+    #  resources:
+    #    - "*"
+    #    #my-bucket
+    #- effect: Allow
+    #  actions:
+    #    - s3:GetObject
+    #    - s3:PutObject
+    #    - s3:DeleteObject
+    #  resources:
+    #    - "*"
+    #    #my-bucket/uploads/*
   # Alternatively, supply a raw AWS-style document for full control:
   # policyDocument: |
   #   {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"s3:*","Resource":"arn:aws:s3:::my-bucket/*"}]}

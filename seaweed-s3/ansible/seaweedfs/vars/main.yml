@@ -35,3 +35,9 @@ seaweed_webhook_name:
     - "validatingwebhookconfiguration/{{ seaweedfs_operator_namespace }}-validating-webhook-configuration"
     - "mutatingwebhookconfiguration/{{ seaweedfs_operator_namespace }}-mutating-webhook-configuration"
 
+seaweed_access_base: "access"
+seaweed_access_files:
+   - "v1_s3credentials.yml"
+   - "v1_s3identity.yml"
+   - "v1_s3policy.yml"
+   - "v1_s3policybinding.yml"

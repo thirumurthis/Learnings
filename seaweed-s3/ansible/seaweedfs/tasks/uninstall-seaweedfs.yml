@@ -1,0 +1,76 @@
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+- name: Execute file operations with guaranteed cleanup
+  block:
+    - name: Copy file to remote tmp directory
+      ansible.builtin.copy:
+        src: "{{ local_file_path }}"
+        dest: "{{ dest_file_path }}"
+        mode: '0644'
+
+    - name: Print s3 delete access command to execute
+      ansible.builtin.debug:
+         msg: "kubectl delete -f {{ dest_file_path }}/{{seaweed_access_base}}/{{ item }} -n {{ seaweedfs_cluster_namespace }}"
+      loop: "{{ seaweed_access_files }}"
+
+    - name: Install access s3 CR files
+      ansible.builtin.command: "kubectl delete -f {{ dest_file_path }}/{{seaweed_access_base}}/{{ item }} -n {{ seaweedfs_cluster_namespace }}"
+      register: s3_access_remove_result
+      changed_when: "'created' in s3_access_remove_result.stdout or 'configured' in s3_access_remove_result.stdout"
+      loop: "{{ seaweed_access_files }}"
+
+    - name: Print output s3 access status
+      ansible.builtin.debug:
+         msg: |
+          "Service account: {{ item.stdout }} : {{ item.stderr }}"
+      loop: "{{ s3_access_remove_result.results }}"
+      when: 
+      - s3_accesses_result.results is defined
+      - s3_accesses_result.results | length > 0
+
+
+    - name: Print s3 access command to execute
+      ansible.builtin.debug:
+         msg: "kubectl delete -f {{ dest_file_path }}/{{ seaweed_cluster_file }} -n {{ seaweedfs_cluster_namespace }}"
+      loop: "{{ seaweed_access_files }}"
+
+    - name: Uninstall the SeaweedFS cluster
+      ansible.builtin.command: "kubectl delete -f {{ dest_file_path }}/{{ seaweed_cluster_file }} -n {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_clstr_remove_result
+      changed_when: "'created' in kubectl_clstr_remove_result.stdout or 'configured' in kubectl_clstr_remove_result.stdout"
+
+    - name: Print the output of uninstall command result
+      ansible.builtin.debug:
+         msg: "Uninstall output: {{ kubectl_clstr_remove_result  }}"
+
+    - name: Uninstall the SeaweedFS Operator Helm chart
+      ansible.builtin.command: "helm uninstall {{ seaweedfs_release_name }} --namespace {{ seaweedfs_operator_namespace }}"
+      register: helm_uninstall_result
+      changed_when: "'uninstalled' in helm_install_result.stdout or 'removed' in helm_install_result.stdout"
+      
+    - name: Print if repo exists
+      ansible.builtin.debug:
+        msg: "helm status: {{ helm_uninstall_result.stdout }}"
+      when: helm_uninstall_result is defined
+
+    - name: Delete seaweedfs namespace cluster
+      ansible.builtin.command: "kubectl delete namespace {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_create_ns_result
+      changed_when: "'deleted' in kubectl_create_ns_result.stdout"
+      failed_when: "'deleted' not in kubectl_create_ns_result.stderr and kubectl_create_ns_result.rc != 0"
+  
+    - name: Delete seaweedfs namespace operator
+      ansible.builtin.command: "kubectl delete namespace {{ seaweedfs_operator_namespace }}"
+      register: kubectl_delete_ns_result
+      changed_when: "'deleted' in kubectl_delete_ns_result.stdout"
+      failed_when: "'deleted' not in kubectl_delete_ns_result.stderr and kubectl_delete_ns_result.rc != 0"
+
+  always:
+    - name: Clean up and remove the remote temporary file
+      ansible.builtin.file:
+        path: "{{ dest_file_path }}"
+        state: absent
+
+- name: Delete webhook configured for seaweedfs
+  ansible.builtin.include_tasks: uninstall-webhook.yml

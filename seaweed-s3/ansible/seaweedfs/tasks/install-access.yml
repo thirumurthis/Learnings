@@ -1,0 +1,59 @@
+- name: Pre-check tools for helm and kubectl
+  ansible.builtin.include_tasks: check-clis.yml
+
+- name: Execute file operations with guaranteed cleanup
+  block:
+    - name: Copy file to remote tmp directory
+      ansible.builtin.copy:
+        src: "{{ local_file_path }}"
+        dest: "{{ dest_file_path }}"
+        mode: '0644'
+
+    - name: Verify the file exists on the remote system
+      ansible.builtin.stat:
+        path: "{{ dest_file_path }}"
+      register: file_status
+    
+    - name: Display file copy confirmation details
+      ansible.builtin.debug:
+        msg: >
+          File exists: {{ file_status.stat.exists }}. 
+          Size: {{ file_status.stat.size }} bytes. 
+          Owner: {{ file_status.stat.pw_name }}.
+      failed_when: not file_status.stat.exists
+
+    - name: List all files in the target folder
+      ansible.builtin.command: "ls {{ dest_file_path }}"
+      register: folder_contents
+
+    - name: Create namespace for seaweedfs cluster
+      ansible.builtin.command: "kubectl create namespace {{ seaweedfs_cluster_namespace }}"
+      register: kubectl_create_ns_result
+      changed_when: "'created' in kubectl_create_ns_result.stdout"
+      failed_when: "'AlreadyExists' not in kubectl_create_ns_result.stderr and kubectl_create_ns_result.rc != 0"
+
+    - name: Print s3 access command to execute
+      ansible.builtin.debug:
+         msg: "kubectl apply -f {{ dest_file_path }}/{{seaweed_access_base}}/{{ item }} -n {{ seaweedfs_cluster_namespace }}"
+      loop: "{{ seaweed_access_files }}"
+
+    - name: Install access s3 CR files
+      ansible.builtin.command: "kubectl apply -f {{ dest_file_path }}/{{seaweed_access_base}}/{{ item }} -n {{ seaweedfs_cluster_namespace }}"
+      register: s3_accesses_result
+      changed_when: "'created' in s3_accesses_result.stdout or 'configured' in s3_accesses_result.stdout"
+      loop: "{{ seaweed_access_files }}"
+
+    - name: Print output s3 access status
+      ansible.builtin.debug:
+         msg: |
+          "Service account: {{ item.stdout }} : {{ item.stderr }}"
+      loop: "{{ s3_accesses_result.results }}"
+      when: 
+      - s3_accesses_result.results is defined
+      - s3_accesses_result.results | length > 0
+
+  always:
+    - name: Clean up and remove the remote temporary file
+      ansible.builtin.file:
+        path: "{{ dest_file_path }}"
+        state: absent

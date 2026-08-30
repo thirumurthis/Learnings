@@ -10,3 +10,6 @@ gRPC/code/spring_grpc_lib_demo/.idea/**
 
 /java/heartbeat-app/target/**
 /java/heartbeat-app/.idea/**
+
+/seaweed-s3/**/**/*.pem
+/seaweed-s3/**/**/*.crt

@@ -3,33 +3,48 @@
   ansible.builtin.include_tasks: 
     file: "install-operator.yml"
     apply:
-      tags: [seaweedfs-operator, seaweedfs-install]
+      tags: [seaweedfs-operator,operator-install, seaweedfs-install]
   tags:
      - seaweedfs-operator
+     - operator-install
      - seaweedfs-install
 
 - name: "Install seaweedfs cert install"
   ansible.builtin.include_tasks:
      file: "install-certs.yml"
      apply:
-       tags: [seaweedfs-certs, seaweedfs-install]
+       tags: [seaweedfs-certs, certs-install, seaweedfs-install]
   tags:
     - seaweedfs-certs
+    - certs-install
     - seaweedfs-install
 
 - name: "Install seaweedfs cert install"
   ansible.builtin.include_tasks:
      file: "install-cluster.yml"
      apply:
-       tags: [seaweedfs-cluster, seaweedfs-install]
+       tags: [seaweedfs-cluster, cluster-install, seaweedfs-install]
   tags:
     - seaweedfs-cluster
+    - cluster-install
+    - seaweedfs-install
+
+- name: "Install seaweedfs access"
+  ansible.builtin.include_tasks:
+     file: "install-access.yml"
+     apply:
+       tags: [seaweedfs-access, access-install, seaweedfs-install]
+  tags:
+    - seaweedfs-access
+    - access-install
     - seaweedfs-install
 
 - name: "Uninstall seaweedfs webhook"
   ansible.builtin.include_tasks:
      file: "uninstall-webhook.yml"
      apply:
-       tags: [seaweedfs-webhook-uninstall]
+       tags: [seaweedfs-webhook-uninstall, webhook-uninstall, seaweedfs-uninstall]
   tags:
     - seaweedfs-webhook-uninstall
+    - webhook-uninstall
+    - seaweedfs-uninstall

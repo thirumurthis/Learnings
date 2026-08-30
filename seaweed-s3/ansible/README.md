@@ -44,6 +44,11 @@ ansible-playbook seaweedfs-install.yaml --tags=seaweedfs-cluster
 - 4. access
 
 ```
+ansible-playbook seaweedfs-install.yaml --tags=seaweedfs-access-install
+```
+
+- using kubectl apply command
+```
  kubectl -n seaweedfs apply  -f seaweedfs/files/seaweedfs/access/
 ```
 
@@ -60,19 +65,35 @@ export AWS_EC2_METADATA_DISABLED=true
 export AWS_ENDPOINT_URL="https://s3.swfs.com"
 
 
+```
 aws s3 --no-ssl-verify ls 
+```
 
-
+```
 openssl s_client -connect s3.swfs.com:443 -showcerts </dev/null 2>/dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > cert.pem
+```
 
+```
 openssl x509 -in cert.pem -noout -text
+```
 
+```
 openssl x509 -in cert.pem -noout -text | egrep "Not|Issuer|Subject|DNS"
+```
 
+```
 aws s3 --ca-bundle cert.pem ls
-
+```
+```
 aws s3 --ca-bundle cert.pem ls
 aws s3api --ca-bundle cert.pem list-buckets
-
+```
 #### create bucket 
+```
 aws s3 --ca-bundle cert.pem mb s3://test-bucket 
+```
+
+### copy file 
+```
+aws s3 --ca-bundle cert.pem cp README.md s3://test-bucket/
+```

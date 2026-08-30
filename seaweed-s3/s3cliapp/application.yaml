@@ -1,0 +1,11 @@
+# Turns off the ASCII Spring banner
+spring.main.banner-mode: off
+
+# Optional: Silences framework INFO logs during startup (shows warnings/errors only)
+logging:
+  level:
+    s3cliapp.*: WARN
+    org.apache.catalina.core: WARN
+    org.springframework: WARN
+    software.amazon.awssdk: WARN
+    
