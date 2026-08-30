@@ -1,8 +1,8 @@
 ## S3 compatible Seaweedfs in KinD cluster with simple Jbang based CLI to access services
 
-Recently had to work on Seaweedfs S3 service and as part of the learning process, exploring how to configure it in KinD and access the S3 gateway service from host machine for loacal development with S3 compatible service.
+Recently had to work on Seaweed file service to configure S3 compatible storage service. As part of the learning process have explored the options to configure the service in KinD cluster with SSL and in this article have documented the details with the configuration.
 
-In local cluster we use certificate-manager with Apisix Ingress controller to deploy the service and expose to access it from host machine using SSL certificates. These configuration are not production ready, for more production grade configuration refer the Seaweed documentation.
+To install the Seaweed have used Seaweedfs operator chart and to access teh S3 Gateway and UI services have used certificate-manager and Apisix Ingress controller deployed to the KinD cluster. These configuration are not production ready, for more production grade configuration refer the Seaweed documentation.
 
 ### Pre-requisites
   - KinD cli
@@ -12,16 +12,18 @@ In local cluster we use certificate-manager with Apisix Ingress controller to de
 ### Summary
 
 To start with we install KinD cluster with one control-plane and 3 data-plane. The configuration used uses extraPortMapping configuration to access the Apisix Ingress from th
-The certificate manager and Apisix aredeployed using the helm charts. The Apisix Ingress is deployed as dual mode (control plane and data plane), the etcd is deployed part of the control plane. 
-With the cert manager and Apisix installed to access the Apisix dashboard the Certificate Issuer, Apisix Tls and Apisix Routes are created (This is optional). 
+
+The certificate manager and Apisix aredeployed using the helm charts. The Apisix Ingress is deployed as dual mode (control plane and data plane), the etcd is deployed part of the control plane.
+
+With the cert manager and Apisix installed to access the Apisix dashboard the Certificate Issuer, Apisix Tls and Apisix Routes are created (This is optional).
+
 The Seaweedfs operator is installed using the charts in seaweedfs-operator namespace, the seaweed cluster itself is deployed in seaweedfs namespace. To configure the S3 to be accessible from host using https, the SSL certificate needs to be configure before deploying the Seaweedfs cluster. For this the Cert Issuer and Certificate request resources are deployed to the Seaweedfs (since we are using cert manager namespace scoped). With the certificate resources installed, the ApisixTLS resource with the DNS name defined for admin, filer and S3 endpoint is installed, this will create a secret with the self-signed CA cert info. The TLS secret info is used in the Seaweedfs configuration tls property. The Apisix Route configuration deployed will be used for accessing the Seaweed admin UI, filer UI and S3 endpoint.
 
 ### Installation
 
 #### Kind cluster installation
 
-The kind configration manfiest to install kind cluster with 1 control and 3 data plane. 
-
+The kind configration manfiest to install kind cluster with 1 control and 3 data plane.
 
 ```yaml
 # file name: kind-cluster.yaml
@@ -41,7 +43,7 @@ nodes:
 - role: worker
 ```
 
-Use the kind cli to install the cluster, the command looks like below. Assume above yaml configuration content is stored in file named kind-cluster.yaml. Rest of this article uses the same format, the filename in the start of yaml will be used in the command that used to deploy to cluster. 
+Use the kind cli to install the cluster, the command looks like below. Assume above yaml configuration content is stored in file named kind-cluster.yaml. Rest of this article uses the same format, the filename in the start of yaml will be used in the command that used to deploy to cluster.
 
 ```sh
 kind create cluster --config kind-cluster.yaml
@@ -105,7 +107,9 @@ kubectl -n apisix apply -f apisix-cert.yaml
 
 #### Apisix installation
 
-To install the Apisix control-plane and data-plane, the command looks like below. The certificate secret is passed as argument to the control plane installation. The resources are deployed in apisix namespace.
+The Apisix is installed in control-plane and data-plane. The command looks like below.
+
+The certificate secret is passed as argument to the control plane installation. The resources are deployed in apisix namespace.
 
 ```sh
 helm upgrade --install --create-namespace -n apisix apisix-cp apisix/apisix \
@@ -167,7 +171,7 @@ spec:
   hosts:
     - apisix.demo.com
   secret:
-    name: selfsigned-apisix-cert-secret  # certificate created by the cert-manager
+    name: ss-apisix-cert-secret  # certificate created by the cert-manager
     namespace: apisix
 ---
 apiVersion: apisix.apache.org/v2
@@ -213,7 +217,8 @@ Now, from browser we can use `https://apisix.demo.com` to view the dashboard.
 #### Seaweed installation
 
 ##### Seaweedfs operator installation
-Seaweed is configured with the cerrificate to access the endpoint with SSL self-signed certificate. The Seaweedfs operator chart is used to deploy the CRDs. The seaweedfs operator [git repo link](https://github.com/seaweedfs/seaweedfs-operator).
+
+ The Seaweedfs operator chart is used to deploy the CRDs. The seaweedfs operator [git repo link](https://github.com/seaweedfs/seaweedfs-operator). Seaweed is configured with the self-signed certificate to access the endpoint.
 
 To install seaweedfs operator use below helm command, add the helm repo using below command
 
@@ -279,7 +284,7 @@ spec:
 ---
 ```
 
-Finally the Apisix TLS manfiest which creates the ca certificate info so we can access the endpoints from the host. If this resource is not created then in Apisix data-plane we could see SNI related error realted to the certificate.
+The Apisix TLS manifest listed below when installed creates the secret with ca certificate info so we can access the endpoints from the host using SSL certificates. If this resource is not created then in Apisix data-plane we could see SNI related error related to the certificate.
 
 ```yaml
 ---
@@ -312,7 +317,7 @@ kubectl -n seaweedfs apply -f swfs-tls.yaml
 
 ##### Seaweedfs cluster installation
 
-Create a service account for the seaweedfs to create internal resources
+Service account resource for the `seaweedfs` which will be used to create internal resources. The service account is configured in the resource manifest.
 
 ```yaml
 #file name: swfs-sa.yaml
@@ -594,3 +599,5 @@ aws s3 --ca-bundle cert.pem mb s3://test-bucket
 ```
 
 <img width="250" height="70" alt="image" src="https://github.com/user-attachments/assets/d83c1d29-f27f-47eb-bac5-39242c6f0a38" />
+
+<img width="2696" height="1678" alt="image" src="https://github.com/user-attachments/assets/e91b673a-0f08-44fb-bf47-07fad0efcfce" />
