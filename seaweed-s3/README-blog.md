@@ -10,7 +10,6 @@ In local cluster we use certificate-manager with Apisix Ingress controller to de
   - helm cli
   - JBang configured
 
-
 ### Summary
 
 The KinD cluster is created using the kind cli using the configuration to expose ports. Once the KinD cluster is ready, the certificate manager and Apisix is deployed using the helm charts. The Apisix Ingress is deployed as dual mode where the control plane and data plane is deployed. With the cert manager and Apisix installed, the Certificate Issuer, Apisix Tls and Apisix Routes are created. The Apisix Route will be used for accessing the Seaweed admin ui, filer ui, etc.
@@ -49,7 +48,8 @@ kind create cluster --config kind-cluster.yaml
 
 Once the kind cluster is installed, the kube config will be automatically updated, we could use kubectl get nodes to see the nodes.
 
-<<< PASET Kind kubectl get nodes output >>>
+<img width="300" height="95" alt="image" src="https://github.com/user-attachments/assets/cf150619-c70b-45c4-9d6f-15c2e7647519" />
+
 
 #### Certificate manager installation
 
@@ -539,7 +539,13 @@ To access the UI and the S3 endpoint, update the hosts file to map loopback IP w
 127.0.0.1 admin.swfs.com master.swfs.com filer.swfs.com s3.swfs.com
 ```
 
-<< TO DO paste the admin ui, etc ui>>
+<img width="2708" height="1670" alt="image" src="https://github.com/user-attachments/assets/ef5f7d0f-eadd-41dc-9e74-c04c3bb6992e" />
+
+<img width="2572" height="934" alt="image" src="https://github.com/user-attachments/assets/a95b1e47-aebc-4d85-9d7b-0e058b907776" />
+
+The s3.swfs.com will be the endpoint we can use with the S3 clients to connect to create and list buckets, resources, etc.
+
+Note, master.swfs.com is not necessary to be exposed, since the service gets created just added a route. 
 
 ###### Fetch the certificate from the KinD cluster
 
@@ -570,10 +576,12 @@ The aws cli command to list the topic is shown below
 aws s3 --ca-bundle cert.pem ls
 ```
 
-<< TO DO PASTE IMAGE of AWS cli output>>
+<img width="250" height="38" alt="image" src="https://github.com/user-attachments/assets/90f182eb-ad14-423b-9717-53baa0306e37" />
 
 To create buckets using aws cli use below command
 
 ```sh
 aws s3 --ca-bundle cert.pem mb s3://test-bucket 
 ```
+
+<img width="250" height="70" alt="image" src="https://github.com/user-attachments/assets/d83c1d29-f27f-47eb-bac5-39242c6f0a38" />
