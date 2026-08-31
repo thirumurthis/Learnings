@@ -2,7 +2,7 @@
 
 Recently had to work on Seaweed file service to configure S3 compatible storage service. As part of the learning process have explored the options to configure the service in KinD cluster with SSL and in this article have documented the details with the configuration.
 
-To install the Seaweed have used Seaweedfs operator chart and to access teh S3 Gateway and UI services have used certificate-manager and Apisix Ingress controller deployed to the KinD cluster. These configuration are not production ready, for more production grade configuration refer the Seaweed documentation.
+To install the Seaweed have used Seaweedfs operator chart and to access the S3 Gateway and UI services have used certificate-manager and Apisix Ingress controller deployed to the KinD cluster. These configuration are not production ready, for more production grade configuration refer the Seaweed documentation.
 
 ### Pre-requisites
   - KinD cli
@@ -13,11 +13,11 @@ To install the Seaweed have used Seaweedfs operator chart and to access teh S3 G
 
 To start with we install KinD cluster with one control-plane and 3 data-plane. The configuration used uses extraPortMapping configuration to access the Apisix Ingress from the host machine.
 
-The certificate manager and Apisix aredeployed using the helm charts. The Apisix Ingress is deployed as dual mode (control plane and data plane), the etcd is deployed part of the control plane.
+The certificate manager and Apisix are deployed using the helm charts. The Apisix Ingress is deployed as dual mode (control plane and data plane), the etcd is deployed part of the control plane.
 
 With the cert manager and Apisix installed to access the Apisix dashboard the Certificate Issuer, Apisix Tls and Apisix Routes are created (This is optional).
 
-The Seaweedfs operator is installed using the charts in seaweedfs-operator namespace, the seaweed cluster itself is deployed in seaweedfs namespace. To configure the S3 to be accessible from host using https, the SSL certificate needs to be configure before deploying the Seaweedfs cluster. For this the Cert Issuer and Certificate request resources are deployed to the Seaweedfs (since we are using cert manager namespace scoped). With the certificate resources installed, the ApisixTLS resource with the DNS name defined for admin, filer and S3 endpoint is installed, this will create a secret with the self-signed CA cert info. The TLS secret info is used in the Seaweedfs configuration tls property. The Apisix Route configuration deployed will be used for accessing the Seaweed admin UI, filer UI and S3 endpoint.
+The Seaweedfs operator is installed using the seaweedfs-operator chart in seaweedfs-operator namespace. Once the operator CRDs are installed to deploy the seaweed cluster resources are deployed to seaweedfs namespace in the KinD cluster. To make the seaweedfs S3 gateway endpoint accessible from host machine using HTTPS endpoint, Certificate Issuer and Certificate Request manifest should be deployed to seaweedfs namespace. With the certificate resources installed, the ApisixTLS resource with the DNS name defined for admin, filer and S3 endpoint this will create a secret with the self-signed CA cert info. The TLS secret info is used in the Seaweedfs cluster configuration tls property. The ApisixRoute configuration deployed will be used for accessing the Seaweed admin UI, filer UI and S3 endpoint.
 
 ### Installation
 
