@@ -17,13 +17,13 @@ The certificate manager and Apisix are deployed using the helm charts. The Apisi
 
 With the cert manager and Apisix installed to access the Apisix dashboard the Certificate Issuer, Apisix Tls and Apisix Routes are created (This is optional).
 
-The Seaweedfs operator is installed using the seaweedfs-operator chart in seaweedfs-operator namespace. Once the operator CRDs are installed, the seaweed cluster resources is deployed in seaweedfs namespace using manfiest yaml in the KinD cluster using kubectl command. To make the seaweedfs S3 gateway endpoint accessible from host machine with HTTPS, the Certificate Issuer and Certificate Request manifest also deployed to seaweedfs namespace. With the certificate resources installed, deploying the ApisixTLS resource with the DNS names defined for admin, filer and S3 endpoint will create a secret with the self-signed CA cert info. This TLS secret info is used in the Seaweedfs cluster manifest in the tls property. The ApisixRoute manifest configuration is finally deployed to create routes to access the Seaweed admin UI, filer UI and S3 endpoint.
+The Seaweedfs operator is installed using the seaweedfs-operator chart in seaweedfs-operator namespace. Once the operator CRDs are installed, the seaweed cluster resources is deployed in seaweedfs namespace using manifest yaml in the KinD cluster using kubectl command. To make the seaweedfs S3 gateway endpoint accessible from host machine with HTTPS, the Certificate Issuer and Certificate Request manifest also deployed to seaweedfs namespace. With the certificate resources installed, deploying the ApisixTLS resource with the DNS names defined for admin, filer and S3 endpoint will create a secret with the self-signed CA cert info. This TLS secret info is used in the Seaweedfs cluster manifest in the tls property. The ApisixRoute manifest configuration is finally deployed to create routes to access the Seaweed admin UI, filer UI and S3 endpoint.
 
 ### Installation
 
 #### Kind cluster installation
 
-The kind configration manfiest to install kind cluster with 1 control and 3 data plane.
+The kind configuration manifest to install kind cluster with 1 control and 3 data plane.
 
 ```yaml
 # file name: kind-cluster.yaml
@@ -238,13 +238,13 @@ helm upgrade --install seaweedfs-operator seaweedfs-operator/seaweedfs-operator 
 
 ##### Seaweedfs certificate installation
 
-To deploy the seaweedfs S3 gateways, we will create a namespace `seaweedfs`. The certificate issuer will be configured in the seaweedfs manfiest and the TLS will be enabled. This would allow access S3 and other services of seaweedfs from host using self-signed certificate. Create the namespace using below command.  
+To deploy the seaweedfs S3 gateways, we will create a namespace `seaweedfs`. The certificate issuer will be configured in the seaweedfs manifest and the TLS will be enabled. This would allow access S3 and other services of seaweedfs from host using self-signed certificate. Create the namespace using below command.  
 
 ```sh
 kubectl create ns seaweedfs
 ```
 
-The certificate issuer manfiest configuration is shown below, which uses self-singed certificate.
+The certificate issuer manifest configuration is shown below, which uses self-singed certificate.
 
 ```yaml
 # file name: swfs-issuer.yaml
@@ -307,7 +307,7 @@ spec:
 
 ```
 
-To install the issuer and certificate request manfiest in seaweedfs namespace use below 
+To install the issuer and certificate request manifest in seaweedfs namespace use below 
 
 ```sh
 kubectl -n seaweedfs apply -f swfs-issuer.yaml
