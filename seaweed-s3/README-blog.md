@@ -1,4 +1,4 @@
-## S3 compatible Seaweedfs in KinD cluster with simple Jbang based CLI to access services
+## S3 compatible Seaweedfs in KinD cluster
 
 Recently had to work on Seaweed file service to configure S3 compatible storage service. As part of the learning process have explored the options to configure the service in KinD cluster with SSL and in this article have documented the details with the configuration.
 
