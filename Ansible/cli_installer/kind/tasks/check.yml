@@ -1,0 +1,25 @@
+---
+#- name: Verify kind CLI Installation
+#  hosts: localhost
+#  gather_facts: false
+#  tasks:
+
+- name: Check kind CLI version if installed
+  ansible.builtin.command: kind version
+  register: kind_check
+  failed_when: false
+  changed_when: false
+
+- name: Report installation status
+  ansible.builtin.debug:
+    msg: >-
+      {{
+        'kind CLI is installed!' 
+        if kind_check.rc == 0 
+        else 'kind CLI is NOT installed.'
+      }}
+
+- name: Conditional task execution (Example)
+  ansible.builtin.debug:
+    msg: "Executing tasks that require the kind CLI..."
+  when: kind_check.rc == 0

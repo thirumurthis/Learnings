@@ -1,0 +1,8 @@
+---
+- name: Install kind cli
+  hosts: localhost
+
+  roles:
+   - kind
+  become: true
+  #become_user: thiru

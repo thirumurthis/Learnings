@@ -1,0 +1,20 @@
+
+- name: Check if kubectl exists
+  ansible.builtin.command: kubectl version --client
+  register: kubectl_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Register new variable if the previous task had no error
+  ansible.builtin.set_fact:
+    kubectl_cli_exists: "{{ kubectl_check is succeeded }}"
+
+- name: Report status
+  ansible.builtin.debug:
+    msg: "kubectl is installed! Version info: {{ kubectl_check.stdout }}"
+  when: kubectl_check.rc == 0
+
+- name: Fail if missing (Optional)
+  ansible.builtin.fail:
+    msg: "kubectl is NOT installed on this system!"
+  when: kubectl_check.rc != 0

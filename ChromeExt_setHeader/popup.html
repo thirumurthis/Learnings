@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        body {width: 350px;padding: 15px; font-family: sans-serif;}
+        h3 {margin-top: 0;}
+        #headers { display: grid; gap: 10px;}
+        .header-row { display: grid; grid-template-columns: 1fr 1fr 32px; gap: 8px; }
+        input{ min-width: 0; padding: 7px; box-sizing: border-box;}
+        button { padding: 7px; cursor: pointer; }
+        .remove-header{ color: #a00;}
+        #enabledControl{ display: flex; align-items: center; gap: 8px; margin-bottom: 15px;}
+        #actions{display: flex; gap: 10px; margin-top: 15px;}
+        #saveBtn{ flex: 1;}
+        #status{margin-top: 20px; margin: 10px 0 0; font-size: 14px; }
+        #status.error{ color: #a00; }
+        #status.success{ color: #0a0; }
+    </style>
+    <body>
+        <h3>Custom Headers</h3>
+        <div id="headers"></div>
+        <label id="enabledControl">
+            <input type="checkbox" id="enabledToggle" role="switch">
+            Enable Custom Headers
+        </label>
+        <div id="actions">
+            <button id="addHeaderBtn" type="button" title="Add Header" aria-label="Add Header">+</button>
+            <button id="saveBtn">Save & Apply</button>
+            <button id="checkBtn" type="button">Check Requests</button>
+        </div>
+        <p id="status" role="status" aria-live="polite"></p>
+        <script src="popup.js"></script>
+    </body>
+</html>

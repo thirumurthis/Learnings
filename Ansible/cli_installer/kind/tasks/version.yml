@@ -1,0 +1,9 @@
+- name: Check existing version of kind
+  ansible.builtin.command: kind --version
+  register: kind_version
+  failed_when: false
+  changed_when: false
+
+- name: Print kind url version
+  ansible.builtin.debug:
+     msg: "Kind version [{{ run_phase }}]: {{ kind_version.stdout }}"

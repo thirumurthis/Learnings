@@ -1,0 +1,9 @@
+---
+- name: "Check Helm cli exists"
+  ansible.builtin.include_tasks: 
+    file: "check.yml"
+    apply:
+      tags: [helm-cli-check, helm-check]
+  tags:
+     - helm-cli-check
+     - helm-check
