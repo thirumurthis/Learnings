@@ -1,11 +1,12 @@
-## Copying Secrets between Kubernetes clusters
+## Pull and Push secrets using ESO between KinD Kubernetes clusters
 
-Recently had to use External Secret Operator (ESO) for a requirement to copy secrets from one cluster to another. To understand and learn this have used two kind cluster, installed the ESO using helm chart on one of the cluster.
+Recently had to use External Secret Operator (ESO) for a requirement to copy secrets from one cluster to another. To understand and learn the configuration have used two kind cluster to detail the setup which can be done locally.  
 
-- The steps detailed below shows copying secrets from namespace only since SecretStore ESO manifest is namespace scoped. ESO provides ClusterSecretStore which is cluster scoped. Two KinD cluster is created named dev0 and dev1. The ESO will be installed in the dev1 cluster, for ESO to connect to the dev0 cluster it requires certificate info. Create a secret which includes the ca certificate fetched from the kubeconifg. In case of KinD cluster, the KinD CLI will update the .kube folder under the $HOME directory.
-A SecretStore needs to be created which will be configured with the certificate secret mentioned above. The secret key should be used in the SecretStore manifest, as commented in the manfiest below.
-To pull the secret an ExternalSecret resource is created, once installed in dev1 cluster on the required namespace, the secrets will be pulled to the dev1 cluster from the configured dev0.
-To push the secret a PushSecret resource is created, once installed in the dev1 cluster one the required nanespace, the secrets from the dev1 cluster on the configured namespace will be pushed to the dev0 cluster.
+The steps detailed below focus on copying secrets from namespace only since SecretStore resource of ESO is namespace scoped. For cluster scope ESO has ClusterSecretStore resource, refer the documentation for more details. 
+
+The two KinD cluster in this case are named dev0 and dev1. The ESO will be installed in the one cluster in this case on dev1 cluster. For ESO to connect to the dev0 cluster it requires certificate info to be created as a secret fetched from the kube config file. The KinD CLI will update the config automatically under the ~.kube folder once the clusters are created. 
+
+The SecretStore resource configures the secret with the certificate info which will be used by ESO controller. The ExternalSecret resource is configured to pull the secret from dev0 cluster from specified namespace to the dev1 cluster, the secret should be created and available in the dev0 namespace else we don't see the secrets in the namespace. PushSecret resource is configured to push the secret created in the namespace on dev1 cluster to dev0 cluster on to specific namespace.  
 
 ### Prerequisites 
 
@@ -24,13 +25,13 @@ To push the secret a PushSecret resource is created, once installed in the dev1 
  - The ExternalSecret resource of ESO is used for pull secret from target cluster
  - The PushSecret resource of ESO is used for pushing secret to the target cluster
 
-Use case demostrated is configure
+Use case demonstrates is configure
   - Pull the secret from the cluster kind-dev0 to kind-dev1 
   - Push the secret from the cluster kind-dev1 to kind-dev0 
 
 #### Create kind cluster
 
-With below commnad we can create two kind cluster 
+With below command we can create two kind cluster 
 
 ```yaml
 # file name: kind_dev0.yaml and kind_dev1.yaml (config remains same for both the clusters)
@@ -146,7 +147,7 @@ kubectl --context kind-dev1 -n eso-demo apply -f eso-secret-store-example.yaml
 
 #### Create the ExternalSecret resource
 
-The ExternalSecret manfiest is used to pull the secret from the `kind-dev0` cluster. Install the manfiest to `kind-dev1` cluster in `eso-demo` namespace. 
+The ExternalSecret manifest is used to pull the secret from the `kind-dev0` cluster. Install the manifest to `kind-dev1` cluster in `eso-demo` namespace. 
 
 ```yaml
 # file name: eso-external-secret-to-pull-from-dev0-to-dev1.yaml
@@ -165,8 +166,8 @@ spec:
   data:
   - secretKey: extra
     remoteRef:
-      key: secret-example
-      property: extra
+      key: secret-example  # secret name on the remote 
+      property: extra      # property
 ```
 
 Install the ExternalSecret to the namespace where the secrets from the `kind-dev0` to be pulled.
