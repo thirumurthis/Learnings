@@ -80,6 +80,228 @@ CLUSTER2=kind-cluster-dev1
 -- use below helm command to configure it .. some of these parameter already overridden in override values file
 -- some config enables metrics 
 
+- clusters.yaml (common configuration)
+- use the docker network inspect and pick the ip's below
+
+```yaml
+clustermesh:
+  config:
+    clusters:
+      kind-cluster-dev0:
+        enabled: true
+        address: cluster-dev0-control-plane # docker control plane name 
+        port: 32379                         # any unused port for clustermeshapi communication 
+        #ips:
+        # - 172.18.0.5
+        # - 172.18.0.4
+        # - 172.18.0.3
+        # - 172.18.0.2
+      kind-cluster-dev1:
+        enabled: true
+        address: cluster-dev1-control-plane
+        port: 32380
+        #ips:
+        # - 172.18.0.8
+        # - 172.18.0.6
+        # - 172.18.0.7
+        # - 172.18.0.9
+
+gatewayAPI:
+   enabled: true
+   hostNetwork:
+    enabled: true
+   
+   # below can be used in case if we different gatway class to use
+   #gatewayClass:
+   #  create: true
+
+kubeProxyReplacement: true
+
+l7Proxy: true
+
+envoy:
+  enabled: true
+  securityContext:
+    capabilities:
+      keepCapNetBindService: true
+      envoy:
+      # Add NET_BIND_SERVICE to the list (keep the others!)
+      - NET_BIND_SERVICE
+      - NET_ADMIN
+      - SYS_ADMIN
+      - BPF
+
+# Mandated for Kind environments so Cilium attaches to the 
+# nested container cgroup layout properly
+cgroup:
+  autoMount: 
+    enabled: true
+  hostRoot: /sys/fs/cgroup
+
+ipam:
+  mode: kubernetes
+
+# check https://docs.cilium.io/en/stable/observability/hubble/setup/#hubble for helm
+hubble:
+  relay: 
+    enabled: true
+  metrics:
+    enabled: true
+    enableOpenMetrics: true
+  ui:
+    enabled: true
+    #baseUrl: "/hubble"
+    #service:
+      # --- The type of service used for Hubble UI access, either ClusterIP or NodePort.
+      #type: NodePort
+      # --- The port to use when the service type is set to NodePort.
+      #nodePort: 31235
+
+operator:
+  prometheus:
+     enabled: true 
+     port: 6942
+```
+
+cluster-1.yaml
+
+```yaml
+cluster:
+  name: kind-cluster-dev0
+  id: 1
+
+clustermesh:
+  useAPIServer: true
+
+  config:
+    enabled: true
+
+  apiserver:
+    service:
+      #type: LoadBalancer
+      type: NodePort           # clusterMesh Api in this case exposed using NodePort 
+      nodePort: 32379          # all cilium pods from other cluster will reach to this endpoting based on the settings in clustermesh.config.clusters[].address/port
+      annotations: {}
+      # The following annotations are examples. Adapt them to your
+      # environment and context.
+      #
+      # Optional: Have ExternalDNS create the DNS records to
+      # reach this API server. Otherwise, create the same record
+      # through your usual DNS management workflow.
+      # annotations:
+      #   external-dns.alpha.kubernetes.io/hostname: cluster1.example.com
+      #
+      # AKS:
+      # annotations:
+      #   service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+      #
+      # EKS:
+      # annotations:
+      #   service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+      #
+      # GKE:
+      # annotations:
+      #   networking.gke.io/load-balancer-type: Internal
+      #   networking.gke.io/internal-load-balancer-allow-global-access: "true"
+    tls:
+      auto:
+        enabled: true
+        method: cronJob
+        server:
+          extraDnsNames:
+            - cluster-dev0.example.com
+            - cluster-dev1.example.com
+
+k8sServiceHost: cluster-dev0-control-plane
+k8sServicePort: 6443
+
+
+  # Optional Cluster Mesh features that you may find useful:
+  # enableEndpointSliceSynchronization: true
+  # mcsapi:
+  #   enabled: true
+  #   corednsAutoConfigure:
+  #     enabled: true
+
+#ingressController:
+#    enabled: true
+#    ingressController: shared #dedicated #shared  #dedicated other option
+#    service:
+#      type: NodePort
+#      insecureNodePort: 31081
+#      secureNodePort: 31443
+```
+
+- cluster-2 yaml
+
+```yaml
+cluster:
+  name: kind-cluster-dev1
+  id: 2
+
+clustermesh:
+  useAPIServer: true
+
+  config:
+    enabled: true
+
+  apiserver:
+    service:
+      #type: LoadBalancer
+      type: NodePort
+      nodePort: 32380
+      annotations: {}
+      # The following annotations are examples. Adapt them to your
+      # environment and context.
+      #
+      # Optional: Have ExternalDNS create the DNS records to
+      # reach this API server. Otherwise, create the same record
+      # through your usual DNS management workflow.
+      # annotations:
+      #   external-dns.alpha.kubernetes.io/hostname: cluster2.example.com
+      #
+      # AKS:
+      # annotations:
+      #   service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+      #
+      # EKS:
+      # annotations:
+      #   service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+      #
+      # GKE:
+      # annotations:
+      #   networking.gke.io/load-balancer-type: Internal
+      #   networking.gke.io/internal-load-balancer-allow-global-access: "true"
+    # below is required for the Apiserver cilium to start correctly
+    tls:
+      auto:
+        enabled: true
+        method: cronJob
+        server:
+          extraDnsNames:
+            - cluster-dev0.example.com
+            - cluster-dev1.example.com
+
+k8sServiceHost: cluster-dev1-control-plane
+k8sServicePort: 6443
+
+
+  # Optional Cluster Mesh features that you may find useful:
+  # enableEndpointSliceSynchronization: true
+  # mcsapi:
+  #   enabled: true
+  #   corednsAutoConfigure:
+  #     enabled: true
+
+#ingressController:
+#    enabled: true
+#    ingressController: shared #dedicated #shared  #dedicated other option
+#    service:
+#      type: NodePort
+#      insecureNodePort: 31082
+#      secureNodePort: 31444
+```
+
 ```sh
 helm upgrade -i cilium oci://quay.io/cilium/charts/cilium --version 1.20.2 \
    --namespace kube-system \
@@ -113,7 +335,7 @@ helm upgrade -i cilium oci://quay.io/cilium/charts/cilium --version 1.20.2 \
 
 -- in case of certificate error on the hubbler use  check the output 
 ```sh
-kubectl --context=kind-cluster2-dev1 -n kube-system get secret hubble-server-certs -o jsonpath='{.data.tls\.crt}' | base64 -d | openssl x509 -text -noout | grep DNS
+kubectl --context=$CLUSTER2 -n kube-system get secret hubble-server-certs -o jsonpath='{.data.tls\.crt}' | base64 -d | openssl x509 -text -noout | grep DNS
 ```
 
 # STEP 5
@@ -372,7 +594,7 @@ spec:
 ```
 
 ```sh
-kubectl --context kind-dev0 apply -f pg_cluster_dev0.yaml -n postgres
+kubectl --context $CLUSTER1 apply -f pg_cluster_dev0.yaml -n postgres
 ```
 
 -- content of file pg_service0_svc.yaml
@@ -419,7 +641,7 @@ kubectl --context=$CLUSTER1 get secret standby.postgres-cluster.credentials.post
 ### in cluster-2 dev1 install the postgres operator 
 
 ```sh
-helm upgrade --install --kube-context kind-dev1 postgres-operator postgres-operator-charts/postgres-operator -n zalando --create-namespace
+helm upgrade --install --kube-context $CLUSTER2 postgres-operator postgres-operator-charts/postgres-operator -n zalando --create-namespace
 ```
 
 ### content of file pg_cluster_dev1.yaml 
@@ -451,7 +673,7 @@ spec:
 ### in cluster-2 dev1 deploy the postgres db 
 
 ```sh
-kubectl --context kind-dev1 apply -f pg_cluster_dev1.yaml -n postgres
+kubectl --context $CLUSTER2 apply -f pg_cluster_dev1.yaml -n postgres
 ```
 
 -- deploy the service discovery content of hte pg_service_dev1.yaml 
@@ -479,13 +701,13 @@ spec:
 ### apply when performing switch over in this case
 
 ```sh
-kubectl --context kind-dev1 apply -f pg_service_dev1.yaml -n postgres
+kubectl --context $CLUSTER1 apply -f pg_service_dev1.yaml -n postgres
 ```
 
 -- After deploying those configuration, to verify if the service is accesisble we can use below commands 
 
 ```sh
-kubectl --context kind-dev1 run alpine-shell --rm -it --image=alpine --restart=Never -- sh
+kubectl --context $CLUSTER1 run alpine-shell --rm -it --image=alpine --restart=Never -- sh
 # nc -vz 172.18.100.10:5432
 ```
 
