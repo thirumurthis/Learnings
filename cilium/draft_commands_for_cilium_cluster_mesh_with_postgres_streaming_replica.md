@@ -755,3 +755,40 @@ To verify if the postgres is performing replication streaming use `patronictl li
 
 
 To Do create a sample spring app with a simple backend and configure backend with the following configuration.
+
+---
+To Do create a sample spring app with a simple backend and configure backend with the following configuration.
+
+url connection postgres://[user]:[password]@[host]:[port]/[database_name]
+
+To check connection from the power shell use 
+
+Test-NetConnection -ComputerName 127.0.0.1 -Port 8081
+
+To connect the database from the primary database we need to follow below step 
+
+make sure to update the envoy config to disable the hostNetwork: false, this is to enable TCP (L7 works with this config) due to this the UI also works)
+make sure to update the Gateway protocol to be TCP instead of HTTP. The TCP also works for UI 
+make sure to create the TCP route 
+Also edit the gateway Nodeport in the cilium-monitoring to use 31081 (extraportmapping confguration)
+
+```
+apiVersion: gateway.networking.k8s.io/v1
+kind: TCPRoute
+metadata:
+  name: postgres-global-route
+  namespace: postgres
+spec:
+  parentRefs:
+  - name: nodeport-gateway
+    namespace: cilium-monitoring
+    port: 31081
+  rules:
+    - backendRefs:
+        - name: postgres-cluster
+          port: 5432
+```
+
+In VS code use the microsoft extension and select the connection string 
+
+postgres://postgres:@127.0.0.1:8081/postgres
