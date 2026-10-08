@@ -109,7 +109,7 @@ clustermesh:
 gatewayAPI:
    enabled: true
    hostNetwork:
-    enabled: true
+    enabled: false  # if set to true then the L7 will not work i.e only Httproute and httpsroute will work Tcp route doesn't work
    
    # below can be used in case if we different gatway class to use
    #gatewayClass:
@@ -415,7 +415,7 @@ metadata:
 spec:
   gatewayClassName: nodeport-gateway-class
   listeners:
-  - protocol: HTTP
+  - protocol: TCP # HTTP - doesn't support the postgres tcproute from host so changed to TCP from HTTP
     port: 31081
     name: web-gw
     allowedRoutes:
