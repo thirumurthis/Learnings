@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.security.autoconfigure.web.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
@@ -16,6 +17,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.OAuth2AuthorizationServerConfiguration;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.authorization.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -25,6 +27,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
@@ -37,14 +40,19 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import javax.sql.DataSource;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -65,15 +73,21 @@ public class AuthzApplication {
 		var authorizationServerConfigurer =
 				new OAuth2AuthorizationServerConfigurer();
 
+		RequestMatcher oAuthEndpoints = authorizationServerConfigurer.getEndpointsMatcher();
+
+		RequestMatcher h2ConsoleMatcher = PathRequest.toH2Console();
+
 		http
-				.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+				//.securityMatcher(request ->
+				//		oAuthEndpoints.matches(request) && !h2ConsoleMatcher.matches(request))
+				.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher() )
 				.with(authorizationServerConfigurer, (authorizationServer) ->
 						authorizationServer
 								.oidc(Customizer.withDefaults())	// Enable OpenID Connect 1.0
 				)
-				.authorizeHttpRequests((authorize) ->
-						authorize
-								.anyRequest().authenticated()
+				.authorizeHttpRequests((authorize) -> authorize
+						//.requestMatchers("/h2-console/**").permitAll()
+						.anyRequest().authenticated()
 				)
 				// Redirect to the login page when not authenticated from the
 				// authorization endpoint
@@ -93,8 +107,15 @@ public class AuthzApplication {
 			throws Exception {
 		http
 				.authorizeHttpRequests((authorize) -> authorize
+						//.dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD).permitAll()
+						//.requestMatchers("/h2-console/**").permitAll()
 						.anyRequest().authenticated()
 				)
+				//.csrf(csrf -> csrf
+				//		.ignoringRequestMatchers("/h2-console/**"))
+				//.headers(headers -> headers
+				//		.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+
 				// Form login handles the redirect to the login page from the
 				// authorization server filter chain
 				.formLogin(Customizer.withDefaults());
@@ -102,7 +123,26 @@ public class AuthzApplication {
 		return http.build();
 	}
 
+	//https://docs.spring.io/spring-security/reference/servlet/authentication/passwords/jdbc.html#servlet-authentication-jdbc-bean
 	@Bean
+	UserDetailsManager users(DataSource dataSource) {
+		UserDetails user = User.builder()
+				.username("user")
+				.password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
+				.roles("USER")
+				.build();
+		UserDetails admin = User.builder()
+				.username("admin")
+				.password("{bcrypt}$2a$10$GRLdNijSQMUvl/au9ofL.eDwmoohzzS7.rmNSJZ.0FxO/BTk76klW")
+				.roles("USER", "ADMIN")
+				.build();
+		JdbcUserDetailsManager users = new JdbcUserDetailsManager(dataSource);
+		//users.createUser(user);
+		//users.createUser(admin);
+		return users;
+	}
+	//inmemory
+	//@Bean
 	public UserDetailsService userDetailsService() {
 		UserDetails userDetails0 = User.withDefaultPasswordEncoder()
 				//User.builder()
@@ -198,12 +238,13 @@ public class AuthzApplication {
 	@Bean
 	public OAuth2TokenCustomizer<JwtEncodingContext> tokenCustomizer() {
 		return context -> {
+			// when using curl with client_credential grant_type
 			// Check if we are generating an Access Token via the Client Credentials flow
 			if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType()) &&
 					AuthorizationGrantType.CLIENT_CREDENTIALS.equals(context.getAuthorizationGrantType())) {
 
 
-				logger.info("@@@ - context.principal {}",context.getAuthorizedScopes());
+				logger.info("[CLIENT_CREDENTIALS] context.principal {}",context.getAuthorizedScopes());
 				// Extract authorities assigned to the Client Principal
 				Set<String> roles = context.getAuthorizedScopes().stream()
 						.map(scope -> scope.replace("ROLE_", "").replace("SCOPE_", ""))
@@ -212,6 +253,19 @@ public class AuthzApplication {
 				// Inject the 'roles' claim into the JWT payload
 				context.getClaims().claim("roles", roles);
 			}
+
+			if (OAuth2TokenType.ACCESS_TOKEN.equals(context.getTokenType())){
+				Set<String> authorities = context.getPrincipal().getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+						.filter(Objects::nonNull)
+						.filter(role -> role.startsWith("ROLE_") )
+						.map(role -> role.replace("ROLE_", ""))
+						.collect(Collectors.toSet());
+				logger.info("[ParameterName.ACCESS_TOKEN] context.principal {}",authorities.stream().distinct());
+
+				context.getClaims().claim("roles", authorities);
+			}
+
 		};
 	}
 
@@ -227,5 +281,4 @@ class HomeController {
 				"<p>Welcome, <b>" + principal.getName() + "</b>! You have logged in successfully.</p>";
 	}
 }
-}
- */
+// */

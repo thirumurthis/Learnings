@@ -1,15 +1,32 @@
 spring:
   application:
     name: authz
-  #threads:
-  #  virtual:
-  #    enabled: true
-
+  threads:
+    virtual:
+      enabled: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      generate-unique-name: false
   datasource:
-    username: postgres
-    password: primaryPassword123
-    url: jdbc:postgresql://127.0.0.1:8085/postgres?targetServerType=primary&hostRecheckSeconds=10&sslmode=disable&loglevel=2
-  #  driver-class-name: org.postgresql.Driver
+    username: authzdb
+    password:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      dll-auto: update
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+
   security:
     #user:
     #  name: spring
@@ -54,3 +71,8 @@ logging:
   level:
     root: info
     org.springframework.security: trace
+    org:
+      springframework:
+        security:
+          web:
+            FilterChainProxy: debug

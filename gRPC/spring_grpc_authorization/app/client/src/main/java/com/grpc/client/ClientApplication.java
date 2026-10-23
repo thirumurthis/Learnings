@@ -116,16 +116,36 @@ public class ClientApplication {
 		var authenticatedUser = this.strategy.getContext().getAuthentication();
 		if (authenticatedUser instanceof OAuth2AuthenticationToken auth2AuthenticationToken) {
 			var clientId = auth2AuthenticationToken.getAuthorizedClientRegistrationId();
-			logger.info("inside token checking clientid ---- *********************** {} ",clientId);
+			//logger.info("inside token checking clientid ---- *********************** {} ", clientId);
 			var oauthAuthorizationRequest = OAuth2AuthorizeRequest
 					.withClientRegistrationId(clientId)
 					.principal(authenticatedUser)
 					.build();
 			var authorized = authorizedClientManager.authorize(oauthAuthorizationRequest);
-			logger.info("[TOKEN] @@@@@@@@@@@@@@@@--- {}",authorized);
+			//logger.info("[TOKEN] @@@@@@@@@@@@@@@@--- {}", authorized);
+			printToken(Objects.requireNonNull(authorized).getAccessToken().getTokenValue());
 			return Objects.requireNonNull(authorized).getAccessToken().getTokenValue();
 		}
 		return null;
+	}
+
+	private void printToken(String jwtTokenValue ){
+
+		// 2. Print the exact token string (Copy-pasteable directly into jwt.io)
+		logger.info("[RAW JWT TOKEN] Bearer {}", jwtTokenValue);
+
+		// 3. OPTIONAL: Decode and print the claims to your console for easier reading
+		try {
+			java.util.Base64.Decoder decoder = java.util.Base64.getUrlDecoder();
+			String[] chunks = jwtTokenValue.split("\\.");
+			if (chunks.length > 1) {
+				String payload = new String(decoder.decode(chunks[1]));
+				logger.info("[JWT CLAIMS PAYLOAD] {}", payload);
+			}
+		} catch (Exception e) {
+			logger.warn("Failed to decode token payload layout for logs: {}", e.getMessage());
+		}
+	}
 		 //*/
 /*		var attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		if (attributes == null) {
@@ -192,7 +212,7 @@ public class ClientApplication {
 		return null;
 	}*/
 
-}
+//} // end of the class
 
 @Controller
 @ResponseBody
