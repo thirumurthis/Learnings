@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: service-http
+  # get the token from the server
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://authz.local:7070 #http://localhost:7070
+
+server:
+  port: 8086
+#management:
+#  otlp:
+#    tracing:
+#      enabled: false
+#      endpoint: http://localhost:8081/prometheus/api/v1/otlp
+#    metrics:
+#      enabled: false
+#      export:
+#        url: http://localhost:8081/prometheus/api/v1/otlp/v1/metrics
+  #tracing:
+  #  sampling:
+  #    probability: 1.0

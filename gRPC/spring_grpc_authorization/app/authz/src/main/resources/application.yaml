@@ -40,8 +40,8 @@ spring:
         client:
           spring:
             registration:
-              client-id: "spring"
-              client-secret: "{noop}secret"
+              client-id: "spring-grpc"
+              client-secret: "{noop}grpc-secret"
               client-authentication-methods:
                 - "client_secret_basic"
               authorization-grant-types:
@@ -50,13 +50,31 @@ spring:
                 - "refresh_token"
                 - "urn:ietf:params:oauth:grant-type:device_code"
               redirect-uris:
-                - "http://client.local:8080/login/oauth2/code/spring"
+                - "http://client-grpc.local:8080/login/oauth2/code/spring-grpc"
               #post-logout-redirect-uris:
               #  - "http://localhost:8080/"
               scopes:
                 - "openid"
                 - "profile"
                 - "user"
+                - "admin"
+              require-authorization-consent: true
+          spring-http:
+            registration:
+              client-id: "spring-http"
+              client-secret: "{noop}http-secret"
+              client-authentication-methods:
+                - "client_secret_basic"
+              authorization-grant-types:
+                - "authorization_code"
+                - "client_credentials"
+                - "refresh_token"
+                - "urn:ietf:params:oauth:grant-type:device_code"
+              redirect-uris:
+                - "http://client-http.local:8083/login/oauth2/code/spring-http"
+              scopes:
+                - "openid"
+                - "profile"
                 - "admin"
               require-authorization-consent: true
 server:

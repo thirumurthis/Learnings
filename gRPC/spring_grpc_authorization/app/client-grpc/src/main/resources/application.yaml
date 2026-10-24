@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: client-grpc
+  security:
+    oauth2:
+      client:
+        provider:
+          spring-grpc-provider:
+            issuer-uri: http://authz.local:7070
+        registration:
+          spring-grpc:
+            provider: "spring-grpc-provider"
+            client-id: "spring-grpc"
+            client-secret: "grpc-secret"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_basic
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - profile
+  threads:
+    virtual:
+      enabled: true
+server:
+  port: 8080
+  http2:
+    enabled: true
+  #servlet:
+  #  session:
+  #    cookie:
+  #      same-site: lax
+  #      secure: false
+logging:
+  level:
+    org.springframework.security: trace
+    root: info

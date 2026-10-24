@@ -16,8 +16,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>service</module>
-        <module>client</module>
+        <module>service-grpc</module>
+        <module>service-http</module>
+        <module>client-grpc</module>
+        <module>client-http</module>
         <module>authz</module>
     </modules>
 

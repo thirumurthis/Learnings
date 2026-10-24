@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: client-http
+  security:
+    oauth2:
+      client:
+        provider:
+          spring-http-provider:
+            issuer-uri: http://authz.local:7070
+        registration:
+          spring-http:
+            provider: "spring-http-provider"
+            client-id: "spring-http"
+            client-secret: "http-secret"
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_basic
+            #redirect-uri: "http://client-http.local:8083/login/oauth2/code/spring-http"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope:
+              - openid
+              - profile
+  threads:
+    virtual:
+      enabled: true
+  http:
+    serviceclient:
+      hello-service:
+        base-url: http://service-http.local:8086
+server:
+  port: 8083
+  http2:
+    enabled: true
+  #servlet:
+  #  session:
+  #    cookie:
+  #      same-site: lax
+  #      secure: false
+logging:
+  level:
+    org.springframework.security: trace
+    root: info

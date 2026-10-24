@@ -8,10 +8,9 @@
 		<version>0.1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<groupId>com.grpc</groupId>
 	<artifactId>authz</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
+	<name>authz</name>
 	<description/>
 	<url/>
 	<licenses>
