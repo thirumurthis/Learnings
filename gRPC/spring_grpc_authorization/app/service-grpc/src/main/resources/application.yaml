@@ -8,6 +8,8 @@ spring:
         jwt:
           issuer-uri: http://authz.local:7070 #http://localhost:7070
 
+server:
+  port: 9090
 #management:
 #  otlp:
 #    tracing:

@@ -22,10 +22,10 @@ spring:
   threads:
     virtual:
       enabled: true
-  http:
-    serviceclient:
-      hello-service:
-        base-url: http://service-http.local:8086
+  #http:
+  #  serviceclient:
+  #    hello-service:
+  #      base-url: http://service-http.local:8086
 server:
   port: 8083
   http2:

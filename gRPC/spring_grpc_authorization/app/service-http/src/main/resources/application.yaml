@@ -9,7 +9,7 @@ spring:
           issuer-uri: http://authz.local:7070 #http://localhost:7070
 
 server:
-  port: 8086
+  port: 9091
 #management:
 #  otlp:
 #    tracing:
