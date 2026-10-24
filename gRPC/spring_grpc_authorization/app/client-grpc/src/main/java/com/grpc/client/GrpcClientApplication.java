@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Objects;
 
-//Below is similar to the way we use HTTP client definition in spring
-//@ImportHttpService(basePackageClasses = AppService.class)
 //@ImportGrpcClients(basePackageClasses= AppServiceGrpc.class, target = "localhost:9090" )
 @ImportGrpcClients(basePackageClasses= AppServiceGrpc.class, target = "service.local:9090" )
 @SpringBootApplication

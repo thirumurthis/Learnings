@@ -14,7 +14,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientHttpServiceGroupConfigurer;
 import org.springframework.web.service.registry.ImportHttpServices;
 
-//Below is similar to the way we use HTTP client definition in spring
 @ImportHttpServices(group = "hello-service", types = HelloWebClient.class)
 @SpringBootApplication
 public class HttpClientApplication {
@@ -38,7 +37,6 @@ public class HttpClientApplication {
 
 		return groups -> groups
 				.filterByName("hello-service")
-				// FIX 2: Change method to .forEachClient
 				.forEachClient((group, clientBuilder) -> {
 					clientBuilder.requestInterceptor(oauth2Interceptor);
 					clientBuilder.requestInterceptor(rawTokenLoggingInterceptor());
